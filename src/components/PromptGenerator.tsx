@@ -7,7 +7,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Zap, Copy, Download, AlertCircle, CheckCircle, Sparkles, Magic } from "lucide-react";
+import { Zap, Copy, Download, AlertCircle, CheckCircle, Sparkles, Wand2 } from "lucide-react";
+
+interface ValidationErrors {
+  category?: string;
+  title?: string;
+  description?: string;
+  userInput?: string;
+}
 
 const PromptGenerator = () => {
   const [formData, setFormData] = useState({
@@ -22,7 +29,7 @@ const PromptGenerator = () => {
   
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({});
+  const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   const categories = [
     { value: 'text-generation', label: '📝 Génération de Texte', color: 'from-blue-500 to-cyan-500' },
@@ -42,7 +49,7 @@ const PromptGenerator = () => {
   ];
 
   const validateForm = () => {
-    const errors = {};
+    const errors: ValidationErrors = {};
     if (!formData.category) errors.category = 'Catégorie requise';
     if (!formData.title) errors.title = 'Titre requis';
     if (!formData.description) errors.description = 'Description requise';
@@ -129,7 +136,7 @@ Sortie: [Réponse générée suivant le format et les contraintes spécifiées]
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center space-x-3 text-2xl">
             <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <Magic className="h-5 w-5 text-white" />
+              <Wand2 className="h-5 w-5 text-white" />
             </div>
             <span className="gradient-text">Configuration du Prompt</span>
           </CardTitle>
