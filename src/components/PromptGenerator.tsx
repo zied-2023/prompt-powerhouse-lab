@@ -93,15 +93,15 @@ const PromptGenerator = () => {
               Que voulez-vous faire ? *
             </Label>
             <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
                 <SelectValue placeholder="Choisissez une option..." />
               </SelectTrigger>
-              <SelectContent className="glass-card border-white/30">
+              <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
                 {categories.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value} className="font-medium">
-                    <div>
-                      <div>{cat.label}</div>
-                      <div className="text-xs text-gray-500">{cat.description}</div>
+                  <SelectItem key={cat.value} value={cat.value} className="font-medium py-3 px-4 hover:bg-gray-50 cursor-pointer">
+                    <div className="flex flex-col">
+                      <div className="font-semibold text-gray-800">{cat.label}</div>
+                      <div className="text-xs text-gray-500 mt-1">{cat.description}</div>
                     </div>
                   </SelectItem>
                 ))}
@@ -118,7 +118,7 @@ const PromptGenerator = () => {
               placeholder="Exemple : Écris un email professionnel pour remercier un client après un achat..."
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[120px]"
+              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[120px] bg-white"
               rows={5}
             />
             <p className="text-xs text-gray-500">
