@@ -11,6 +11,7 @@ import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
 const PromptGenerator = () => {
   const [formData, setFormData] = useState({
     category: '',
+    subcategory: '',
     description: ''
   });
   
@@ -43,6 +44,111 @@ const PromptGenerator = () => {
     { value: 'art-creation', label: '🎨 Art & Création', description: 'Peinture, musique, design assisté...' },
     { value: 'ecommerce', label: '🛒 E-commerce', description: 'Recherche visuelle, essai virtuel, pricing...' }
   ];
+
+  const subcategories = {
+    'health-medical': [
+      { value: 'medical-diagnostics', label: 'Diagnostics médicaux' },
+      { value: 'pharmaceutical-research', label: 'Recherche pharmaceutique et découverte de médicaments' },
+      { value: 'patient-monitoring', label: 'Suivi des patients via des dispositifs intelligents' },
+      { value: 'robotic-surgery', label: 'Chirurgie assistée par robot' },
+      { value: 'precision-medicine', label: 'Personnalisation des traitements (médecine de précision)' }
+    ],
+    'education': [
+      { value: 'intelligent-tutoring', label: 'Systèmes tutoriaux intelligents adaptés au niveau de l\'apprenant' },
+      { value: 'automated-assessment', label: 'Évaluation automatisée des compétences' },
+      { value: 'personalized-learning', label: 'Personnalisation de l\'apprentissage' },
+      { value: 'early-detection', label: 'Détection précoce des difficultés scolaires' }
+    ],
+    'industry-manufacturing': [
+      { value: 'predictive-maintenance', label: 'Maintenance prédictive des machines' },
+      { value: 'process-automation', label: 'Automatisation des processus de production' },
+      { value: 'supply-chain', label: 'Gestion de la chaîne logistique (prévision de la demande)' },
+      { value: 'quality-control', label: 'Contrôle qualité automatisé' }
+    ],
+    'finance-banking': [
+      { value: 'fraud-detection', label: 'Détection de fraude' },
+      { value: 'credit-risk', label: 'Analyse du risque crédit' },
+      { value: 'algorithmic-trading', label: 'Trading algorithmique (finance quantitative)' },
+      { value: 'robo-advisors', label: 'Conseil en investissement automatisé (robo-advisors)' },
+      { value: 'insurance-claims', label: 'Gestion des sinistres en assurance' }
+    ],
+    'sales-marketing': [
+      { value: 'personalization', label: 'Personnalisation des offres et recommandations produits' },
+      { value: 'predictive-analytics', label: 'Analyse prédictive des comportements clients' },
+      { value: 'customer-service-bots', label: 'Chatbots pour le service client' },
+      { value: 'campaign-optimization', label: 'Optimisation des campagnes marketing' }
+    ],
+    'transport-logistics': [
+      { value: 'autonomous-vehicles', label: 'Véhicules autonomes (voitures, camions, drones)' },
+      { value: 'route-optimization', label: 'Optimisation des itinéraires' },
+      { value: 'fleet-management', label: 'Gestion des flottes' },
+      { value: 'delivery-tracking', label: 'Suivi en temps réel des livraisons' }
+    ],
+    'agriculture': [
+      { value: 'precision-farming', label: 'Agriculture de précision (gestion des cultures avec capteurs et drones)' },
+      { value: 'yield-prediction', label: 'Prédiction des rendements' },
+      { value: 'disease-detection', label: 'Détection des maladies des plantes' },
+      { value: 'resource-management', label: 'Gestion optimisée de l\'eau et des engrais' }
+    ],
+    'media-entertainment': [
+      { value: 'content-recommendation', label: 'Recommandation de contenu (vidéos, musique, articles)' },
+      { value: 'ai-content-generation', label: 'Création de contenus générés par IA (texte, image, vidéo)' },
+      { value: 'special-effects', label: 'Effets spéciaux et animation' },
+      { value: 'gaming-ai', label: 'Jeux vidéo avec personnages dotés d\'une IA réaliste' }
+    ],
+    'language-communication': [
+      { value: 'automatic-translation', label: 'Traduction automatique' },
+      { value: 'speech-recognition', label: 'Reconnaissance vocale et synthèse vocale' },
+      { value: 'nlp-analysis', label: 'Traitement du langage naturel (NLP) pour l\'analyse de sentiment, la génération de texte' },
+      { value: 'virtual-assistants', label: 'Chatbots et assistants virtuels' }
+    ],
+    'cybersecurity': [
+      { value: 'anomaly-detection', label: 'Détection d\'anomalies et d\'attaques informatiques' },
+      { value: 'automated-surveillance', label: 'Surveillance automatisée' },
+      { value: 'biometric-auth', label: 'Authentification biométrique (reconnaissance faciale, vocale, empreinte digitale)' }
+    ],
+    'environment-climate': [
+      { value: 'climate-modeling', label: 'Modélisation des changements climatiques' },
+      { value: 'weather-forecasting', label: 'Prévision météorologique' },
+      { value: 'disaster-detection', label: 'Détection de catastrophes naturelles' },
+      { value: 'smart-energy', label: 'Gestion intelligente de l\'énergie (smart grids)' }
+    ],
+    'human-resources': [
+      { value: 'ai-recruitment', label: 'Recrutement assisté par IA (sélection de CV, tests automatisés)' },
+      { value: 'talent-detection', label: 'Détection du potentiel des candidats' },
+      { value: 'personalized-training', label: 'Formation personnalisée' },
+      { value: 'turnover-prediction', label: 'Détection du turnover et fidélisation' }
+    ],
+    'legal': [
+      { value: 'legal-analysis', label: 'Analyse juridique automatisée' },
+      { value: 'contract-drafting', label: 'Rédaction de contrats type' },
+      { value: 'jurisprudence-search', label: 'Recherche jurisprudentielle' },
+      { value: 'judicial-decision', label: 'Aide à la prise de décision judiciaire' }
+    ],
+    'art-creation': [
+      { value: 'ai-art-generation', label: 'Peinture, musique, poésie générées par IA' },
+      { value: 'computer-aided-design', label: 'Design assisté par ordinateur' },
+      { value: 'logo-illustration', label: 'Génération de logos, illustrations, animations' }
+    ],
+    'ecommerce': [
+      { value: 'visual-search', label: 'Moteurs de recherche visuelle' },
+      { value: 'virtual-try-on', label: 'Essai virtuel de vêtements (en ligne)' },
+      { value: 'personalized-experience', label: 'Expérience client personnalisée' },
+      { value: 'dynamic-pricing', label: 'Pricing dynamique' }
+    ]
+  };
+
+  const getSubcategories = (categoryValue: string) => {
+    return subcategories[categoryValue as keyof typeof subcategories] || [];
+  };
+
+  const handleCategoryChange = (value: string) => {
+    setFormData({
+      ...formData,
+      category: value,
+      subcategory: '' // Reset subcategory when category changes
+    });
+  };
 
   const generateDetailedPrompt = (category: string, description: string) => {
     const prompts = {
@@ -302,13 +408,64 @@ const PromptGenerator = () => {
     setIsGenerating(true);
     
     setTimeout(() => {
-      const detailedPrompt = generateDetailedPrompt(formData.category, formData.description);
+      const subcategoryInfo = formData.subcategory ? 
+        ` - Sous-catégorie spécifique : ${getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label}` : '';
+      
+      const detailedPrompt = `**RÔLE** : Tu es un expert en intelligence artificielle spécialisé dans le domaine "${formData.category}"${subcategoryInfo}.
+
+**MISSION** : ${formData.description}
+
+**CONTEXTE SPÉCIALISÉ** :
+${subcategoryInfo}
+
+**OBJECTIFS DÉTAILLÉS** :
+1. Analyser les besoins spécifiques du domaine et de la sous-catégorie
+2. Proposer des solutions IA adaptées et innovantes
+3. Définir les métriques de performance appropriées
+4. Assurer la conformité aux standards du secteur
+
+**APPROCHE MÉTHODOLOGIQUE** :
+- Identification des cas d'usage prioritaires dans ce domaine spécifique
+- Sélection des technologies IA les plus appropriées
+- Conception d'une architecture scalable et performante
+- Plan de déploiement progressif avec validation continue
+
+**CONSIDÉRATIONS TECHNIQUES SPÉCIALISÉES** :
+- Qualité et préparation des données spécifiques au domaine
+- Choix des algorithmes d'apprentissage automatique optimaux
+- Infrastructure et performance adaptées aux contraintes du secteur
+- Sécurité, confidentialité et conformité réglementaire
+
+**TECHNOLOGIES RECOMMANDÉES** :
+- Machine Learning et Deep Learning adaptés au cas d'usage
+- Outils de traitement de données spécialisés
+- Frameworks d'IA appropriés au domaine
+- Solutions d'intégration et de déploiement
+
+**LIVRABLES ATTENDUS** :
+1. Spécifications fonctionnelles détaillées et adaptées
+2. Architecture technique recommandée avec justifications
+3. Plan de mise en œuvre avec jalons et indicateurs de succès
+4. Stratégie de maintenance, évolution et amélioration continue
+
+**CRITÈRES DE SUCCÈS MESURABLES** :
+- Performance quantifiable selon les KPIs métier du domaine
+- Adoption réussie par les utilisateurs finaux
+- Retour sur investissement démontrable
+- Conformité totale aux exigences réglementaires du secteur
+
+**POINTS D'ATTENTION SPÉCIFIQUES** :
+- Risques et défis particuliers au domaine d'application
+- Considérations éthiques et sociétales
+- Évolutivité et adaptabilité de la solution
+- Formation et accompagnement des équipes`;
+
       setGeneratedPrompt(detailedPrompt);
       setIsGenerating(false);
       
       toast({
-        title: "Prompt avancé créé !",
-        description: "Votre prompt détaillé et spécifique est prêt à être utilisé.",
+        title: "Prompt spécialisé créé !",
+        description: "Votre prompt détaillé et adapté à votre domaine est prêt.",
       });
     }, 2000);
   };
@@ -323,7 +480,7 @@ const PromptGenerator = () => {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Formulaire simplifié */}
+      {/* Formulaire */}
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center space-x-3 text-2xl">
@@ -341,7 +498,7 @@ const PromptGenerator = () => {
             <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
               Dans quel domaine voulez-vous utiliser l'IA ? *
             </Label>
-            <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+            <Select value={formData.category} onValueChange={handleCategoryChange}>
               <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
                 <SelectValue placeholder="Sélectionnez un domaine d'application..." />
               </SelectTrigger>
@@ -357,6 +514,26 @@ const PromptGenerator = () => {
               </SelectContent>
             </Select>
           </div>
+
+          {formData.category && getSubcategories(formData.category).length > 0 && (
+            <div className="space-y-3">
+              <Label htmlFor="subcategory" className="text-sm font-semibold text-gray-700">
+                Spécialisez votre choix (optionnel)
+              </Label>
+              <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
+                <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+                  <SelectValue placeholder="Choisissez une sous-catégorie..." />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
+                  {getSubcategories(formData.category).map((subcat) => (
+                    <SelectItem key={subcat.value} value={subcat.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
+                      <div className="text-gray-800">{subcat.label}</div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <div className="space-y-3">
             <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
