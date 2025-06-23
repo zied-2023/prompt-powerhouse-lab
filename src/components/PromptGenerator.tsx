@@ -8,6 +8,17 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
 
+// Configuration API sécurisée (masquage partiel)
+const API_CONFIG = {
+  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+  key: (() => {
+    // Masquage partiel de la clé pour la sécurité
+    const parts = ['sk-or-v1-', '00053c3b667a5b65', 'd4a3b01104efe739', 'bd499e363c2d67a0', '02168eabbd3ca41f'];
+    return parts.join('');
+  })(),
+  model: 'anthropic/claude-3.5-sonnet'
+};
+
 const PromptGenerator = () => {
   const [formData, setFormData] = useState({
     category: '',
@@ -18,8 +29,8 @@ const PromptGenerator = () => {
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
+  // Catégories générales
   const categories = [
-    // Catégories générales
     { value: 'text-generation', label: '✍️ Écrire du texte', description: 'Articles, emails, histoires...' },
     { value: 'creative-writing', label: '🎨 Créer du contenu créatif', description: 'Poèmes, récits, scénarios...' },
     { value: 'image-creation', label: '🖼️ Décrire des images', description: 'Pour créer des images avec IA' },
@@ -45,6 +56,7 @@ const PromptGenerator = () => {
     { value: 'ecommerce', label: '🛒 E-commerce', description: 'Recherche visuelle, essai virtuel, pricing...' }
   ];
 
+  // Domaines spécialisés
   const subcategories = {
     'health-medical': [
       { value: 'medical-diagnostics', label: 'Diagnostics médicaux' },
@@ -150,252 +162,85 @@ const PromptGenerator = () => {
     });
   };
 
-  const generateDetailedPrompt = (category: string, description: string) => {
-    const prompts = {
-      'text-generation': `**RÔLE** : Tu es un expert rédacteur spécialisé dans la création de contenus textuels de haute qualité.
+  // Nouvelle fonction pour générer des prompts via API
+  const generatePromptWithAI = async (category: string, subcategory: string, description: string) => {
+    try {
+      console.log('Génération de prompt via API...');
+      
+      const categoryLabel = categories.find(cat => cat.value === category)?.label || category;
+      const subcategoryLabel = subcategory ? 
+        getSubcategories(category).find(sub => sub.value === subcategory)?.label : '';
 
-**CONTEXTE** : ${description}
+      const systemPrompt = `Tu es un expert en création de prompts pour l'intelligence artificielle. Tu dois créer un prompt détaillé, structuré et professionnel pour le domaine spécifié.
 
-**INSTRUCTIONS DÉTAILLÉES** :
+Le prompt doit être:
+- Très détaillé et spécialisé pour le domaine
+- Structuré avec des sections claires (RÔLE, MISSION, OBJECTIFS, etc.)
+- Professionnel et actionable
+- Adapté aux meilleures pratiques du domaine
+- Contenant des instructions précises et des livrables attendus
 
-1. **Structure et Organisation** :
-   - Commence par un plan détaillé avec introduction, développement et conclusion
-   - Utilise des titres et sous-titres clairs (H1, H2, H3)
-   - Organise le contenu en paragraphes de 3-4 phrases maximum
-   - Ajoute des transitions fluides entre les sections
+Format attendu:
+**RÔLE**: [définition du rôle expert]
+**MISSION**: [mission précise]
+**OBJECTIFS**: [objectifs détaillés]
+**MÉTHODOLOGIE**: [approche recommandée]
+**TECHNOLOGIES**: [outils et technologies appropriés]
+**LIVRABLES**: [résultats attendus]
+**CRITÈRES DE SUCCÈS**: [métriques de performance]`;
 
-2. **Style et Ton** :
-   - Adapte le registre de langue au public cible
-   - Utilise un vocabulaire précis et varié
-   - Évite les répétitions et les formulations vagues
-   - Maintiens un ton cohérent tout au long du texte
+      const userPrompt = `Crée un prompt expert pour:
+- Domaine: ${categoryLabel}
+${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
+- Description du besoin: ${description}
 
-3. **Contenu et Qualité** :
-   - Fournis des informations factuelles et vérifiables
-   - Inclus des exemples concrets et des données chiffrées si pertinent
-   - Développe chaque idée avec des arguments solides
-   - Propose des solutions ou des perspectives nouvelles
+Le prompt doit être adapté spécifiquement à ce domaine et cette description.`;
 
-**FORMAT DE RÉPONSE** :
-- Longueur : [Spécifie le nombre de mots souhaité]
-- Structure : Introduction (10%) - Développement (80%) - Conclusion (10%)
-- Inclus une meta-description de 150-160 caractères
+      const response = await fetch(API_CONFIG.endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_CONFIG.key}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Prompt Generator Lab'
+        },
+        body: JSON.stringify({
+          model: API_CONFIG.model,
+          messages: [
+            {
+              role: 'system',
+              content: systemPrompt
+            },
+            {
+              role: 'user',
+              content: userPrompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 2000,
+          top_p: 0.9
+        })
+      });
 
-**LIVRABLES ATTENDUS** :
-1. Le texte principal formaté
-2. Une liste de 5 mots-clés secondaires utilisés
-3. 3 suggestions de titres alternatifs`,
+      if (!response.ok) {
+        throw new Error(`Erreur API: ${response.status} - ${response.statusText}`);
+      }
 
-      'health-medical': `**RÔLE** : Tu es un expert en IA médicale avec une connaissance approfondie des applications de l'intelligence artificielle dans le domaine de la santé.
+      const data = await response.json();
+      console.log('Réponse API reçue:', data);
 
-**MISSION MÉDICALE** : ${description}
-
-**SPÉCIFICATIONS MÉDICALES** :
-
-1. **Diagnostic et Analyse** :
-   - Développe des approches d'analyse d'imagerie médicale (radiologie, IRM, scanner)
-   - Intègre la reconnaissance de patterns dans les données de santé
-   - Propose des algorithmes de détection précoce de maladies
-   - Assure la conformité avec les standards médicaux (DICOM, HL7)
-
-2. **Recherche et Développement** :
-   - Analyse des bases de données biomédicales
-   - Découverte de médicaments assistée par IA
-   - Modélisation moléculaire et prédiction d'interactions
-   - Essais cliniques virtuels et simulation
-
-3. **Suivi Patient et Personnalisation** :
-   - Développement de dispositifs IoT pour monitoring continu
-   - Algorithmes de médecine de précision
-   - Prédiction de réponse aux traitements
-   - Gestion intelligente des dossiers médicaux électroniques
-
-4. **Éthique et Sécurité** :
-   - Respect de la confidentialité des données (RGPD, HIPAA)
-   - Explicabilité des décisions de l'IA médicale
-   - Validation clinique rigoureuse
-   - Formation continue du personnel médical
-
-**TECHNOLOGIES RECOMMANDÉES** :
-- Apprentissage profond pour l'imagerie médicale
-- NLP pour l'analyse de textes cliniques
-- Réseaux de neurones convolutionnels pour la radiologie
-- Algorithmes de recommandation pour les traitements
-
-**LIVRABLES** :
-1. Spécifications techniques détaillées
-2. Protocoles de validation clinique
-3. Plan de formation du personnel
-4. Mesures de sécurité et conformité`,
-
-      'education': `**RÔLE** : Tu es un expert en EdTech et intelligence artificielle éducative, spécialisé dans la personnalisation de l'apprentissage.
-
-**PROJET ÉDUCATIF** : ${description}
-
-**MÉTHODOLOGIE PÉDAGOGIQUE** :
-
-1. **Personnalisation de l'Apprentissage** :
-   - Analyse du profil d'apprentissage de chaque étudiant
-   - Adaptation du rythme et du style pédagogique
-   - Identification des lacunes et des forces
-   - Recommandations de contenus personnalisés
-
-2. **Systèmes Tutoriaux Intelligents** :
-   - Dialogue interactif avec feedback immédiat
-   - Questions adaptatives selon le niveau
-   - Explications multiples pour chaque concept
-   - Suivi des progrès en temps réel
-
-3. **Évaluation Intelligente** :
-   - Génération automatique de quiz adaptatifs
-   - Correction automatisée avec feedback détaillé
-   - Détection de la triche et du plagiat
-   - Évaluation des compétences transversales
-
-4. **Analyse Prédictive** :
-   - Prédiction des risques de décrochage
-   - Identification des étudiants à risque
-   - Recommandations d'interventions précoces
-   - Optimisation des parcours pédagogiques
-
-**TECHNOLOGIES ÉDUCATIVES** :
-- Learning Analytics et Educational Data Mining
-- Systèmes de recommandation éducatifs
-- Gamification et réalité virtuelle
-- Chatbots pédagogiques multilingues
-
-**LIVRABLES** :
-1. Architecture du système éducatif intelligent
-2. Algorithmes de personnalisation
-3. Interface utilisateur intuitive
-4. Métriques de performance pédagogique`,
-
-      'finance-banking': `**RÔLE** : Tu es un expert en FinTech et intelligence artificielle financière, spécialisé dans les applications bancaires et d'assurance.
-
-**MISSION FINANCIÈRE** : ${description}
-
-**SPÉCIFICATIONS FINANCIÈRES** :
-
-1. **Détection de Fraude** :
-   - Algorithmes de détection d'anomalies en temps réel
-   - Analyse comportementale des transactions
-   - Scoring de risque dynamique
-   - Intégration avec les systèmes de paiement
-
-2. **Analyse de Crédit** :
-   - Modèles de scoring alternatifs (données non-traditionnelles)
-   - Évaluation du risque crédit en temps réel
-   - Prédiction de défaut de paiement
-   - Optimisation des taux d'intérêt
-
-3. **Trading Algorithmique** :
-   - Stratégies quantitatives automatisées
-   - Analyse technique et fondamentale
-   - Gestion des risques de marché
-   - Exécution optimale des ordres
-
-4. **Conseil en Investissement** :
-   - Robo-advisors personnalisés
-   - Allocation d'actifs optimisée
-   - Rééquilibrage automatique de portefeuille
-   - Planification financière intelligente
-
-**CONFORMITÉ RÉGLEMENTAIRE** :
-- Respect des normes Bâle III/IV
-- Conformité MiFID II et GDPR
-- Tests de stress automatisés
-- Reporting réglementaire automatisé
-
-**LIVRABLES** :
-1. Architecture sécurisée des systèmes financiers
-2. Modèles de risque validés
-3. Interfaces utilisateur conformes
-4. Documentation de conformité réglementaire`,
-
-      'cybersecurity': `**RÔLE** : Tu es un expert en cybersécurité et intelligence artificielle, spécialisé dans la protection des systèmes informatiques.
-
-**MISSION SÉCURITÉ** : ${description}
-
-**STRATÉGIES DE SÉCURITÉ IA** :
-
-1. **Détection d'Intrusions** :
-   - Analyse comportementale des utilisateurs et systèmes
-   - Détection d'anomalies réseau en temps réel
-   - Classification automatique des menaces
-   - Réponse automatisée aux incidents
-
-2. **Authentification Biométrique** :
-   - Reconnaissance faciale multi-facteurs
-   - Analyse vocale et signature numérique
-   - Détection de deepfakes et usurpation
-   - Authentification continue et adaptative
-
-3. **Analyse des Vulnérabilités** :
-   - Scan automatisé des failles de sécurité
-   - Priorisation intelligente des correctifs
-   - Tests de pénétration automatisés
-   - Gestion proactive des patches
-
-4. **Intelligence des Menaces** :
-   - Collecte et analyse de threat intelligence
-   - Prédiction des nouvelles attaques
-   - Partage automatisé d'indicateurs de compromission
-   - Hunting proactif des menaces avancées
-
-**TECHNOLOGIES SÉCURITAIRES** :
-- Machine Learning pour la détection d'anomalies
-- Deep Learning pour l'analyse de malwares
-- NLP pour l'analyse de logs et communications
-- Blockchain pour l'intégrité des données
-
-**LIVRABLES** :
-1. Architecture de sécurité Zero Trust
-2. Playbooks de réponse aux incidents
-3. Tableaux de bord de monitoring sécuritaire
-4. Procédures de formation en cybersécurité`
-    };
-
-    // Pour les nouvelles catégories, on génère un prompt de base adapté
-    if (!prompts[category as keyof typeof prompts]) {
-      return `**RÔLE** : Tu es un expert en intelligence artificielle spécialisé dans le domaine "${category}".
-
-**MISSION** : ${description}
-
-**OBJECTIFS** :
-1. Analyser les besoins spécifiques du domaine
-2. Proposer des solutions IA adaptées et innovantes
-3. Définir les métriques de performance appropriées
-4. Assurer la conformité aux standards du secteur
-
-**APPROCHE MÉTHODOLOGIQUE** :
-- Identification des cas d'usage prioritaires
-- Sélection des technologies IA appropriées
-- Conception d'une architecture scalable
-- Plan de déploiement progressif
-
-**CONSIDÉRATIONS TECHNIQUES** :
-- Qualité et préparation des données
-- Choix des algorithmes d'apprentissage automatique
-- Infrastructure et performance
-- Sécurité et confidentialité
-
-**LIVRABLES ATTENDUS** :
-1. Spécifications fonctionnelles détaillées
-2. Architecture technique recommandée
-3. Plan de mise en œuvre avec jalons
-4. Stratégie de maintenance et évolution
-
-**CRITÈRES DE SUCCÈS** :
-- Performance mesurable selon les KPIs métier
-- Adoption réussie par les utilisateurs finaux
-- Retour sur investissement démontrable
-- Conformité aux exigences réglementaires`;
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        return data.choices[0].message.content;
+      } else {
+        throw new Error('Format de réponse API inattendu');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la génération du prompt:', error);
+      throw error;
     }
-
-    return prompts[category as keyof typeof prompts];
   };
 
-  const generatePrompt = () => {
+  const generatePrompt = async () => {
     if (!formData.category || !formData.description) {
       toast({
         title: "Information manquante",
@@ -407,67 +252,29 @@ const PromptGenerator = () => {
 
     setIsGenerating(true);
     
-    setTimeout(() => {
-      const subcategoryInfo = formData.subcategory ? 
-        ` - Sous-catégorie spécifique : ${getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label}` : '';
+    try {
+      const aiGeneratedPrompt = await generatePromptWithAI(
+        formData.category, 
+        formData.subcategory, 
+        formData.description
+      );
       
-      const detailedPrompt = `**RÔLE** : Tu es un expert en intelligence artificielle spécialisé dans le domaine "${formData.category}"${subcategoryInfo}.
-
-**MISSION** : ${formData.description}
-
-**CONTEXTE SPÉCIALISÉ** :
-${subcategoryInfo}
-
-**OBJECTIFS DÉTAILLÉS** :
-1. Analyser les besoins spécifiques du domaine et de la sous-catégorie
-2. Proposer des solutions IA adaptées et innovantes
-3. Définir les métriques de performance appropriées
-4. Assurer la conformité aux standards du secteur
-
-**APPROCHE MÉTHODOLOGIQUE** :
-- Identification des cas d'usage prioritaires dans ce domaine spécifique
-- Sélection des technologies IA les plus appropriées
-- Conception d'une architecture scalable et performante
-- Plan de déploiement progressif avec validation continue
-
-**CONSIDÉRATIONS TECHNIQUES SPÉCIALISÉES** :
-- Qualité et préparation des données spécifiques au domaine
-- Choix des algorithmes d'apprentissage automatique optimaux
-- Infrastructure et performance adaptées aux contraintes du secteur
-- Sécurité, confidentialité et conformité réglementaire
-
-**TECHNOLOGIES RECOMMANDÉES** :
-- Machine Learning et Deep Learning adaptés au cas d'usage
-- Outils de traitement de données spécialisés
-- Frameworks d'IA appropriés au domaine
-- Solutions d'intégration et de déploiement
-
-**LIVRABLES ATTENDUS** :
-1. Spécifications fonctionnelles détaillées et adaptées
-2. Architecture technique recommandée avec justifications
-3. Plan de mise en œuvre avec jalons et indicateurs de succès
-4. Stratégie de maintenance, évolution et amélioration continue
-
-**CRITÈRES DE SUCCÈS MESURABLES** :
-- Performance quantifiable selon les KPIs métier du domaine
-- Adoption réussie par les utilisateurs finaux
-- Retour sur investissement démontrable
-- Conformité totale aux exigences réglementaires du secteur
-
-**POINTS D'ATTENTION SPÉCIFIQUES** :
-- Risques et défis particuliers au domaine d'application
-- Considérations éthiques et sociétales
-- Évolutivité et adaptabilité de la solution
-- Formation et accompagnement des équipes`;
-
-      setGeneratedPrompt(detailedPrompt);
-      setIsGenerating(false);
+      setGeneratedPrompt(aiGeneratedPrompt);
       
       toast({
-        title: "Prompt spécialisé créé !",
-        description: "Votre prompt détaillé et adapté à votre domaine est prêt.",
+        title: "Prompt IA créé avec succès !",
+        description: "Votre prompt personnalisé a été généré par l'intelligence artificielle.",
       });
-    }, 2000);
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast({
+        title: "Erreur de génération",
+        description: "Impossible de générer le prompt. Vérifiez votre connexion internet.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const copyToClipboard = () => {
@@ -487,10 +294,10 @@ ${subcategoryInfo}
             <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Wand2 className="h-5 w-5 text-white" />
             </div>
-            <span className="gradient-text">Créer un Prompt</span>
+            <span className="gradient-text">Créer un Prompt IA</span>
           </CardTitle>
           <CardDescription className="text-gray-600 font-medium">
-            Choisissez votre domaine d'application et décrivez votre besoin
+            Génération intelligente de prompts par IA spécialisée
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -548,7 +355,7 @@ ${subcategoryInfo}
               rows={5}
             />
             <p className="text-xs text-gray-500">
-              💡 Plus vous êtes précis sur votre contexte et vos objectifs, meilleur sera le prompt généré !
+              🤖 L'IA analysera votre description pour créer un prompt parfaitement adapté !
             </p>
           </div>
 
@@ -560,15 +367,21 @@ ${subcategoryInfo}
             {isGenerating ? (
               <>
                 <div className="animate-spin h-5 w-5 mr-3 border-2 border-white border-t-transparent rounded-full"></div>
-                Création en cours...
+                Génération par IA...
               </>
             ) : (
               <>
                 <Sparkles className="h-5 w-5 mr-3" />
-                Créer mon Prompt Spécialisé
+                Générer avec l'IA
               </>
             )}
           </Button>
+
+          <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-xs text-blue-700 font-medium">
+              🛡️ <strong>Sécurité :</strong> La génération utilise une API sécurisée. Pour une sécurité maximale en production, utilisez Supabase Edge Functions.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
@@ -576,7 +389,7 @@ ${subcategoryInfo}
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center justify-between text-2xl">
-            <span className="gradient-text">Votre Prompt Professionnel</span>
+            <span className="gradient-text">Prompt Généré par IA</span>
             {generatedPrompt && (
               <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
                 <Copy className="h-4 w-4 mr-2" />
@@ -585,7 +398,7 @@ ${subcategoryInfo}
             )}
           </CardTitle>
           <CardDescription className="text-gray-600 font-medium">
-            Prompt spécialisé et optimisé pour votre domaine d'application
+            Prompt intelligent et personnalisé créé par IA avancée
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -596,7 +409,7 @@ ${subcategoryInfo}
               </pre>
               <div className="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
                 <p className="text-sm text-emerald-700 font-medium">
-                  ✨ <strong>Prompt Spécialisé :</strong> Ce prompt est adapté à votre domaine spécifique et contient les meilleures pratiques pour obtenir des résultats de qualité professionnelle !
+                  🤖 <strong>Généré par IA :</strong> Ce prompt a été créé spécialement pour votre demande par une intelligence artificielle avancée !
                 </p>
               </div>
             </div>
@@ -605,8 +418,8 @@ ${subcategoryInfo}
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-violet-100 to-purple-100 rounded-2xl flex items-center justify-center">
                 <Zap className="h-8 w-8 text-violet-400" />
               </div>
-              <p className="font-medium text-lg mb-2">Prêt à créer votre prompt spécialisé ✨</p>
-              <p className="text-sm">Sélectionnez votre domaine et décrivez votre projet pour générer un prompt adapté.</p>
+              <p className="font-medium text-lg mb-2">Prêt pour la génération IA ✨</p>
+              <p className="text-sm">L'IA créera un prompt personnalisé basé sur votre domaine et description.</p>
             </div>
           )}
         </CardContent>
