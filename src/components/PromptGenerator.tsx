@@ -6,7 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
+import { Zap, Copy, Sparkles, Wand2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Configuration API sécurisée (masquage partiel)
 const API_CONFIG = {
@@ -162,7 +163,7 @@ const PromptGenerator = () => {
     });
   };
 
-  // Nouvelle fonction pour générer des prompts via API
+  // Nouvelle fonction pour générer des prompts via API avec gestion d'erreur améliorée
   const generatePromptWithAI = async (category: string, subcategory: string, description: string) => {
     try {
       console.log('Génération de prompt via API...');
@@ -171,30 +172,19 @@ const PromptGenerator = () => {
       const subcategoryLabel = subcategory ? 
         getSubcategories(category).find(sub => sub.value === subcategory)?.label : '';
 
-      const systemPrompt = `Tu es un expert en création de prompts pour l'intelligence artificielle. Tu dois créer un prompt détaillé, structuré et professionnel pour le domaine spécifié.
+      const systemPrompt = `Tu es un expert en création de prompts pour l'intelligence artificielle. Crée un prompt détaillé et structuré.
 
-Le prompt doit être:
-- Très détaillé et spécialisé pour le domaine
-- Structuré avec des sections claires (RÔLE, MISSION, OBJECTIFS, etc.)
-- Professionnel et actionable
-- Adapté aux meilleures pratiques du domaine
-- Contenant des instructions précises et des livrables attendus
-
-Format attendu:
-**RÔLE**: [définition du rôle expert]
+Format:
+**RÔLE**: [rôle expert]
 **MISSION**: [mission précise]
 **OBJECTIFS**: [objectifs détaillés]
-**MÉTHODOLOGIE**: [approche recommandée]
-**TECHNOLOGIES**: [outils et technologies appropriés]
-**LIVRABLES**: [résultats attendus]
-**CRITÈRES DE SUCCÈS**: [métriques de performance]`;
+**MÉTHODOLOGIE**: [approche]
+**LIVRABLES**: [résultats attendus]`;
 
       const userPrompt = `Crée un prompt expert pour:
 - Domaine: ${categoryLabel}
 ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
-- Description du besoin: ${description}
-
-Le prompt doit être adapté spécifiquement à ce domaine et cette description.`;
+- Description: ${description}`;
 
       const response = await fetch(API_CONFIG.endpoint, {
         method: 'POST',
@@ -217,13 +207,19 @@ Le prompt doit être adapté spécifiquement à ce domaine et cette description.
             }
           ],
           temperature: 0.7,
-          max_tokens: 2000,
+          max_tokens: 1000, // Réduit de 2000 à 1000
           top_p: 0.9
         })
       });
 
       if (!response.ok) {
-        throw new Error(`Erreur API: ${response.status} - ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 402) {
+          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte OpenRouter ou utiliser une autre clé API.');
+        }
+        
+        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || response.statusText}`);
       }
 
       const data = await response.json();
@@ -267,9 +263,17 @@ Le prompt doit être adapté spécifiquement à ce domaine et cette description.
       });
     } catch (error) {
       console.error('Erreur:', error);
+      
+      let errorMessage = "Impossible de générer le prompt.";
+      if (error.message.includes('crédits')) {
+        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte OpenRouter.";
+      } else if (error.message.includes('connexion')) {
+        errorMessage = "Vérifiez votre connexion internet.";
+      }
+      
       toast({
         title: "Erreur de génération",
-        description: "Impossible de générer le prompt. Vérifiez votre connexion internet.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -287,6 +291,17 @@ Le prompt doit être adapté spécifiquement à ce domaine et cette description.
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* Alerte d'information sur l'erreur API */}
+      <div className="lg:col-span-2">
+        <Alert className="border-orange-200 bg-orange-50">
+          <AlertCircle className="h-4 w-4 text-orange-600" />
+          <AlertDescription className="text-orange-700">
+            <strong>Problème détecté :</strong> La clé API n'a plus de crédits suffisants. 
+            Pour résoudre ce problème : rechargez les crédits sur OpenRouter.ai ou utilisez une nouvelle clé API.
+          </AlertDescription>
+        </Alert>
+      </div>
+
       {/* Formulaire */}
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
@@ -377,9 +392,10 @@ Le prompt doit être adapté spécifiquement à ce domaine et cette description.
             )}
           </Button>
 
-          <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-xs text-blue-700 font-medium">
-              🛡️ <strong>Sécurité :</strong> La génération utilise une API sécurisée. Pour une sécurité maximale en production, utilisez Supabase Edge Functions.
+          <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+            <p className="text-xs text-red-700 font-medium">
+              ⚠️ <strong>Clé API sans crédits :</strong> La clé actuelle n'a plus de crédits. 
+              Visitez <a href="https://openrouter.ai/settings/credits" target="_blank" rel="noopener noreferrer" className="underline">OpenRouter.ai</a> pour recharger.
             </p>
           </div>
         </CardContent>
