@@ -15,7 +15,7 @@ const API_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
   key: (() => {
     // Masquage partiel de la clé pour la sécurité
-    const parts = ['sk-or-v1-', 'c8c946e92101f468', '442ccac4d56bd192', '9b63267cd801e2a2', '690bb2c500742e02'];
+    const parts = ['sk-or-v1-', '6316c41e252ed3d6', '87d9b85a49dfe9a7', '7a52adae84cc5cb1', 'cd11876af4fb7ea4'];
     return parts.join('');
   })(),
   model: 'anthropic/claude-3.5-sonnet'
