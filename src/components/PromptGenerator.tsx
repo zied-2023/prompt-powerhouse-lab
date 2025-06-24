@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,132 +25,136 @@ const PromptGenerator = () => {
   const [formData, setFormData] = useState({
     category: '',
     subcategory: '',
-    description: ''
+    description: '',
+    objective: '',
+    targetAudience: '',
+    format: '',
+    tone: '',
+    length: ''
   });
   
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Catégories générales
+  // Nouvelles catégories restructurées
   const categories = [
-    { value: 'text-generation', label: '✍️ Écrire du texte', description: 'Articles, emails, histoires...' },
-    { value: 'creative-writing', label: '🎨 Créer du contenu créatif', description: 'Poèmes, récits, scénarios...' },
-    { value: 'image-creation', label: '🖼️ Décrire des images', description: 'Pour créer des images avec IA' },
-    { value: 'code-generation', label: '💻 Coder', description: 'Programmes, scripts, sites web...' },
-    { value: 'data-analysis', label: '📊 Analyser des données', description: 'Résumés, rapports, insights...' },
-    { value: 'interactive-dialogue', label: '💬 Avoir une conversation', description: 'Assistant, coach, tuteur...' },
-    
-    // Domaines spécialisés
-    { value: 'health-medical', label: '🏥 Santé & Médical', description: 'Diagnostics, recherche, suivi patients...' },
-    { value: 'education', label: '🎓 Éducation', description: 'Tutorat, évaluation, apprentissage personnalisé...' },
-    { value: 'industry-manufacturing', label: '🏭 Industrie & Fabrication', description: 'Maintenance, automatisation, logistique...' },
-    { value: 'finance-banking', label: '💰 Finance & Banque', description: 'Fraude, crédit, trading, conseils...' },
-    { value: 'sales-marketing', label: '📈 Vente & Marketing', description: 'Recommandations, campagnes, chatbots...' },
-    { value: 'transport-logistics', label: '🚛 Transport & Logistique', description: 'Véhicules autonomes, itinéraires, livraisons...' },
-    { value: 'agriculture', label: '🌾 Agriculture', description: 'Précision, rendements, gestion cultures...' },
-    { value: 'media-entertainment', label: '🎬 Médias & Divertissement', description: 'Recommandations, création contenu, effets...' },
-    { value: 'language-communication', label: '🗣️ Langage & Communication', description: 'Traduction, reconnaissance vocale, NLP...' },
-    { value: 'cybersecurity', label: '🔒 Cybersécurité', description: 'Détection anomalies, authentification, surveillance...' },
-    { value: 'environment-climate', label: '🌍 Environnement & Climat', description: 'Modélisation climat, prévisions, énergie...' },
-    { value: 'human-resources', label: '👥 Ressources Humaines', description: 'Recrutement, formation, fidélisation...' },
-    { value: 'legal', label: '⚖️ Droit', description: 'Analyse juridique, contrats, jurisprudence...' },
-    { value: 'art-creation', label: '🎨 Art & Création', description: 'Peinture, musique, design assisté...' },
-    { value: 'ecommerce', label: '🛒 E-commerce', description: 'Recherche visuelle, essai virtuel, pricing...' }
+    { 
+      value: 'content-creation', 
+      label: '🎨 Création de Contenu', 
+      description: 'Rédaction, création artistique, vidéo/audio, marketing, littérature'
+    },
+    { 
+      value: 'business-professional', 
+      label: '💼 Business et Professionnel', 
+      description: 'Stratégie, communication, RH, vente, management'
+    },
+    { 
+      value: 'education-training', 
+      label: '🎓 Éducation et Formation', 
+      description: 'Cours, évaluation, recherche, pédagogie, formation pro'
+    },
+    { 
+      value: 'technology-development', 
+      label: '💻 Technologie et Développement', 
+      description: 'Programmation, data science, cybersécurité, architecture'
+    },
+    { 
+      value: 'analysis-research', 
+      label: '🔍 Analyse et Recherche', 
+      description: 'Analyse de données, recherche académique, veille concurrentielle'
+    },
+    { 
+      value: 'problem-solving', 
+      label: '🎯 Résolution de Problèmes', 
+      description: 'Diagnostic, brainstorming, prise de décision, optimisation'
+    },
+    { 
+      value: 'communication-relations', 
+      label: '🗣️ Communication et Relations', 
+      description: 'Relations clients, communication interne, négociation, PR'
+    }
   ];
 
-  // Domaines spécialisés
+  // Sous-catégories pour chaque catégorie principale
   const subcategories = {
-    'health-medical': [
-      { value: 'medical-diagnostics', label: 'Diagnostics médicaux' },
-      { value: 'pharmaceutical-research', label: 'Recherche pharmaceutique et découverte de médicaments' },
-      { value: 'patient-monitoring', label: 'Suivi des patients via des dispositifs intelligents' },
-      { value: 'robotic-surgery', label: 'Chirurgie assistée par robot' },
-      { value: 'precision-medicine', label: 'Personnalisation des traitements (médecine de précision)' }
+    'content-creation': [
+      { value: 'writing', label: 'Rédaction - Articles, blogs, descriptions produits, newsletters' },
+      { value: 'artistic-creation', label: 'Création artistique - Images, illustrations, designs, logos' },
+      { value: 'video-audio', label: 'Vidéo/Audio - Scripts, storyboards, podcasts, voix-off' },
+      { value: 'marketing', label: 'Marketing - Publicités, slogans, campagnes, réseaux sociaux' },
+      { value: 'literature', label: 'Littérature - Histoires, poèmes, romans, scénarios' }
     ],
-    'education': [
-      { value: 'intelligent-tutoring', label: 'Systèmes tutoriaux intelligents adaptés au niveau de l\'apprenant' },
-      { value: 'automated-assessment', label: 'Évaluation automatisée des compétences' },
-      { value: 'personalized-learning', label: 'Personnalisation de l\'apprentissage' },
-      { value: 'early-detection', label: 'Détection précoce des difficultés scolaires' }
+    'business-professional': [
+      { value: 'strategy', label: 'Stratégie - Plans d\'affaires, analyses de marché, SWOT' },
+      { value: 'communication', label: 'Communication - Emails, présentations, rapports' },
+      { value: 'hr', label: 'Ressources Humaines - Offres d\'emploi, évaluations, formations' },
+      { value: 'sales', label: 'Vente - Pitches, propositions commerciales, négociation' },
+      { value: 'management', label: 'Management - Leadership, gestion d\'équipe, processus' }
     ],
-    'industry-manufacturing': [
-      { value: 'predictive-maintenance', label: 'Maintenance prédictive des machines' },
-      { value: 'process-automation', label: 'Automatisation des processus de production' },
-      { value: 'supply-chain', label: 'Gestion de la chaîne logistique (prévision de la demande)' },
-      { value: 'quality-control', label: 'Contrôle qualité automatisé' }
+    'education-training': [
+      { value: 'courses', label: 'Cours et leçons - Plans de cours, explications, tutoriels' },
+      { value: 'evaluation', label: 'Évaluation - Quiz, examens, exercices pratiques' },
+      { value: 'research', label: 'Recherche - Méthodologie, analyse, synthèse' },
+      { value: 'pedagogy', label: 'Pédagogie - Méthodes d\'enseignement, adaptation aux élèves' },
+      { value: 'professional-training', label: 'Formation professionnelle - Certifications, compétences' }
     ],
-    'finance-banking': [
-      { value: 'fraud-detection', label: 'Détection de fraude' },
-      { value: 'credit-risk', label: 'Analyse du risque crédit' },
-      { value: 'algorithmic-trading', label: 'Trading algorithmique (finance quantitative)' },
-      { value: 'robo-advisors', label: 'Conseil en investissement automatisé (robo-advisors)' },
-      { value: 'insurance-claims', label: 'Gestion des sinistres en assurance' }
+    'technology-development': [
+      { value: 'programming', label: 'Programmation - Code, débogage, optimisation, documentation' },
+      { value: 'data-science', label: 'Data Science - Analyse de données, ML, visualisation' },
+      { value: 'cybersecurity', label: 'Cybersécurité - Audits, bonnes pratiques, formations' },
+      { value: 'architecture', label: 'Architecture - Conception système, bases de données' },
+      { value: 'devops', label: 'DevOps - Automatisation, déploiement, monitoring' }
     ],
-    'sales-marketing': [
-      { value: 'personalization', label: 'Personnalisation des offres et recommandations produits' },
-      { value: 'predictive-analytics', label: 'Analyse prédictive des comportements clients' },
-      { value: 'customer-service-bots', label: 'Chatbots pour le service client' },
-      { value: 'campaign-optimization', label: 'Optimisation des campagnes marketing' }
+    'analysis-research': [
+      { value: 'data-analysis', label: 'Analyse de données - Statistiques, tendances, insights' },
+      { value: 'academic-research', label: 'Recherche académique - Revue littérature, hypothèses' },
+      { value: 'competitive-intelligence', label: 'Veille concurrentielle - Benchmarking, études de marché' },
+      { value: 'audit-evaluation', label: 'Audit et évaluation - Performance, qualité, conformité' },
+      { value: 'forecasting', label: 'Prospective - Prédictions, scénarios, tendances futures' }
     ],
-    'transport-logistics': [
-      { value: 'autonomous-vehicles', label: 'Véhicules autonomes (voitures, camions, drones)' },
-      { value: 'route-optimization', label: 'Optimisation des itinéraires' },
-      { value: 'fleet-management', label: 'Gestion des flottes' },
-      { value: 'delivery-tracking', label: 'Suivi en temps réel des livraisons' }
+    'problem-solving': [
+      { value: 'diagnosis', label: 'Diagnostic - Identification problèmes, causes racines' },
+      { value: 'brainstorming', label: 'Brainstorming - Génération d\'idées, créativité' },
+      { value: 'decision-making', label: 'Prise de décision - Critères, options, recommandations' },
+      { value: 'optimization', label: 'Optimisation - Amélioration processus, efficacité' },
+      { value: 'innovation', label: 'Innovation - Nouvelles approches, disruption' }
     ],
-    'agriculture': [
-      { value: 'precision-farming', label: 'Agriculture de précision (gestion des cultures avec capteurs et drones)' },
-      { value: 'yield-prediction', label: 'Prédiction des rendements' },
-      { value: 'disease-detection', label: 'Détection des maladies des plantes' },
-      { value: 'resource-management', label: 'Gestion optimisée de l\'eau et des engrais' }
-    ],
-    'media-entertainment': [
-      { value: 'content-recommendation', label: 'Recommandation de contenu (vidéos, musique, articles)' },
-      { value: 'ai-content-generation', label: 'Création de contenus générés par IA (texte, image, vidéo)' },
-      { value: 'special-effects', label: 'Effets spéciaux et animation' },
-      { value: 'gaming-ai', label: 'Jeux vidéo avec personnages dotés d\'une IA réaliste' }
-    ],
-    'language-communication': [
-      { value: 'automatic-translation', label: 'Traduction automatique' },
-      { value: 'speech-recognition', label: 'Reconnaissance vocale et synthèse vocale' },
-      { value: 'nlp-analysis', label: 'Traitement du langage naturel (NLP) pour l\'analyse de sentiment, la génération de texte' },
-      { value: 'virtual-assistants', label: 'Chatbots et assistants virtuels' }
-    ],
-    'cybersecurity': [
-      { value: 'anomaly-detection', label: 'Détection d\'anomalies et d\'attaques informatiques' },
-      { value: 'automated-surveillance', label: 'Surveillance automatisée' },
-      { value: 'biometric-auth', label: 'Authentification biométrique (reconnaissance faciale, vocale, empreinte digitale)' }
-    ],
-    'environment-climate': [
-      { value: 'climate-modeling', label: 'Modélisation des changements climatiques' },
-      { value: 'weather-forecasting', label: 'Prévision météorologique' },
-      { value: 'disaster-detection', label: 'Détection de catastrophes naturelles' },
-      { value: 'smart-energy', label: 'Gestion intelligente de l\'énergie (smart grids)' }
-    ],
-    'human-resources': [
-      { value: 'ai-recruitment', label: 'Recrutement assisté par IA (sélection de CV, tests automatisés)' },
-      { value: 'talent-detection', label: 'Détection du potentiel des candidats' },
-      { value: 'personalized-training', label: 'Formation personnalisée' },
-      { value: 'turnover-prediction', label: 'Détection du turnover et fidélisation' }
-    ],
-    'legal': [
-      { value: 'legal-analysis', label: 'Analyse juridique automatisée' },
-      { value: 'contract-drafting', label: 'Rédaction de contrats type' },
-      { value: 'jurisprudence-search', label: 'Recherche jurisprudentielle' },
-      { value: 'judicial-decision', label: 'Aide à la prise de décision judiciaire' }
-    ],
-    'art-creation': [
-      { value: 'ai-art-generation', label: 'Peinture, musique, poésie générées par IA' },
-      { value: 'computer-aided-design', label: 'Design assisté par ordinateur' },
-      { value: 'logo-illustration', label: 'Génération de logos, illustrations, animations' }
-    ],
-    'ecommerce': [
-      { value: 'visual-search', label: 'Moteurs de recherche visuelle' },
-      { value: 'virtual-try-on', label: 'Essai virtuel de vêtements (en ligne)' },
-      { value: 'personalized-experience', label: 'Expérience client personnalisée' },
-      { value: 'dynamic-pricing', label: 'Pricing dynamique' }
+    'communication-relations': [
+      { value: 'customer-relations', label: 'Relations clients - Service client, satisfaction, fidélisation' },
+      { value: 'internal-communication', label: 'Communication interne - Équipes, changement, culture' },
+      { value: 'negotiation', label: 'Négociation - Techniques, stratégies, accords' },
+      { value: 'presentation', label: 'Présentation - Discours, pitch, storytelling' },
+      { value: 'public-relations', label: 'Relations publiques - Image, réputation, crises' }
     ]
   };
+
+  // Options pour les formats de sortie
+  const outputFormats = [
+    { value: 'bullet-list', label: 'Liste à puces' },
+    { value: 'structured-paragraph', label: 'Paragraphe structuré' },
+    { value: 'table', label: 'Tableau' },
+    { value: 'numbered-steps', label: 'Étapes numérotées' },
+    { value: 'dialogue', label: 'Dialogue/Conversation' },
+    { value: 'code-script', label: 'Code/Script' }
+  ];
+
+  // Options pour le ton/style
+  const toneOptions = [
+    { value: 'professional', label: 'Professionnel' },
+    { value: 'casual', label: 'Décontracté' },
+    { value: 'technical', label: 'Technique' },
+    { value: 'creative', label: 'Créatif' },
+    { value: 'persuasive', label: 'Persuasif' },
+    { value: 'educational', label: 'Éducatif' }
+  ];
+
+  // Options pour la longueur
+  const lengthOptions = [
+    { value: 'short', label: 'Court (1-2 paragraphes)' },
+    { value: 'medium', label: 'Moyen (3-5 paragraphes)' },
+    { value: 'long', label: 'Long (6-10 paragraphes)' },
+    { value: 'very-detailed', label: 'Très détaillé (10+ paragraphes)' }
+  ];
 
   const getSubcategories = (categoryValue: string) => {
     return subcategories[categoryValue as keyof typeof subcategories] || [];
@@ -163,28 +168,36 @@ const PromptGenerator = () => {
     });
   };
 
-  // Nouvelle fonction pour générer des prompts via API avec gestion d'erreur améliorée
-  const generatePromptWithAI = async (category: string, subcategory: string, description: string) => {
+  // Génération de prompts via API avec gestion d'erreur améliorée
+  const generatePromptWithAI = async (formData: any) => {
     try {
       console.log('Génération de prompt via API...');
       
-      const categoryLabel = categories.find(cat => cat.value === category)?.label || category;
-      const subcategoryLabel = subcategory ? 
-        getSubcategories(category).find(sub => sub.value === subcategory)?.label : '';
+      const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
+      const subcategoryLabel = formData.subcategory ? 
+        getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
       const systemPrompt = `Tu es un expert en création de prompts pour l'intelligence artificielle. Crée un prompt détaillé et structuré.
 
-Format:
-**RÔLE**: [rôle expert]
-**MISSION**: [mission précise]
-**OBJECTIFS**: [objectifs détaillés]
-**MÉTHODOLOGIE**: [approche]
-**LIVRABLES**: [résultats attendus]`;
+Format requis:
+**RÔLE**: [rôle expert spécialisé]
+**MISSION**: [mission précise et claire]
+**OBJECTIFS**: [objectifs détaillés et mesurables]
+**MÉTHODOLOGIE**: [approche structurée]
+**CONTRAINTES**: [contraintes techniques et contextuelles]
+**LIVRABLES**: [résultats attendus avec format spécifique]
+**STYLE**: [ton et style de communication]`;
 
-      const userPrompt = `Crée un prompt expert pour:
+      let userPrompt = `Crée un prompt expert pour:
 - Domaine: ${categoryLabel}
 ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
-- Description: ${description}`;
+- Description: ${formData.description}`;
+
+      if (formData.objective) userPrompt += `\n- Objectif: ${formData.objective}`;
+      if (formData.targetAudience) userPrompt += `\n- Public cible: ${formData.targetAudience}`;
+      if (formData.format) userPrompt += `\n- Format souhaité: ${outputFormats.find(f => f.value === formData.format)?.label}`;
+      if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
+      if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
 
       const response = await fetch(API_CONFIG.endpoint, {
         method: 'POST',
@@ -207,7 +220,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             }
           ],
           temperature: 0.7,
-          max_tokens: 1000, // Réduit de 2000 à 1000
+          max_tokens: 1000,
           top_p: 0.9
         })
       });
@@ -249,11 +262,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
     setIsGenerating(true);
     
     try {
-      const aiGeneratedPrompt = await generatePromptWithAI(
-        formData.category, 
-        formData.subcategory, 
-        formData.description
-      );
+      const aiGeneratedPrompt = await generatePromptWithAI(formData);
       
       setGeneratedPrompt(aiGeneratedPrompt);
       
@@ -291,17 +300,6 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      {/* Alerte d'information sur l'erreur API */}
-      <div className="lg:col-span-2">
-        <Alert className="border-orange-200 bg-orange-50">
-          <AlertCircle className="h-4 w-4 text-orange-600" />
-          <AlertDescription className="text-orange-700">
-            <strong>Problème détecté :</strong> La clé API n'a plus de crédits suffisants. 
-            Pour résoudre ce problème : rechargez les crédits sur OpenRouter.ai ou utilisez une nouvelle clé API.
-          </AlertDescription>
-        </Alert>
-      </div>
-
       {/* Formulaire */}
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
@@ -309,20 +307,21 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Wand2 className="h-5 w-5 text-white" />
             </div>
-            <span className="gradient-text">Créer un Prompt IA</span>
+            <span className="gradient-text">Générateur de Prompts IA</span>
           </CardTitle>
           <CardDescription className="text-gray-600 font-medium">
-            Génération intelligente de prompts par IA spécialisée
+            Création intelligente de prompts structurés et personnalisés
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Catégorie principale */}
           <div className="space-y-3">
             <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
-              Dans quel domaine voulez-vous utiliser l'IA ? *
+              Catégorie principale *
             </Label>
             <Select value={formData.category} onValueChange={handleCategoryChange}>
               <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
-                <SelectValue placeholder="Sélectionnez un domaine d'application..." />
+                <SelectValue placeholder="Sélectionnez un domaine..." />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
                 {categories.map((cat) => (
@@ -337,14 +336,15 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             </Select>
           </div>
 
+          {/* Sous-catégorie */}
           {formData.category && getSubcategories(formData.category).length > 0 && (
             <div className="space-y-3">
               <Label htmlFor="subcategory" className="text-sm font-semibold text-gray-700">
-                Spécialisez votre choix (optionnel)
+                Sous-catégorie (optionnel)
               </Label>
               <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
                 <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
-                  <SelectValue placeholder="Choisissez une sous-catégorie..." />
+                  <SelectValue placeholder="Choisissez une spécialisation..." />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
                   {getSubcategories(formData.category).map((subcat) => (
@@ -357,21 +357,104 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             </div>
           )}
 
+          {/* Description principale */}
           <div className="space-y-3">
             <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
-              Décrivez précisément ce que vous voulez faire *
+              Description de la tâche *
             </Label>
             <Textarea
               id="description"
-              placeholder="Exemple : Créer un système de diagnostic médical pour analyser des radiographies pulmonaires et détecter les pneumonies..."
+              placeholder="Décrivez précisément ce que vous voulez accomplir..."
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[120px] bg-white"
-              rows={5}
+              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px] bg-white"
+              rows={4}
             />
-            <p className="text-xs text-gray-500">
-              🤖 L'IA analysera votre description pour créer un prompt parfaitement adapté !
-            </p>
+          </div>
+
+          {/* Objectif */}
+          <div className="space-y-3">
+            <Label htmlFor="objective" className="text-sm font-semibold text-gray-700">
+              Objectif principal (optionnel)
+            </Label>
+            <Input
+              id="objective"
+              placeholder="Quel est le but recherché ?"
+              value={formData.objective}
+              onChange={(e) => setFormData({...formData, objective: e.target.value})}
+              className="animated-border hover:shadow-lg transition-all duration-200 bg-white"
+            />
+          </div>
+
+          {/* Public cible */}
+          <div className="space-y-3">
+            <Label htmlFor="targetAudience" className="text-sm font-semibold text-gray-700">
+              Public cible (optionnel)
+            </Label>
+            <Input
+              id="targetAudience"
+              placeholder="À qui s'adresse le résultat ?"
+              value={formData.targetAudience}
+              onChange={(e) => setFormData({...formData, targetAudience: e.target.value})}
+              className="animated-border hover:shadow-lg transition-all duration-200 bg-white"
+            />
+          </div>
+
+          {/* Format de sortie */}
+          <div className="space-y-3">
+            <Label htmlFor="format" className="text-sm font-semibold text-gray-700">
+              Format de sortie (optionnel)
+            </Label>
+            <Select value={formData.format} onValueChange={(value) => setFormData({...formData, format: value})}>
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+                <SelectValue placeholder="Choisissez un format..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
+                {outputFormats.map((format) => (
+                  <SelectItem key={format.value} value={format.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
+                    {format.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Ton/Style */}
+          <div className="space-y-3">
+            <Label htmlFor="tone" className="text-sm font-semibold text-gray-700">
+              Ton/Style (optionnel)
+            </Label>
+            <Select value={formData.tone} onValueChange={(value) => setFormData({...formData, tone: value})}>
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+                <SelectValue placeholder="Choisissez un ton..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
+                {toneOptions.map((tone) => (
+                  <SelectItem key={tone.value} value={tone.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
+                    {tone.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Longueur */}
+          <div className="space-y-3">
+            <Label htmlFor="length" className="text-sm font-semibold text-gray-700">
+              Longueur approximative (optionnel)
+            </Label>
+            <Select value={formData.length} onValueChange={(value) => setFormData({...formData, length: value})}>
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+                <SelectValue placeholder="Choisissez une longueur..." />
+              </SelectTrigger>
+              <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
+                {lengthOptions.map((length) => (
+                  <SelectItem key={length.value} value={length.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
+                    {length.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <Button 
@@ -391,13 +474,6 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </>
             )}
           </Button>
-
-          <div className="p-3 bg-red-50 rounded-lg border border-red-200">
-            <p className="text-xs text-red-700 font-medium">
-              ⚠️ <strong>Clé API sans crédits :</strong> La clé actuelle n'a plus de crédits. 
-              Visitez <a href="https://openrouter.ai/settings/credits" target="_blank" rel="noopener noreferrer" className="underline">OpenRouter.ai</a> pour recharger.
-            </p>
-          </div>
         </CardContent>
       </Card>
 
@@ -414,7 +490,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             )}
           </CardTitle>
           <CardDescription className="text-gray-600 font-medium">
-            Prompt intelligent et personnalisé créé par IA avancée
+            Prompt intelligent et structuré créé par IA avancée
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -435,7 +511,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
                 <Zap className="h-8 w-8 text-violet-400" />
               </div>
               <p className="font-medium text-lg mb-2">Prêt pour la génération IA ✨</p>
-              <p className="text-sm">L'IA créera un prompt personnalisé basé sur votre domaine et description.</p>
+              <p className="text-sm">L'IA créera un prompt structuré basé sur vos paramètres.</p>
             </div>
           )}
         </CardContent>
