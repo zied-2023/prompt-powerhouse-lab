@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Zap, Copy, Sparkles, Wand2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslation } from "@/hooks/useTranslation";
 
 // Configuration API sécurisée (masquage partiel)
 const API_CONFIG = {
@@ -22,6 +22,7 @@ const API_CONFIG = {
 };
 
 const PromptGenerator = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     category: '',
     subcategory: '',
@@ -40,120 +41,120 @@ const PromptGenerator = () => {
   const categories = [
     { 
       value: 'content-creation', 
-      label: '🎨 Création de Contenu', 
-      description: 'Rédaction, création artistique, vidéo/audio, marketing, littérature'
+      label: t('contentCreation'), 
+      description: t('contentCreationDesc')
     },
     { 
       value: 'business-professional', 
-      label: '💼 Business et Professionnel', 
-      description: 'Stratégie, communication, RH, vente, management'
+      label: t('businessProfessional'), 
+      description: t('businessProfessionalDesc')
     },
     { 
       value: 'education-training', 
-      label: '🎓 Éducation et Formation', 
-      description: 'Cours, évaluation, recherche, pédagogie, formation pro'
+      label: t('educationTraining'), 
+      description: t('educationTrainingDesc')
     },
     { 
       value: 'technology-development', 
-      label: '💻 Technologie et Développement', 
-      description: 'Programmation, data science, cybersécurité, architecture'
+      label: t('technologyDevelopment'), 
+      description: t('technologyDevelopmentDesc')
     },
     { 
       value: 'analysis-research', 
-      label: '🔍 Analyse et Recherche', 
-      description: 'Analyse de données, recherche académique, veille concurrentielle'
+      label: t('analysisResearch'), 
+      description: t('analysisResearchDesc')
     },
     { 
       value: 'problem-solving', 
-      label: '🎯 Résolution de Problèmes', 
-      description: 'Diagnostic, brainstorming, prise de décision, optimisation'
+      label: t('problemSolving'), 
+      description: t('problemSolvingDesc')
     },
     { 
       value: 'communication-relations', 
-      label: '🗣️ Communication et Relations', 
-      description: 'Relations clients, communication interne, négociation, PR'
+      label: t('communicationRelations'), 
+      description: t('communicationRelationsDesc')
     }
   ];
 
   // Sous-catégories pour chaque catégorie principale
   const subcategories = {
     'content-creation': [
-      { value: 'writing', label: 'Rédaction - Articles, blogs, descriptions produits, newsletters' },
-      { value: 'artistic-creation', label: 'Création artistique - Images, illustrations, designs, logos' },
-      { value: 'video-audio', label: 'Vidéo/Audio - Scripts, storyboards, podcasts, voix-off' },
-      { value: 'marketing', label: 'Marketing - Publicités, slogans, campagnes, réseaux sociaux' },
-      { value: 'literature', label: 'Littérature - Histoires, poèmes, romans, scénarios' }
+      { value: 'writing', label: t('writing') },
+      { value: 'artistic-creation', label: t('artisticCreation') },
+      { value: 'video-audio', label: t('videoAudio') },
+      { value: 'marketing', label: t('marketing') },
+      { value: 'literature', label: t('literature') }
     ],
     'business-professional': [
-      { value: 'strategy', label: 'Stratégie - Plans d\'affaires, analyses de marché, SWOT' },
-      { value: 'communication', label: 'Communication - Emails, présentations, rapports' },
-      { value: 'hr', label: 'Ressources Humaines - Offres d\'emploi, évaluations, formations' },
-      { value: 'sales', label: 'Vente - Pitches, propositions commerciales, négociation' },
-      { value: 'management', label: 'Management - Leadership, gestion d\'équipe, processus' }
+      { value: 'strategy', label: t('strategy') },
+      { value: 'communication', label: t('communication') },
+      { value: 'hr', label: t('hr') },
+      { value: 'sales', label: t('sales') },
+      { value: 'management', label: t('management') }
     ],
     'education-training': [
-      { value: 'courses', label: 'Cours et leçons - Plans de cours, explications, tutoriels' },
-      { value: 'evaluation', label: 'Évaluation - Quiz, examens, exercices pratiques' },
-      { value: 'research', label: 'Recherche - Méthodologie, analyse, synthèse' },
-      { value: 'pedagogy', label: 'Pédagogie - Méthodes d\'enseignement, adaptation aux élèves' },
-      { value: 'professional-training', label: 'Formation professionnelle - Certifications, compétences' }
+      { value: 'courses', label: t('courses') },
+      { value: 'evaluation', label: t('evaluation') },
+      { value: 'research', label: t('research') },
+      { value: 'pedagogy', label: t('pedagogy') },
+      { value: 'professional-training', label: t('professionalTraining') }
     ],
     'technology-development': [
-      { value: 'programming', label: 'Programmation - Code, débogage, optimisation, documentation' },
-      { value: 'data-science', label: 'Data Science - Analyse de données, ML, visualisation' },
-      { value: 'cybersecurity', label: 'Cybersécurité - Audits, bonnes pratiques, formations' },
-      { value: 'architecture', label: 'Architecture - Conception système, bases de données' },
-      { value: 'devops', label: 'DevOps - Automatisation, déploiement, monitoring' }
+      { value: 'programming', label: t('programming') },
+      { value: 'data-science', label: t('dataScience') },
+      { value: 'cybersecurity', label: t('cybersecurity') },
+      { value: 'architecture', label: t('architecture') },
+      { value: 'devops', label: t('devops') }
     ],
     'analysis-research': [
-      { value: 'data-analysis', label: 'Analyse de données - Statistiques, tendances, insights' },
-      { value: 'academic-research', label: 'Recherche académique - Revue littérature, hypothèses' },
-      { value: 'competitive-intelligence', label: 'Veille concurrentielle - Benchmarking, études de marché' },
-      { value: 'audit-evaluation', label: 'Audit et évaluation - Performance, qualité, conformité' },
-      { value: 'forecasting', label: 'Prospective - Prédictions, scénarios, tendances futures' }
+      { value: 'data-analysis', label: t('dataAnalysisSubcat') },
+      { value: 'academic-research', label: t('academicResearch') },
+      { value: 'competitive-intelligence', label: t('competitiveIntelligence') },
+      { value: 'audit-evaluation', label: t('auditEvaluation') },
+      { value: 'forecasting', label: t('forecasting') }
     ],
     'problem-solving': [
-      { value: 'diagnosis', label: 'Diagnostic - Identification problèmes, causes racines' },
-      { value: 'brainstorming', label: 'Brainstorming - Génération d\'idées, créativité' },
-      { value: 'decision-making', label: 'Prise de décision - Critères, options, recommandations' },
-      { value: 'optimization', label: 'Optimisation - Amélioration processus, efficacité' },
-      { value: 'innovation', label: 'Innovation - Nouvelles approches, disruption' }
+      { value: 'diagnosis', label: t('diagnosis') },
+      { value: 'brainstorming', label: t('brainstorming') },
+      { value: 'decision-making', label: t('decisionMaking') },
+      { value: 'optimization', label: t('optimization') },
+      { value: 'innovation', label: t('innovation') }
     ],
     'communication-relations': [
-      { value: 'customer-relations', label: 'Relations clients - Service client, satisfaction, fidélisation' },
-      { value: 'internal-communication', label: 'Communication interne - Équipes, changement, culture' },
-      { value: 'negotiation', label: 'Négociation - Techniques, stratégies, accords' },
-      { value: 'presentation', label: 'Présentation - Discours, pitch, storytelling' },
-      { value: 'public-relations', label: 'Relations publiques - Image, réputation, crises' }
+      { value: 'customer-relations', label: t('customerRelations') },
+      { value: 'internal-communication', label: t('internalCommunication') },
+      { value: 'negotiation', label: t('negotiation') },
+      { value: 'presentation', label: t('presentation') },
+      { value: 'public-relations', label: t('publicRelations') }
     ]
   };
 
   // Options pour les formats de sortie
   const outputFormats = [
-    { value: 'bullet-list', label: 'Liste à puces' },
-    { value: 'structured-paragraph', label: 'Paragraphe structuré' },
-    { value: 'table', label: 'Tableau' },
-    { value: 'numbered-steps', label: 'Étapes numérotées' },
-    { value: 'dialogue', label: 'Dialogue/Conversation' },
-    { value: 'code-script', label: 'Code/Script' }
+    { value: 'bullet-list', label: t('bulletList') },
+    { value: 'structured-paragraph', label: t('structuredParagraph') },
+    { value: 'table', label: t('table') },
+    { value: 'numbered-steps', label: t('numberedSteps') },
+    { value: 'dialogue', label: t('dialogue') },
+    { value: 'code-script', label: t('codeScript') }
   ];
 
   // Options pour le ton/style
   const toneOptions = [
-    { value: 'professional', label: 'Professionnel' },
-    { value: 'casual', label: 'Décontracté' },
-    { value: 'technical', label: 'Technique' },
-    { value: 'creative', label: 'Créatif' },
-    { value: 'persuasive', label: 'Persuasif' },
-    { value: 'educational', label: 'Éducatif' }
+    { value: 'professional', label: t('professional') },
+    { value: 'casual', label: t('casual') },
+    { value: 'technical', label: t('technical') },
+    { value: 'creative', label: t('creative') },
+    { value: 'persuasive', label: t('persuasive') },
+    { value: 'educational', label: t('educational') }
   ];
 
   // Options pour la longueur
   const lengthOptions = [
-    { value: 'short', label: 'Court (1-2 paragraphes)' },
-    { value: 'medium', label: 'Moyen (3-5 paragraphes)' },
-    { value: 'long', label: 'Long (6-10 paragraphes)' },
-    { value: 'very-detailed', label: 'Très détaillé (10+ paragraphes)' }
+    { value: 'short', label: t('short') },
+    { value: 'medium', label: t('medium') },
+    { value: 'long', label: t('long') },
+    { value: 'very-detailed', label: t('veryDetailed') }
   ];
 
   const getSubcategories = (categoryValue: string) => {
@@ -168,7 +169,6 @@ const PromptGenerator = () => {
     });
   };
 
-  // Génération de prompts via API avec gestion d'erreur améliorée
   const generatePromptWithAI = async (formData: any) => {
     try {
       console.log('Génération de prompt via API...');
@@ -252,8 +252,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
   const generatePrompt = async () => {
     if (!formData.category || !formData.description) {
       toast({
-        title: "Information manquante",
-        description: "Veuillez choisir une catégorie et décrire ce que vous voulez.",
+        title: t('missingInfo'),
+        description: t('chooseCategoryDesc'),
         variant: "destructive"
       });
       return;
@@ -267,8 +267,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       setGeneratedPrompt(aiGeneratedPrompt);
       
       toast({
-        title: "Prompt IA créé avec succès !",
-        description: "Votre prompt personnalisé a été généré par l'intelligence artificielle.",
+        title: t('promptCreatedSuccess'),
+        description: t('promptCreatedDesc'),
       });
     } catch (error) {
       console.error('Erreur:', error);
@@ -281,7 +281,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       }
       
       toast({
-        title: "Erreur de génération",
+        title: t('generationError'),
         description: errorMessage,
         variant: "destructive"
       });
@@ -293,8 +293,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
   const copyToClipboard = () => {
     navigator.clipboard.writeText(generatedPrompt);
     toast({
-      title: "Copié !",
-      description: "Le prompt a été copié dans votre presse-papiers.",
+      title: t('copiedSuccess'),
+      description: t('promptCopiedClipboard'),
     });
   };
 
@@ -307,21 +307,21 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Wand2 className="h-5 w-5 text-white" />
             </div>
-            <span className="gradient-text">Générateur de Prompts IA</span>
+            <span className="gradient-text">{t('promptGeneratorTitle')}</span>
           </CardTitle>
           <CardDescription className="text-gray-600 font-medium">
-            Création intelligente de prompts structurés et personnalisés
+            {t('promptGeneratorDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Catégorie principale */}
           <div className="space-y-3">
             <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
-              Catégorie principale *
+              {t('mainCategory')} {t('required')}
             </Label>
             <Select value={formData.category} onValueChange={handleCategoryChange}>
               <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
-                <SelectValue placeholder="Sélectionnez un domaine..." />
+                <SelectValue placeholder={t('selectDomain')} />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
                 {categories.map((cat) => (
@@ -340,11 +340,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {formData.category && getSubcategories(formData.category).length > 0 && (
             <div className="space-y-3">
               <Label htmlFor="subcategory" className="text-sm font-semibold text-gray-700">
-                Sous-catégorie (optionnel)
+                {t('subcategory')} {t('optional')}
               </Label>
               <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
                 <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
-                  <SelectValue placeholder="Choisissez une spécialisation..." />
+                  <SelectValue placeholder={t('chooseSpecialization')} />
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
                   {getSubcategories(formData.category).map((subcat) => (
@@ -360,11 +360,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Description principale */}
           <div className="space-y-3">
             <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
-              Description de la tâche *
+              {t('taskDescription')} {t('required')}
             </Label>
             <Textarea
               id="description"
-              placeholder="Décrivez précisément ce que vous voulez accomplir..."
+              placeholder={t('taskDescriptionPlaceholder')}
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
               className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px] bg-white"
@@ -375,11 +375,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Objectif */}
           <div className="space-y-3">
             <Label htmlFor="objective" className="text-sm font-semibold text-gray-700">
-              Objectif principal (optionnel)
+              {t('mainObjective')} {t('optional')}
             </Label>
             <Input
               id="objective"
-              placeholder="Quel est le but recherché ?"
+              placeholder={t('mainObjectivePlaceholder')}
               value={formData.objective}
               onChange={(e) => setFormData({...formData, objective: e.target.value})}
               className="animated-border hover:shadow-lg transition-all duration-200 bg-white"
@@ -389,11 +389,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Public cible */}
           <div className="space-y-3">
             <Label htmlFor="targetAudience" className="text-sm font-semibold text-gray-700">
-              Public cible (optionnel)
+              {t('targetAudience')} {t('optional')}
             </Label>
             <Input
               id="targetAudience"
-              placeholder="À qui s'adresse le résultat ?"
+              placeholder={t('targetAudiencePlaceholder')}
               value={formData.targetAudience}
               onChange={(e) => setFormData({...formData, targetAudience: e.target.value})}
               className="animated-border hover:shadow-lg transition-all duration-200 bg-white"
@@ -403,11 +403,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Format de sortie */}
           <div className="space-y-3">
             <Label htmlFor="format" className="text-sm font-semibold text-gray-700">
-              Format de sortie (optionnel)
+              {t('outputFormat')} {t('optional')}
             </Label>
             <Select value={formData.format} onValueChange={(value) => setFormData({...formData, format: value})}>
               <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
-                <SelectValue placeholder="Choisissez un format..." />
+                <SelectValue placeholder={t('chooseFormat')} />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
                 {outputFormats.map((format) => (
@@ -422,11 +422,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Ton/Style */}
           <div className="space-y-3">
             <Label htmlFor="tone" className="text-sm font-semibold text-gray-700">
-              Ton/Style (optionnel)
+              {t('toneStyle')} {t('optional')}
             </Label>
             <Select value={formData.tone} onValueChange={(value) => setFormData({...formData, tone: value})}>
               <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
-                <SelectValue placeholder="Choisissez un ton..." />
+                <SelectValue placeholder={t('chooseTone')} />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
                 {toneOptions.map((tone) => (
@@ -441,11 +441,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Longueur */}
           <div className="space-y-3">
             <Label htmlFor="length" className="text-sm font-semibold text-gray-700">
-              Longueur approximative (optionnel)
+              {t('approximateLength')} {t('optional')}
             </Label>
             <Select value={formData.length} onValueChange={(value) => setFormData({...formData, length: value})}>
               <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
-                <SelectValue placeholder="Choisissez une longueur..." />
+                <SelectValue placeholder={t('chooseLength')} />
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
                 {lengthOptions.map((length) => (
@@ -465,12 +465,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             {isGenerating ? (
               <>
                 <div className="animate-spin h-5 w-5 mr-3 border-2 border-white border-t-transparent rounded-full"></div>
-                Génération par IA...
+                {t('generatingWithAI')}
               </>
             ) : (
               <>
                 <Sparkles className="h-5 w-5 mr-3" />
-                Générer avec l'IA
+                {t('generateWithAI')}
               </>
             )}
           </Button>
@@ -481,16 +481,16 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center justify-between text-2xl">
-            <span className="gradient-text">Prompt Généré par IA</span>
+            <span className="gradient-text">{t('aiGeneratedPrompt')}</span>
             {generatedPrompt && (
               <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
                 <Copy className="h-4 w-4 mr-2" />
-                Copier
+                {t('copy')}
               </Button>
             )}
           </CardTitle>
           <CardDescription className="text-gray-600 font-medium">
-            Prompt intelligent et structuré créé par IA avancée
+            {t('aiGeneratedPromptDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -501,7 +501,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </pre>
               <div className="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
                 <p className="text-sm text-emerald-700 font-medium">
-                  🤖 <strong>Généré par IA :</strong> Ce prompt a été créé spécialement pour votre demande par une intelligence artificielle avancée !
+                  🤖 <strong>{t('generatedByAI')} :</strong> {t('aiGeneratedDesc')}
                 </p>
               </div>
             </div>
@@ -510,8 +510,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-violet-100 to-purple-100 rounded-2xl flex items-center justify-center">
                 <Zap className="h-8 w-8 text-violet-400" />
               </div>
-              <p className="font-medium text-lg mb-2">Prêt pour la génération IA ✨</p>
-              <p className="text-sm">L'IA créera un prompt structuré basé sur vos paramètres.</p>
+              <p className="font-medium text-lg mb-2">{t('readyForGeneration')}</p>
+              <p className="text-sm">{t('aiWillCreate')}</p>
             </div>
           )}
         </CardContent>
