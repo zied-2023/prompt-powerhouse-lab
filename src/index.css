@@ -93,6 +93,19 @@
     @apply bg-background text-foreground font-sans;
     font-feature-settings: "cv03", "cv04", "cv11";
   }
+
+  /* Support RTL */
+  [dir="rtl"] {
+    direction: rtl;
+  }
+
+  [dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+  }
+
+  [dir="rtl"] .flex-row-reverse {
+    flex-direction: row-reverse;
+  }
 }
 
 @layer components {
@@ -100,18 +113,34 @@
     @apply bg-white/20 backdrop-blur-xl border border-white/30 shadow-2xl;
   }
   
+  .dark .glass-card {
+    @apply bg-gray-800/20 border-gray-700/30;
+  }
+  
   .gradient-text {
     @apply bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 bg-clip-text text-transparent;
+  }
+  
+  .dark .gradient-text {
+    @apply bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400 bg-clip-text text-transparent;
   }
   
   .glow-effect {
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
   }
   
+  .dark .glow-effect {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  }
+  
   .animated-border {
     position: relative;
     background: linear-gradient(45deg, #f3f4f6, #ffffff);
     border-radius: 12px;
+  }
+  
+  .dark .animated-border {
+    background: linear-gradient(45deg, #374151, #1f2937);
   }
   
   .animated-border::before {
@@ -132,6 +161,10 @@
 @layer utilities {
   .text-shadow {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dark .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
   
   .hover-lift {
