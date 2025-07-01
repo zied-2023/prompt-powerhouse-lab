@@ -8,48 +8,50 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Plus, Edit, Trash2, Save, X } from "lucide-react";
+import { useTranslation } from '@/hooks/useTranslation';
 
 const CategoryManager = () => {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([
     {
       id: 1,
-      name: 'Text Generation',
-      description: 'Prompts for generating various types of written content including articles, emails, and creative writing.',
-      examples: ['Blog posts', 'Email templates', 'Product descriptions', 'Social media content'],
+      name: t('textGeneration'),
+      description: t('textGenerationDesc'),
+      examples: [t('blogPostGenerator'), 'Email templates', 'Product descriptions', 'Social media content'],
       color: 'blue'
     },
     {
       id: 2,
-      name: 'Image Creation',
-      description: 'Prompts for generating and describing visual content, artwork, and design concepts.',
+      name: t('imageCreation'),
+      description: t('imageCreationDesc'),
       examples: ['Product photography', 'Digital art', 'Logo design', 'Infographics'],
       color: 'green'
     },
     {
       id: 3,
-      name: 'Interactive Dialogue',
-      description: 'Conversational prompts for chatbots, customer service, and interactive experiences.',
-      examples: ['Customer support', 'Educational tutoring', 'Sales conversations', 'FAQ systems'],
+      name: t('interactiveDialogue'),
+      description: t('interactiveDialogueDesc'),
+      examples: [t('customerSupportChatbot'), 'Educational tutoring', 'Sales conversations', 'FAQ systems'],
       color: 'purple'
     },
     {
       id: 4,
-      name: 'Code Generation',
-      description: 'Technical prompts for generating, reviewing, and optimizing code across different languages.',
-      examples: ['React components', 'API endpoints', 'Database queries', 'Algorithm implementations'],
+      name: t('codeGeneration'),
+      description: t('codeGenerationDesc'),
+      examples: [t('reactComponentGenerator'), 'API endpoints', 'Database queries', 'Algorithm implementations'],
       color: 'orange'
     },
     {
       id: 5,
-      name: 'Data Analysis',
-      description: 'Prompts for analyzing datasets, generating insights, and creating data visualizations.',
+      name: t('dataAnalysis'),
+      description: t('dataAnalysisDesc'),
       examples: ['Statistical analysis', 'Trend identification', 'Report generation', 'Data visualization'],
       color: 'red'
     },
     {
       id: 6,
-      name: 'Creative Writing',
-      description: 'Artistic and creative prompts for storytelling, character development, and narrative creation.',
+      name: t('creativeWriting'),
+      description: t('creativeWritingDesc'),
       examples: ['Short stories', 'Character profiles', 'Plot development', 'Poetry'],
       color: 'indigo'
     }
@@ -65,12 +67,12 @@ const CategoryManager = () => {
   });
 
   const colorOptions = [
-    { value: 'blue', label: 'Blue', class: 'bg-blue-100 text-blue-800 border-blue-200' },
-    { value: 'green', label: 'Green', class: 'bg-green-100 text-green-800 border-green-200' },
-    { value: 'purple', label: 'Purple', class: 'bg-purple-100 text-purple-800 border-purple-200' },
-    { value: 'orange', label: 'Orange', class: 'bg-orange-100 text-orange-800 border-orange-200' },
-    { value: 'red', label: 'Red', class: 'bg-red-100 text-red-800 border-red-200' },
-    { value: 'indigo', label: 'Indigo', class: 'bg-indigo-100 text-indigo-800 border-indigo-200' }
+    { value: 'blue', label: t('blue'), class: 'bg-blue-100 text-blue-800 border-blue-200' },
+    { value: 'green', label: t('green'), class: 'bg-green-100 text-green-800 border-green-200' },
+    { value: 'purple', label: t('purple'), class: 'bg-purple-100 text-purple-800 border-purple-200' },
+    { value: 'orange', label: t('orange'), class: 'bg-orange-100 text-orange-800 border-orange-200' },
+    { value: 'red', label: t('red'), class: 'bg-red-100 text-red-800 border-red-200' },
+    { value: 'indigo', label: t('indigo'), class: 'bg-indigo-100 text-indigo-800 border-indigo-200' }
   ];
 
   const getColorClass = (color) => {
@@ -86,8 +88,8 @@ const CategoryManager = () => {
   const handleCreate = () => {
     if (!formData.name || !formData.description) {
       toast({
-        title: "Validation Error",
-        description: "Name and description are required.",
+        title: t('validationError'),
+        description: t('nameDescriptionRequired'),
         variant: "destructive"
       });
       return;
@@ -105,8 +107,8 @@ const CategoryManager = () => {
     resetForm();
     
     toast({
-      title: "Category Created",
-      description: `"${newCategory.name}" has been added to your categories.`
+      title: t('categoryCreated'),
+      description: `"${newCategory.name}" ${t('categoryCreated').toLowerCase()}.`
     });
   };
 
@@ -123,8 +125,8 @@ const CategoryManager = () => {
   const handleUpdate = () => {
     if (!formData.name || !formData.description) {
       toast({
-        title: "Validation Error",
-        description: "Name and description are required.",
+        title: t('validationError'),
+        description: t('nameDescriptionRequired'),
         variant: "destructive"
       });
       return;
@@ -145,16 +147,16 @@ const CategoryManager = () => {
     resetForm();
     
     toast({
-      title: "Category Updated",
-      description: "Category has been successfully updated."
+      title: t('categoryUpdated'),
+      description: t('categoryUpdated')
     });
   };
 
   const handleDelete = (id) => {
     setCategories(categories.filter(cat => cat.id !== id));
     toast({
-      title: "Category Deleted",
-      description: "Category has been removed."
+      title: t('categoryDeleted'),
+      description: t('categoryDeleted')
     });
   };
 
@@ -165,7 +167,7 @@ const CategoryManager = () => {
         <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
           <CardHeader>
             <CardTitle>
-              {editingId ? 'Edit Category' : 'Create New Category'}
+              {editingId ? t('editCategory') : t('createNewCategory')}
             </CardTitle>
             <CardDescription>
               {editingId ? 'Modify the category details below' : 'Add a new category for organizing prompts'}
@@ -174,7 +176,7 @@ const CategoryManager = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name">Category Name</Label>
+                <Label htmlFor="name">{t('categoryName')}</Label>
                 <Input
                   id="name"
                   placeholder="e.g., Marketing Content"
@@ -183,7 +185,7 @@ const CategoryManager = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="color">Color Theme</Label>
+                <Label htmlFor="color">{t('colorTheme')}</Label>
                 <select
                   id="color"
                   value={formData.color}
@@ -200,7 +202,7 @@ const CategoryManager = () => {
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('categoryDescription')}</Label>
               <Textarea
                 id="description"
                 placeholder="Describe what types of prompts belong in this category..."
@@ -211,7 +213,7 @@ const CategoryManager = () => {
             </div>
 
             <div>
-              <Label htmlFor="examples">Example Use Cases (comma-separated)</Label>
+              <Label htmlFor="examples">{t('exampleUseCases')} (comma-separated)</Label>
               <Input
                 id="examples"
                 placeholder="e.g., Ad copy, Landing pages, Email campaigns"
@@ -223,11 +225,11 @@ const CategoryManager = () => {
             <div className="flex space-x-2">
               <Button onClick={editingId ? handleUpdate : handleCreate}>
                 <Save className="h-4 w-4 mr-2" />
-                {editingId ? 'Update' : 'Create'} Category
+                {editingId ? t('update') : t('create')} {t('categories')}
               </Button>
               <Button variant="outline" onClick={resetForm}>
                 <X className="h-4 w-4 mr-2" />
-                Cancel
+                {t('cancel')}
               </Button>
             </div>
           </CardContent>
@@ -239,7 +241,7 @@ const CategoryManager = () => {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Prompt Categories</CardTitle>
+              <CardTitle>{t('categories')}</CardTitle>
               <CardDescription>
                 Manage and organize your prompt categories for better organization
               </CardDescription>
@@ -247,7 +249,7 @@ const CategoryManager = () => {
             {!isCreating && !editingId && (
               <Button onClick={() => setIsCreating(true)}>
                 <Plus className="h-4 w-4 mr-2" />
-                Add Category
+                {t('addCategory')}
               </Button>
             )}
           </div>
@@ -289,7 +291,7 @@ const CategoryManager = () => {
                   
                   {category.examples.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-gray-500 mb-2">Example Use Cases:</p>
+                      <p className="text-xs font-medium text-gray-500 mb-2">{t('exampleUseCases')}:</p>
                       <div className="flex flex-wrap gap-1">
                         {category.examples.slice(0, 3).map((example, index) => (
                           <Badge key={index} variant="outline" className="text-xs">

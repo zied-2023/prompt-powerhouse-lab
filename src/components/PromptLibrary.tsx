@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,8 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Search, Copy, Eye, Filter } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTranslation } from '@/hooks/useTranslation';
 
 const PromptLibrary = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedPrompt, setSelectedPrompt] = useState(null);
@@ -17,7 +18,7 @@ const PromptLibrary = () => {
     {
       id: 1,
       category: 'text-generation',
-      title: 'Blog Post Generator',
+      title: t('blogPostGenerator'),
       description: 'Generate engaging blog posts with SEO optimization',
       prompt: `**Prompt Category**: TEXT GENERATION
 
@@ -45,7 +46,7 @@ Output: [Generated blog post with proper structure, SEO elements, and engaging c
     {
       id: 2,
       category: 'image-creation',
-      title: 'Product Image Prompt',
+      title: t('productImagePrompt'),
       description: 'Create detailed prompts for product photography and design',
       prompt: `**Prompt Category**: IMAGE CREATION
 
@@ -73,7 +74,7 @@ Output: [Detailed image generation prompt with technical specifications]
     {
       id: 3,
       category: 'interactive-dialogue',
-      title: 'Customer Support Chatbot',
+      title: t('customerSupportChatbot'),
       description: 'Design conversational flows for customer service automation',
       prompt: `**Prompt Category**: INTERACTIVE DIALOGUE
 
@@ -101,7 +102,7 @@ Output: [Conversational flow with empathetic responses and solution pathways]
     {
       id: 4,
       category: 'code-generation',
-      title: 'React Component Generator',
+      title: t('reactComponentGenerator'),
       description: 'Generate React components with TypeScript and Tailwind CSS',
       prompt: `**Prompt Category**: CODE GENERATION
 
@@ -129,7 +130,7 @@ Output: [Complete React component code with TypeScript interfaces and Tailwind s
     {
       id: 5,
       category: 'data-analysis',
-      title: 'Data Insights Generator',
+      title: t('dataInsightsGenerator'),
       description: 'Analyze datasets and generate actionable insights',
       prompt: `**Prompt Category**: DATA ANALYSIS
 
@@ -157,7 +158,7 @@ Output: [Structured analysis with key findings, trends, and recommendations]
     {
       id: 6,
       category: 'creative-writing',
-      title: 'Story Concept Generator',
+      title: t('storyConceptGenerator'),
       description: 'Create compelling story concepts and character development',
       prompt: `**Prompt Category**: CREATIVE WRITING
 
@@ -185,13 +186,13 @@ Output: [Detailed story concept with character profiles and plot structure]
   ];
 
   const categories = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'text-generation', label: 'Text Generation' },
-    { value: 'image-creation', label: 'Image Creation' },
-    { value: 'interactive-dialogue', label: 'Interactive Dialogue' },
-    { value: 'code-generation', label: 'Code Generation' },
-    { value: 'data-analysis', label: 'Data Analysis' },
-    { value: 'creative-writing', label: 'Creative Writing' }
+    { value: 'all', label: t('allCategories') },
+    { value: 'text-generation', label: t('textGeneration') },
+    { value: 'image-creation', label: t('imageCreation') },
+    { value: 'interactive-dialogue', label: t('interactiveDialogue') },
+    { value: 'code-generation', label: t('codeGeneration') },
+    { value: 'data-analysis', label: t('dataAnalysis') },
+    { value: 'creative-writing', label: t('creativeWriting') }
   ];
 
   const filteredPrompts = promptExamples.filter(prompt => {
@@ -205,8 +206,8 @@ Output: [Detailed story concept with character profiles and plot structure]
   const copyPrompt = (prompt) => {
     navigator.clipboard.writeText(prompt);
     toast({
-      title: "Copied!",
-      description: "Prompt template copied to clipboard.",
+      title: t('copied'),
+      description: t('promptCopied'),
     });
   };
 
@@ -215,9 +216,9 @@ Output: [Detailed story concept with character profiles and plot structure]
       {/* Search and Filter */}
       <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
         <CardHeader>
-          <CardTitle>Prompt Template Library</CardTitle>
+          <CardTitle>{t('promptTemplateLibrary')}</CardTitle>
           <CardDescription>
-            Browse and use pre-built prompt templates for common use cases
+            {t('browsePromptTemplates')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -226,7 +227,7 @@ Output: [Detailed story concept with character profiles and plot structure]
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  placeholder="Search prompts by title, description, or tags..."
+                  placeholder={t('searchPrompts')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10"
@@ -261,7 +262,7 @@ Output: [Detailed story concept with character profiles and plot structure]
                   <CardDescription className="mt-2">{prompt.description}</CardDescription>
                 </div>
                 <Badge variant="outline" className="ml-2 bg-purple-50 text-purple-700 border-purple-200">
-                  {prompt.category.replace('-', ' ')}
+                  {categories.find(cat => cat.value === prompt.category)?.label || prompt.category.replace('-', ' ')}
                 </Badge>
               </div>
             </CardHeader>
@@ -283,7 +284,7 @@ Output: [Detailed story concept with character profiles and plot structure]
                     className="flex-1"
                   >
                     <Eye className="h-4 w-4 mr-2" />
-                    Preview
+                    {t('preview')}
                   </Button>
                   <Button
                     variant="outline"
@@ -319,11 +320,11 @@ Output: [Detailed story concept with character profiles and plot structure]
               </div>
               <div className="flex justify-end space-x-2 mt-4">
                 <Button variant="outline" onClick={() => setSelectedPrompt(null)}>
-                  Close
+                  {t('close')}
                 </Button>
                 <Button onClick={() => copyPrompt(selectedPrompt.prompt)}>
                   <Copy className="h-4 w-4 mr-2" />
-                  Copy Template
+                  {t('copyTemplate')}
                 </Button>
               </div>
             </CardContent>
@@ -335,7 +336,7 @@ Output: [Detailed story concept with character profiles and plot structure]
         <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
           <CardContent className="text-center py-12">
             <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p className="text-gray-500">No prompts found matching your search criteria.</p>
+            <p className="text-gray-500">{t('noPromptsFound')}</p>
           </CardContent>
         </Card>
       )}
