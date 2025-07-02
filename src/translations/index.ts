@@ -320,7 +320,19 @@ const translations = {
     finalTip1: "Vérifiez que tous les éléments importants sont inclus",
     finalTip2: "Votre prompt sera optimisé selon vos spécifications",
     finalTip3: "Vous pourrez modifier et réutiliser ce prompt",
-    finalTip4: "Plus les détails sont précis, meilleur sera le résultat"
+    finalTip4: "Plus les détails sont précis, meilleur sera le résultat",
+
+    // PromptLibrary specific translations
+    allCategories: "Toutes les catégories",
+    copied: "Copié",
+    promptCopied: "Prompt copié",
+    promptTemplateLibrary: "Bibliothèque de Templates de Prompts",
+    browsePromptTemplates: "Parcourir les templates de prompts prêts à utiliser",
+    searchPrompts: "Rechercher des prompts...",
+    preview: "Aperçu",
+    close: "Fermer",
+    copyTemplate: "Copier le Template",
+    noPromptsFound: "Aucun prompt trouvé"
   },
   ar: {
     // Navigation et interface générale
@@ -336,7 +348,7 @@ const translations = {
     advancedAI: "ذكاء اصطناعي متقدم",
     noCode: "بدون برمجة",
     
-    // Thème et langue
+    // Thème واللغة
     darkMode: "الوضع المظلم",
     lightMode: "الوضع المضيء",
     language: "اللغة",
@@ -643,7 +655,19 @@ const translations = {
     finalTip1: "تأكد من تضمين جميع العناصر المهمة",
     finalTip2: "سيتم تحسين التنبيه وفقاً لمواصفاتك",
     finalTip3: "يمكنك تعديل وإعادة استخدام هذا التنبيه",
-    finalTip4: "كلما كانت التفاصيل أكثر دقة، كانت النتيجة أفضل"
+    finalTip4: "كلما كانت التفاصيل أكثر دقة، كانت النتيجة أفضل",
+
+    // PromptLibrary specific translations
+    allCategories: "جميع الفئات",
+    copied: "تم النسخ",
+    promptCopied: "تم نسخ التنبيه",
+    promptTemplateLibrary: "مكتبة قوالب التنبيهات",
+    browsePromptTemplates: "تصفح قوالب التنبيهات الجاهزة للاستخدام",
+    searchPrompts: "البحث عن التنبيهات...",
+    preview: "معاينة",
+    close: "إغلاق",
+    copyTemplate: "نسخ القالب",
+    noPromptsFound: "لم يتم العثور على تنبيهات"
   }
 } as const;
 
