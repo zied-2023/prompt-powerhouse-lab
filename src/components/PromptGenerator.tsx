@@ -13,11 +13,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 // Configuration API sécurisée (masquage partiel)
 const API_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: (() => {
-    // Masquage partiel de la clé pour la sécurité
-    const parts = ['sk-or-v1-', '99672b8dd65b2019', '0b5a85a7ccd69bef', '85482a3f07f688ad', '6bb11f7d323e8ae7'];
-    return parts.join('');
-  })(),
+  key: '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',
   model: 'anthropic/claude-3.5-sonnet'
 };
 
