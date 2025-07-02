@@ -41,6 +41,57 @@ const translations = {
     communicationRelations: "Communication & Relations",
     communicationRelationsDesc: "Relations client, communication interne et négociation",
     
+    // Catégories pour CategoryManager
+    textGeneration: "Génération de Texte",
+    textGenerationDesc: "Création automatique de contenu textuel",
+    imageCreation: "Création d'Images",
+    imageCreationDesc: "Génération et édition d'images avec l'IA",
+    interactiveDialogue: "Dialogue Interactif",
+    interactiveDialogueDesc: "Conversations et interactions avec l'IA",
+    codeGeneration: "Génération de Code",
+    codeGenerationDesc: "Création automatique de code et scripts",
+    dataAnalysis: "Analyse de Données",
+    dataAnalysisDesc: "Traitement et analyse de données complexes",
+    creativeWriting: "Écriture Créative",
+    creativeWritingDesc: "Création de contenu littéraire et artistique",
+    
+    // Exemples d'usage
+    blogPostGenerator: "Générateur d'articles de blog",
+    customerSupportChatbot: "Chatbot de support client",
+    reactComponentGenerator: "Générateur de composants React",
+    
+    // Couleurs
+    blue: "Bleu",
+    green: "Vert",
+    purple: "Violet",
+    orange: "Orange",
+    red: "Rouge",
+    indigo: "Indigo",
+    
+    // Messages de validation et d'erreur
+    validationError: "Erreur de validation",
+    nameDescriptionRequired: "Le nom et la description sont requis",
+    categoryCreated: "Catégorie créée",
+    categoryUpdated: "Catégorie mise à jour",
+    categoryDeleted: "Catégorie supprimée",
+    
+    // Actions et boutons
+    create: "Créer",
+    update: "Mettre à jour",
+    cancel: "Annuler",
+    edit: "Modifier",
+    delete: "Supprimer",
+    save: "Sauvegarder",
+    addCategory: "Ajouter une catégorie",
+    createNewCategory: "Créer une nouvelle catégorie",
+    editCategory: "Modifier la catégorie",
+    
+    // Formulaires
+    categoryName: "Nom de la catégorie",
+    categoryDescription: "Description de la catégorie",
+    colorTheme: "Thème de couleur",
+    exampleUseCases: "Exemples d'utilisation",
+    
     // Sous-catégories
     writing: "Rédaction",
     artisticCreation: "Création Artistique",
@@ -309,6 +360,57 @@ const translations = {
     problemSolvingDesc: "التشخيص والعصف الذهني واتخاذ القرارات والتحسين",
     communicationRelations: "التواصل والعلاقات",
     communicationRelationsDesc: "علاقات العملاء والتواصل الداخلي والتفاوض",
+    
+    // Catégories pour CategoryManager
+    textGeneration: "إنشاء النصوص",
+    textGenerationDesc: "إنشاء المحتوى النصي تلقائياً",
+    imageCreation: "إنشاء الصور",
+    imageCreationDesc: "إنشاء وتحرير الصور بالذكاء الاصطناعي",
+    interactiveDialogue: "الحوار التفاعلي",
+    interactiveDialogueDesc: "المحادثات والتفاعلات مع الذكاء الاصطناعي",
+    codeGeneration: "إنشاء الكود",
+    codeGenerationDesc: "إنشاء الكود والسكريبتات تلقائياً",
+    dataAnalysis: "تحليل البيانات",
+    dataAnalysisDesc: "معالجة وتحليل البيانات المعقدة",
+    creativeWriting: "الكتابة الإبداعية",
+    creativeWritingDesc: "إنشاء المحتوى الأدبي والفني",
+    
+    // Exemples d'usage
+    blogPostGenerator: "منشئ مقالات المدونة",
+    customerSupportChatbot: "روبوت الدعم الفني",
+    reactComponentGenerator: "منشئ مكونات React",
+    
+    // Couleurs
+    blue: "أزرق",
+    green: "أخضر",
+    purple: "بنفسجي",
+    orange: "برتقالي",
+    red: "أحمر",
+    indigo: "نيلي",
+    
+    // Messages de validation et d'erreur
+    validationError: "خطأ في التحقق",
+    nameDescriptionRequired: "الاسم والوصف مطلوبان",
+    categoryCreated: "تم إنشاء الفئة",
+    categoryUpdated: "تم تحديث الفئة",
+    categoryDeleted: "تم حذف الفئة",
+    
+    // Actions et boutons
+    create: "إنشاء",
+    update: "تحديث",
+    cancel: "إلغاء",
+    edit: "تحرير",
+    delete: "حذف",
+    save: "حفظ",
+    addCategory: "إضافة فئة",
+    createNewCategory: "إنشاء فئة جديدة",
+    editCategory: "تعديل الفئة",
+    
+    // Formulaires
+    categoryName: "اسم الفئة",
+    categoryDescription: "وصف الفئة",
+    colorTheme: "لون المظهر",
+    exampleUseCases: "أمثلة الاستخدام",
     
     // Sous-catégories
     writing: "الكتابة",
