@@ -1,4 +1,3 @@
-
 const translations = {
   fr: {
     // Navigation et interface générale
@@ -57,8 +56,11 @@ const translations = {
     
     // Exemples d'usage
     blogPostGenerator: "Générateur d'articles de blog",
+    productImagePrompt: "Prompt d'image produit",
     customerSupportChatbot: "Chatbot de support client",
     reactComponentGenerator: "Générateur de composants React",
+    dataInsightsGenerator: "Générateur d'insights de données",
+    storyConceptGenerator: "Générateur de concepts d'histoires",
     
     // Couleurs
     blue: "Bleu",
@@ -377,8 +379,11 @@ const translations = {
     
     // Exemples d'usage
     blogPostGenerator: "منشئ مقالات المدونة",
+    productImagePrompt: "تنبيه صورة المنتج",
     customerSupportChatbot: "روبوت الدعم الفني",
     reactComponentGenerator: "منشئ مكونات React",
+    dataInsightsGenerator: "منشئ رؤى البيانات",
+    storyConceptGenerator: "منشئ مفاهيم القصص",
     
     // Couleurs
     blue: "أزرق",
