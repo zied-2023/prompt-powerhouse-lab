@@ -20,8 +20,32 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
+				sans: ['Inter', 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'system-ui', 'sans-serif'],
 				mono: ['JetBrains Mono', 'Monaco', 'Consolas', 'monospace'],
+				// Polices spécialisées pour l'arabe
+				'arabic-body': ['IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', 'system-ui', 'sans-serif'],
+				'arabic-heading': ['IBM Plex Sans Arabic', 'Amiri', 'Traditional Arabic', 'serif'],
+				'arabic-elegant': ['Amiri', 'Traditional Arabic', 'Times New Roman', 'serif'],
+			},
+			fontSize: {
+				// Échelle typographique fluide
+				'fluid-xs': 'clamp(0.75rem, 1.5vw, 0.875rem)',
+				'fluid-sm': 'clamp(0.875rem, 2vw, 1rem)',
+				'fluid-base': 'clamp(1rem, 2.5vw, 1.125rem)',
+				'fluid-lg': 'clamp(1.125rem, 3vw, 1.25rem)',
+				'fluid-xl': 'clamp(1.25rem, 3.5vw, 1.5rem)',
+				'fluid-2xl': 'clamp(1.5rem, 4vw, 1.875rem)',
+				'fluid-3xl': 'clamp(1.875rem, 5vw, 2.25rem)',
+				'fluid-4xl': 'clamp(2.25rem, 6vw, 3rem)',
+			},
+			lineHeight: {
+				'arabic': '1.75', // Hauteur de ligne optimisée pour l'arabe
+				'arabic-tight': '1.5',
+				'arabic-relaxed': '1.9',
+			},
+			letterSpacing: {
+				'arabic': '0.025em', // Espacement optimal pour l'arabe
+				'arabic-wide': '0.05em',
 			},
 			colors: {
 				border: 'hsl(var(--border))',
