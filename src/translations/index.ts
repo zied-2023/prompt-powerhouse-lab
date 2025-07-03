@@ -43,7 +43,61 @@ export type TranslationKey =
   
   // Messages
   | 'missingInfo' | 'generationError' | 'copiedSuccess' | 'promptCopiedClipboard'
-  | 'validationError' | 'nameDescriptionRequired' | 'categoryCreated';
+  | 'validationError' | 'nameDescriptionRequired' | 'categoryCreated' | 'categoryUpdated' | 'categoryDeleted'
+  
+  // Category Manager
+  | 'editCategory' | 'createNewCategory' | 'categoryName' | 'colorTheme' | 'categoryDescription'
+  | 'exampleUseCases' | 'update' | 'create' | 'cancel' | 'addCategory'
+  
+  // Multi-step builder specific
+  | 'multiStepBuilder' | 'multiStepBuilderDesc' | 'progress' | 'generateAdvancedPrompt'
+  | 'advancedPromptResult' | 'advancedPromptGenerated' | 'advancedPromptGeneratedDesc' | 'tryAgainLater'
+  | 'stepObjectiveTitle' | 'stepContextTitle' | 'stepConstraintsTitle' | 'stepOutputFormatTitle' | 'stepReviewTitle'
+  
+  // Tone options
+  | 'professional' | 'casual' | 'technical' | 'creative' | 'persuasive' | 'educational' | 'authoritative' | 'friendly'
+  
+  // Length options
+  | 'brief' | 'concise' | 'detailed' | 'comprehensive' | 'extensive'
+  
+  // Format options
+  | 'structuredReport' | 'bulletPoints' | 'narrative' | 'stepByStep' | 'qaFormat' | 'presentation'
+  
+  // Style options
+  | 'analytical' | 'descriptive' | 'comparative' | 'argumentative' | 'instructional' | 'consultative'
+  
+  // Technical level options
+  | 'beginner' | 'intermediate' | 'advanced' | 'expert'
+  
+  // Step-specific labels
+  | 'toneStyle' | 'selectTone' | 'approximateLength' | 'selectLength' | 'technicalLevel' | 'selectTechnicalLevel'
+  | 'responseFormat' | 'selectFormat' | 'writingStyle' | 'selectStyle'
+  
+  // Step Objective
+  | 'mainObjective' | 'mainObjectivePlaceholder' | 'specificTargets' | 'addTarget' | 'targetPlaceholder'
+  | 'noTargetsYet' | 'successCriteria' | 'successCriteriaPlaceholder' | 'stepObjectiveTips'
+  | 'tipObjective1' | 'tipObjective2' | 'tipObjective3'
+  
+  // Step Context
+  | 'contextBackground' | 'contextBackgroundPlaceholder' | 'targetAudience' | 'targetAudiencePlaceholder'
+  | 'industry' | 'selectIndustry' | 'contextConstraints' | 'addConstraint' | 'constraintPlaceholder'
+  | 'noConstraintsYet' | 'stepContextTips' | 'tipContext1' | 'tipContext2' | 'tipContext3'
+  | 'technology' | 'healthcare' | 'finance' | 'education' | 'marketing' | 'retail' | 'manufacturing'
+  | 'consulting' | 'media' | 'other'
+  
+  // Step Constraints
+  | 'stepConstraintsTips' | 'tipConstraints1' | 'tipConstraints2' | 'tipConstraints3'
+  
+  // Step Output Format
+  | 'outputStructure' | 'selectStructure' | 'requiredSections' | 'addSection' | 'sectionPlaceholder'
+  | 'noSectionsYet' | 'expectedDeliverables' | 'addDeliverable' | 'deliverablePlaceholder' | 'noDeliverablesYet'
+  | 'stepOutputFormatTips' | 'tipOutputFormat1' | 'tipOutputFormat2' | 'tipOutputFormat3'
+  | 'hierarchical' | 'sequential' | 'modular' | 'matrix' | 'flowchart' | 'comparative'
+  
+  // Step Review
+  | 'objectiveReview' | 'contextReview' | 'requirementsReview' | 'outputFormatReview' | 'notSpecified'
+  | 'readyToGenerate' | 'almostReady' | 'allRequiredFieldsCompleted' | 'someFieldsMissing' | 'completed'
+  | 'finalTips' | 'finalTip1' | 'finalTip2' | 'finalTip3' | 'finalTip4';
 
 const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> = {
   fr: {
@@ -162,7 +216,172 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     promptCopiedClipboard: "Le prompt a été copié dans le presse-papiers",
     validationError: "Erreur de validation",
     nameDescriptionRequired: "Le nom et la description sont requis",
-    categoryCreated: "Catégorie créée"
+    categoryCreated: "Catégorie créée",
+    categoryUpdated: "Catégorie mise à jour",
+    categoryDeleted: "Catégorie supprimée",
+    
+    // Category Manager
+    editCategory: "Modifier la catégorie",
+    createNewCategory: "Créer une nouvelle catégorie",
+    categoryName: "Nom de la catégorie",
+    colorTheme: "Thème de couleur",
+    categoryDescription: "Description de la catégorie",
+    exampleUseCases: "Exemples d'utilisation",
+    update: "Mettre à jour",
+    create: "Créer",
+    cancel: "Annuler",
+    addCategory: "Ajouter une catégorie",
+    
+    // Multi-step builder specific
+    multiStepBuilder: "Constructeur Multi-Étapes",
+    multiStepBuilderDesc: "Créez des prompts complexes étape par étape",
+    progress: "Progression",
+    generateAdvancedPrompt: "Générer le Prompt Avancé",
+    advancedPromptResult: "Résultat du Prompt Avancé",
+    advancedPromptGenerated: "Prompt avancé généré",
+    advancedPromptGeneratedDesc: "Votre prompt avancé a été créé avec succès",
+    tryAgainLater: "Veuillez réessayer plus tard",
+    stepObjectiveTitle: "Définir l'Objectif",
+    stepContextTitle: "Ajouter du Contexte",
+    stepConstraintsTitle: "Définir les Contraintes",
+    stepOutputFormatTitle: "Format de Sortie",
+    stepReviewTitle: "Révision et Génération",
+    
+    // Tone options
+    professional: "Professionnel",
+    casual: "Décontracté",
+    technical: "Technique",
+    creative: "Créatif",
+    persuasive: "Persuasif",
+    educational: "Éducatif",
+    authoritative: "Autoritaire",
+    friendly: "Amical",
+    
+    // Length options
+    brief: "Bref",
+    concise: "Concis",
+    detailed: "Détaillé",
+    comprehensive: "Complet",
+    extensive: "Étendu",
+    
+    // Format options
+    structuredReport: "Rapport structuré",
+    bulletPoints: "Points à puces",
+    narrative: "Narratif",
+    stepByStep: "Étape par étape",
+    qaFormat: "Format Q&R",
+    presentation: "Présentation",
+    
+    // Style options
+    analytical: "Analytique",
+    descriptive: "Descriptif",
+    comparative: "Comparatif",
+    argumentative: "Argumentatif",
+    instructional: "Instructionnel",
+    consultative: "Consultatif",
+    
+    // Technical level options
+    beginner: "Débutant",
+    intermediate: "Intermédiaire",
+    advanced: "Avancé",
+    expert: "Expert",
+    
+    // Step-specific labels
+    toneStyle: "Ton et Style",
+    selectTone: "Sélectionner un ton",
+    approximateLength: "Longueur approximative",
+    selectLength: "Sélectionner une longueur",
+    technicalLevel: "Niveau technique",
+    selectTechnicalLevel: "Sélectionner un niveau technique",
+    responseFormat: "Format de réponse",
+    selectFormat: "Sélectionner un format",
+    writingStyle: "Style d'écriture",
+    selectStyle: "Sélectionner un style",
+    
+    // Step Objective
+    mainObjective: "Objectif principal",
+    mainObjectivePlaceholder: "Décrivez clairement votre objectif principal...",
+    specificTargets: "Cibles spécifiques",
+    addTarget: "Ajouter une cible",
+    targetPlaceholder: "Décrivez une cible spécifique...",
+    noTargetsYet: "Aucune cible spécifique encore définie",
+    successCriteria: "Critères de succès",
+    successCriteriaPlaceholder: "Comment saurez-vous que l'objectif est atteint ?",
+    stepObjectiveTips: "Conseils pour définir l'objectif",
+    tipObjective1: "Soyez spécifique et mesurable dans vos objectifs",
+    tipObjective2: "Définissez des cibles claires et atteignables",
+    tipObjective3: "Établissez des critères de succès concrets",
+    
+    // Step Context
+    contextBackground: "Contexte et arrière-plan",
+    contextBackgroundPlaceholder: "Décrivez le contexte, l'historique et les informations pertinentes...",
+    targetAudience: "Public cible",
+    targetAudiencePlaceholder: "À qui s'adresse cette demande ?",
+    industry: "Secteur d'activité",
+    selectIndustry: "Sélectionner un secteur",
+    contextConstraints: "Contraintes contextuelles",
+    addConstraint: "Ajouter une contrainte",
+    constraintPlaceholder: "Décrivez une contrainte ou limitation...",
+    noConstraintsYet: "Aucune contrainte définie pour le moment",
+    stepContextTips: "Conseils pour le contexte",
+    tipContext1: "Fournissez suffisamment de contexte pour une compréhension claire",
+    tipContext2: "Définissez précisément votre public cible",
+    tipContext3: "Mentionnez les contraintes importantes dès le début",
+    technology: "Technologie",
+    healthcare: "Santé",
+    finance: "Finance",
+    education: "Éducation",
+    marketing: "Marketing",
+    retail: "Commerce de détail",
+    manufacturing: "Fabrication",
+    consulting: "Conseil",
+    media: "Médias",
+    other: "Autre",
+    
+    // Step Constraints
+    stepConstraintsTips: "Conseils pour les contraintes",
+    tipConstraints1: "Choisissez un ton adapté à votre audience",
+    tipConstraints2: "Définissez une longueur appropriée à votre besoin",
+    tipConstraints3: "Sélectionnez le niveau technique adapté",
+    
+    // Step Output Format
+    outputStructure: "Structure de sortie",
+    selectStructure: "Sélectionner une structure",
+    requiredSections: "Sections requises",
+    addSection: "Ajouter une section",
+    sectionPlaceholder: "Nom de la section...",
+    noSectionsYet: "Aucune section définie pour le moment",
+    expectedDeliverables: "Livrables attendus",
+    addDeliverable: "Ajouter un livrable",
+    deliverablePlaceholder: "Décrivez un livrable attendu...",
+    noDeliverablesYet: "Aucun livrable défini pour le moment",
+    stepOutputFormatTips: "Conseils pour le format de sortie",
+    tipOutputFormat1: "Définissez une structure claire et logique",
+    tipOutputFormat2: "Spécifiez les sections importantes",
+    tipOutputFormat3: "Listez tous les livrables attendus",
+    hierarchical: "Hiérarchique",
+    sequential: "Séquentiel",
+    modular: "Modulaire",
+    matrix: "Matrice",
+    flowchart: "Organigramme",
+    comparative: "Comparatif",
+    
+    // Step Review
+    objectiveReview: "Révision de l'objectif",
+    contextReview: "Révision du contexte",
+    requirementsReview: "Révision des exigences",
+    outputFormatReview: "Révision du format de sortie",
+    notSpecified: "Non spécifié",
+    readyToGenerate: "Prêt à générer",
+    almostReady: "Presque prêt",
+    allRequiredFieldsCompleted: "Tous les champs requis sont complétés",
+    someFieldsMissing: "Certains champs requis manquent",
+    completed: "complété",
+    finalTips: "Conseils finaux",
+    finalTip1: "Vérifiez que tous les éléments sont cohérents",
+    finalTip2: "Assurez-vous que l'objectif est clairement défini",
+    finalTip3: "Confirmez que le contexte est suffisant",
+    finalTip4: "Validez que le format de sortie correspond à vos besoins"
   },
   
   ar: {
@@ -178,8 +397,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     language: "اللغة",
     advancedAI: "ذكاء اصطناعي متقدم",
     noCode: "بدون كود",
-    
-    // Form elements
     titlePlaceholder: "صف ما تريد إنتاجه...",
     category: "الفئة",
     tone: "النبرة",
@@ -193,13 +410,9 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     examples: "أمثلة",
     required: "(مطلوب)",
     optional: "(اختياري)",
-    
-    // Languages
     french: "Français",
     arabic: "العربية",
     english: "English",
-    
-    // Prompt Generator
     promptGeneratorTitle: "مولد المطالبات بالذكاء الاصطناعي",
     promptGeneratorDesc: "أنشئ مطالبات محسنة للحصول على أفضل النتائج من الذكاء الاصطناعي",
     quickGenerator: "المولد السريع",
@@ -212,8 +425,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     aiWillCreate: "سيقوم الذكاء الاصطناعي بإنشاء مطالبتك المحسنة",
     generatedByAI: "مُنتج بالذكاء الاصطناعي",
     aiGeneratedDesc: "تم تحسين هذه المطالبة بواسطة الذكاء الاصطناعي للحصول على نتائج أفضل",
-    
-    // Multi-step builder
     multiStepTitle: "المنشئ متعدد الخطوات",
     multiStepDesc: "أنشئ مطالبات معقدة خطوة بخطوة",
     step: "الخطوة",
@@ -231,8 +442,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     next: "التالي",
     generate: "إنتاج",
     finalPrompt: "المطالبة النهائية",
-    
-    // Improvement section
     improvement: "التحسين",
     improvementTitle: "تحسين المطالبات",
     improvementDesc: "حسن مطالباتك الموجودة بمساعدة الذكاء الاصطناعي",
@@ -248,8 +457,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     improvementSuccess: "تم تحسين المطالبة بنجاح",
     improvementSuccessDesc: "تم تحسين مطالبتك بواسطة الذكاء الاصطناعي",
     enterOriginalPrompt: "يرجى إدخال المطالبة الأصلية",
-    
-    // Categories
     textGeneration: "إنتاج النصوص",
     textGenerationDesc: "أنشئ محتوى نصي عالي الجودة",
     blogPostGenerator: "مولد مقالات المدونة",
@@ -265,23 +472,158 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     dataAnalysisDesc: "حلل وفسر بياناتك",
     creativeWriting: "الكتابة الإبداعية",
     creativeWritingDesc: "قصص وقصائد ومحتوى إبداعي",
-    
-    // Colors
     blue: "أزرق",
     green: "أخضر",
     purple: "بنفسجي",
     orange: "برتقالي",
     red: "أحمر",
     indigo: "نيلي",
-    
-    // Messages
     missingInfo: "معلومات مفقودة",
     generationError: "خطأ في الإنتاج",
     copiedSuccess: "تم النسخ بنجاح",
     promptCopiedClipboard: "تم نسخ المطالبة إلى الحافظة",
     validationError: "خطأ في التحقق",
     nameDescriptionRequired: "الاسم والوصف مطلوبان",
-    categoryCreated: "تم إنشاء الفئة"
+    categoryCreated: "تم إنشاء الفئة",
+    categoryUpdated: "تم تحديث الفئة",
+    categoryDeleted: "تم حذف الفئة",
+    editCategory: "تعديل الفئة",
+    createNewCategory: "إنشاء فئة جديدة",
+    categoryName: "اسم الفئة",
+    colorTheme: "موضوع اللون",
+    categoryDescription: "وصف الفئة",
+    exampleUseCases: "أمثلة الاستخدام",
+    update: "تحديث",
+    create: "إنشاء",
+    cancel: "إلغاء",
+    addCategory: "إضافة فئة",
+    multiStepBuilder: "المنشئ متعدد الخطوات",
+    multiStepBuilderDesc: "أنشئ مطالبات معقدة خطوة بخطوة",
+    progress: "التقدم",
+    generateAdvancedPrompt: "إنتاج المطالبة المتقدمة",
+    advancedPromptResult: "نتيجة المطالبة المتقدمة",
+    advancedPromptGenerated: "تم إنتاج المطالبة المتقدمة",
+    advancedPromptGeneratedDesc: "تم إنشاء مطالبتك المتقدمة بنجاح",
+    tryAgainLater: "يرجى المحاولة مرة أخرى لاحقاً",
+    stepObjectiveTitle: "تحديد الهدف",
+    stepContextTitle: "إضافة السياق",
+    stepConstraintsTitle: "تحديد القيود",
+    stepOutputFormatTitle: "تنسيق الإخراج",
+    stepReviewTitle: "المراجعة والإنتاج",
+    professional: "مهني",
+    casual: "عادي",
+    technical: "تقني",
+    creative: "إبداعي",
+    persuasive: "إقناعي",
+    educational: "تعليمي",
+    authoritative: "موثوق",
+    friendly: "ودود",
+    brief: "موجز",
+    concise: "مختصر",
+    detailed: "مفصل",
+    comprehensive: "شامل",
+    extensive: "موسع",
+    structuredReport: "تقرير منظم",
+    bulletPoints: "نقاط",
+    narrative: "سردي",
+    stepByStep: "خطوة بخطوة",
+    qaFormat: "تنسيق سؤال وجواب",
+    presentation: "عرض تقديمي",
+    analytical: "تحليلي",
+    descriptive: "وصفي",
+    comparative: "مقارن",
+    argumentative: "جدلي",
+    instructional: "تعليمي",
+    consultative: "استشاري",
+    beginner: "مبتدئ",
+    intermediate: "متوسط",
+    advanced: "متقدم",
+    expert: "خبير",
+    toneStyle: "النبرة والأسلوب",
+    selectTone: "اختر النبرة",
+    approximateLength: "الطول التقريبي",
+    selectLength: "اختر الطول",
+    technicalLevel: "المستوى التقني",
+    selectTechnicalLevel: "اختر المستوى التقني",
+    responseFormat: "تنسيق الاستجابة",
+    selectFormat: "اختر التنسيق",
+    writingStyle: "أسلوب الكتابة",
+    selectStyle: "اختر الأسلوب",
+    mainObjective: "الهدف الرئيسي",
+    mainObjectivePlaceholder: "صف هدفك الرئيسي بوضوح...",
+    specificTargets: "الأهداف المحددة",
+    addTarget: "إضافة هدف",
+    targetPlaceholder: "صف هدفاً محدداً...",
+    noTargetsYet: "لم يتم تحديد أهداف محددة بعد",
+    successCriteria: "معايير النجاح",
+    successCriteriaPlaceholder: "كيف ستعرف أن الهدف تحقق؟",
+    stepObjectiveTips: "نصائح لتحديد الهدف",
+    tipObjective1: "كن محدداً وقابلاً للقياس في أهدافك",
+    tipObjective2: "حدد أهدافاً واضحة وقابلة للتحقيق",
+    tipObjective3: "ضع معايير نجاح ملموسة",
+    contextBackground: "السياق والخلفية",
+    contextBackgroundPlaceholder: "صف السياق والتاريخ والمعلومات ذات الصلة...",
+    targetAudience: "الجمهور المستهدف",
+    targetAudiencePlaceholder: "لمن موجه هذا الطلب؟",
+    industry: "القطاع",
+    selectIndustry: "اختر القطاع",
+    contextConstraints: "القيود السياقية",
+    addConstraint: "إضافة قيد",
+    constraintPlaceholder: "صف قيداً أو حدوداً...",
+    noConstraintsYet: "لم يتم تحديد قيود حتى الآن",
+    stepContextTips: "نصائح للسياق",
+    tipContext1: "وفر سياقاً كافياً لفهم واضح",
+    tipContext2: "حدد جمهورك المستهدف بدقة",
+    tipContext3: "اذكر القيود المهمة من البداية",
+    technology: "التكنولوجيا",
+    healthcare: "الرعاية الصحية",
+    finance: "المالية",
+    education: "التعليم",
+    marketing: "التسويق",
+    retail: "التجارة بالتجزئة",
+    manufacturing: "التصنيع",
+    consulting: "الاستشارات",
+    media: "الإعلام",
+    other: "أخرى",
+    stepConstraintsTips: "نصائح للقيود",
+    tipConstraints1: "اختر نبرة مناسبة لجمهورك",
+    tipConstraints2: "حدد طولاً مناسباً لحاجتك",
+    tipConstraints3: "اختر المستوى التقني المناسب",
+    outputStructure: "هيكل الإخراج",
+    selectStructure: "اختر الهيكل",
+    requiredSections: "الأقسام المطلوبة",
+    addSection: "إضافة قسم",
+    sectionPlaceholder: "اسم القسم...",
+    noSectionsYet: "لم يتم تحديد أقسام حتى الآن",
+    expectedDeliverables: "المخرجات المتوقعة",
+    addDeliverable: "إضافة مخرج",
+    deliverablePlaceholder: "صف مخرجاً متوقعاً...",
+    noDeliverablesYet: "لم يتم تحديد مخرجات حتى الآن",
+    stepOutputFormatTips: "نصائح لتنسيق الإخراج",
+    tipOutputFormat1: "حدد هيكلاً واضحاً ومنطقياً",
+    tipOutputFormat2: "حدد الأقسام المهمة",
+    tipOutputFormat3: "اسرد جميع المخرجات المتوقعة",
+    hierarchical: "هرمي",
+    sequential: "متتالي",
+    modular: "معياري",
+    matrix: "مصفوفة",
+    flowchart: "مخطط تدفق",
+    comparative: "مقارن",
+    objectiveReview: "مراجعة الهدف",
+    contextReview: "مراجعة السياق",
+    requirementsReview: "مراجعة المتطلبات",
+    outputFormatReview: "مراجعة تنسيق الإخراج",
+    notSpecified: "غير محدد",
+    readyToGenerate: "جاهز للإنتاج",
+    almostReady: "تقريباً جاهز",
+    allRequiredFieldsCompleted: "تم إكمال جميع الحقول المطلوبة",
+    someFieldsMissing: "بعض الحقول المطلوبة مفقودة",
+    completed: "مكتمل",
+    finalTips: "نصائح نهائية",
+    finalTip1: "تأكد من أن جميع العناصر متسقة",
+    finalTip2: "تأكد من أن الهدف محدد بوضوح",
+    finalTip3: "أكد أن السياق كافٍ",
+    finalTip4: "تحقق من أن تنسيق الإخراج يناسب احتياجاتك"
   },
   
   en: {
@@ -297,8 +639,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     language: "Language",
     advancedAI: "Advanced AI",
     noCode: "No Code",
-    
-    // Form elements
     titlePlaceholder: "Describe what you want to generate...",
     category: "Category",
     tone: "Tone",
@@ -312,13 +652,9 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     examples: "Examples",
     required: "(required)",
     optional: "(optional)",
-    
-    // Languages
     french: "Français",
     arabic: "العربية",
     english: "English",
-    
-    // Prompt Generator
     promptGeneratorTitle: "AI Prompt Generator",
     promptGeneratorDesc: "Create optimized prompts to get the best results from your AI",
     quickGenerator: "Quick Generator",
@@ -331,8 +667,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     aiWillCreate: "AI will create your optimized prompt",
     generatedByAI: "Generated by AI",
     aiGeneratedDesc: "This prompt has been optimized by our AI for better results",
-    
-    // Multi-step builder
     multiStepTitle: "Multi-Step Builder",
     multiStepDesc: "Create complex prompts step by step",
     step: "Step",
@@ -350,8 +684,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     next: "Next",
     generate: "Generate",
     finalPrompt: "Final Prompt",
-    
-    // Improvement section
     improvement: "Improvement",
     improvementTitle: "Prompt Improvement",
     improvementDesc: "Optimize your existing prompts with AI assistance",
@@ -367,8 +699,6 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     improvementSuccess: "Prompt improved successfully",
     improvementSuccessDesc: "Your prompt has been optimized by AI",
     enterOriginalPrompt: "Please enter the original prompt",
-    
-    // Categories
     textGeneration: "Text Generation",
     textGenerationDesc: "Create quality textual content",
     blogPostGenerator: "Blog post generator",
@@ -384,23 +714,158 @@ const translations: Record<'fr' | 'ar' | 'en', Record<TranslationKey, string>> =
     dataAnalysisDesc: "Analyze and interpret your data",
     creativeWriting: "Creative Writing",
     creativeWritingDesc: "Stories, poems and creative content",
-    
-    // Colors
     blue: "Blue",
     green: "Green",
     purple: "Purple",
     orange: "Orange",
     red: "Red",
     indigo: "Indigo",
-    
-    // Messages
     missingInfo: "Missing information",
     generationError: "Generation error",
     copiedSuccess: "Copied successfully",
     promptCopiedClipboard: "Prompt copied to clipboard",
     validationError: "Validation error",
     nameDescriptionRequired: "Name and description are required",
-    categoryCreated: "Category created"
+    categoryCreated: "Category created",
+    categoryUpdated: "Category updated",
+    categoryDeleted: "Category deleted",
+    editCategory: "Edit Category",
+    createNewCategory: "Create New Category",
+    categoryName: "Category Name",
+    colorTheme: "Color Theme",
+    categoryDescription: "Category Description",
+    exampleUseCases: "Example Use Cases",
+    update: "Update",
+    create: "Create",
+    cancel: "Cancel",
+    addCategory: "Add Category",
+    multiStepBuilder: "Multi-Step Builder",
+    multiStepBuilderDesc: "Create complex prompts step by step",
+    progress: "Progress",
+    generateAdvancedPrompt: "Generate Advanced Prompt",
+    advancedPromptResult: "Advanced Prompt Result",
+    advancedPromptGenerated: "Advanced prompt generated",
+    advancedPromptGeneratedDesc: "Your advanced prompt has been created successfully",
+    tryAgainLater: "Please try again later",
+    stepObjectiveTitle: "Define Objective",
+    stepContextTitle: "Add Context",
+    stepConstraintsTitle: "Define Constraints",
+    stepOutputFormatTitle: "Output Format",
+    stepReviewTitle: "Review and Generate",
+    professional: "Professional",
+    casual: "Casual",
+    technical: "Technical",
+    creative: "Creative",
+    persuasive: "Persuasive",
+    educational: "Educational",
+    authoritative: "Authoritative",
+    friendly: "Friendly",
+    brief: "Brief",
+    concise: "Concise",
+    detailed: "Detailed",
+    comprehensive: "Comprehensive",
+    extensive: "Extensive",
+    structuredReport: "Structured Report",
+    bulletPoints: "Bullet Points",
+    narrative: "Narrative",
+    stepByStep: "Step by Step",
+    qaFormat: "Q&A Format",
+    presentation: "Presentation",
+    analytical: "Analytical",
+    descriptive: "Descriptive",
+    comparative: "Comparative",
+    argumentative: "Argumentative",
+    instructional: "Instructional",
+    consultative: "Consultative",
+    beginner: "Beginner",
+    intermediate: "Intermediate",
+    advanced: "Advanced",
+    expert: "Expert",
+    toneStyle: "Tone & Style",
+    selectTone: "Select tone",
+    approximateLength: "Approximate Length",
+    selectLength: "Select length",
+    technicalLevel: "Technical Level",
+    selectTechnicalLevel: "Select technical level",
+    responseFormat: "Response Format",
+    selectFormat: "Select format",
+    writingStyle: "Writing Style",
+    selectStyle: "Select style",
+    mainObjective: "Main Objective",
+    mainObjectivePlaceholder: "Clearly describe your main objective...",
+    specificTargets: "Specific Targets",
+    addTarget: "Add Target",
+    targetPlaceholder: "Describe a specific target...",
+    noTargetsYet: "No specific targets defined yet",
+    successCriteria: "Success Criteria",
+    successCriteriaPlaceholder: "How will you know the objective is achieved?",
+    stepObjectiveTips: "Tips for Defining Objectives",
+    tipObjective1: "Be specific and measurable in your objectives",
+    tipObjective2: "Define clear and achievable targets",
+    tipObjective3: "Establish concrete success criteria",
+    contextBackground: "Context & Background",
+    contextBackgroundPlaceholder: "Describe the context, history and relevant information...",
+    targetAudience: "Target Audience",
+    targetAudiencePlaceholder: "Who is this request for?",
+    industry: "Industry",
+    selectIndustry: "Select industry",
+    contextConstraints: "Contextual Constraints",
+    addConstraint: "Add Constraint",
+    constraintPlaceholder: "Describe a constraint or limitation...",
+    noConstraintsYet: "No constraints defined yet",
+    stepContextTips: "Tips for Context",
+    tipContext1: "Provide enough context for clear understanding",
+    tipContext2: "Define your target audience precisely",
+    tipContext3: "Mention important constraints early",
+    technology: "Technology",
+    healthcare: "Healthcare",
+    finance: "Finance",
+    education: "Education",
+    marketing: "Marketing",
+    retail: "Retail",
+    manufacturing: "Manufacturing",
+    consulting: "Consulting",
+    media: "Media",
+    other: "Other",
+    stepConstraintsTips: "Tips for Constraints",
+    tipConstraints1: "Choose a tone suitable for your audience",
+    tipConstraints2: "Define an appropriate length for your need",
+    tipConstraints3: "Select the appropriate technical level",
+    outputStructure: "Output Structure",
+    selectStructure: "Select structure",
+    requiredSections: "Required Sections",
+    addSection: "Add Section",
+    sectionPlaceholder: "Section name...",
+    noSectionsYet: "No sections defined yet",
+    expectedDeliverables: "Expected Deliverables",
+    addDeliverable: "Add Deliverable",
+    deliverablePlaceholder: "Describe an expected deliverable...",
+    noDeliverablesYet: "No deliverables defined yet",
+    stepOutputFormatTips: "Tips for Output Format",
+    tipOutputFormat1: "Define a clear and logical structure",
+    tipOutputFormat2: "Specify important sections",
+    tipOutputFormat3: "List all expected deliverables",
+    hierarchical: "Hierarchical",
+    sequential: "Sequential",
+    modular: "Modular",
+    matrix: "Matrix",
+    flowchart: "Flowchart",
+    comparative: "Comparative",
+    objectiveReview: "Objective Review",
+    contextReview: "Context Review",
+    requirementsReview: "Requirements Review",
+    outputFormatReview: "Output Format Review",
+    notSpecified: "Not specified",
+    readyToGenerate: "Ready to generate",
+    almostReady: "Almost ready",
+    allRequiredFieldsCompleted: "All required fields completed",
+    someFieldsMissing: "Some required fields missing",
+    completed: "completed",
+    finalTips: "Final Tips",
+    finalTip1: "Check that all elements are consistent",
+    finalTip2: "Ensure the objective is clearly defined",
+    finalTip3: "Confirm that the context is sufficient",
+    finalTip4: "Validate that the output format meets your needs"
   }
 };
 
