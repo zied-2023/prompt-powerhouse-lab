@@ -1,4 +1,3 @@
-
 export type TranslationKey = 
   | 'title'
   | 'subtitle'
@@ -101,7 +100,62 @@ export type TranslationKey =
   | 'tryAgainLater'
   | 'multiStepBuilder'
   | 'multiStepBuilderDesc'
-  | 'progress';
+  | 'progress'
+  | 'step'
+  | 'previous'
+  | 'next'
+  | 'generateAdvancedPrompt'
+  | 'advancedPromptResult'
+  | 'professional'
+  | 'casual'
+  | 'technical'
+  | 'creative'
+  | 'persuasive'
+  | 'educational'
+  | 'authoritative'
+  | 'friendly'
+  | 'brief'
+  | 'concise'
+  | 'detailed'
+  | 'comprehensive'
+  | 'extensive'
+  | 'structuredReport'
+  | 'bulletPoints'
+  | 'narrative'
+  | 'stepByStep'
+  | 'qaFormat'
+  | 'presentation'
+  | 'analytical'
+  | 'descriptive'
+  | 'comparative'
+  | 'argumentative'
+  | 'instructional'
+  | 'consultative'
+  | 'beginner'
+  | 'intermediate'
+  | 'expert'
+  | 'toneStyle'
+  | 'selectTone'
+  | 'approximateLength'
+  | 'selectLength'
+  | 'technicalLevel'
+  | 'selectTechnicalLevel'
+  | 'responseFormat'
+  | 'selectFormat'
+  | 'writingStyle'
+  | 'selectStyle'
+  | 'stepConstraintsTips'
+  | 'tipConstraints1'
+  | 'tipConstraints2'
+  | 'tipConstraints3'
+  | 'technology'
+  | 'healthcare'
+  | 'finance'
+  | 'education'
+  | 'marketing'
+  | 'retail'
+  | 'manufacturing'
+  | 'consulting';
 
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -206,7 +260,62 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     tryAgainLater: 'Please try again later',
     multiStepBuilder: 'Multi-Step Builder',
     multiStepBuilderDesc: 'Create complex prompts step by step',
-    progress: 'Progress'
+    progress: 'Progress',
+    step: 'Step',
+    previous: 'Previous',
+    next: 'Next',
+    generateAdvancedPrompt: 'Generate Advanced Prompt',
+    advancedPromptResult: 'Advanced Prompt Result',
+    professional: 'Professional',
+    casual: 'Casual',
+    technical: 'Technical',
+    creative: 'Creative',
+    persuasive: 'Persuasive',
+    educational: 'Educational',
+    authoritative: 'Authoritative',
+    friendly: 'Friendly',
+    brief: 'Brief',
+    concise: 'Concise',
+    detailed: 'Detailed',
+    comprehensive: 'Comprehensive',
+    extensive: 'Extensive',
+    structuredReport: 'Structured Report',
+    bulletPoints: 'Bullet Points',
+    narrative: 'Narrative',
+    stepByStep: 'Step by Step',
+    qaFormat: 'Q&A Format',
+    presentation: 'Presentation',
+    analytical: 'Analytical',
+    descriptive: 'Descriptive',
+    comparative: 'Comparative',
+    argumentative: 'Argumentative',
+    instructional: 'Instructional',
+    consultative: 'Consultative',
+    beginner: 'Beginner',
+    intermediate: 'Intermediate',
+    expert: 'Expert',
+    toneStyle: 'Tone & Style',
+    selectTone: 'Select tone',
+    approximateLength: 'Approximate Length',
+    selectLength: 'Select length',
+    technicalLevel: 'Technical Level',
+    selectTechnicalLevel: 'Select technical level',
+    responseFormat: 'Response Format',
+    selectFormat: 'Select format',
+    writingStyle: 'Writing Style',
+    selectStyle: 'Select style',
+    stepConstraintsTips: 'Step Constraints Tips',
+    tipConstraints1: 'Define clear constraints for better results',
+    tipConstraints2: 'Consider your target audience',
+    tipConstraints3: 'Specify the desired output format',
+    technology: 'Technology',
+    healthcare: 'Healthcare',
+    finance: 'Finance',
+    education: 'Education',
+    marketing: 'Marketing',
+    retail: 'Retail',
+    manufacturing: 'Manufacturing',
+    consulting: 'Consulting'
   },
   fr: {
     title: 'Laboratoire de Génération de Prompts',
@@ -310,7 +419,62 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     tryAgainLater: 'Veuillez réessayer plus tard',
     multiStepBuilder: 'Constructeur Multi-Étapes',
     multiStepBuilderDesc: 'Créer des prompts complexes étape par étape',
-    progress: 'Progression'
+    progress: 'Progression',
+    step: 'Étape',
+    previous: 'Précédent',
+    next: 'Suivant',
+    generateAdvancedPrompt: 'Générer un Prompt Avancé',
+    advancedPromptResult: 'Résultat du Prompt Avancé',
+    professional: 'Professionnel',
+    casual: 'Décontracté',
+    technical: 'Technique',
+    creative: 'Créatif',
+    persuasive: 'Persuasif',
+    educational: 'Éducatif',
+    authoritative: 'Autoritaire',
+    friendly: 'Amical',
+    brief: 'Bref',
+    concise: 'Concis',
+    detailed: 'Détaillé',
+    comprehensive: 'Complet',
+    extensive: 'Étendu',
+    structuredReport: 'Rapport Structuré',
+    bulletPoints: 'Points à Puces',
+    narrative: 'Narratif',
+    stepByStep: 'Étape par Étape',
+    qaFormat: 'Format Q&R',
+    presentation: 'Présentation',
+    analytical: 'Analytique',
+    descriptive: 'Descriptif',
+    comparative: 'Comparatif',
+    argumentative: 'Argumentatif',
+    instructional: 'Instructionnel',
+    consultative: 'Consultatif',
+    beginner: 'Débutant',
+    intermediate: 'Intermédiaire',
+    expert: 'Expert',
+    toneStyle: 'Ton et Style',
+    selectTone: 'Sélectionner le ton',
+    approximateLength: 'Longueur Approximative',
+    selectLength: 'Sélectionner la longueur',
+    technicalLevel: 'Niveau Technique',
+    selectTechnicalLevel: 'Sélectionner le niveau technique',
+    responseFormat: 'Format de Réponse',
+    selectFormat: 'Sélectionner le format',
+    writingStyle: 'Style d\'Écriture',
+    selectStyle: 'Sélectionner le style',
+    stepConstraintsTips: 'Conseils pour les Contraintes',
+    tipConstraints1: 'Définir des contraintes claires pour de meilleurs résultats',
+    tipConstraints2: 'Considérer votre public cible',
+    tipConstraints3: 'Spécifier le format de sortie désiré',
+    technology: 'Technologie',
+    healthcare: 'Santé',
+    finance: 'Finance',
+    education: 'Éducation',
+    marketing: 'Marketing',
+    retail: 'Commerce de Détail',
+    manufacturing: 'Fabrication',
+    consulting: 'Conseil'
   }
 };
 
