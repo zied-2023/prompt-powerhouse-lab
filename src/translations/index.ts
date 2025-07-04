@@ -46,7 +46,62 @@ export type TranslationKey =
   | 'improvementSuccessDesc'
   | 'enterOriginalPrompt'
   | 'required'
-  | 'optional';
+  | 'optional'
+  | 'french'
+  | 'english'
+  | 'arabic'
+  | 'textGeneration'
+  | 'textGenerationDesc'
+  | 'blogPostGenerator'
+  | 'imageCreation'
+  | 'imageCreationDesc'
+  | 'interactiveDialogue'
+  | 'interactiveDialogueDesc'
+  | 'customerSupportChatbot'
+  | 'codeGeneration'
+  | 'codeGenerationDesc'
+  | 'reactComponentGenerator'
+  | 'dataAnalysis'
+  | 'dataAnalysisDesc'
+  | 'creativeWriting'
+  | 'creativeWritingDesc'
+  | 'blue'
+  | 'green'
+  | 'purple'
+  | 'orange'
+  | 'red'
+  | 'indigo'
+  | 'validationError'
+  | 'nameDescriptionRequired'
+  | 'categoryCreated'
+  | 'categoryUpdated'
+  | 'categoryDeleted'
+  | 'editCategory'
+  | 'createNewCategory'
+  | 'categoryName'
+  | 'colorTheme'
+  | 'categoryDescription'
+  | 'exampleUseCases'
+  | 'update'
+  | 'create'
+  | 'cancel'
+  | 'addCategory'
+  | 'stepObjectiveTitle'
+  | 'stepObjectiveDesc'
+  | 'stepContextTitle'
+  | 'stepContextDesc'
+  | 'stepConstraintsTitle'
+  | 'stepConstraintsDesc'
+  | 'stepOutputFormatTitle'
+  | 'stepOutputFormatDesc'
+  | 'stepReviewTitle'
+  | 'stepReviewDesc'
+  | 'advancedPromptGenerated'
+  | 'advancedPromptGeneratedDesc'
+  | 'tryAgainLater'
+  | 'multiStepBuilder'
+  | 'multiStepBuilderDesc'
+  | 'progress';
 
 const translations: Record<string, Record<TranslationKey, string>> = {
   en: {
@@ -96,7 +151,62 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     improvementSuccessDesc: 'Your prompt has been optimized',
     enterOriginalPrompt: 'Please enter the original prompt',
     required: '(required)',
-    optional: '(optional)'
+    optional: '(optional)',
+    french: 'Français',
+    english: 'English',
+    arabic: 'العربية',
+    textGeneration: 'Text Generation',
+    textGenerationDesc: 'Create written content',
+    blogPostGenerator: 'Blog Post Generator',
+    imageCreation: 'Image Creation',
+    imageCreationDesc: 'Generate visual content',
+    interactiveDialogue: 'Interactive Dialogue',
+    interactiveDialogueDesc: 'Create conversational AI',
+    customerSupportChatbot: 'Customer Support Chatbot',
+    codeGeneration: 'Code Generation',
+    codeGenerationDesc: 'Generate programming code',
+    reactComponentGenerator: 'React Component Generator',
+    dataAnalysis: 'Data Analysis',
+    dataAnalysisDesc: 'Analyze and interpret data',
+    creativeWriting: 'Creative Writing',
+    creativeWritingDesc: 'Creative content creation',
+    blue: 'Blue',
+    green: 'Green',
+    purple: 'Purple',
+    orange: 'Orange',
+    red: 'Red',
+    indigo: 'Indigo',
+    validationError: 'Validation Error',
+    nameDescriptionRequired: 'Name and description are required',
+    categoryCreated: 'Category Created',
+    categoryUpdated: 'Category Updated',
+    categoryDeleted: 'Category Deleted',
+    editCategory: 'Edit Category',
+    createNewCategory: 'Create New Category',
+    categoryName: 'Category Name',
+    colorTheme: 'Color Theme',
+    categoryDescription: 'Category Description',
+    exampleUseCases: 'Example Use Cases',
+    update: 'Update',
+    create: 'Create',
+    cancel: 'Cancel',
+    addCategory: 'Add Category',
+    stepObjectiveTitle: 'Step 1: Objective',
+    stepObjectiveDesc: 'Define the main goal',
+    stepContextTitle: 'Step 2: Context',
+    stepContextDesc: 'Provide background information',
+    stepConstraintsTitle: 'Step 3: Constraints',
+    stepConstraintsDesc: 'Set limitations and rules',
+    stepOutputFormatTitle: 'Step 4: Output Format',
+    stepOutputFormatDesc: 'Define the expected output',
+    stepReviewTitle: 'Step 5: Review',
+    stepReviewDesc: 'Review and generate',
+    advancedPromptGenerated: 'Advanced Prompt Generated',
+    advancedPromptGeneratedDesc: 'Your multi-step prompt is ready',
+    tryAgainLater: 'Please try again later',
+    multiStepBuilder: 'Multi-Step Builder',
+    multiStepBuilderDesc: 'Create complex prompts step by step',
+    progress: 'Progress'
   },
   fr: {
     title: 'Laboratoire de Génération de Prompts',
@@ -145,7 +255,62 @@ const translations: Record<string, Record<TranslationKey, string>> = {
     improvementSuccessDesc: 'Votre prompt a été optimisé',
     enterOriginalPrompt: 'Veuillez entrer le prompt original',
     required: '(obligatoire)',
-    optional: '(optionnel)'
+    optional: '(optionnel)',
+    french: 'Français',
+    english: 'English',
+    arabic: 'العربية',
+    textGeneration: 'Génération de Texte',
+    textGenerationDesc: 'Créer du contenu écrit',
+    blogPostGenerator: 'Générateur d\'Articles',
+    imageCreation: 'Création d\'Images',
+    imageCreationDesc: 'Générer du contenu visuel',
+    interactiveDialogue: 'Dialogue Interactif',
+    interactiveDialogueDesc: 'Créer une IA conversationnelle',
+    customerSupportChatbot: 'Chatbot Support Client',
+    codeGeneration: 'Génération de Code',
+    codeGenerationDesc: 'Générer du code de programmation',
+    reactComponentGenerator: 'Générateur de Composants React',
+    dataAnalysis: 'Analyse de Données',
+    dataAnalysisDesc: 'Analyser et interpréter les données',
+    creativeWriting: 'Écriture Créative',
+    creativeWritingDesc: 'Création de contenu créatif',
+    blue: 'Bleu',
+    green: 'Vert',
+    purple: 'Violet',
+    orange: 'Orange',
+    red: 'Rouge',
+    indigo: 'Indigo',
+    validationError: 'Erreur de Validation',
+    nameDescriptionRequired: 'Le nom et la description sont requis',
+    categoryCreated: 'Catégorie Créée',
+    categoryUpdated: 'Catégorie Mise à Jour',
+    categoryDeleted: 'Catégorie Supprimée',
+    editCategory: 'Modifier la Catégorie',
+    createNewCategory: 'Créer une Nouvelle Catégorie',
+    categoryName: 'Nom de la Catégorie',
+    colorTheme: 'Thème Couleur',
+    categoryDescription: 'Description de la Catégorie',
+    exampleUseCases: 'Exemples d\'Utilisation',
+    update: 'Mettre à jour',
+    create: 'Créer',
+    cancel: 'Annuler',
+    addCategory: 'Ajouter une Catégorie',
+    stepObjectiveTitle: 'Étape 1 : Objectif',
+    stepObjectiveDesc: 'Définir l\'objectif principal',
+    stepContextTitle: 'Étape 2 : Contexte',
+    stepContextDesc: 'Fournir des informations de contexte',
+    stepConstraintsTitle: 'Étape 3 : Contraintes',
+    stepConstraintsDesc: 'Définir les limitations et règles',
+    stepOutputFormatTitle: 'Étape 4 : Format de Sortie',
+    stepOutputFormatDesc: 'Définir le format de sortie attendu',
+    stepReviewTitle: 'Étape 5 : Révision',
+    stepReviewDesc: 'Réviser et générer',
+    advancedPromptGenerated: 'Prompt Avancé Généré',
+    advancedPromptGeneratedDesc: 'Votre prompt multi-étapes est prêt',
+    tryAgainLater: 'Veuillez réessayer plus tard',
+    multiStepBuilder: 'Constructeur Multi-Étapes',
+    multiStepBuilderDesc: 'Créer des prompts complexes étape par étape',
+    progress: 'Progression'
   }
 };
 

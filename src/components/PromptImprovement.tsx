@@ -9,11 +9,11 @@ import { toast } from "@/hooks/use-toast";
 import { RefreshCw, Copy, Sparkles, TrendingUp, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Configuration API
+// Configuration API avec le modèle correct
 const API_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
   key: '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',
-  model: 'claude-opus-4-20250514'
+  model: 'anthropic/claude-3.5-sonnet' // Modèle corrigé
 };
 
 const PromptImprovement = () => {
@@ -85,13 +85,14 @@ Réponds au format suivant:
             }
           ],
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 800,
           top_p: 0.9
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
+        console.error('Erreur API:', response.status, errorData);
         
         if (response.status === 402) {
           throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte OpenRouter ou utiliser une autre clé API.');
@@ -134,9 +135,11 @@ Réponds au format suivant:
     } catch (error) {
       console.error('Erreur lors de l\'amélioration du prompt:', error);
       
-      let errorMessage = "Impossible d'améliorer le prompt.";
+      let errorMessage = "Impossible d'améliorer le prompt. Vérifiez votre connexion.";
       if (error.message.includes('crédits')) {
         errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte OpenRouter.";
+      } else if (error.message.includes('model')) {
+        errorMessage = "Modèle AI non disponible. Réessayez plus tard.";
       }
       
       toast({
