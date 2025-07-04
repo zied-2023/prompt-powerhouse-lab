@@ -1,8 +1,4 @@
 
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,27 +43,6 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
-    /* Échelle typographique responsive optimisée pour l'arabe */
-    --text-xs: 0.75rem;     /* 12px */
-    --text-sm: 0.875rem;    /* 14px */
-    --text-base: 1rem;      /* 16px */
-    --text-lg: 1.125rem;    /* 18px */
-    --text-xl: 1.25rem;     /* 20px */
-    --text-2xl: 1.5rem;     /* 24px */
-    --text-3xl: 1.875rem;   /* 30px */
-    --text-4xl: 2.25rem;    /* 36px */
-    --text-5xl: 3rem;       /* 48px */
-    
-    /* Hauteurs de ligne optimisées pour l'arabe */
-    --leading-tight: 1.25;
-    --leading-normal: 1.5;
-    --leading-relaxed: 1.75;
-    
-    /* Espacement des lettres pour l'arabe */
-    --tracking-tight: -0.025em;
-    --tracking-normal: 0em;
-    --tracking-wide: 0.025em;
   }
 
   .dark {
@@ -115,99 +90,21 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings: "cv03", "cv04", "cv11";
-    
-    /* Police par défaut avec fallbacks optimisés */
-    font-family: 'Inter', 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', 'Tahoma', system-ui, sans-serif;
-    
-    /* Taille de base responsive */
-    font-size: clamp(var(--text-sm), 2.5vw, var(--text-base));
-    line-height: var(--leading-normal);
-    
-    /* Optimisation du rendu des polices */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
 
-  /* Optimisation spécifique pour l'arabe */
+  /* Support RTL */
   [dir="rtl"] {
     direction: rtl;
-    font-family: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Amiri', 'Traditional Arabic', 'Segoe UI', system-ui, sans-serif;
-    
-    /* Espacement optimisé pour l'arabe */
-    letter-spacing: var(--tracking-normal);
-    word-spacing: 0.1em;
-    
-    /* Hauteur de ligne plus généreuse pour les caractères arabes */
-    line-height: var(--leading-relaxed);
   }
 
-  /* Hiérarchie typographique responsive */
-  h1, .text-4xl, .text-5xl {
-    font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
-    line-height: var(--leading-tight);
-    font-weight: 700;
-  }
-  
-  h2, .text-3xl {
-    font-size: clamp(var(--text-xl), 3.5vw, var(--text-3xl));
-    line-height: var(--leading-tight);
-    font-weight: 600;
-  }
-  
-  h3, .text-2xl {
-    font-size: clamp(var(--text-lg), 3vw, var(--text-2xl));
-    line-height: var(--leading-normal);
-    font-weight: 600;
-  }
-  
-  h4, .text-xl {
-    font-size: clamp(var(--text-base), 2.5vw, var(--text-xl));
-    line-height: var(--leading-normal);
-    font-weight: 500;
-  }
-  
-  /* Optimisation pour les titres arabes */
-  [dir="rtl"] h1,
-  [dir="rtl"] h2,
-  [dir="rtl"] h3,
-  [dir="rtl"] h4 {
-    font-family: 'IBM Plex Sans Arabic', 'Amiri', 'Traditional Arabic', serif;
-    letter-spacing: var(--tracking-wide);
-  }
-
-  /* Tailles minimales garanties pour la lisibilité */
-  .text-xs { 
-    font-size: max(var(--text-xs), 12px); 
-    line-height: var(--leading-normal);
-  }
-  .text-sm { 
-    font-size: max(var(--text-sm), 14px); 
-    line-height: var(--leading-normal);
-  }
-  .text-base { 
-    font-size: max(var(--text-base), 16px); 
-    line-height: var(--leading-normal);
-  }
-
-  /* Support RTL amélioré */
   [dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
     --tw-space-x-reverse: 1;
   }
 
   [dir="rtl"] .flex-row-reverse {
     flex-direction: row-reverse;
-  }
-  
-  /* Alignement du texte pour RTL */
-  [dir="rtl"] .text-left {
-    text-align: right;
-  }
-  
-  [dir="rtl"] .text-right {
-    text-align: left;
   }
 }
 
@@ -259,33 +156,6 @@
     animation: gradient-shift 3s ease infinite;
     background-size: 300% 300%;
   }
-  
-  /* Classes de polices spécialisées */
-  .font-arabic-body {
-    font-family: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', 'Segoe UI', system-ui, sans-serif;
-    font-weight: 400;
-  }
-  
-  .font-arabic-heading {
-    font-family: 'IBM Plex Sans Arabic', 'Amiri', 'Traditional Arabic', serif;
-    font-weight: 600;
-  }
-  
-  .font-arabic-elegant {
-    font-family: 'Amiri', 'Traditional Arabic', 'Times New Roman', serif;
-    font-weight: 400;
-  }
-  
-  /* Optimisation du contraste et de la lisibilité */
-  .text-high-contrast {
-    color: hsl(var(--foreground));
-    text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dark .text-high-contrast {
-    color: hsl(var(--foreground));
-    text-shadow: 0 0 1px rgba(255, 255, 255, 0.1);
-  }
 }
 
 @layer utilities {
@@ -304,86 +174,4 @@
   .hover-lift:hover {
     transform: translateY(-2px);
   }
-  
-  /* Utilitaires pour la typographie responsive */
-  .text-fluid-xs {
-    font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-  }
-  
-  .text-fluid-sm {
-    font-size: clamp(0.875rem, 2vw, 1rem);
-  }
-  
-  .text-fluid-base {
-    font-size: clamp(1rem, 2.5vw, 1.125rem);
-  }
-  
-  .text-fluid-lg {
-    font-size: clamp(1.125rem, 3vw, 1.25rem);
-  }
-  
-  .text-fluid-xl {
-    font-size: clamp(1.25rem, 3.5vw, 1.5rem);
-  }
-  
-  /* Optimisation pour les écrans haute résolution */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .text-crisp {
-      -webkit-font-smoothing: subpixel-antialiased;
-      -moz-osx-font-smoothing: auto;
-    }
-  }
-}
-
-/* Breakpoints responsive pour la typographie */
-@media (max-width: 640px) {
-  :root {
-    --text-xs: 0.7rem;
-    --text-sm: 0.8rem;
-    --text-base: 0.9rem;
-    --text-lg: 1rem;
-    --text-xl: 1.1rem;
-    --text-2xl: 1.3rem;
-    --text-3xl: 1.6rem;
-    --text-4xl: 2rem;
-  }
-  
-  /* Espacement réduit sur mobile pour l'arabe */
-  [dir="rtl"] {
-    word-spacing: 0.05em;
-    line-height: 1.6;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  :root {
-    --text-base: 1.05rem;
-    --text-lg: 1.2rem;
-    --text-xl: 1.35rem;
-    --text-2xl: 1.6rem;
-    --text-3xl: 2rem;
-    --text-4xl: 2.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  :root {
-    --text-base: 1.1rem;
-    --text-lg: 1.3rem;
-    --text-xl: 1.5rem;
-    --text-2xl: 1.8rem;
-    --text-3xl: 2.2rem;
-    --text-4xl: 2.8rem;
-  }
-  
-  /* Espacement optimal sur desktop pour l'arabe */
-  [dir="rtl"] {
-    word-spacing: 0.15em;
-    line-height: 1.8;
-  }
-}
-
-/* Animation pour les transitions de langue */
-.lang-transition {
-  transition: font-family 0.3s ease, direction 0.3s ease, text-align 0.3s ease;
 }
