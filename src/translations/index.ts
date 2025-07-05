@@ -181,7 +181,6 @@ export type TranslationKey =
   | 'next'
   | 'previous'
   | 'background'
-  | 'description'
   | 'theme'
   | 'createNewCategory'
   | 'colorTheme'
@@ -307,7 +306,30 @@ export type TranslationKey =
   | 'manufacturing'
   | 'consulting'
   | 'media'
-  | 'other';
+  | 'other'
+  | 'industry'
+  | 'productImagePrompt'
+  | 'dataInsightsGenerator'
+  | 'storyConceptGenerator'
+  | 'allCategories'
+  | 'copied'
+  | 'promptCopied'
+  | 'promptTemplateLibrary'
+  | 'browsePromptTemplates'
+  | 'searchPrompts'
+  | 'preview'
+  | 'close'
+  | 'copyTemplate'
+  | 'noPromptsFound'
+  | 'darkMode'
+  | 'lightMode'
+  | 'subtitle'
+  | 'advancedAI'
+  | 'noCode'
+  | 'generator'
+  | 'improvement'
+  | 'library'
+  | 'integration';
 
 // Translation content
 export const translations = {
@@ -493,7 +515,6 @@ export const translations = {
     next: 'Next',
     previous: 'Previous',
     background: 'Background',
-    description: 'Description',
     theme: 'Theme',
     createNewCategory: 'Create New Category',
     colorTheme: 'Color Theme',
@@ -619,7 +640,30 @@ export const translations = {
     manufacturing: 'Manufacturing',
     consulting: 'Consulting',
     media: 'Media',
-    other: 'Other'
+    other: 'Other',
+    industry: 'Industry',
+    productImagePrompt: 'Product Image Prompt',
+    dataInsightsGenerator: 'Data Insights Generator',
+    storyConceptGenerator: 'Story Concept Generator',
+    allCategories: 'All Categories',
+    copied: 'Copied',
+    promptCopied: 'Prompt Copied',
+    promptTemplateLibrary: 'Prompt Template Library',
+    browsePromptTemplates: 'Browse Prompt Templates',
+    searchPrompts: 'Search Prompts',
+    preview: 'Preview',
+    close: 'Close',
+    copyTemplate: 'Copy Template',
+    noPromptsFound: 'No Prompts Found',
+    darkMode: 'Dark Mode',
+    lightMode: 'Light Mode',
+    subtitle: 'Create, improve, and optimize AI prompts with our advanced toolkit',
+    advancedAI: 'Advanced AI',
+    noCode: 'No Code',
+    generator: 'Generator',
+    improvement: 'Improvement',
+    library: 'Library',
+    integration: 'Integration'
   },
   fr: {
     welcome: 'Bienvenue dans Prompt Generator Lab',
@@ -803,7 +847,6 @@ export const translations = {
     next: 'Suivant',
     previous: 'Précédent',
     background: 'Arrière-plan',
-    description: 'Description',
     theme: 'Thème',
     createNewCategory: 'Créer nouvelle catégorie',
     colorTheme: 'Thème de couleur',
@@ -929,7 +972,30 @@ export const translations = {
     manufacturing: 'Fabrication',
     consulting: 'Conseil',
     media: 'Médias',
-    other: 'Autre'
+    other: 'Autre',
+    industry: 'Industrie',
+    productImagePrompt: 'Prompt Image Produit',
+    dataInsightsGenerator: 'Générateur d\'Insights Données',
+    storyConceptGenerator: 'Générateur de Concept d\'Histoire',
+    allCategories: 'Toutes Catégories',
+    copied: 'Copié',
+    promptCopied: 'Prompt Copié',
+    promptTemplateLibrary: 'Bibliothèque de Modèles de Prompts',
+    browsePromptTemplates: 'Parcourir les Modèles de Prompts',
+    searchPrompts: 'Rechercher Prompts',
+    preview: 'Aperçu',
+    close: 'Fermer',
+    copyTemplate: 'Copier Modèle',
+    noPromptsFound: 'Aucun Prompt Trouvé',
+    darkMode: 'Mode Sombre',
+    lightMode: 'Mode Clair',
+    subtitle: 'Créez, améliorez et optimisez des prompts IA avec notre boîte à outils avancée',
+    advancedAI: 'IA Avancée',
+    noCode: 'Sans Code',
+    generator: 'Générateur',
+    improvement: 'Amélioration',
+    library: 'Bibliothèque',
+    integration: 'Intégration'
   },
   ar: {
     welcome: 'مرحباً بك في مختبر مولد الـ Prompts',
@@ -1113,7 +1179,6 @@ export const translations = {
     next: 'التالي',
     previous: 'السابق',
     background: 'الخلفية',
-    description: 'الوصف',
     theme: 'المظهر',
     createNewCategory: 'إنشاء فئة جديدة',
     colorTheme: 'موضوع اللون',
@@ -1150,7 +1215,7 @@ export const translations = {
     comprehensive: 'شامل',
     extensive: 'واسع النطاق',
     structuredReport: 'تقرير منظم',
-    bulletPoints: 'نقاط',
+    bulletList: 'نقاط',
     narrative: 'سردي',
     stepByStep: 'خطوة بخطوة',
     qaFormat: 'تنسيق سؤال وجواب',
@@ -1239,7 +1304,30 @@ export const translations = {
     manufacturing: 'التصنيع',
     consulting: 'الاستشارات',
     media: 'الإعلام',
-    other: 'أخرى'
+    other: 'أخرى',
+    industry: 'الصناعة',
+    productImagePrompt: 'موجه صورة المنتج',
+    dataInsightsGenerator: 'مولد رؤى البيانات',
+    storyConceptGenerator: 'مولد مفهوم القصة',
+    allCategories: 'جميع الفئات',
+    copied: 'تم النسخ',
+    promptCopied: 'تم نسخ الموجه',
+    promptTemplateLibrary: 'مكتبة قوالب الموجهات',
+    browsePromptTemplates: 'تصفح قوالب الموجهات',
+    searchPrompts: 'البحث في الموجهات',
+    preview: 'معاينة',
+    close: 'إغلاق',
+    copyTemplate: 'نسخ القالب',
+    noPromptsFound: 'لم يتم العثور على موجهات',
+    darkMode: 'الوضع المظلم',
+    lightMode: 'الوضع المضيء',
+    subtitle: 'أنشئ وحسّن وطوّر موجهات الذكاء الاصطناعي باستخدام مجموعة أدواتنا المتقدمة',
+    advancedAI: 'ذكاء اصطناعي متقدم',
+    noCode: 'بدون كود',
+    generator: 'مولد',
+    improvement: 'تحسين',
+    library: 'مكتبة',
+    integration: 'تكامل'
   }
 } as const;
 
