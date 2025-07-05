@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,10 +10,10 @@ import { Zap, Copy, Sparkles, Wand2, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Configuration API sécurisée (masquage partiel)
+// Configuration API
 const API_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: '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',
+  key: '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',
   model: 'anthropic/claude-3.5-sonnet'
 };
 
