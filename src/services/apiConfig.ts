@@ -9,7 +9,7 @@ export interface ApiConfig {
 // Configuration pour OpenRouter API
 const OPENROUTER_CONFIG: ApiConfig = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: null, // Sera définie via les secrets Supabase ou input utilisateur
+  key: null, // Aucune clé par défaut - doit être configurée par l'utilisateur
   model: 'anthropic/claude-3.5-sonnet'
 };
 
@@ -38,10 +38,8 @@ export class ApiConfigManager {
     const localApiKey = localStorage.getItem('openrouter_api_key');
     if (localApiKey) {
       this.config.key = localApiKey;
-    } else {
-      // Clé par défaut (à remplacer par les secrets Supabase)
-      this.config.key = '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';
     }
+    // Suppression de la clé par défaut - l'utilisateur doit configurer sa propre clé
   }
 
   public getConfig(): ApiConfig {
