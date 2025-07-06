@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 // Configuration API sécurisée (masquage partiel)
 const API_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: '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',
+  key: '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',
   model: 'anthropic/claude-3.5-sonnet'
 };
 
