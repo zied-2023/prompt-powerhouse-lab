@@ -6,15 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, Copy, Sparkles, TrendingUp, CheckCircle } from "lucide-react";
+import { RefreshCw, Copy, TrendingUp, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-
-// Configuration API
-const API_CONFIG = {
-  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: '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',
-  model: 'anthropic/claude-3.5-sonnet'
-};
+import { apiConfigManager } from "../services/apiConfig";
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
@@ -34,9 +28,20 @@ const PromptImprovement = () => {
       return;
     }
 
+    if (!apiConfigManager.hasValidKey()) {
+      toast({
+        title: t('generationError'),
+        description: "Clé API manquante. Veuillez configurer votre clé API OpenRouter.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsImproving(true);
     
     try {
+      const config = apiConfigManager.getConfig();
+      
       const systemPrompt = `Tu es un expert en optimisation de prompts pour l'intelligence artificielle. Ta mission est d'améliorer les prompts existants en les rendant plus efficaces, clairs et structurés.
 
 Analyse le prompt fourni et améliore-le en suivant ces principes:
@@ -62,16 +67,16 @@ Réponds au format suivant:
         userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
       }
 
-      const response = await fetch(API_CONFIG.endpoint, {
+      const response = await fetch(config.endpoint, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${API_CONFIG.key}`,
+          'Authorization': `Bearer ${config.key}`,
           'Content-Type': 'application/json',
           'HTTP-Referer': window.location.origin,
           'X-Title': 'Prompt Generator Lab'
         },
         body: JSON.stringify({
-          model: API_CONFIG.model,
+          model: config.model,
           messages: [
             {
               role: 'system',

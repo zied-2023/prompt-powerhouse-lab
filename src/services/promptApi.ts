@@ -1,14 +1,15 @@
 
-// Configuration API
-const API_CONFIG = {
-  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: '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',
-  model: 'anthropic/claude-3.5-sonnet'
-};
+import { apiConfigManager } from './apiConfig';
 
 export const generatePromptWithAI = async (formData: any, categories: any[], outputFormats: any[], toneOptions: any[], lengthOptions: any[]) => {
   try {
     console.log('Génération de prompt via API...');
+    
+    const config = apiConfigManager.getConfig();
+    
+    if (!apiConfigManager.hasValidKey()) {
+      throw new Error('Clé API manquante. Veuillez configurer votre clé API OpenRouter.');
+    }
     
     const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
     const subcategoryLabel = formData.subcategory ? 
@@ -36,16 +37,16 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
     if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
     if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
 
-    const response = await fetch(API_CONFIG.endpoint, {
+    const response = await fetch(config.endpoint, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${API_CONFIG.key}`,
+        'Authorization': `Bearer ${config.key}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': window.location.origin,
         'X-Title': 'Prompt Generator Lab'
       },
       body: JSON.stringify({
-        model: API_CONFIG.model,
+        model: config.model,
         messages: [
           {
             role: 'system',

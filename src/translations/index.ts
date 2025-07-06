@@ -1,1334 +1,621 @@
-// Translation types
 export type TranslationKey = 
-  | 'welcome'
-  | 'description'
-  | 'getStarted'
-  | 'features'
-  | 'feature1'
-  | 'feature2'
-  | 'feature3'
-  | 'about'
-  | 'contact'
-  | 'home'
-  | 'promptGeneratorTitle'
-  | 'promptGeneratorDesc'
-  | 'improvementTitle'
-  | 'improvementDesc'
-  | 'mainCategory'
-  | 'required'
-  | 'selectDomain'
-  | 'subcategory'
-  | 'optional'
-  | 'chooseSpecialization'
-  | 'taskDescription'
-  | 'taskDescriptionPlaceholder'
-  | 'mainObjective'
-  | 'mainObjectivePlaceholder'
-  | 'targetAudience'
-  | 'targetAudiencePlaceholder'
-  | 'outputFormat'
-  | 'chooseFormat'
-  | 'toneStyle'
-  | 'chooseTone'
-  | 'approximateLength'
-  | 'chooseLength'
-  | 'generateWithAI'
-  | 'generatingWithAI'
-  | 'aiGeneratedPrompt'
-  | 'aiGeneratedPromptDesc'
-  | 'copy'
-  | 'readyForGeneration'
-  | 'aiWillCreate'
-  | 'missingInfo'
-  | 'chooseCategoryDesc'
-  | 'promptCreatedSuccess'
-  | 'promptCreatedDesc'
-  | 'generationError'
-  | 'copiedSuccess'
-  | 'promptCopiedClipboard'
-  | 'generatedByAI'
-  | 'aiGeneratedDesc'
-  | 'contentCreation'
-  | 'contentCreationDesc'
-  | 'businessProfessional'
-  | 'businessProfessionalDesc'
-  | 'educationTraining'
-  | 'educationTrainingDesc'
-  | 'technologyDevelopment'
-  | 'technologyDevelopmentDesc'
-  | 'analysisResearch'
-  | 'analysisResearchDesc'
-  | 'problemSolving'
-  | 'problemSolvingDesc'
-  | 'communicationRelations'
-  | 'communicationRelationsDesc'
-  | 'writing'
-  | 'artisticCreation'
-  | 'videoAudio'
-  | 'marketing'
-  | 'literature'
-  | 'strategy'
-  | 'communication'
-  | 'hr'
-  | 'sales'
-  | 'management'
-  | 'courses'
-  | 'evaluation'
-  | 'research'
-  | 'pedagogy'
-  | 'professionalTraining'
-  | 'programming'
-  | 'dataScience'
-  | 'cybersecurity'
-  | 'architecture'
-  | 'devops'
-  | 'dataAnalysisSubcat'
-  | 'academicResearch'
-  | 'competitiveIntelligence'
-  | 'auditEvaluation'
-  | 'forecasting'
-  | 'diagnosis'
-  | 'brainstorming'
-  | 'decisionMaking'
-  | 'optimization'
-  | 'innovation'
-  | 'customerRelations'
-  | 'internalCommunication'
-  | 'negotiation'
-  | 'presentation'
-  | 'publicRelations'
-  | 'bulletList'
-  | 'structuredParagraph'
-  | 'table'
-  | 'numberedSteps'
-  | 'dialogue'
-  | 'codeScript'
-  | 'professional'
-  | 'casual'
-  | 'technical'
-  | 'creative'
-  | 'persuasive'
-  | 'educational'
-  | 'short'
-  | 'medium'
-  | 'long'
-  | 'veryDetailed'
-  | 'originalPrompt'
-  | 'originalPromptPlaceholder'
-  | 'improvementObjective'
-  | 'improvementObjectivePlaceholder'
-  | 'improvePrompt'
-  | 'improvingPrompt'
-  | 'improvedPrompt'
-  | 'improvedPromptDesc'
-  | 'improvements'
-  | 'improvementSuccess'
-  | 'improvementSuccessDesc'
-  | 'enterOriginalPrompt'
-  | 'textGeneration'
-  | 'textGenerationDesc'
-  | 'blogPostGenerator'
-  | 'imageCreation'
-  | 'imageCreationDesc'
-  | 'interactiveDialogue'
-  | 'interactiveDialogueDesc'
-  | 'customerSupportChatbot'
-  | 'codeGeneration'
-  | 'codeGenerationDesc'
-  | 'reactComponentGenerator'
-  | 'dataAnalysis'
-  | 'dataAnalysisDesc'
-  | 'creativeWriting'
-  | 'creativeWritingDesc'
-  | 'blue'
-  | 'green'
-  | 'purple'
-  | 'orange'
-  | 'red'
-  | 'indigo'
-  | 'validationError'
-  | 'nameDescriptionRequired'
-  | 'categoryCreated'
-  | 'categoryUpdated'
-  | 'categoryDeleted'
-  | 'deleteConfirmation'
-  | 'confirmDelete'
-  | 'cancel'
-  | 'edit'
-  | 'delete'
-  | 'save'
-  | 'addCategory'
-  | 'editCategory'
-  | 'categoryName'
-  | 'categoryDescription'
-  | 'categoryColor'
-  | 'categoryNamePlaceholder'
-  | 'categoryDescriptionPlaceholder'
-  | 'createCategory'
-  | 'updateCategory'
-  | 'categoryManagement'
-  | 'categoryManagementDesc'
-  | 'manageCategories'
-  | 'customCategories'
-  | 'noCustomCategories'
-  | 'createFirstCategory'
-  | 'progress'
-  | 'style'
-  | 'title'
-  | 'format'
-  | 'step'
-  | 'length'
-  | 'next'
-  | 'previous'
-  | 'background'
-  | 'theme'
-  | 'createNewCategory'
-  | 'colorTheme'
-  | 'exampleUseCases'
-  | 'update'
-  | 'create'
-  | 'categories'
-  | 'french'
-  | 'arabic'
-  | 'english'
-  | 'stepObjectiveTitle'
-  | 'stepObjectiveDesc'
-  | 'stepContextTitle'
-  | 'stepContextDesc'
-  | 'stepConstraintsTitle'
-  | 'stepConstraintsDesc'
-  | 'stepOutputFormatTitle'
-  | 'stepOutputFormatDesc'
-  | 'stepReviewTitle'
-  | 'stepReviewDesc'
-  | 'advancedPromptGenerated'
-  | 'advancedPromptGeneratedDesc'
-  | 'tryAgainLater'
-  | 'multiStepBuilder'
-  | 'multiStepBuilderDesc'
-  | 'generating'
-  | 'generateAdvancedPrompt'
-  | 'advancedPromptResult'
-  | 'authoritative'
-  | 'friendly'
-  | 'brief'
-  | 'concise'
-  | 'detailed'
-  | 'comprehensive'
-  | 'extensive'
-  | 'structuredReport'
-  | 'bulletPoints'
-  | 'narrative'
-  | 'stepByStep'
-  | 'qaFormat'
-  | 'analytical'
-  | 'descriptive'
-  | 'comparative'
-  | 'argumentative'
-  | 'instructional'
-  | 'consultative'
-  | 'beginner'
-  | 'intermediate'
-  | 'advanced'
-  | 'expert'
-  | 'selectTone'
-  | 'selectLength'
-  | 'technicalLevel'
-  | 'selectTechnicalLevel'
-  | 'responseFormat'
-  | 'selectFormat'
-  | 'writingStyle'
-  | 'selectStyle'
-  | 'stepConstraintsTips'
-  | 'tipConstraints1'
-  | 'tipConstraints2'
-  | 'tipConstraints3'
-  | 'contextBackground'
-  | 'contextBackgroundPlaceholder'
-  | 'selectIndustry'
-  | 'contextConstraints'
-  | 'addConstraint'
-  | 'constraintPlaceholder'
-  | 'noConstraintsYet'
-  | 'stepContextTips'
-  | 'tipContext1'
-  | 'tipContext2'
-  | 'tipContext3'
-  | 'specificTargets'
-  | 'addTarget'
-  | 'targetPlaceholder'
-  | 'noTargetsYet'
-  | 'successCriteria'
-  | 'successCriteriaPlaceholder'
-  | 'stepObjectiveTips'
-  | 'tipObjective1'
-  | 'tipObjective2'
-  | 'tipObjective3'
-  | 'outputStructure'
-  | 'selectStructure'
-  | 'requiredSections'
-  | 'addSection'
-  | 'sectionPlaceholder'
-  | 'noSectionsYet'
-  | 'expectedDeliverables'
-  | 'addDeliverable'
-  | 'deliverablePlaceholder'
-  | 'noDeliverablesYet'
-  | 'stepOutputFormatTips'
-  | 'tipOutputFormat1'
-  | 'tipOutputFormat2'
-  | 'tipOutputFormat3'
-  | 'hierarchical'
-  | 'sequential'
-  | 'modular'
-  | 'matrix'
-  | 'flowchart'
-  | 'objectiveReview'
-  | 'contextReview'
-  | 'requirementsReview'
-  | 'outputFormatReview'
-  | 'notSpecified'
-  | 'readyToGenerate'
-  | 'allRequiredFieldsCompleted'
-  | 'almostReady'
-  | 'someFieldsMissing'
-  | 'completed'
-  | 'finalTips'
-  | 'finalTip1'
-  | 'finalTip2'
-  | 'finalTip3'
-  | 'finalTip4'
-  | 'technology'
-  | 'healthcare'
-  | 'finance'
-  | 'education'
-  | 'retail'
-  | 'manufacturing'
-  | 'consulting'
-  | 'media'
-  | 'other'
-  | 'industry'
-  | 'productImagePrompt'
-  | 'dataInsightsGenerator'
-  | 'storyConceptGenerator'
-  | 'allCategories'
-  | 'copied'
-  | 'promptCopied'
-  | 'promptTemplateLibrary'
-  | 'browsePromptTemplates'
-  | 'searchPrompts'
-  | 'preview'
-  | 'close'
-  | 'copyTemplate'
-  | 'noPromptsFound'
-  | 'darkMode'
-  | 'lightMode'
-  | 'subtitle'
-  | 'advancedAI'
-  | 'noCode'
-  | 'generator'
-  | 'improvement'
-  | 'library'
-  | 'integration';
+  // Existing keys
+  'promptGeneratorTitle' | 'promptGeneratorDesc' | 'category' | 'required' | 'chooseCategoryPlaceholder' |
+  'subcategory' | 'optional' | 'chooseSubcategoryPlaceholder' | 'description' | 'descriptionPlaceholder' |
+  'objective' | 'objectivePlaceholder' | 'targetAudience' | 'targetAudiencePlaceholder' | 'outputFormat' |
+  'chooseFormatPlaceholder' | 'tone' | 'chooseTonePlaceholder' | 'length' | 'chooseLengthPlaceholder' |
+  'generateWithAI' | 'generatingWithAI' | 'aiGeneratedPrompt' | 'aiGeneratedPromptDesc' | 'copy' |
+  'generatedByAI' | 'aiGeneratedDesc' | 'readyForGeneration' | 'aiWillCreate' | 'missingInfo' |
+  'chooseCategoryDesc' | 'promptCreatedSuccess' | 'promptCreatedDesc' | 'generationError' | 'copiedSuccess' |
+  'promptCopiedClipboard' | 'improvementTitle' | 'improvementDesc' | 'originalPrompt' | 'originalPromptPlaceholder' |
+  'improvementObjective' | 'improvementObjectivePlaceholder' | 'improvePrompt' | 'improvingPrompt' |
+  'improvedPrompt' | 'improvedPromptDesc' | 'improvements' | 'improvementSuccess' | 'improvementSuccessDesc' |
+  'enterOriginalPrompt' |
+  // New keys for missing translations
+  'createNewCategory' | 'colorTheme' | 'exampleUseCases' | 'update' | 'create' | 'categories' |
+  'french' | 'arabic' | 'english' | 'stepObjectiveTitle' | 'stepObjectiveDesc' | 'stepContextTitle' |
+  'stepContextDesc' | 'stepConstraintsTitle' | 'stepConstraintsDesc' | 'stepOutputFormatTitle' |
+  'stepOutputFormatDesc' | 'stepReviewTitle' | 'stepReviewDesc' | 'advancedPromptGenerated' |
+  'advancedPromptGeneratedDesc' | 'tryAgainLater' | 'multiStepBuilder' | 'multiStepBuilderDesc' |
+  'generating' | 'generateAdvancedPrompt' | 'advancedPromptResult' | 'authoritative' | 'friendly' |
+  'brief' | 'concise' | 'detailed' | 'comprehensive' | 'extensive' | 'structuredReport' |
+  'bulletPoints' | 'narrative' | 'stepByStep' | 'qaFormat' | 'analytical' | 'descriptive' |
+  'comparative' | 'argumentative' | 'instructional' | 'consultative' | 'beginner' | 'intermediate' |
+  'advanced' | 'expert' | 'selectTone' | 'selectLength' | 'technicalLevel' | 'selectTechnicalLevel' |
+  'responseFormat' | 'selectFormat' | 'writingStyle' | 'selectStyle' | 'stepConstraintsTips' |
+  'tipConstraints1' | 'tipConstraints2' | 'tipConstraints3' | 'stepContextTips' | 'tipContext1' |
+  'tipContext2' | 'tipContext3' | 'stepObjectiveTips' | 'tipObjective1' | 'tipObjective2' |
+  'tipObjective3' | 'stepOutputTips' | 'tipOutput1' | 'tipOutput2' | 'tipOutput3' |
+  'stepReviewTips' | 'tipReview1' | 'tipReview2' | 'tipReview3' | 'examples' | 'example1' |
+  'example2' | 'example3' | 'contextInformation' | 'contextPlaceholder' | 'specificObjective' |
+  'objectiveMultiStepPlaceholder' | 'previousSteps' | 'nextStep' | 'generateFinalPrompt' |
+  'finalPromptGenerated' | 'multiStepPromptResult' | 'templateCustomization' | 'customizeTemplate' |
+  'templateCustomizationDesc' | 'template' | 'templatePlaceholder' | 'variables' | 'variablesPlaceholder' |
+  'customizationTips' | 'tipCustomization1' | 'tipCustomization2' | 'tipCustomization3' |
+  'customTemplate' | 'promptTemplateLibrary' | 'promptTemplateLibraryDesc' | 'searchTemplates' |
+  'filterByCategory' | 'allCategories' | 'useTemplate' | 'customize' | 'templateUsed' |
+  'templateUsedDesc' | 'templateCustomized' | 'templateCustomizedDesc' | 'noTemplatesFound' |
+  'tryDifferentSearch' | 'newTemplate' | 'editTemplate' | 'deleteTemplate' | 'confirmDelete' |
+  'confirmDeleteDesc' | 'cancel' | 'delete' | 'templateDeleted' | 'templateDeletedDesc' |
+  'templateSaved' | 'templateSavedDesc' | 'templateUpdated' | 'templateUpdatedDesc' |
+  'enterTemplateName' | 'templateName' | 'templateNamePlaceholder' | 'templateContent' |
+  'templateContentPlaceholder' | 'saveTemplate' | 'savingTemplate' | 'templateExists' |
+  'templateExistsDesc' | 'overwrite' | 'changeTemplateName';
 
-// Translation content
-export const translations = {
+const translations = {
   en: {
-    welcome: 'Welcome to Prompt Generator Lab',
-    description: 'Create powerful AI prompts with our advanced generator',
-    getStarted: 'Get Started',
-    features: 'Features',
-    feature1: 'AI-Powered Generation',
-    feature2: 'Multiple Categories',
-    feature3: 'Easy to Use',
-    about: 'About',
-    contact: 'Contact',
-    home: 'Home',
-    promptGeneratorTitle: 'AI Prompt Generator',
-    promptGeneratorDesc: 'Create professional prompts tailored to your needs',
-    improvementTitle: 'Prompt Improvement',
-    improvementDesc: 'Enhance and optimize your existing prompts',
-    mainCategory: 'Main Category',
-    required: '*',
-    selectDomain: 'Select a domain',
-    subcategory: 'Subcategory',
-    optional: '(optional)',
-    chooseSpecialization: 'Choose a specialization',
-    taskDescription: 'Task Description',
-    taskDescriptionPlaceholder: 'Describe what you want to accomplish...',
-    mainObjective: 'Main Objective',
-    mainObjectivePlaceholder: 'What is the main goal?',
-    targetAudience: 'Target Audience',
-    targetAudiencePlaceholder: 'Who is the target audience?',
-    outputFormat: 'Output Format',
-    chooseFormat: 'Choose a format',
-    toneStyle: 'Tone & Style',
-    chooseTone: 'Choose a tone',
-    approximateLength: 'Approximate Length',
-    chooseLength: 'Choose length',
-    generateWithAI: 'Generate with AI',
-    generatingWithAI: 'Generating...',
-    aiGeneratedPrompt: 'AI Generated Prompt',
-    aiGeneratedPromptDesc: 'Your optimized prompt ready to use',
-    copy: 'Copy',
-    readyForGeneration: 'Ready for generation',
-    aiWillCreate: 'AI will create your perfect prompt',
-    missingInfo: 'Missing Information',
-    chooseCategoryDesc: 'Please select a category and describe your task',
-    promptCreatedSuccess: 'Prompt Created!',
-    promptCreatedDesc: 'Your AI prompt has been generated successfully',
-    generationError: 'Generation Error',
-    copiedSuccess: 'Copied!',
-    promptCopiedClipboard: 'Prompt copied to clipboard',
-    generatedByAI: 'Generated by AI',
-    aiGeneratedDesc: 'This prompt was created using artificial intelligence',
-    contentCreation: 'Content Creation',
-    contentCreationDesc: 'Writing, design, and media production',
-    businessProfessional: 'Business & Professional',
-    businessProfessionalDesc: 'Strategy, management, and corporate tasks',
-    educationTraining: 'Education & Training',
-    educationTrainingDesc: 'Teaching, learning, and skill development',
-    technologyDevelopment: 'Technology & Development',
-    technologyDevelopmentDesc: 'Programming, systems, and technical solutions',
-    analysisResearch: 'Analysis & Research',
-    analysisResearchDesc: 'Data analysis, research, and insights',
-    problemSolving: 'Problem Solving',
-    problemSolvingDesc: 'Creative solutions and decision making',
-    communicationRelations: 'Communication & Relations',
-    communicationRelationsDesc: 'Interpersonal and public communications',
-    writing: 'Writing',
-    artisticCreation: 'Artistic Creation',
-    videoAudio: 'Video & Audio',
-    marketing: 'Marketing',
-    literature: 'Literature',
-    strategy: 'Strategy',
-    communication: 'Communication',
-    hr: 'Human Resources',
-    sales: 'Sales',
-    management: 'Management',
-    courses: 'Courses',
-    evaluation: 'Evaluation',
-    research: 'Research',
-    pedagogy: 'Pedagogy',
-    professionalTraining: 'Professional Training',
-    programming: 'Programming',
-    dataScience: 'Data Science',
-    cybersecurity: 'Cybersecurity',
-    architecture: 'Architecture',
-    devops: 'DevOps',
-    dataAnalysisSubcat: 'Data Analysis',
-    academicResearch: 'Academic Research',
-    competitiveIntelligence: 'Competitive Intelligence',
-    auditEvaluation: 'Audit & Evaluation',
-    forecasting: 'Forecasting',
-    diagnosis: 'Diagnosis',
-    brainstorming: 'Brainstorming',
-    decisionMaking: 'Decision Making',
-    optimization: 'Optimization',
-    innovation: 'Innovation',
-    customerRelations: 'Customer Relations',
-    internalCommunication: 'Internal Communication',
-    negotiation: 'Negotiation',
-    presentation: 'Presentation',
-    publicRelations: 'Public Relations',
-    bulletList: 'Bullet List',
-    structuredParagraph: 'Structured Paragraph',
-    table: 'Table',
-    numberedSteps: 'Numbered Steps',
-    dialogue: 'Dialogue',
-    codeScript: 'Code/Script',
-    professional: 'Professional',
-    casual: 'Casual',
-    technical: 'Technical',
-    creative: 'Creative',
-    persuasive: 'Persuasive',
-    educational: 'Educational',
-    short: 'Short',
-    medium: 'Medium',
-    long: 'Long',
-    veryDetailed: 'Very Detailed',
-    originalPrompt: 'Original Prompt',
-    originalPromptPlaceholder: 'Enter your prompt to improve...',
-    improvementObjective: 'Improvement Objective',
-    improvementObjectivePlaceholder: 'What specific aspect to improve?',
-    improvePrompt: 'Improve Prompt',
-    improvingPrompt: 'Improving...',
-    improvedPrompt: 'Improved Prompt',
-    improvedPromptDesc: 'Your optimized and enhanced prompt',
-    improvements: 'Improvements Made',
-    improvementSuccess: 'Improvement Complete!',
-    improvementSuccessDesc: 'Your prompt has been successfully improved',
-    enterOriginalPrompt: 'Please enter the original prompt to improve',
-    textGeneration: 'Text Generation',
-    textGenerationDesc: 'Generate various types of text content',
-    blogPostGenerator: 'Blog Post Generator',
-    imageCreation: 'Image Creation',
-    imageCreationDesc: 'Create and design visual content',
-    interactiveDialogue: 'Interactive Dialogue',
-    interactiveDialogueDesc: 'Conversational and interactive content',
-    customerSupportChatbot: 'Customer Support Chatbot',
-    codeGeneration: 'Code Generation',
-    codeGenerationDesc: 'Programming and development assistance',
-    reactComponentGenerator: 'React Component Generator',
-    dataAnalysis: 'Data Analysis',
-    dataAnalysisDesc: 'Analyze and interpret data',
-    creativeWriting: 'Creative Writing',
-    creativeWritingDesc: 'Creative and artistic writing',
-    blue: 'Blue',
-    green: 'Green',
-    purple: 'Purple',
-    orange: 'Orange',
-    red: 'Red',
-    indigo: 'Indigo',
-    validationError: 'Validation Error',
-    nameDescriptionRequired: 'Name and description are required',
-    categoryCreated: 'Category Created',
-    categoryUpdated: 'Category Updated',
-    categoryDeleted: 'Category Deleted',
-    deleteConfirmation: 'Delete Confirmation',
-    confirmDelete: 'Are you sure you want to delete this category?',
-    cancel: 'Cancel',
-    edit: 'Edit',
-    delete: 'Delete',
-    save: 'Save',
-    addCategory: 'Add Category',
-    editCategory: 'Edit Category',
-    categoryName: 'Category Name',
-    categoryDescription: 'Category Description',
-    categoryColor: 'Category Color',
-    categoryNamePlaceholder: 'Enter category name...',
-    categoryDescriptionPlaceholder: 'Enter category description...',
-    createCategory: 'Create Category',
-    updateCategory: 'Update Category',
-    categoryManagement: 'Category Management',
-    categoryManagementDesc: 'Manage your custom prompt categories',
-    manageCategories: 'Manage Categories',
-    customCategories: 'Custom Categories',
-    noCustomCategories: 'No custom categories yet',
-    createFirstCategory: 'Create your first custom category',
-    progress: 'Progress',
-    style: 'Style',
-    title: 'Title',
-    format: 'Format',
-    step: 'Step',
-    length: 'Length',
-    next: 'Next',
-    previous: 'Previous',
-    background: 'Background',
-    theme: 'Theme',
-    createNewCategory: 'Create New Category',
-    colorTheme: 'Color Theme',
-    exampleUseCases: 'Example Use Cases',
-    update: 'Update',
-    create: 'Create',
-    categories: 'Categories',
-    french: 'French',
-    arabic: 'Arabic',
-    english: 'English',
-    stepObjectiveTitle: 'Define Objective',
-    stepObjectiveDesc: 'Set clear goals and success criteria',
-    stepContextTitle: 'Context & Background',
-    stepContextDesc: 'Provide context and constraints',
-    stepConstraintsTitle: 'Requirements & Style',
-    stepConstraintsDesc: 'Specify tone, format, and style',
-    stepOutputFormatTitle: 'Output Format',
-    stepOutputFormatDesc: 'Define structure and deliverables',
-    stepReviewTitle: 'Review & Generate',
-    stepReviewDesc: 'Review and generate your prompt',
-    advancedPromptGenerated: 'Advanced Prompt Generated',
-    advancedPromptGeneratedDesc: 'Your advanced prompt has been created successfully',
-    tryAgainLater: 'Please try again later',
-    multiStepBuilder: 'Multi-Step Builder',
-    multiStepBuilderDesc: 'Create advanced prompts step by step',
-    generating: 'Generating...',
-    generateAdvancedPrompt: 'Generate Advanced Prompt',
-    advancedPromptResult: 'Advanced Prompt Result',
-    authoritative: 'Authoritative',
-    friendly: 'Friendly',
-    brief: 'Brief',
-    concise: 'Concise',
-    detailed: 'Detailed',
-    comprehensive: 'Comprehensive',
-    extensive: 'Extensive',
-    structuredReport: 'Structured Report',
-    bulletPoints: 'Bullet Points',
-    narrative: 'Narrative',
-    stepByStep: 'Step-by-Step',
-    qaFormat: 'Q&A Format',
-    analytical: 'Analytical',
-    descriptive: 'Descriptive',
-    comparative: 'Comparative',
-    argumentative: 'Argumentative',
-    instructional: 'Instructional',
-    consultative: 'Consultative',
-    beginner: 'Beginner',
-    intermediate: 'Intermediate',
-    advanced: 'Advanced',
-    expert: 'Expert',
-    selectTone: 'Select a tone',
-    selectLength: 'Select length',
-    technicalLevel: 'Technical Level',
-    selectTechnicalLevel: 'Select technical level',
-    responseFormat: 'Response Format',
-    selectFormat: 'Select format',
-    writingStyle: 'Writing Style',
-    selectStyle: 'Select style',
-    stepConstraintsTips: 'Requirements Tips',
-    tipConstraints1: 'Choose tone based on your audience',
-    tipConstraints2: 'Length affects detail level',
-    tipConstraints3: 'Technical level should match user expertise',
-    contextBackground: 'Context Background',
-    contextBackgroundPlaceholder: 'Provide relevant background information...',
-    selectIndustry: 'Select industry',
-    contextConstraints: 'Context Constraints',
-    addConstraint: 'Add Constraint',
-    constraintPlaceholder: 'Enter a constraint...',
-    noConstraintsYet: 'No constraints added yet',
-    stepContextTips: 'Context Tips',
-    tipContext1: 'Provide clear background context',
-    tipContext2: 'Define your target audience precisely',
-    tipContext3: 'Add relevant constraints and limitations',
-    specificTargets: 'Specific Targets',
-    addTarget: 'Add Target',
-    targetPlaceholder: 'Enter a specific target...',
-    noTargetsYet: 'No targets added yet',
-    successCriteria: 'Success Criteria',
-    successCriteriaPlaceholder: 'How will you measure success?',
-    stepObjectiveTips: 'Objective Tips',
-    tipObjective1: 'Be specific about your main goal',
-    tipObjective2: 'Add measurable targets',
-    tipObjective3: 'Define clear success criteria',
-    outputStructure: 'Output Structure',
-    selectStructure: 'Select structure',
-    requiredSections: 'Required Sections',
-    addSection: 'Add Section',
-    sectionPlaceholder: 'Enter section name...',
-    noSectionsYet: 'No sections added yet',
-    expectedDeliverables: 'Expected Deliverables',
-    addDeliverable: 'Add Deliverable',
-    deliverablePlaceholder: 'Enter deliverable...',
-    noDeliverablesYet: 'No deliverables added yet',
-    stepOutputFormatTips: 'Output Format Tips',
-    tipOutputFormat1: 'Choose structure that fits your needs',
-    tipOutputFormat2: 'Define specific sections required',
-    tipOutputFormat3: 'List all expected deliverables',
-    hierarchical: 'Hierarchical',
-    sequential: 'Sequential',
-    modular: 'Modular',
-    matrix: 'Matrix',
-    flowchart: 'Flowchart',
-    objectiveReview: 'Objective Review',
-    contextReview: 'Context Review',
-    requirementsReview: 'Requirements Review',
-    outputFormatReview: 'Output Format Review',
-    notSpecified: 'Not specified',
-    readyToGenerate: 'Ready to Generate',
-    allRequiredFieldsCompleted: 'All required fields completed',
-    almostReady: 'Almost Ready',
-    someFieldsMissing: 'Some fields are missing',
-    completed: 'Completed',
-    finalTips: 'Final Tips',
-    finalTip1: 'Review all sections before generating',
-    finalTip2: 'Make sure objectives are clear',
-    finalTip3: 'Check that context is complete',
-    finalTip4: 'Verify output format matches needs',
-    technology: 'Technology',
-    healthcare: 'Healthcare',
-    finance: 'Finance',
-    education: 'Education',
-    retail: 'Retail',
-    manufacturing: 'Manufacturing',
-    consulting: 'Consulting',
-    media: 'Media',
-    other: 'Other',
-    industry: 'Industry',
-    productImagePrompt: 'Product Image Prompt',
-    dataInsightsGenerator: 'Data Insights Generator',
-    storyConceptGenerator: 'Story Concept Generator',
-    allCategories: 'All Categories',
-    copied: 'Copied',
-    promptCopied: 'Prompt Copied',
-    promptTemplateLibrary: 'Prompt Template Library',
-    browsePromptTemplates: 'Browse Prompt Templates',
-    searchPrompts: 'Search Prompts',
-    preview: 'Preview',
-    close: 'Close',
-    copyTemplate: 'Copy Template',
-    noPromptsFound: 'No Prompts Found',
-    darkMode: 'Dark Mode',
-    lightMode: 'Light Mode',
-    subtitle: 'Create, improve, and optimize AI prompts with our advanced toolkit',
-    advancedAI: 'Advanced AI',
-    noCode: 'No Code',
-    generator: 'Generator',
-    improvement: 'Improvement',
-    library: 'Library',
-    integration: 'Integration'
+    promptGeneratorTitle: "AI Prompt Generator",
+    promptGeneratorDesc: "Create optimized prompts for any AI task with our intelligent assistant",
+    category: "Category",
+    required: "(required)",
+    chooseCategoryPlaceholder: "Choose a category...",
+    subcategory: "Subcategory",
+    optional: "(optional)",
+    chooseSubcategoryPlaceholder: "Choose a subcategory...",
+    description: "Description",
+    descriptionPlaceholder: "Describe what you want to achieve...",
+    objective: "Objective",
+    objectivePlaceholder: "What is your specific goal?",
+    targetAudience: "Target Audience",
+    targetAudiencePlaceholder: "Who is your target audience?",
+    outputFormat: "Output Format",
+    chooseFormatPlaceholder: "Choose desired format...",
+    tone: "Tone",
+    chooseTonePlaceholder: "Choose tone...",
+    length: "Length",
+    chooseLengthPlaceholder: "Choose length...",
+    generateWithAI: "Generate with AI",
+    generatingWithAI: "Generating with AI...",
+    aiGeneratedPrompt: "AI Generated Prompt",
+    aiGeneratedPromptDesc: "Your optimized prompt ready to use",
+    copy: "Copy",
+    generatedByAI: "Generated by AI",
+    aiGeneratedDesc: "This prompt was created using artificial intelligence to optimize your results.",
+    readyForGeneration: "Ready for generation",
+    aiWillCreate: "AI will create an optimized prompt based on your preferences",
+    missingInfo: "Missing information",
+    chooseCategoryDesc: "Please choose a category and add a description",
+    promptCreatedSuccess: "Prompt created successfully!",
+    promptCreatedDesc: "Your optimized prompt is ready to use",
+    generationError: "Generation error",
+    copiedSuccess: "Copied successfully!",
+    promptCopiedClipboard: "Prompt copied to clipboard",
+    improvementTitle: "Prompt Improvement",
+    improvementDesc: "Improve and optimize your existing prompts with AI",
+    originalPrompt: "Original Prompt",
+    originalPromptPlaceholder: "Enter the prompt you want to improve...",
+    improvementObjective: "Improvement Objective",
+    improvementObjectivePlaceholder: "What specific aspect do you want to improve?",
+    improvePrompt: "Improve Prompt",
+    improvingPrompt: "Improving prompt...",
+    improvedPrompt: "Improved Prompt",
+    improvedPromptDesc: "Your optimized and enhanced prompt",
+    improvements: "Improvements Made",
+    improvementSuccess: "Improvement completed!",
+    improvementSuccessDesc: "Your prompt has been successfully improved",
+    enterOriginalPrompt: "Please enter the original prompt to improve",
+    createNewCategory: "Create New Category",
+    colorTheme: "Color Theme",
+    exampleUseCases: "Example Use Cases",
+    update: "Update",
+    create: "Create",
+    categories: "Categories",
+    french: "French",
+    arabic: "Arabic",
+    english: "English",
+    stepObjectiveTitle: "Define Objective",
+    stepObjectiveDesc: "What do you want to achieve?",
+    stepContextTitle: "Add Context",
+    stepContextDesc: "Provide background information",
+    stepConstraintsTitle: "Set Constraints",
+    stepConstraintsDesc: "Define parameters and limitations",
+    stepOutputFormatTitle: "Output Format",
+    stepOutputFormatDesc: "How should the result be presented?",
+    stepReviewTitle: "Review & Generate",
+    stepReviewDesc: "Review your settings and generate the prompt",
+    advancedPromptGenerated: "Advanced prompt generated!",
+    advancedPromptGeneratedDesc: "Your multi-step prompt is ready",
+    tryAgainLater: "Please try again later",
+    multiStepBuilder: "Multi-Step Builder",
+    multiStepBuilderDesc: "Create complex prompts step by step",
+    generating: "Generating...",
+    generateAdvancedPrompt: "Generate Advanced Prompt",
+    advancedPromptResult: "Advanced Prompt Result",
+    authoritative: "Authoritative",
+    friendly: "Friendly",
+    brief: "Brief",
+    concise: "Concise",
+    detailed: "Detailed",
+    comprehensive: "Comprehensive",
+    extensive: "Extensive",
+    structuredReport: "Structured Report",
+    bulletPoints: "Bullet Points",
+    narrative: "Narrative",
+    stepByStep: "Step by Step",
+    qaFormat: "Q&A Format",
+    analytical: "Analytical",
+    descriptive: "Descriptive",
+    comparative: "Comparative",
+    argumentative: "Argumentative",
+    instructional: "Instructional",
+    consultative: "Consultative",
+    beginner: "Beginner",
+    intermediate: "Intermediate",
+    advanced: "Advanced",
+    expert: "Expert",
+    selectTone: "Select tone...",
+    selectLength: "Select length...",
+    technicalLevel: "Technical Level",
+    selectTechnicalLevel: "Select technical level...",
+    responseFormat: "Response Format",
+    selectFormat: "Select format...",
+    writingStyle: "Writing Style",
+    selectStyle: "Select style...",
+    stepConstraintsTips: "Tips for setting constraints",
+    tipConstraints1: "Be specific about tone and style",
+    tipConstraints2: "Define the technical level required",
+    tipConstraints3: "Specify the desired output format",
+    stepContextTips: "Tips for adding context",
+    tipContext1: "Provide relevant background information",
+    tipContext2: "Mention any specific requirements",
+    tipContext3: "Include examples if helpful",
+    stepObjectiveTips: "Tips for defining objectives",
+    tipObjective1: "Be clear and specific about your goal",
+    tipObjective2: "Mention the desired outcome",
+    tipObjective3: "Consider your target audience",
+    stepOutputTips: "Tips for output format",
+    tipOutput1: "Choose the most appropriate format",
+    tipOutput2: "Consider how you'll use the result",
+    tipOutput3: "Think about your audience's preferences",
+    stepReviewTips: "Tips for review",
+    tipReview1: "Check all your settings",
+    tipReview2: "Make sure everything aligns with your goal",
+    tipReview3: "You can always come back and modify",
+    examples: "Examples",
+    example1: "Example 1",
+    example2: "Example 2",
+    example3: "Example 3",
+    contextInformation: "Context Information",
+    contextPlaceholder: "Provide background information, constraints, or specific requirements...",
+    specificObjective: "Specific Objective",
+    objectiveMultiStepPlaceholder: "What exactly do you want to achieve with this prompt?",
+    previousSteps: "Previous Steps",
+    nextStep: "Next Step",
+    generateFinalPrompt: "Generate Final Prompt",
+    finalPromptGenerated: "Final prompt generated successfully!",
+    multiStepPromptResult: "Multi-Step Prompt Result",
+    templateCustomization: "Template Customization",
+    customizeTemplate: "Customize Template",
+    templateCustomizationDesc: "Personalize templates with your variables",
+    template: "Template",
+    templatePlaceholder: "Enter your template with variables like {{variable}}...",
+    variables: "Variables",
+    variablesPlaceholder: "Define your variables (one per line): variable=value",
+    customizationTips: "Customization tips",
+    tipCustomization1: "Use {{variable}} syntax in your template",
+    tipCustomization2: "Define variables with variable=value format",
+    tipCustomization3: "Variables will be replaced automatically",
+    customTemplate: "Custom Template",
+    promptTemplateLibrary: "Prompt Template Library",
+    promptTemplateLibraryDesc: "Browse and use pre-made prompt templates",
+    searchTemplates: "Search templates...",
+    filterByCategory: "Filter by category",
+    allCategories: "All Categories",
+    useTemplate: "Use Template",
+    customize: "Customize",
+    templateUsed: "Template used!",
+    templateUsedDesc: "Template has been applied successfully",
+    templateCustomized: "Template customized!",
+    templateCustomizedDesc: "Your customized template is ready",
+    noTemplatesFound: "No templates found",
+    tryDifferentSearch: "Try a different search term or category",
+    newTemplate: "New Template",
+    editTemplate: "Edit Template",
+    deleteTemplate: "Delete Template",
+    confirmDelete: "Confirm Deletion",
+    confirmDeleteDesc: "Are you sure you want to delete this template?",
+    cancel: "Cancel",
+    delete: "Delete",
+    templateDeleted: "Template deleted!",
+    templateDeletedDesc: "Template has been removed successfully",
+    templateSaved: "Template saved!",
+    templateSavedDesc: "Your template has been saved to the library",
+    templateUpdated: "Template updated!",
+    templateUpdatedDesc: "Template changes have been saved",
+    enterTemplateName: "Please enter a template name",
+    templateName: "Template Name",
+    templateNamePlaceholder: "Enter template name...",
+    templateContent: "Template Content",
+    templateContentPlaceholder: "Enter your template content...",
+    saveTemplate: "Save Template",
+    savingTemplate: "Saving template...",
+    templateExists: "Template exists",
+    templateExistsDesc: "A template with this name already exists",
+    overwrite: "Overwrite",
+    changeTemplateName: "Change Name"
   },
   fr: {
-    welcome: 'Bienvenue dans Prompt Generator Lab',
-    description: 'Créez des prompts IA puissants avec notre générateur avancé',
-    getStarted: 'Commencer',
-    features: 'Fonctionnalités',
-    feature1: 'Génération par IA',
-    feature2: 'Catégories multiples',
-    feature3: 'Facile à utiliser',
-    about: 'À propos',
-    contact: 'Contact',
-    home: 'Accueil',
-    promptGeneratorTitle: 'Générateur de Prompts IA',
-    promptGeneratorDesc: 'Créez des prompts professionnels adaptés à vos besoins',
-    improvementTitle: 'Amélioration de Prompts',
-    improvementDesc: 'Améliorez et optimisez vos prompts existants',
-    mainCategory: 'Catégorie principale',
-    required: '*',
-    selectDomain: 'Sélectionner un domaine',
-    subcategory: 'Sous-catégorie',
-    optional: '(optionnel)',
-    chooseSpecialization: 'Choisir une spécialisation',
-    taskDescription: 'Description de la tâche',
-    taskDescriptionPlaceholder: 'Décrivez ce que vous voulez accomplir...',
-    mainObjective: 'Objectif principal',
-    mainObjectivePlaceholder: 'Quel est l\'objectif principal ?',
-    targetAudience: 'Public cible',
-    targetAudiencePlaceholder: 'Qui est le public cible ?',
-    outputFormat: 'Format de sortie',
-    chooseFormat: 'Choisir un format',
-    toneStyle: 'Ton et style',
-    chooseTone: 'Choisir un ton',
-    approximateLength: 'Longueur approximative',
-    chooseLength: 'Choisir la longueur',
-    generateWithAI: 'Générer avec IA',
-    generatingWithAI: 'Génération...',
-    aiGeneratedPrompt: 'Prompt Généré par IA',
-    aiGeneratedPromptDesc: 'Votre prompt optimisé prêt à utiliser',
-    copy: 'Copier',
-    readyForGeneration: 'Prêt pour la génération',
-    aiWillCreate: 'L\'IA va créer votre prompt parfait',
-    missingInfo: 'Informations manquantes',
-    chooseCategoryDesc: 'Veuillez sélectionner une catégorie et décrire votre tâche',
-    promptCreatedSuccess: 'Prompt créé !',
-    promptCreatedDesc: 'Votre prompt IA a été généré avec succès',
-    generationError: 'Erreur de génération',
-    copiedSuccess: 'Copié !',
-    promptCopiedClipboard: 'Prompt copié dans le presse-papiers',
-    generatedByAI: 'Généré par IA',
-    aiGeneratedDesc: 'Ce prompt a été créé en utilisant l\'intelligence artificielle',
-    contentCreation: 'Création de contenu',
-    contentCreationDesc: 'Rédaction, design et production média',
-    businessProfessional: 'Business et professionnel',
-    businessProfessionalDesc: 'Stratégie, management et tâches d\'entreprise',
-    educationTraining: 'Éducation et formation',
-    educationTrainingDesc: 'Enseignement, apprentissage et développement des compétences',
-    technologyDevelopment: 'Technologie et développement',
-    technologyDevelopmentDesc: 'Programmation, systèmes et solutions techniques',
-    analysisResearch: 'Analyse et recherche',
-    analysisResearchDesc: 'Analyse de données, recherche et insights',
-    problemSolving: 'Résolution de problèmes',
-    problemSolvingDesc: 'Solutions créatives et prise de décision',
-    communicationRelations: 'Communication et relations',
-    communicationRelationsDesc: 'Communications interpersonnelles et publiques',
-    writing: 'Rédaction',
-    artisticCreation: 'Création artistique',
-    videoAudio: 'Vidéo et audio',
-    marketing: 'Marketing',
-    literature: 'Littérature',
-    strategy: 'Stratégie',
-    communication: 'Communication',
-    hr: 'Ressources humaines',
-    sales: 'Ventes',
-    management: 'Management',
-    courses: 'Cours',
-    evaluation: 'Évaluation',
-    research: 'Recherche',
-    pedagogy: 'Pédagogie',
-    professionalTraining: 'Formation professionnelle',
-    programming: 'Programmation',
-    dataScience: 'Science des données',
-    cybersecurity: 'Cybersécurité',
-    architecture: 'Architecture',
-    devops: 'DevOps',
-    dataAnalysisSubcat: 'Analyse de données',
-    academicResearch: 'Recherche académique',
-    competitiveIntelligence: 'Intelligence concurrentielle',
-    auditEvaluation: 'Audit et évaluation',
-    forecasting: 'Prévision',
-    diagnosis: 'Diagnostic',
-    brainstorming: 'Brainstorming',
-    decisionMaking: 'Prise de décision',
-    optimization: 'Optimisation',
-    innovation: 'Innovation',
-    customerRelations: 'Relations client',
-    internalCommunication: 'Communication interne',
-    negotiation: 'Négociation',
-    presentation: 'Présentation',
-    publicRelations: 'Relations publiques',
-    bulletList: 'Liste à puces',
-    structuredParagraph: 'Paragraphe structuré',
-    table: 'Tableau',
-    numberedSteps: 'Étapes numérotées',
-    dialogue: 'Dialogue',
-    codeScript: 'Code/Script',
-    professional: 'Professionnel',
-    casual: 'Décontracté',
-    technical: 'Technique',
-    creative: 'Créatif',
-    persuasive: 'Persuasif',
-    educational: 'Éducatif',
-    short: 'Court',
-    medium: 'Moyen',
-    long: 'Long',
-    veryDetailed: 'Très détaillé',
-    originalPrompt: 'Prompt original',
-    originalPromptPlaceholder: 'Entrez votre prompt à améliorer...',
-    improvementObjective: 'Objectif d\'amélioration',
-    improvementObjectivePlaceholder: 'Quel aspect spécifique améliorer ?',
-    improvePrompt: 'Améliorer le prompt',
-    improvingPrompt: 'Amélioration...',
-    improvedPrompt: 'Prompt amélioré',
-    improvedPromptDesc: 'Votre prompt optimisé et amélioré',
-    improvements: 'Améliorations apportées',
-    improvementSuccess: 'Amélioration terminée !',
-    improvementSuccessDesc: 'Votre prompt a été amélioré avec succès',
-    enterOriginalPrompt: 'Veuillez entrer le prompt original à améliorer',
-    textGeneration: 'Génération de texte',
-    textGenerationDesc: 'Générer différents types de contenu textuel',
-    blogPostGenerator: 'Générateur d\'articles de blog',
-    imageCreation: 'Création d\'images',
-    imageCreationDesc: 'Créer et concevoir du contenu visuel',
-    interactiveDialogue: 'Dialogue interactif',
-    interactiveDialogueDesc: 'Contenu conversationnel et interactif',
-    customerSupportChatbot: 'Chatbot de support client',
-    codeGeneration: 'Génération de code',
-    codeGenerationDesc: 'Assistance en programmation et développement',
-    reactComponentGenerator: 'Générateur de composants React',
-    dataAnalysis: 'Analyse de données',
-    dataAnalysisDesc: 'Analyser et interpréter les données',
-    creativeWriting: 'Écriture créative',
-    creativeWritingDesc: 'Écriture créative et artistique',
-    blue: 'Bleu',
-    green: 'Vert',
-    purple: 'Violet',
-    orange: 'Orange',
-    red: 'Rouge',
-    indigo: 'Indigo',
-    validationError: 'Erreur de validation',
-    nameDescriptionRequired: 'Le nom et la description sont requis',
-    categoryCreated: 'Catégorie créée',
-    categoryUpdated: 'Catégorie mise à jour',
-    categoryDeleted: 'Catégorie supprimée',
-    deleteConfirmation: 'Confirmation de suppression',
-    confirmDelete: 'Êtes-vous sûr de vouloir supprimer cette catégorie ?',
-    cancel: 'Annuler',
-    edit: 'Modifier',
-    delete: 'Supprimer',
-    save: 'Sauvegarder',
-    addCategory: 'Ajouter une catégorie',
-    editCategory: 'Modifier la catégorie',
-    categoryName: 'Nom de la catégorie',
-    categoryDescription: 'Description de la catégorie',
-    categoryColor: 'Couleur de la catégorie',
-    categoryNamePlaceholder: 'Entrez le nom de la catégorie...',
-    categoryDescriptionPlaceholder: 'Entrez la description de la catégorie...',
-    createCategory: 'Créer la catégorie',
-    updateCategory: 'Mettre à jour la catégorie',
-    categoryManagement: 'Gestion des catégories',
-    categoryManagementDesc: 'Gérez vos catégories de prompts personnalisées',
-    manageCategories: 'Gérer les catégories',
-    customCategories: 'Catégories personnalisées',
-    noCustomCategories: 'Aucune catégorie personnalisée pour le moment',
-    createFirstCategory: 'Créez votre première catégorie personnalisée',
-    progress: 'Progrès',
-    style: 'Style',
-    title: 'Titre',
-    format: 'Format',
-    step: 'Étape',
-    length: 'Longueur',
-    next: 'Suivant',
-    previous: 'Précédent',
-    background: 'Arrière-plan',
-    theme: 'Thème',
-    createNewCategory: 'Créer nouvelle catégorie',
-    colorTheme: 'Thème de couleur',
-    exampleUseCases: 'Exemples d\'utilisation',
-    update: 'Mettre à jour',
-    create: 'Créer',
-    categories: 'Catégories',
-    french: 'Français',
-    arabic: 'Arabe',
-    english: 'Anglais',
-    stepObjectiveTitle: 'Définir l\'objectif',
-    stepObjectiveDesc: 'Fixez des objectifs clairs et des critères de succès',
-    stepContextTitle: 'Contexte et arrière-plan',
-    stepContextDesc: 'Fournissez le contexte et les contraintes',
-    stepConstraintsTitle: 'Exigences et style',
-    stepConstraintsDesc: 'Spécifiez le ton, le format et le style',
-    stepOutputFormatTitle: 'Format de sortie',
-    stepOutputFormatDesc: 'Définissez la structure et les livrables',
-    stepReviewTitle: 'Révision et génération',
-    stepReviewDesc: 'Révisez et générez votre prompt',
-    advancedPromptGenerated: 'Prompt avancé généré',
-    advancedPromptGeneratedDesc: 'Votre prompt avancé a été créé avec succès',
-    tryAgainLater: 'Veuillez réessayer plus tard',
-    multiStepBuilder: 'Constructeur multi-étapes',
-    multiStepBuilderDesc: 'Créez des prompts avancés étape par étape',
-    generating: 'Génération...',
-    generateAdvancedPrompt: 'Générer un prompt avancé',
-    advancedPromptResult: 'Résultat du prompt avancé',
-    authoritative: 'Autoritaire',
-    friendly: 'Amical',
-    brief: 'Bref',
-    concise: 'Concis',
-    detailed: 'Détaillé',
-    comprehensive: 'Complet',
-    extensive: 'Étendu',
-    structuredReport: 'Rapport structuré',
-    bulletPoints: 'Points à puces',
-    narrative: 'Narratif',
-    stepByStep: 'Étape par étape',
-    qaFormat: 'Format Q&R',
-    analytical: 'Analytique',
-    descriptive: 'Descriptif',
-    comparative: 'Comparatif',
-    argumentative: 'Argumentatif',
-    instructional: 'Instructionnel',
-    consultative: 'Consultatif',
-    beginner: 'Débutant',
-    intermediate: 'Intermédiaire',
-    advanced: 'Avancé',
-    expert: 'Expert',
-    selectTone: 'Sélectionner un ton',
-    selectLength: 'Sélectionner la longueur',
-    technicalLevel: 'Niveau technique',
-    selectTechnicalLevel: 'Sélectionner le niveau technique',
-    responseFormat: 'Format de réponse',
-    selectFormat: 'Sélectionner le format',
-    writingStyle: 'Style d\'écriture',
-    selectStyle: 'Sélectionner le style',
-    stepConstraintsTips: 'Conseils sur les exigences',
-    tipConstraints1: 'Choisissez le ton selon votre audience',
-    tipConstraints2: 'La longueur affecte le niveau de détail',
-    tipConstraints3: 'Le niveau technique doit correspondre à l\'expertise utilisateur',
-    contextBackground: 'Contexte et arrière-plan',
-    contextBackgroundPlaceholder: 'Fournissez des informations contextuelles pertinentes...',
-    selectIndustry: 'Sélectionner l\'industrie',
-    contextConstraints: 'Contraintes contextuelles',
-    addConstraint: 'Ajouter une contrainte',
-    constraintPlaceholder: 'Entrez une contrainte...',
-    noConstraintsYet: 'Aucune contrainte ajoutée encore',
-    stepContextTips: 'Conseils sur le contexte',
-    tipContext1: 'Fournissez un contexte d\'arrière-plan clair',
-    tipContext2: 'Définissez précisément votre public cible',
-    tipContext3: 'Ajoutez des contraintes et limitations pertinentes',
-    specificTargets: 'Objectifs spécifiques',
-    addTarget: 'Ajouter un objectif',
-    targetPlaceholder: 'Entrez un objectif spécifique...',
-    noTargetsYet: 'Aucun objectif ajouté encore',
-    successCriteria: 'Critères de succès',
-    successCriteriaPlaceholder: 'Comment mesurerez-vous le succès ?',
-    stepObjectiveTips: 'Conseils sur l\'objectif',
-    tipObjective1: 'Soyez spécifique sur votre objectif principal',
-    tipObjective2: 'Ajoutez des objectifs mesurables',
-    tipObjective3: 'Définissez des critères de succès clairs',
-    outputStructure: 'Structure de sortie',
-    selectStructure: 'Sélectionner la structure',
-    requiredSections: 'Sections requises',
-    addSection: 'Ajouter une section',
-    sectionPlaceholder: 'Entrez le nom de la section...',
-    noSectionsYet: 'Aucune section ajoutée encore',
-    expectedDeliverables: 'Livrables attendus',
-    addDeliverable: 'Ajouter un livrable',
-    deliverablePlaceholder: 'Entrez un livrable...',
-    noDeliverablesYet: 'Aucun livrable ajouté encore',
-    stepOutputFormatTips: 'Conseils sur le format de sortie',
-    tipOutputFormat1: 'Choisissez une structure qui correspond à vos besoins',
-    tipOutputFormat2: 'Définissez les sections spécifiques requises',
-    tipOutputFormat3: 'Listez tous les livrables attendus',
-    hierarchical: 'Hiérarchique',
-    sequential: 'Séquentiel',
-    modular: 'Modulaire',
-    matrix: 'Matrice',
-    flowchart: 'Organigramme',
-    objectiveReview: 'Révision de l\'objectif',
-    contextReview: 'Révision du contexte',
-    requirementsReview: 'Révision des exigences',
-    outputFormatReview: 'Révision du format de sortie',
-    notSpecified: 'Non spécifié',
-    readyToGenerate: 'Prêt à générer',
-    allRequiredFieldsCompleted: 'Tous les champs requis sont complétés',
-    almostReady: 'Presque prêt',
-    someFieldsMissing: 'Certains champs manquent',
-    completed: 'Complété',
-    finalTips: 'Conseils finaux',
-    finalTip1: 'Révisez toutes les sections avant de générer',
-    finalTip2: 'Assurez-vous que les objectifs sont clairs',
-    finalTip3: 'Vérifiez que le contexte est complet',
-    finalTip4: 'Vérifiez que le format de sortie correspond aux besoins',
-    technology: 'Technologie',
-    healthcare: 'Santé',
-    finance: 'Finance',
-    education: 'Éducation',
-    retail: 'Commerce de détail',
-    manufacturing: 'Fabrication',
-    consulting: 'Conseil',
-    media: 'Médias',
-    other: 'Autre',
-    industry: 'Industrie',
-    productImagePrompt: 'Prompt Image Produit',
-    dataInsightsGenerator: 'Générateur d\'Insights Données',
-    storyConceptGenerator: 'Générateur de Concept d\'Histoire',
-    allCategories: 'Toutes Catégories',
-    copied: 'Copié',
-    promptCopied: 'Prompt Copié',
-    promptTemplateLibrary: 'Bibliothèque de Modèles de Prompts',
-    browsePromptTemplates: 'Parcourir les Modèles de Prompts',
-    searchPrompts: 'Rechercher Prompts',
-    preview: 'Aperçu',
-    close: 'Fermer',
-    copyTemplate: 'Copier Modèle',
-    noPromptsFound: 'Aucun Prompt Trouvé',
-    darkMode: 'Mode Sombre',
-    lightMode: 'Mode Clair',
-    subtitle: 'Créez, améliorez et optimisez des prompts IA avec notre boîte à outils avancée',
-    advancedAI: 'IA Avancée',
-    noCode: 'Sans Code',
-    generator: 'Générateur',
-    improvement: 'Amélioration',
-    library: 'Bibliothèque',
-    integration: 'Intégration'
+    promptGeneratorTitle: "Générateur de Prompts IA",
+    promptGeneratorDesc: "Créez des prompts optimisés pour toute tâche IA avec notre assistant intelligent",
+    category: "Catégorie",
+    required: "(requis)",
+    chooseCategoryPlaceholder: "Choisir une catégorie...",
+    subcategory: "Sous-catégorie",
+    optional: "(optionnel)",
+    chooseSubcategoryPlaceholder: "Choisir une sous-catégorie...",
+    description: "Description",
+    descriptionPlaceholder: "Décrivez ce que vous voulez accomplir...",
+    objective: "Objectif",
+    objectivePlaceholder: "Quel est votre objectif spécifique ?",
+    targetAudience: "Public cible",
+    targetAudiencePlaceholder: "Qui est votre public cible ?",
+    outputFormat: "Format de sortie",
+    chooseFormatPlaceholder: "Choisir le format désiré...",
+    tone: "Ton",
+    chooseTonePlaceholder: "Choisir le ton...",
+    length: "Longueur",
+    chooseLengthPlaceholder: "Choisir la longueur...",
+    generateWithAI: "Générer avec l'IA",
+    generatingWithAI: "Génération avec l'IA...",
+    aiGeneratedPrompt: "Prompt généré par l'IA",
+    aiGeneratedPromptDesc: "Votre prompt optimisé prêt à utiliser",
+    copy: "Copier",
+    generatedByAI: "Généré par l'IA",
+    aiGeneratedDesc: "Ce prompt a été créé en utilisant l'intelligence artificielle pour optimiser vos résultats.",
+    readyForGeneration: "Prêt pour la génération",
+    aiWillCreate: "L'IA va créer un prompt optimisé basé sur vos préférences",
+    missingInfo: "Informations manquantes",
+    chooseCategoryDesc: "Veuillez choisir une catégorie et ajouter une description",
+    promptCreatedSuccess: "Prompt créé avec succès !",
+    promptCreatedDesc: "Votre prompt optimisé est prêt à utiliser",
+    generationError: "Erreur de génération",
+    copiedSuccess: "Copié avec succès !",
+    promptCopiedClipboard: "Prompt copié dans le presse-papiers",
+    improvementTitle: "Amélioration de Prompt",
+    improvementDesc: "Améliorez et optimisez vos prompts existants avec l'IA",
+    originalPrompt: "Prompt original",
+    originalPromptPlaceholder: "Entrez le prompt que vous voulez améliorer...",
+    improvementObjective: "Objectif d'amélioration",
+    improvementObjectivePlaceholder: "Quel aspect spécifique voulez-vous améliorer ?",
+    improvePrompt: "Améliorer le prompt",
+    improvingPrompt: "Amélioration du prompt...",
+    improvedPrompt: "Prompt amélioré",
+    improvedPromptDesc: "Votre prompt optimisé et amélioré",
+    improvements: "Améliorations apportées",
+    improvementSuccess: "Amélioration terminée !",
+    improvementSuccessDesc: "Votre prompt a été amélioré avec succès",
+    enterOriginalPrompt: "Veuillez entrer le prompt original à améliorer",
+    createNewCategory: "Créer une nouvelle catégorie",
+    colorTheme: "Thème de couleur",
+    exampleUseCases: "Exemples d'utilisation",
+    update: "Mettre à jour",
+    create: "Créer",
+    categories: "Catégories",
+    french: "Français",
+    arabic: "Arabe",
+    english: "Anglais",
+    stepObjectiveTitle: "Définir l'objectif",
+    stepObjectiveDesc: "Que voulez-vous accomplir ?",
+    stepContextTitle: "Ajouter du contexte",
+    stepContextDesc: "Fournir des informations de base",
+    stepConstraintsTitle: "Définir les contraintes",
+    stepConstraintsDesc: "Définir les paramètres et limitations",
+    stepOutputFormatTitle: "Format de sortie",
+    stepOutputFormatDesc: "Comment le résultat doit-il être présenté ?",
+    stepReviewTitle: "Révision et génération",
+    stepReviewDesc: "Révisez vos paramètres et générez le prompt",
+    advancedPromptGenerated: "Prompt avancé généré !",
+    advancedPromptGeneratedDesc: "Votre prompt multi-étapes est prêt",
+    tryAgainLater: "Veuillez réessayer plus tard",
+    multiStepBuilder: "Constructeur multi-étapes",
+    multiStepBuilderDesc: "Créez des prompts complexes étape par étape",
+    generating: "Génération...",
+    generateAdvancedPrompt: "Générer un prompt avancé",
+    advancedPromptResult: "Résultat du prompt avancé",
+    authoritative: "Autoritaire",
+    friendly: "Amical",
+    brief: "Bref",
+    concise: "Concis",
+    detailed: "Détaillé",
+    comprehensive: "Complet",
+    extensive: "Étendu",
+    structuredReport: "Rapport structuré",
+    bulletPoints: "Points à puces",
+    narrative: "Narratif",
+    stepByStep: "Étape par étape",
+    qaFormat: "Format Q&R",
+    analytical: "Analytique",
+    descriptive: "Descriptif",
+    comparative: "Comparatif",
+    argumentative: "Argumentatif",
+    instructional: "Instructionnel",
+    consultative: "Consultatif",
+    beginner: "Débutant",
+    intermediate: "Intermédiaire",
+    advanced: "Avancé",
+    expert: "Expert",
+    selectTone: "Sélectionner le ton...",
+    selectLength: "Sélectionner la longueur...",
+    technicalLevel: "Niveau technique",
+    selectTechnicalLevel: "Sélectionner le niveau technique...",
+    responseFormat: "Format de réponse",
+    selectFormat: "Sélectionner le format...",
+    writingStyle: "Style d'écriture",
+    selectStyle: "Sélectionner le style...",
+    stepConstraintsTips: "Conseils pour définir les contraintes",
+    tipConstraints1: "Soyez spécifique sur le ton et le style",
+    tipConstraints2: "Définissez le niveau technique requis",
+    tipConstraints3: "Spécifiez le format de sortie désiré",
+    stepContextTips: "Conseils pour ajouter du contexte",
+    tipContext1: "Fournissez des informations de base pertinentes",
+    tipContext2: "Mentionnez les exigences spécifiques",
+    tipContext3: "Incluez des exemples si utile",
+    stepObjectiveTips: "Conseils pour définir les objectifs",
+    tipObjective1: "Soyez clair et spécifique sur votre objectif",
+    tipObjective2: "Mentionnez le résultat désiré",
+    tipObjective3: "Considérez votre public cible",
+    stepOutputTips: "Conseils pour le format de sortie",
+    tipOutput1: "Choisissez le format le plus approprié",
+    tipOutput2: "Considérez comment vous utiliserez le résultat",
+    tipOutput3: "Pensez aux préférences de votre audience",
+    stepReviewTips: "Conseils pour la révision",
+    tipReview1: "Vérifiez tous vos paramètres",
+    tipReview2: "Assurez-vous que tout s'aligne avec votre objectif",
+    tipReview3: "Vous pouvez toujours revenir et modifier",
+    examples: "Exemples",
+    example1: "Exemple 1",
+    example2: "Exemple 2",
+    example3: "Exemple 3",
+    contextInformation: "Informations contextuelles",
+    contextPlaceholder: "Fournissez des informations de base, contraintes ou exigences spécifiques...",
+    specificObjective: "Objectif spécifique",
+    objectiveMultiStepPlaceholder: "Que voulez-vous exactement accomplir avec ce prompt ?",
+    previousSteps: "Étapes précédentes",
+    nextStep: "Étape suivante",
+    generateFinalPrompt: "Générer le prompt final",
+    finalPromptGenerated: "Prompt final généré avec succès !",
+    multiStepPromptResult: "Résultat du prompt multi-étapes",
+    templateCustomization: "Personnalisation de modèle",
+    customizeTemplate: "Personnaliser le modèle",
+    templateCustomizationDesc: "Personnalisez les modèles avec vos variables",
+    template: "Modèle",
+    templatePlaceholder: "Entrez votre modèle avec des variables comme {{variable}}...",
+    variables: "Variables",
+    variablesPlaceholder: "Définissez vos variables (une par ligne) : variable=valeur",
+    customizationTips: "Conseils de personnalisation",
+    tipCustomization1: "Utilisez la syntaxe {{variable}} dans votre modèle",
+    tipCustomization2: "Définissez les variables avec le format variable=valeur",
+    tipCustomization3: "Les variables seront remplacées automatiquement",
+    customTemplate: "Modèle personnalisé",
+    promptTemplateLibrary: "Bibliothèque de modèles de prompts",
+    promptTemplateLibraryDesc: "Parcourez et utilisez des modèles de prompts pré-faits",
+    searchTemplates: "Rechercher des modèles...",
+    filterByCategory: "Filtrer par catégorie",
+    allCategories: "Toutes les catégories",
+    useTemplate: "Utiliser le modèle",
+    customize: "Personnaliser",
+    templateUsed: "Modèle utilisé !",
+    templateUsedDesc: "Le modèle a été appliqué avec succès",
+    templateCustomized: "Modèle personnalisé !",
+    templateCustomizedDesc: "Votre modèle personnalisé est prêt",
+    noTemplatesFound: "Aucun modèle trouvé",
+    tryDifferentSearch: "Essayez un terme de recherche ou une catégorie différente",
+    newTemplate: "Nouveau modèle",
+    editTemplate: "Modifier le modèle",
+    deleteTemplate: "Supprimer le modèle",
+    confirmDelete: "Confirmer la suppression",
+    confirmDeleteDesc: "Êtes-vous sûr de vouloir supprimer ce modèle ?",
+    cancel: "Annuler",
+    delete: "Supprimer",
+    templateDeleted: "Modèle supprimé !",
+    templateDeletedDesc: "Le modèle a été supprimé avec succès",
+    templateSaved: "Modèle sauvegardé !",
+    templateSavedDesc: "Votre modèle a été sauvegardé dans la bibliothèque",
+    templateUpdated: "Modèle mis à jour !",
+    templateUpdatedDesc: "Les modifications du modèle ont été sauvegardées",
+    enterTemplateName: "Veuillez entrer un nom de modèle",
+    templateName: "Nom du modèle",
+    templateNamePlaceholder: "Entrez le nom du modèle...",
+    templateContent: "Contenu du modèle",
+    templateContentPlaceholder: "Entrez le contenu de votre modèle...",
+    saveTemplate: "Sauvegarder le modèle",
+    savingTemplate: "Sauvegarde du modèle...",
+    templateExists: "Le modèle existe",
+    templateExistsDesc: "Un modèle avec ce nom existe déjà",
+    overwrite: "Écraser",
+    changeTemplateName: "Changer le nom"
   },
   ar: {
-    welcome: 'مرحباً بك في مختبر مولد الـ Prompts',
-    description: 'أنشئ prompts قوية للذكاء الاصطناعي باستخدام مولدنا المتقدم',
-    getStarted: 'ابدأ الآن',
-    features: 'المميزات',
-    feature1: 'توليد بالذكاء الاصطناعي',
-    feature2: 'فئات متعددة',
-    feature3: 'سهل الاستخدام',
-    about: 'حول',
-    contact: 'اتصل',
-    home: 'الرئيسية',
-    promptGeneratorTitle: 'مولد Prompts الذكاء الاصطناعي',
-    promptGeneratorDesc: 'أنشئ prompts احترافية مصممة لاحتياجاتك',
-    improvementTitle: 'تحسين الـ Prompts',
-    improvementDesc: 'حسّن وطوّر prompts الموجودة لديك',
-    mainCategory: 'الفئة الرئيسية',
-    required: '*',
-    selectDomain: 'اختر مجالاً',
-    subcategory: 'الفئة الفرعية',
-    optional: '(اختياري)',
-    chooseSpecialization: 'اختر تخصصاً',
-    taskDescription: 'وصف المهمة',
-    taskDescriptionPlaceholder: 'صف ما تريد إنجازه...',
-    mainObjective: 'الهدف الرئيسي',
-    mainObjectivePlaceholder: 'ما هو الهدف الرئيسي؟',
-    targetAudience: 'الجمهور المستهدف',
-    targetAudiencePlaceholder: 'من هو الجمهور المستهدف؟',
-    outputFormat: 'تنسيق الإخراج',
-    chooseFormat: 'اختر تنسيقاً',
-    toneStyle: 'النبرة والأسلوب',
-    chooseTone: 'اختر نبرة',
-    approximateLength: 'الطول التقريبي',
-    chooseLength: 'اختر الطول',
-    generateWithAI: 'توليد بالذكاء الاصطناعي',
-    generatingWithAI: 'جاري التوليد...',
-    aiGeneratedPrompt: 'Prompt مولد بالذكاء الاصطناعي',
-    aiGeneratedPromptDesc: 'prompt المحسن جاهز للاستخدام',
-    copy: 'نسخ',
-    readyForGeneration: 'جاهز للتوليد',
-    aiWillCreate: 'الذكاء الاصطناعي سينشئ prompt مثالي لك',
-    missingInfo: 'معلومات مفقودة',
-    chooseCategoryDesc: 'يرجى اختيار فئة ووصف مهمتك',
-    promptCreatedSuccess: 'تم إنشاء الـ Prompt!',
-    promptCreatedDesc: 'تم توليد prompt الذكاء الاصطناعي بنجاح',
-    generationError: 'خطأ في التوليد',
-    copiedSuccess: 'تم النسخ!',
-    promptCopiedClipboard: 'تم نسخ الـ Prompt إلى الحافظة',
-    generatedByAI: 'مولد بالذكاء الاصطناعي',
-    aiGeneratedDesc: 'تم إنشاء هذا الـ prompt باستخدام الذكاء الاصطناعي',
-    contentCreation: 'إنشاء المحتوى',
-    contentCreationDesc: 'الكتابة والتصميم وإنتاج الوسائط',
-    businessProfessional: 'الأعمال والمهنية',
-    businessProfessionalDesc: 'الاستراتيجية والإدارة والمهام المؤسسية',
-    educationTraining: 'التعليم والتدريب',
-    educationTrainingDesc: 'التدريس والتعلم وتطوير المهارات',
-    technologyDevelopment: 'التكنولوجيا والتطوير',
-    technologyDevelopmentDesc: 'البرمجة والأنظمة والحلول التقنية',
-    analysisResearch: 'التحليل والبحث',
-    analysisResearchDesc: 'تحليل البيانات والبحث والرؤى',
-    problemSolving: 'حل المشاكل',
-    problemSolvingDesc: 'الحلول الإبداعية واتخاذ القرارات',
-    communicationRelations: 'التواصل والعلاقات',
-    communicationRelationsDesc: 'التواصل الشخصي والعام',
-    writing: 'الكتابة',
-    artisticCreation: 'الإبداع الفني',
-    videoAudio: 'الفيديو والصوت',
-    marketing: 'التسويق',
-    literature: 'الأدب',
-    strategy: 'الاستراتيجية',
-    communication: 'التواصل',
-    hr: 'الموارد البشرية',
-    sales: 'المبيعات',
-    management: 'الإدارة',
-    courses: 'الدورات',
-    evaluation: 'التقييم',
-    research: 'البحث',
-    pedagogy: 'علم التربية',
-    professionalTraining: 'التدريب المهني',
-    programming: 'البرمجة',
-    dataScience: 'علم البيانات',
-    cybersecurity: 'الأمن السيبراني',
-    architecture: 'الهندسة المعمارية',
-    devops: 'DevOps',
-    dataAnalysisSubcat: 'تحليل البيانات',
-    academicResearch: 'البحث الأكاديمي',
-    competitiveIntelligence: 'الذكاء التنافسي',
-    auditEvaluation: 'التدقيق والتقييم',
-    forecasting: 'التنبؤ',
-    diagnosis: 'التشخيص',
-    brainstorming: 'العصف الذهني',
-    decisionMaking: 'اتخاذ القرارات',
-    optimization: 'التحسين',
-    innovation: 'الابتكار',
-    customerRelations: 'علاقات العملاء',
-    internalCommunication: 'التواصل الداخلي',
-    negotiation: 'التفاوض',
-    presentation: 'العرض',
-    publicRelations: 'العلاقات العامة',
-    bulletList: 'قائمة نقطية',
-    structuredParagraph: 'فقرة منظمة',
-    table: 'جدول',
-    numberedSteps: 'خطوات مرقمة',
-    dialogue: 'حوار',
-    codeScript: 'كود/سكريبت',
-    professional: 'مهني',
-    casual: 'غير رسمي',
-    technical: 'تقني',
-    creative: 'إبداعي',
-    persuasive: 'إقناعي',
-    educational: 'تعليمي',
-    short: 'قصير',
-    medium: 'متوسط',
-    long: 'طويل',
-    veryDetailed: 'مفصل جداً',
-    originalPrompt: 'الـ Prompt الأصلي',
-    originalPromptPlaceholder: 'أدخل prompt للتحسين...',
-    improvementObjective: 'هدف التحسين',
-    improvementObjectivePlaceholder: 'أي جانب محدد للتحسين؟',
-    improvePrompt: 'تحسين الـ Prompt',
-    improvingPrompt: 'جاري التحسين...',
-    improvedPrompt: 'Prompt محسن',
-    improvedPromptDesc: 'prompt المحسن والمطور',
-    improvements: 'التحسينات المطبقة',
-    improvementSuccess: 'اكتمل التحسين!',
-    improvementSuccessDesc: 'تم تحسين prompt بنجاح',
-    enterOriginalPrompt: 'يرجى إدخال الـ prompt الأصلي للتحسين',
-    textGeneration: 'توليد النصوص',
-    textGenerationDesc: 'توليد أنواع مختلفة من المحتوى النصي',
-    blogPostGenerator: 'مولد مقالات المدونة',
-    imageCreation: 'إنشاء الصور',
-    imageCreationDesc: 'إنشاء وتصميم المحتوى البصري',
-    interactiveDialogue: 'الحوار التفاعلي',
-    interactiveDialogueDesc: 'محتوى محادثة وتفاعلي',
-    customerSupportChatbot: 'روبوت دعم العملاء',
-    codeGeneration: 'توليد الكود',
-    codeGenerationDesc: 'مساعدة البرمجة والتطوير',
-    reactComponentGenerator: 'مولد مكونات React',
-    dataAnalysis: 'تحليل البيانات',
-    dataAnalysisDesc: 'تحليل وتفسير البيانات',
-    creativeWriting: 'الكتابة الإبداعية',
-    creativeWritingDesc: 'الكتابة الإبداعية والفنية',
-    blue: 'أزرق',
-    green: 'أخضر',
-    purple: 'بنفسجي',
-    orange: 'برتقالي',
-    red: 'أحمر',
-    indigo: 'نيلي',
-    validationError: 'خطأ في التحقق',
-    nameDescriptionRequired: 'الاسم والوصف مطلوبان',
-    categoryCreated: 'تم إنشاء الفئة',
-    categoryUpdated: 'تم تحديث الفئة',
-    categoryDeleted: 'تم حذف الفئة',
-    deleteConfirmation: 'تأكيد الحذف',
-    confirmDelete: 'هل أنت متأكد من حذف هذه الفئة؟',
-    cancel: 'إلغاء',
-    edit: 'تحرير',
-    delete: 'حذف',
-    save: 'حفظ',
-    addCategory: 'إضافة فئة',
-    editCategory: 'تحرير الفئة',
-    categoryName: 'اسم الفئة',
-    categoryDescription: 'وصف الفئة',
-    categoryColor: 'لون الفئة',
-    categoryNamePlaceholder: 'أدخل اسم الفئة...',
-    categoryDescriptionPlaceholder: 'أدخل وصف الفئة...',
-    createCategory: 'إنشاء الفئة',
-    updateCategory: 'تحديث الفئة',
-    categoryManagement: 'إدارة الفئات',
-    categoryManagementDesc: 'إدارة فئات الـ prompts المخصصة',
-    manageCategories: 'إدارة الفئات',
-    customCategories: 'الفئات المخصصة',
-    noCustomCategories: 'لا توجد فئات مخصصة بعد',
-    createFirstCategory: 'أنشئ فئتك المخصصة الأولى',
-    progress: 'التقدم',
-    style: 'الأسلوب',
-    title: 'العنوان',
-    format: 'التنسيق',
-    step: 'الخطوة',
-    length: 'الطول',
-    next: 'التالي',
-    previous: 'السابق',
-    background: 'الخلفية',
-    theme: 'المظهر',
-    createNewCategory: 'إنشاء فئة جديدة',
-    colorTheme: 'موضوع اللون',
-    exampleUseCases: 'أمثلة على الاستخدام',
-    update: 'تحديث',
-    create: 'إنشاء',
-    categories: 'الفئات',
-    french: 'فرنسي',
-    arabic: 'عربي',
-    english: 'إنجليزي',
-    stepObjectiveTitle: 'تحديد الهدف',
-    stepObjectiveDesc: 'ضع أهدافاً واضحة ومعايير نجاح',
-    stepContextTitle: 'السياق والخلفية',
-    stepContextDesc: 'قدم السياق والقيود',
-    stepConstraintsTitle: 'المتطلبات والأسلوب',
-    stepConstraintsDesc: 'حدد النبرة والتنسيق والأسلوب',
-    stepOutputFormatTitle: 'تنسيق الإخراج',
-    stepOutputFormatDesc: 'حدد الهيكل والمخرجات',
-    stepReviewTitle: 'المراجعة والتوليد',
-    stepReviewDesc: 'راجع وولد prompt الخاص بك',
-    advancedPromptGenerated: 'تم توليد prompt متقدم',
-    advancedPromptGeneratedDesc: 'تم إنشاء prompt المتقدم بنجاح',
-    tryAgainLater: 'يرجى المحاولة مرة أخرى لاحقاً',
-    multiStepBuilder: 'المنشئ متعدد الخطوات',
-    multiStepBuilderDesc: 'أنشئ prompts متقدمة خطوة بخطوة',
-    generating: 'جاري التوليد...',
-    generateAdvancedPrompt: 'توليد prompt متقدم',
-    advancedPromptResult: 'نتيجة الـ prompt المتقدم',
-    authoritative: 'موثوق',
-    friendly: 'ودود',
-    brief: 'موجز',
-    concise: 'مقتضب',
-    detailed: 'مفصل',
-    comprehensive: 'شامل',
-    extensive: 'واسع النطاق',
-    structuredReport: 'تقرير منظم',
-    bulletList: 'نقاط',
-    narrative: 'سردي',
-    stepByStep: 'خطوة بخطوة',
-    qaFormat: 'تنسيق سؤال وجواب',
-    analytical: 'تحليلي',
-    descriptive: 'وصفي',
-    comparative: 'مقارن',
-    argumentative: 'جدلي',
-    instructional: 'تعليمي',
-    consultative: 'استشاري',
-    beginner: 'مبتدئ',
-    intermediate: 'متوسط',
-    advanced: 'متقدم',
-    expert: 'خبير',
-    selectTone: 'اختر النبرة',
-    selectLength: 'اختر الطول',
-    technicalLevel: 'المستوى التقني',
-    selectTechnicalLevel: 'اختر المستوى التقني',
-    responseFormat: 'تنسيق الاستجابة',
-    selectFormat: 'اختر التنسيق',
-    writingStyle: 'أسلوب الكتابة',
-    selectStyle: 'اختر الأسلوب',
-    stepConstraintsTips: 'نصائح المتطلبات',
-    tipConstraints1: 'اختر النبرة حسب جمهورك',
-    tipConstraints2: 'الطول يؤثر على مستوى التفصيل',
-    tipConstraints3: 'يجب أن يتطابق المستوى التقني مع خبرة المستخدم',
-    contextBackground: 'خلفية السياق',
-    contextBackgroundPlaceholder: 'قدم معلومات خلفية ذات صلة...',
-    selectIndustry: 'اختر الصناعة',
-    contextConstraints: 'قيود السياق',
-    addConstraint: 'أضف قيد',
-    constraintPlaceholder: 'أدخل قيد...',
-    noConstraintsYet: 'لم تتم إضافة قيود بعد',
-    stepContextTips: 'نصائح السياق',
-    tipContext1: 'قدم سياق خلفية واضح',
-    tipContext2: 'حدد جمهورك المستهدف بدقة',
-    tipContext3: 'أضف قيود وحدود ذات صلة',
-    specificTargets: 'أهداف محددة',
-    addTarget: 'أضف هدف',
-    targetPlaceholder: 'أدخل هدف محدد...',
-    noTargetsYet: 'لم تتم إضافة أهداف بعد',
-    successCriteria: 'معايير النجاح',
-    successCriteriaPlaceholder: 'كيف ستقيس النجاح؟',
-    stepObjectiveTips: 'نصائح الهدف',
-    tipObjective1: 'كن محدداً حول هدفك الرئيسي',
-    tipObjective2: 'أضف أهداف قابلة للقياس',
-    tipObjective3: 'حدد معايير نجاح واضحة',
-    outputStructure: 'هيكل الإخراج',
-    selectStructure: 'اختر الهيكل',
-    requiredSections: 'الأقسام المطلوبة',
-    addSection: 'أضف قسم',
-    sectionPlaceholder: 'أدخل اسم القسم...',
-    noSectionsYet: 'لم تتم إضافة أقسام بعد',
-    expectedDeliverables: 'المخرجات المتوقعة',
-    addDeliverable: 'أضف مخرج',
-    deliverablePlaceholder: 'أدخل مخرج...',
-    noDeliverablesYet: 'لم تتم إضافة مخرجات بعد',
-    stepOutputFormatTips: 'نصائح تنسيق الإخراج',
-    tipOutputFormat1: 'اختر هيكل يناسب احتياجاتك',
-    tipOutputFormat2: 'حدد الأقسام المحددة المطلوبة',
-    tipOutputFormat3: 'اسرد جميع المخرجات المتوقعة',
-    hierarchical: 'هرمي',
-    sequential: 'متسلسل',
-    modular: 'معياري',
-    matrix: 'مصفوفة',
-    flowchart: 'مخطط انسيابي',
-    objectiveReview: 'مراجعة الهدف',
-    contextReview: 'مراجعة السياق',
-    requirementsReview: 'مراجعة المتطلبات',
-    outputFormatReview: 'مراجعة تنسيق الإخراج',
-    notSpecified: 'غير محدد',
-    readyToGenerate: 'جاهز للتوليد',
-    allRequiredFieldsCompleted: 'تم إكمال جميع الحقول المطلوبة',
-    almostReady: 'شبه جاهز',
-    someFieldsMissing: 'بعض الحقول مفقودة',
-    completed: 'مكتمل',
-    finalTips: 'نصائح نهائية',
-    finalTip1: 'راجع جميع الأقسام قبل التوليد',
-    finalTip2: 'تأكد من وضوح الأهداف',
-    finalTip3: 'تحقق من اكتمال السياق',
-    finalTip4: 'تحقق من أن تنسيق الإخراج يطابق الاحتياجات',
-    technology: 'التكنولوجيا',
-    healthcare: 'الرعاية الصحية',
-    finance: 'المالية',
-    education: 'التعليم',
-    retail: 'البيع بالتجزئة',
-    manufacturing: 'التصنيع',
-    consulting: 'الاستشارات',
-    media: 'الإعلام',
-    other: 'أخرى',
-    industry: 'الصناعة',
-    productImagePrompt: 'موجه صورة المنتج',
-    dataInsightsGenerator: 'مولد رؤى البيانات',
-    storyConceptGenerator: 'مولد مفهوم القصة',
-    allCategories: 'جميع الفئات',
-    copied: 'تم النسخ',
-    promptCopied: 'تم نسخ الموجه',
-    promptTemplateLibrary: 'مكتبة قوالب الموجهات',
-    browsePromptTemplates: 'تصفح قوالب الموجهات',
-    searchPrompts: 'البحث في الموجهات',
-    preview: 'معاينة',
-    close: 'إغلاق',
-    copyTemplate: 'نسخ القالب',
-    noPromptsFound: 'لم يتم العثور على موجهات',
-    darkMode: 'الوضع المظلم',
-    lightMode: 'الوضع المضيء',
-    subtitle: 'أنشئ وحسّن وطوّر موجهات الذكاء الاصطناعي باستخدام مجموعة أدواتنا المتقدمة',
-    advancedAI: 'ذكاء اصطناعي متقدم',
-    noCode: 'بدون كود',
-    generator: 'مولد',
-    improvement: 'تحسين',
-    library: 'مكتبة',
-    integration: 'تكامل'
+    promptGeneratorTitle: "مولد النصوص الذكي",
+    promptGeneratorDesc: "إنشاء نصوص محسنة لأي مهمة ذكية مع مساعدنا الذكي",
+    category: "الفئة",
+    required: "(مطلوب)",
+    chooseCategoryPlaceholder: "اختر فئة...",
+    subcategory: "الفئة الفرعية",
+    optional: "(اختياري)",
+    chooseSubcategoryPlaceholder: "اختر فئة فرعية...",
+    description: "الوصف",
+    descriptionPlaceholder: "صف ما تريد تحقيقه...",
+    objective: "الهدف",
+    objectivePlaceholder: "ما هو هدفك المحدد؟",
+    targetAudience: "الجمهور المستهدف",
+    targetAudiencePlaceholder: "من هو جمهورك المستهدف؟",
+    outputFormat: "تنسيق الإخراج",
+    chooseFormatPlaceholder: "اختر التنسيق المرغوب...",
+    tone: "النبرة",
+    chooseTonePlaceholder: "اختر النبرة...",
+    length: "الطول",
+    chooseLengthPlaceholder: "اختر الطول...",
+    generateWithAI: "إنشاء بالذكاء الاصطناعي",
+    generatingWithAI: "إنشاء بالذكاء الاصطناعي...",
+    aiGeneratedPrompt: "نص محسن بالذكاء الاصطناعي",
+    aiGeneratedPromptDesc: "نصك المحسن جاهز للاستخدام",
+    copy: "نسخ",
+    generatedByAI: "محسن بالذكاء الاصطناعي",
+    aiGeneratedDesc: "تم إنشاء هذا النص باستخدام الذكاء الاصطناعي لتحسين نتائجك.",
+    readyForGeneration: "جاهز للإنشاء",
+    aiWillCreate: "سيقوم الذكاء الاصطناعي بإنشاء نص محسن بناءً على تفضيلاتك",
+    missingInfo: "معلومات مفقودة",
+    chooseCategoryDesc: "يرجى اختيار فئة وإضافة وصف",
+    promptCreatedSuccess: "تم إنشاء النص بنجاح!",
+    promptCreatedDesc: "نصك المحسن جاهز للاستخدام",
+    generationError: "خطأ في الإنشاء",
+    copiedSuccess: "تم النسخ بنجاح!",
+    promptCopiedClipboard: "تم نسخ النص إلى الحافظة",
+    improvementTitle: "تحسين النص",
+    improvementDesc: "حسن وطور نصوصك الموجودة بالذكاء الاصطناعي",
+    originalPrompt: "النص الأصلي",
+    originalPromptPlaceholder: "أدخل النص الذي تريد تحسينه...",
+    improvementObjective: "هدف التحسين",
+    improvementObjectivePlaceholder: "أي جانب محدد تريد تحسينه؟",
+    improvePrompt: "تحسين النص",
+    improvingPrompt: "تحسين النص...",
+    improvedPrompt: "النص المحسن",
+    improvedPromptDesc: "نصك المحسن والمطور",
+    improvements: "التحسينات المضافة",
+    improvementSuccess: "اكتمل التحسين!",
+    improvementSuccessDesc: "تم تحسين نصك بنجاح",
+    enterOriginalPrompt: "يرجى إدخال النص الأصلي للتحسين",
+    createNewCategory: "إنشاء فئة جديدة",
+    colorTheme: "لون الموضوع",
+    exampleUseCases: "أمثلة الاستخدام",
+    update: "تحديث",
+    create: "إنشاء",
+    categories: "الفئات",
+    french: "الفرنسية",
+    arabic: "العربية",
+    english: "الإنجليزية",
+    stepObjectiveTitle: "تحديد الهدف",
+    stepObjectiveDesc: "ماذا تريد أن تحقق؟",
+    stepContextTitle: "إضافة السياق",
+    stepContextDesc: "تقديم معلومات أساسية",
+    stepConstraintsTitle: "تحديد القيود",
+    stepConstraintsDesc: "تحديد المعايير والحدود",
+    stepOutputFormatTitle: "تنسيق الإخراج",
+    stepOutputFormatDesc: "كيف يجب عرض النتيجة؟",
+    stepReviewTitle: "المراجعة والإنشاء",
+    stepReviewDesc: "راجع إعداداتك وأنشئ النص",
+    advancedPromptGenerated: "تم إنشاء نص متقدم!",
+    advancedPromptGeneratedDesc: "نصك متعدد الخطوات جاهز",
+    tryAgainLater: "يرجى المحاولة لاحقاً",
+    multiStepBuilder: "منشئ متعدد الخطوات",
+    multiStepBuilderDesc: "إنشاء نصوص معقدة خطوة بخطوة",
+    generating: "إنشاء...",
+    generateAdvancedPrompt: "إنشاء نص متقدم",
+    advancedPromptResult: "نتيجة النص المتقدم",
+    authoritative: "موثوق",
+    friendly: "ودود",
+    brief: "موجز",
+    concise: "مختصر",
+    detailed: "مفصل",
+    comprehensive: "شامل",
+    extensive: "واسع",
+    structuredReport: "تقرير منظم",
+    bulletPoints: "نقاط",
+    narrative: "سردي",
+    stepByStep: "خطوة بخطوة",
+    qaFormat: "تنسيق سؤال وجواب",
+    analytical: "تحليلي",
+    descriptive: "وصفي",
+    comparative: "مقارن",
+    argumentative: "جدلي",
+    instructional: "تعليمي",
+    consultative: "استشاري",
+    beginner: "مبتدئ",
+    intermediate: "متوسط",
+    advanced: "متقدم",
+    expert: "خبير",
+    selectTone: "اختر النبرة...",
+    selectLength: "اختر الطول...",
+    technicalLevel: "المستوى التقني",
+    selectTechnicalLevel: "اختر المستوى التقني...",
+    responseFormat: "تنسيق الاستجابة",
+    selectFormat: "اختر التنسيق...",
+    writingStyle: "أسلوب الكتابة",
+    selectStyle: "اختر الأسلوب...",
+    stepConstraintsTips: "نصائح لتحديد القيود",
+    tipConstraints1: "كن محدداً حول النبرة والأسلوب",
+    tipConstraints2: "حدد المستوى التقني المطلوب",
+    tipConstraints3: "حدد تنسيق الإخراج المرغوب",
+    stepContextTips: "نصائح لإضافة السياق",
+    tipContext1: "قدم معلومات أساسية ذات صلة",
+    tipContext2: "اذكر أي متطلبات محددة",
+    tipContext3: "ضع أمثلة إذا كانت مفيدة",
+    stepObjectiveTips: "نصائح لتحديد الأهداف",
+    tipObjective1: "كن واضحاً ومحدداً حول هدفك",
+    tipObjective2: "اذكر النتيجة المرغوبة",
+    tipObjective3: "فكر في جمهورك المستهدف",
+    stepOutputTips: "نصائح لتنسيق الإخراج",
+    tipOutput1: "اختر التنسيق الأنسب",
+    tipOutput2: "فكر في كيفية استخدام النتيجة",
+    tipOutput3: "فكر في تفضيلات جمهورك",
+    stepReviewTips: "نصائح للمراجعة",
+    tipReview1: "تحقق من جميع إعداداتك",
+    tipReview2: "تأكد أن كل شيء يتماشى مع هدفك",
+    tipReview3: "يمكنك دائماً العودة والتعديل",
+    examples: "أمثلة",
+    example1: "مثال 1",
+    example2: "مثال 2",
+    example3: "مثال 3",
+    contextInformation: "معلومات السياق",
+    contextPlaceholder: "قدم معلومات أساسية أو قيود أو متطلبات محددة...",
+    specificObjective: "هدف محدد",
+    objectiveMultiStepPlaceholder: "ماذا تريد تحقيقه بالضبط بهذا النص؟",
+    previousSteps: "الخطوات السابقة",
+    nextStep: "الخطوة التالية",
+    generateFinalPrompt: "إنشاء النص النهائي",
+    finalPromptGenerated: "تم إنشاء النص النهائي بنجاح!",
+    multiStepPromptResult: "نتيجة النص متعدد الخطوات",
+    templateCustomization: "تخصيص القالب",
+    customizeTemplate: "تخصيص القالب",
+    templateCustomizationDesc: "شخصن القوالب بمتغيراتك",
+    template: "القالب",
+    templatePlaceholder: "أدخل قالبك مع متغيرات مثل {{variable}}...",
+    variables: "المتغيرات",
+    variablesPlaceholder: "حدد متغيراتك (واحد في كل سطر): متغير=القيمة",
+    customizationTips: "نصائح التخصيص",
+    tipCustomization1: "استخدم صيغة {{variable}} في قالبك",
+    tipCustomization2: "حدد المتغيرات بتنسيق متغير=قيمة",
+    tipCustomization3: "سيتم استبدال المتغيرات تلقائياً",
+    customTemplate: "قالب مخصص",
+    promptTemplateLibrary: "مكتبة قوالب النصوص",
+    promptTemplateLibraryDesc: "تصفح واستخدم قوالب نصوص جاهزة",
+    searchTemplates: "البحث في القوالب...",
+    filterByCategory: "تصفية حسب الفئة",
+    allCategories: "جميع الفئات",
+    useTemplate: "استخدام القالب",
+    customize: "تخصيص",
+    templateUsed: "تم استخدام القالب!",
+    templateUsedDesc: "تم تطبيق القالب بنجاح",
+    templateCustomized: "تم تخصيص القالب!",
+    templateCustomizedDesc: "قالبك المخصص جاهز",
+    noTemplatesFound: "لم يتم العثور على قوالب",
+    tryDifferentSearch: "جرب مصطلح بحث أو فئة مختلفة",
+    newTemplate: "قالب جديد",
+    editTemplate: "تعديل القالب",
+    deleteTemplate: "حذف القالب",
+    confirmDelete: "تأكيد الحذف",
+    confirmDeleteDesc: "هل أنت متأكد من حذف هذا القالب؟",
+    cancel: "إلغاء",
+    delete: "حذف",
+    templateDeleted: "تم حذف القالب!",
+    templateDeletedDesc: "تم حذف القالب بنجاح",
+    templateSaved: "تم حفظ القالب!",
+    templateSavedDesc: "تم حفظ قالبك في المكتبة",
+    templateUpdated: "تم تحديث القالب!",
+    templateUpdatedDesc: "تم حفظ تغييرات القالب",
+    enterTemplateName: "يرجى إدخال اسم القالب",
+    templateName: "اسم القالب",
+    templateNamePlaceholder: "أدخل اسم القالب...",
+    templateContent: "محتوى القالب",
+    templateContentPlaceholder: "أدخل محتوى قالبك...",
+    saveTemplate: "حفظ القالب",
+    savingTemplate: "حفظ القالب...",
+    templateExists: "القالب موجود",
+    templateExistsDesc: "يوجد قالب بهذا الاسم بالفعل",
+    overwrite: "استبدال",
+    changeTemplateName: "تغيير الاسم"
   }
-} as const;
+};
 
 export default translations;
