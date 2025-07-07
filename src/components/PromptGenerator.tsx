@@ -6,15 +6,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Zap, Copy, Sparkles, Wand2, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Configuration API
+// Configuration API - Mistral
 const API_CONFIG = {
-  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+  endpoint: 'https://api.mistral.ai/v1/chat/completions',
   key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
-  model: 'anthropic/claude-3.5-sonnet'
+  model: 'mistral-large-latest'
 };
 
 const PromptGenerator = () => {
@@ -167,7 +166,7 @@ const PromptGenerator = () => {
 
   const generatePromptWithAI = async (formData: any) => {
     try {
-      console.log('Génération de prompt via API...');
+      console.log('Génération de prompt via API Mistral...');
       
       const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
       const subcategoryLabel = formData.subcategory ? 
@@ -199,9 +198,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_CONFIG.key}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Prompt Generator Lab'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           model: API_CONFIG.model,
@@ -216,8 +213,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             }
           ],
           temperature: 0.7,
-          max_tokens: 1000,
-          top_p: 0.9
+          max_tokens: 1000
         })
       });
 
@@ -225,14 +221,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         const errorData = await response.json().catch(() => ({}));
         
         if (response.status === 402) {
-          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte OpenRouter ou utiliser une autre clé API.');
+          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte Mistral ou utiliser une autre clé API.');
         }
         
-        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || response.statusText}`);
+        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('Réponse API reçue:', data);
+      console.log('Réponse API Mistral reçue:', data);
 
       if (data.choices && data.choices[0] && data.choices[0].message) {
         return data.choices[0].message.content;
@@ -271,7 +267,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       
       let errorMessage = "Impossible de générer le prompt.";
       if (error.message.includes('crédits')) {
-        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte OpenRouter.";
+        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte Mistral.";
       } else if (error.message.includes('connexion')) {
         errorMessage = "Vérifiez votre connexion internet.";
       }
