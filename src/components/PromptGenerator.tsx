@@ -9,13 +9,6 @@ import { toast } from "@/hooks/use-toast";
 import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Configuration API - Mistral
-const API_CONFIG = {
-  endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
-  model: 'mistral-large-latest'
-};
-
 const PromptGenerator = () => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -31,6 +24,7 @@ const PromptGenerator = () => {
   
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [apiKey, setApiKey] = useState('');
 
   // Nouvelles catégories restructurées
   const categories = [
@@ -165,6 +159,10 @@ const PromptGenerator = () => {
   };
 
   const generatePromptWithAI = async (formData: any) => {
+    if (!apiKey.trim()) {
+      throw new Error('Veuillez configurer votre clé API Mistral dans les paramètres.');
+    }
+
     try {
       console.log('Génération de prompt via API Mistral...');
       
@@ -194,14 +192,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
       if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
 
-      const response = await fetch(API_CONFIG.endpoint, {
+      const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${API_CONFIG.key}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: API_CONFIG.model,
+          model: 'mistral-large-latest',
           messages: [
             {
               role: 'system',
@@ -222,6 +220,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         
         if (response.status === 402) {
           throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte Mistral ou utiliser une autre clé API.');
+        } else if (response.status === 429) {
+          throw new Error('Limite de requêtes dépassée. Veuillez attendre quelques minutes avant de réessayer ou vérifier votre quota API.');
+        } else if (response.status === 401) {
+          throw new Error('Clé API invalide. Veuillez vérifier votre clé API Mistral.');
         }
         
         throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
@@ -268,6 +270,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       let errorMessage = "Impossible de générer le prompt.";
       if (error.message.includes('crédits')) {
         errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte Mistral.";
+      } else if (error.message.includes('Limite de requêtes')) {
+        errorMessage = "Limite de requêtes dépassée. Attendez quelques minutes avant de réessayer.";
+      } else if (error.message.includes('Clé API invalide')) {
+        errorMessage = "Clé API invalide. Vérifiez votre configuration.";
+      } else if (error.message.includes('configurer votre clé')) {
+        errorMessage = "Veuillez configurer votre clé API Mistral.";
       } else if (error.message.includes('connexion')) {
         errorMessage = "Vérifiez votre connexion internet.";
       }
@@ -306,6 +314,32 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Configuration API Key */}
+          <div className="space-y-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+            <Label htmlFor="apiKey" className="text-sm font-semibold text-amber-800">
+              Clé API Mistral (obligatoire)
+            </Label>
+            <Input
+              id="apiKey"
+              type="password"
+              placeholder="Entrez votre clé API Mistral..."
+              value={apiKey}
+              onChange={(e) => setApiKey(e.target.value)}
+              className="animated-border hover:shadow-lg transition-all duration-200 bg-white border-amber-300"
+            />
+            <p className="text-xs text-amber-700">
+              Obtenez votre clé API sur{' '}
+              <a 
+                href="https://console.mistral.ai/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline hover:text-amber-800"
+              >
+                console.mistral.ai
+              </a>
+            </p>
+          </div>
+
           {/* Catégorie principale */}
           <div className="space-y-3">
             <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
@@ -451,7 +485,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           <Button 
             onClick={generatePrompt} 
-            disabled={isGenerating}
+            disabled={isGenerating || !apiKey.trim()}
             className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 hover:from-violet-700 hover:via-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 glow-effect text-lg"
           >
             {isGenerating ? (
