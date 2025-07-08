@@ -31,6 +31,13 @@ const API_PROVIDERS = {
     model: 'claude-3-sonnet-20240229',
     consoleUrl: 'https://console.anthropic.com/',
     authHeader: (key: string) => key
+  },
+  deepseek: {
+    name: 'DeepSeek',
+    endpoint: 'https://api.deepseek.com/v1/chat/completions',
+    model: 'deepseek-chat',
+    consoleUrl: 'https://platform.deepseek.com/api_keys',
+    authHeader: (key: string) => `Bearer ${key}`
   }
 };
 
