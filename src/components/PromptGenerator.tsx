@@ -403,7 +403,6 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{provider.name}</span>
                 </div>
               ))}
-            </Label>
           </div>
 
           {/* Catégorie principale */}
