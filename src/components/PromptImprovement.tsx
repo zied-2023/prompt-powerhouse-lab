@@ -5,14 +5,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, Copy, TrendingUp, CheckCircle } from "lucide-react";
+import { RefreshCw, Copy, Sparkles, TrendingUp, CheckCircle } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Configuration API - Mistral
+// Configuration API
 const API_CONFIG = {
-  endpoint: 'https://api.mistral.ai/v1/chat/completions',
+  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
   key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
-  model: 'mistral-large-latest'
+  model: 'anthropic/claude-3.5-sonnet'
 };
 
 const PromptImprovement = () => {
@@ -65,7 +65,9 @@ Réponds au format suivant:
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_CONFIG.key}`,
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Prompt Generator Lab'
         },
         body: JSON.stringify({
           model: API_CONFIG.model,
@@ -80,7 +82,8 @@ Réponds au format suivant:
             }
           ],
           temperature: 0.7,
-          max_tokens: 1500
+          max_tokens: 1500,
+          top_p: 0.9
         })
       });
 
@@ -88,14 +91,14 @@ Réponds au format suivant:
         const errorData = await response.json().catch(() => ({}));
         
         if (response.status === 402) {
-          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte Mistral ou utiliser une autre clé API.');
+          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte OpenRouter ou utiliser une autre clé API.');
         }
         
-        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('Réponse API Mistral reçue:', data);
+      console.log('Réponse API reçue:', data);
 
       if (data.choices && data.choices[0] && data.choices[0].message) {
         const content = data.choices[0].message.content;
@@ -130,7 +133,7 @@ Réponds au format suivant:
       
       let errorMessage = "Impossible d'améliorer le prompt.";
       if (error.message.includes('crédits')) {
-        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte Mistral.";
+        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte OpenRouter.";
       }
       
       toast({

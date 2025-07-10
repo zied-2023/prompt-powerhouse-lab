@@ -6,39 +6,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
+import { Zap, Copy, Sparkles, Wand2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Configuration des fournisseurs d'API
-const API_PROVIDERS = {
-  mistral: {
-    name: 'Mistral AI',
-    endpoint: 'https://api.mistral.ai/v1/chat/completions',
-    model: 'mistral-large-latest',
-    consoleUrl: 'https://console.mistral.ai/',
-    authHeader: (key: string) => `Bearer ${key}`
-  },
-  openai: {
-    name: 'OpenAI',
-    endpoint: 'https://api.openai.com/v1/chat/completions',
-    model: 'gpt-4',
-    consoleUrl: 'https://platform.openai.com/api-keys',
-    authHeader: (key: string) => `Bearer ${key}`
-  },
-  anthropic: {
-    name: 'Anthropic',
-    endpoint: 'https://api.anthropic.com/v1/messages',
-    model: 'claude-3-sonnet-20240229',
-    consoleUrl: 'https://console.anthropic.com/',
-    authHeader: (key: string) => key
-  },
-  deepseek: {
-    name: 'DeepSeek',
-    endpoint: 'https://api.deepseek.com/v1/chat/completions',
-    model: 'deepseek-chat',
-    consoleUrl: 'https://platform.deepseek.com/api_keys',
-    authHeader: (key: string) => `Bearer ${key}`
-  }
+// Configuration API
+const API_CONFIG = {
+  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
+  model: 'anthropic/claude-3.5-sonnet'
 };
 
 const PromptGenerator = () => {
@@ -56,8 +32,6 @@ const PromptGenerator = () => {
   
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [selectedProvider, setSelectedProvider] = useState('mistral');
 
   // Nouvelles catégories restructurées
   const categories = [
@@ -192,17 +166,8 @@ const PromptGenerator = () => {
   };
 
   const generatePromptWithAI = async (formData: any) => {
-    if (!apiKey.trim()) {
-      throw new Error('Veuillez configurer votre clé API dans les paramètres.');
-    }
-
-    const provider = API_PROVIDERS[selectedProvider as keyof typeof API_PROVIDERS];
-    if (!provider) {
-      throw new Error('Fournisseur d\'API non supporté.');
-    }
-
     try {
-      console.log(`Génération de prompt via ${provider.name}...`);
+      console.log('Génération de prompt via API...');
       
       const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
       const subcategoryLabel = formData.subcategory ? 
@@ -230,14 +195,16 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
       if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
 
-      const response = await fetch(provider.endpoint, {
+      const response = await fetch(API_CONFIG.endpoint, {
         method: 'POST',
         headers: {
-          'Authorization': provider.authHeader(apiKey),
-          'Content-Type': 'application/json'
+          'Authorization': `Bearer ${API_CONFIG.key}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Prompt Generator Lab'
         },
         body: JSON.stringify({
-          model: provider.model,
+          model: API_CONFIG.model,
           messages: [
             {
               role: 'system',
@@ -249,7 +216,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             }
           ],
           temperature: 0.7,
-          max_tokens: 1000
+          max_tokens: 1000,
+          top_p: 0.9
         })
       });
 
@@ -257,26 +225,22 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         const errorData = await response.json().catch(() => ({}));
         
         if (response.status === 402) {
-          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte ou utiliser une autre clé API.');
-        } else if (response.status === 429) {
-          throw new Error('Limite de requêtes dépassée. Veuillez attendre quelques minutes avant de réessayer ou vérifier votre quota API.');
-        } else if (response.status === 401) {
-          throw new Error('Clé API invalide. Veuillez vérifier votre clé API.');
+          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte OpenRouter ou utiliser une autre clé API.');
         }
         
-        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('Réponse API Mistral reçue:', data);
+      console.log('Réponse API reçue:', data);
 
       if (data.choices && data.choices[0] && data.choices[0].message) {
         return data.choices[0].message.content;
       } else {
-        throw new Error(`Format de réponse API inattendu pour ${provider.name}`);
+        throw new Error('Format de réponse API inattendu');
       }
     } catch (error) {
-      console.error(`Erreur lors de la génération du prompt avec ${provider.name}:`, error);
+      console.error('Erreur lors de la génération du prompt:', error);
       throw error;
     }
   };
@@ -307,17 +271,9 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       
       let errorMessage = "Impossible de générer le prompt.";
       if (error.message.includes('crédits')) {
-        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte.";
-      } else if (error.message.includes('Limite de requêtes')) {
-        errorMessage = "Limite de requêtes dépassée. Attendez quelques minutes avant de réessayer.";
-      } else if (error.message.includes('Clé API invalide')) {
-        errorMessage = "Clé API invalide. Vérifiez votre configuration.";
-      } else if (error.message.includes('configurer votre clé')) {
-        errorMessage = "Veuillez configurer votre clé API.";
+        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte OpenRouter.";
       } else if (error.message.includes('connexion')) {
         errorMessage = "Vérifiez votre connexion internet.";
-      } else if (error.message.includes('Fournisseur')) {
-        errorMessage = "Fournisseur d'API non supporté.";
       }
       
       toast({
@@ -354,65 +310,6 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Configuration API Key */}
-          <div className="space-y-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg">
-            <div className="space-y-3">
-              <Label htmlFor="provider" className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                Fournisseur d'API
-              </Label>
-              <select
-                id="provider"
-                value={selectedProvider}
-                onChange={(e) => setSelectedProvider(e.target.value)}
-                className="w-full px-3 py-2 border border-amber-300 dark:border-amber-600 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-              >
-                {Object.entries(API_PROVIDERS).map(([key, provider]) => (
-                  <option key={key} value={key}>
-                    {provider.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            
-            <div className="space-y-3">
-              <Label htmlFor="apiKey" className="text-sm font-semibold text-amber-800 dark:text-amber-300">
-                Clé API {API_PROVIDERS[selectedProvider as keyof typeof API_PROVIDERS].name} (obligatoire)
-              </Label>
-              <Input
-                id="apiKey"
-                type="password"
-                placeholder={`Entrez votre clé API ${API_PROVIDERS[selectedProvider as keyof typeof API_PROVIDERS].name}...`}
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
-                className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 border-amber-300 dark:border-amber-600"
-              />
-              <p className="text-xs text-amber-700 dark:text-amber-400">
-                Obtenez votre clé API sur{' '}
-                <a 
-                  href={API_PROVIDERS[selectedProvider as keyof typeof API_PROVIDERS].consoleUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="underline hover:text-amber-800 dark:hover:text-amber-300"
-                >
-                  {API_PROVIDERS[selectedProvider as keyof typeof API_PROVIDERS].consoleUrl.replace('https://', '')}
-                </a>
-              </p>
-            </div>
-          </div>
-
-          {/* Sélection du fournisseur et clé API */}
-          <div className="space-y-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
-            <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">Fournisseurs supportés</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {Object.entries(API_PROVIDERS).map(([key, provider]) => (
-                <div key={key} className="flex items-center space-x-2 p-2 bg-white dark:bg-gray-800 rounded border">
-                  <div className={`w-3 h-3 rounded-full ${selectedProvider === key ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{provider.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Catégorie principale */}
           <div className="space-y-3">
             <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
@@ -558,7 +455,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           <Button 
             onClick={generatePrompt} 
-            disabled={isGenerating || !apiKey.trim()}
+            disabled={isGenerating}
             className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 hover:from-violet-700 hover:via-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 glow-effect text-lg"
           >
             {isGenerating ? (
