@@ -2,7 +2,16 @@
 
 ## Overview
 
-This is a full-stack web application built with React/TypeScript frontend and Express backend, designed as a prompt engineering platform called "Prompt Powerhouse". The application allows users to generate, improve, and manage AI prompts through a sophisticated interface with multi-language support and theme customization.
+This is a full-stack web application built with React/TypeScript frontend and Express backend, designed as a prompt engineering platform called "Prompt Powerhouse". The application allows users to generate, improve, and manage AI prompts through a sophisticated interface with multi-language support and theme customization. The application now includes full database integration with PostgreSQL for persistent data storage.
+
+## Recent Changes
+
+**July 11, 2025 - Database Integration Complete**
+- Added PostgreSQL database with comprehensive schema
+- Implemented DatabaseStorage replacing in-memory storage
+- Created full CRUD API endpoints for categories, prompts, and prompt sessions
+- Successfully tested database connectivity and operations
+- Fixed language selector dropdown by adding missing translation keys
 
 ## User Preferences
 
@@ -21,7 +30,7 @@ Preferred communication style: Simple, everyday language.
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
 - **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
-- **Development Storage**: In-memory storage implementation for development/testing
+- **Storage**: DatabaseStorage implementation using PostgreSQL (replaced in-memory storage)
 - **Session Management**: Connect-pg-simple for PostgreSQL session storage
 - **Build System**: ESBuild for production builds
 
@@ -67,9 +76,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Persistence
 1. Drizzle ORM handles database schema and migrations
-2. Storage interface abstracts database operations
-3. Development uses in-memory storage, production uses PostgreSQL
-4. Session management for user state persistence
+2. Storage interface abstracts database operations  
+3. PostgreSQL database with comprehensive schema for users, categories, prompts, and sessions
+4. Full CRUD API endpoints for all data models
+5. Session management for user state persistence
 
 ## External Dependencies
 
