@@ -1,68 +1,218 @@
-export const translations = {
+export interface TranslationKey {
+  // Existing keys
+  title: string;
+  subtitle: string;
+  generator: string;
+  improvement: string;
+  advanced: string;
+  library: string;
+  categories: string;
+  integration: string;
+  advancedAI: string;
+  noCode: string;
+  
+  // Generator keys
+  promptGeneratorTitle: string;
+  promptGeneratorDesc: string;
+  mainCategory: string;
+  required: string;
+  optional: string;
+  selectDomain: string;
+  subcategory: string;
+  chooseSpecialization: string;
+  taskDescription: string;
+  taskDescriptionPlaceholder: string;
+  mainObjective: string;
+  mainObjectivePlaceholder: string;
+  targetAudience: string;
+  targetAudiencePlaceholder: string;
+  outputFormat: string;
+  chooseFormat: string;
+  toneStyle: string;
+  chooseTone: string;
+  approximateLength: string;
+  chooseLength: string;
+  generateWithAI: string;
+  generatingWithAI: string;
+  aiGeneratedPrompt: string;
+  aiGeneratedPromptDesc: string;
+  copy: string;
+  readyForGeneration: string;
+  aiWillCreate: string;
+  generatedByAI: string;
+  aiGeneratedDesc: string;
+  
+  // Improvement keys
+  improvementTitle: string;
+  improvementDesc: string;
+  originalPrompt: string;
+  originalPromptPlaceholder: string;
+  improvementObjective: string;
+  improvementObjectivePlaceholder: string;
+  improvePrompt: string;
+  improvingPrompt: string;
+  improvedPrompt: string;
+  improvedPromptDesc: string;
+  improvements: string;
+  
+  // Categories
+  contentCreation: string;
+  contentCreationDesc: string;
+  businessProfessional: string;
+  businessProfessionalDesc: string;
+  educationTraining: string;
+  educationTrainingDesc: string;
+  technologyDevelopment: string;
+  technologyDevelopmentDesc: string;
+  analysisResearch: string;
+  analysisResearchDesc: string;
+  problemSolving: string;
+  problemSolvingDesc: string;
+  communicationRelations: string;
+  communicationRelationsDesc: string;
+  
+  // Subcategories
+  writing: string;
+  artisticCreation: string;
+  videoAudio: string;
+  marketing: string;
+  literature: string;
+  strategy: string;
+  communication: string;
+  hr: string;
+  sales: string;
+  management: string;
+  courses: string;
+  evaluation: string;
+  research: string;
+  pedagogy: string;
+  professionalTraining: string;
+  programming: string;
+  dataScience: string;
+  cybersecurity: string;
+  architecture: string;
+  devops: string;
+  dataAnalysisSubcat: string;
+  academicResearch: string;
+  competitiveIntelligence: string;
+  auditEvaluation: string;
+  forecasting: string;
+  diagnosis: string;
+  brainstorming: string;
+  decisionMaking: string;
+  optimization: string;
+  innovation: string;
+  customerRelations: string;
+  internalCommunication: string;
+  negotiation: string;
+  presentation: string;
+  publicRelations: string;
+  
+  // Formats
+  bulletList: string;
+  structuredParagraph: string;
+  table: string;
+  numberedSteps: string;
+  dialogue: string;
+  codeScript: string;
+  
+  // Tones
+  professional: string;
+  casual: string;
+  technical: string;
+  creative: string;
+  persuasive: string;
+  educational: string;
+  
+  // Lengths
+  short: string;
+  medium: string;
+  long: string;
+  veryDetailed: string;
+  
+  // Messages
+  missingInfo: string;
+  chooseCategoryDesc: string;
+  enterOriginalPrompt: string;
+  promptCreatedSuccess: string;
+  promptCreatedDesc: string;
+  generationError: string;
+  copiedSuccess: string;
+  promptCopiedClipboard: string;
+  improvementSuccess: string;
+  improvementSuccessDesc: string;
+}
+
+export const translations: Record<string, TranslationKey> = {
   en: {
-    // Main navigation and titles
     title: "Prompt Generator Lab",
-    subtitle: "Advanced AI-powered prompt creation platform",
+    subtitle: "Create optimized prompts with AI assistance",
     generator: "Generator",
     improvement: "Improvement",
     advanced: "Advanced",
     library: "Library",
     categories: "Categories",
     integration: "Integration",
+    advancedAI: "Advanced AI",
+    noCode: "No Code",
     
-    // Common actions
-    generate: "Generate",
-    copy: "Copy",
-    save: "Save",
-    edit: "Edit",
-    delete: "Delete",
-    cancel: "Cancel",
-    confirm: "Confirm",
-    close: "Close",
-    next: "Next",
-    previous: "Previous",
-    update: "Update",
-    create: "Create",
-    retry: "Retry",
-    
-    // Status and feedback
-    loading: "Loading...",
-    success: "Success",
-    error: "Error",
-    warning: "Warning",
-    info: "Information",
+    promptGeneratorTitle: "AI Prompt Generator",
+    promptGeneratorDesc: "Create professional prompts tailored to your needs",
+    mainCategory: "Main Category",
     required: "(Required)",
     optional: "(Optional)",
-    
-    // Prompt Generator
-    promptGeneratorTitle: "AI Prompt Generator",
-    promptGeneratorDesc: "Create optimized prompts with artificial intelligence",
-    mainCategory: "Main Category",
+    selectDomain: "Select a domain",
     subcategory: "Subcategory",
+    chooseSpecialization: "Choose a specialization",
     taskDescription: "Task Description",
+    taskDescriptionPlaceholder: "Describe what you want to accomplish...",
     mainObjective: "Main Objective",
+    mainObjectivePlaceholder: "What is your main goal?",
     targetAudience: "Target Audience",
+    targetAudiencePlaceholder: "Who is this for?",
     outputFormat: "Output Format",
-    toneStyle: "Tone/Style",
+    chooseFormat: "Choose format",
+    toneStyle: "Tone & Style",
+    chooseTone: "Choose tone",
     approximateLength: "Approximate Length",
+    chooseLength: "Choose length",
+    generateWithAI: "Generate with AI",
+    generatingWithAI: "Generating with AI...",
+    aiGeneratedPrompt: "AI Generated Prompt",
+    aiGeneratedPromptDesc: "Your optimized prompt is ready",
+    copy: "Copy",
+    readyForGeneration: "Ready for generation",
+    aiWillCreate: "AI will create your perfect prompt",
+    generatedByAI: "Generated by AI",
+    aiGeneratedDesc: "This prompt was created by artificial intelligence",
     
-    // Categories
+    improvementTitle: "Prompt Improvement",
+    improvementDesc: "Enhance existing prompts with AI optimization",
+    originalPrompt: "Original Prompt",
+    originalPromptPlaceholder: "Enter your current prompt...",
+    improvementObjective: "Improvement Objective",
+    improvementObjectivePlaceholder: "What aspect should be improved?",
+    improvePrompt: "Improve Prompt",
+    improvingPrompt: "Improving prompt...",
+    improvedPrompt: "Improved Prompt",
+    improvedPromptDesc: "Your enhanced prompt with improvements",
+    improvements: "Improvements Made",
+    
     contentCreation: "Content Creation",
-    contentCreationDesc: "Writing, design, multimedia",
+    contentCreationDesc: "Writing, design, media production",
     businessProfessional: "Business & Professional",
     businessProfessionalDesc: "Strategy, management, communication",
     educationTraining: "Education & Training",
-    educationTrainingDesc: "Courses, evaluation, pedagogy",
+    educationTrainingDesc: "Learning, teaching, skill development",
     technologyDevelopment: "Technology & Development",
-    technologyDevelopmentDesc: "Programming, data science, architecture",
+    technologyDevelopmentDesc: "Programming, systems, innovation",
     analysisResearch: "Analysis & Research",
-    analysisResearchDesc: "Data analysis, studies, intelligence",
+    analysisResearchDesc: "Data analysis, studies, investigations",
     problemSolving: "Problem Solving",
-    problemSolvingDesc: "Diagnosis, optimization, innovation",
+    problemSolvingDesc: "Solutions, optimization, innovation",
     communicationRelations: "Communication & Relations",
-    communicationRelationsDesc: "Customer relations, negotiation, presentation",
+    communicationRelationsDesc: "Interaction, relationships, collaboration",
     
-    // Subcategories
     writing: "Writing",
     artisticCreation: "Artistic Creation",
     videoAudio: "Video & Audio",
@@ -99,260 +249,108 @@ export const translations = {
     presentation: "Presentation",
     publicRelations: "Public Relations",
     
-    // Output formats
     bulletList: "Bullet List",
     structuredParagraph: "Structured Paragraph",
     table: "Table",
     numberedSteps: "Numbered Steps",
     dialogue: "Dialogue",
     codeScript: "Code/Script",
-    structuredReport: "Structured Report",
-    bulletPoints: "Bullet Points",
-    narrative: "Narrative",
-    stepByStep: "Step by Step",
-    qaFormat: "Q&A Format",
     
-    // Tones
     professional: "Professional",
     casual: "Casual",
     technical: "Technical",
     creative: "Creative",
     persuasive: "Persuasive",
     educational: "Educational",
-    authoritative: "Authoritative",
-    friendly: "Friendly",
-    analytical: "Analytical",
-    descriptive: "Descriptive",
-    comparative: "Comparative",
-    argumentative: "Argumentative",
-    informative: "Informative",
-    explanatory: "Explanatory",
-    instructional: "Instructional",
-    evaluative: "Evaluative",
-    exploratory: "Exploratory",
     
-    // Lengths
     short: "Short",
     medium: "Medium",
     long: "Long",
     veryDetailed: "Very Detailed",
-    brief: "Brief",
-    concise: "Concise",
-    detailed: "Detailed",
-    comprehensive: "Comprehensive",
-    extensive: "Extensive",
-    summary: "Summary",
     
-    // Placeholders
-    selectDomain: "Select a domain...",
-    chooseSpecialization: "Choose a specialization...",
-    taskDescriptionPlaceholder: "Describe the task you want to accomplish...",
-    mainObjectivePlaceholder: "What do you want to achieve?",
-    targetAudiencePlaceholder: "Who is your target audience?",
-    chooseFormat: "Choose a format...",
-    chooseTone: "Choose a tone...",
-    chooseLength: "Choose a length...",
-    
-    // Generation
-    generateWithAI: "Generate with AI",
-    generatingWithAI: "Generating with AI...",
-    aiGeneratedPrompt: "AI Generated Prompt",
-    aiGeneratedPromptDesc: "Your optimized prompt created by artificial intelligence",
-    generatedByAI: "Generated by AI",
-    aiGeneratedDesc: "This prompt was created by artificial intelligence and optimized for your needs.",
-    readyForGeneration: "Ready for Generation",
-    aiWillCreate: "AI will create an optimized prompt based on your specifications.",
-    
-    // Prompt Improvement
-    improvementTitle: "Prompt Improvement",
-    improvementDesc: "Enhance your existing prompts with AI assistance",
-    originalPrompt: "Original Prompt",
-    improvementObjective: "Improvement Objective",
-    improvedPrompt: "Improved Prompt",
-    improvedPromptDesc: "Your enhanced prompt with AI improvements",
-    improvements: "Improvements Made",
-    originalPromptPlaceholder: "Paste your original prompt here...",
-    improvementObjectivePlaceholder: "What aspect would you like to improve?",
-    improvePrompt: "Improve Prompt",
-    improvingPrompt: "Improving Prompt...",
-    improvementSuccess: "Improvement Successful",
-    improvementSuccessDesc: "Your prompt has been successfully improved",
-    
-    // Multi-Step Builder
-    multiStepBuilder: "Multi-Step Builder",
-    multiStepBuilderDesc: "Create complex prompts step by step",
-    stepContext: "Context",
-    stepObjective: "Objective",
-    stepConstraints: "Constraints",
-    stepOutputFormat: "Output Format",
-    stepReview: "Review",
-    contextStep: "Step 1: Context",
-    objectiveStep: "Step 2: Objective",
-    constraintsStep: "Step 3: Constraints",
-    outputFormatStep: "Step 4: Output Format",
-    reviewStep: "Step 5: Review",
-    contextDescription: "Define the context and background",
-    objectiveDescription: "Specify your main objective",
-    constraintsDescription: "Set constraints and parameters",
-    outputFormatDescription: "Choose your preferred output format",
-    reviewDescription: "Review and finalize your prompt",
-    buildPrompt: "Build Prompt",
-    promptBuilt: "Prompt Built",
-    promptBuiltDesc: "Your multi-step prompt has been created",
-    
-    // Library
-    allCategories: "All Categories",
-    searchPrompts: "Search Prompts",
-    noPromptsFound: "No Prompts Found",
-    noPromptsFoundDesc: "No prompts match your search criteria",
-    editPrompt: "Edit Prompt",
-    deletePrompt: "Delete Prompt",
-    confirmDelete: "Confirm Delete",
-    confirmDeleteDesc: "Are you sure you want to delete this prompt?",
-    promptDeleted: "Prompt Deleted",
-    promptDeletedDesc: "The prompt has been successfully deleted",
-    savePrompt: "Save Prompt",
-    editPromptTitle: "Edit Prompt",
-    addNewPrompt: "Add New Prompt",
-    promptTitle: "Prompt Title",
-    promptContent: "Prompt Content",
-    promptCategory: "Prompt Category",
-    promptTags: "Prompt Tags",
-    tagsPlaceholder: "Enter tags separated by commas",
-    promptSaved: "Prompt Saved",
-    promptSavedDesc: "The prompt has been saved successfully",
-    tags: "Tags",
-    filterByTags: "Filter by Tags",
-    clearFilters: "Clear Filters",
-    viewPrompt: "View Prompt",
-    usePrompt: "Use Prompt",
-    favorite: "Favorite",
-    unfavorite: "Unfavorite",
-    favorites: "Favorites",
-    recent: "Recent",
-    popular: "Popular",
-    myPrompts: "My Prompts",
-    sharedPrompts: "Shared Prompts",
-    share: "Share",
-    duplicate: "Duplicate",
-    rating: "Rating",
-    ratePrompt: "Rate Prompt",
-    reviews: "Reviews",
-    addReview: "Add Review",
-    helpful: "Helpful",
-    notHelpful: "Not Helpful",
-    reportPrompt: "Report Prompt",
-    promptReported: "Prompt Reported",
-    
-    // Category Manager
-    categoryDeleted: "Category Deleted",
-    editCategory: "Edit Category",
-    createNewCategory: "Create New Category",
-    colorTheme: "Color Theme",
-    exampleUseCases: "Example Use Cases",
-    addCategory: "Add Category",
-    
-    // Integration Panel
-    apiIntegrations: "API Integrations",
-    apiIntegrationsDesc: "Connect with external AI services",
-    openaiIntegration: "OpenAI Integration",
-    anthropicIntegration: "Anthropic Integration",
-    openrouterIntegration: "OpenRouter Integration",
-    apiKey: "API Key",
-    enterApiKey: "Enter your API key",
-    testConnection: "Test Connection",
-    connectionSuccessful: "Connection Successful",
-    connectionFailed: "Connection Failed",
-    saveApiKey: "Save API Key",
-    apiKeySaved: "API Key Saved",
-    exportImport: "Export/Import",
-    exportImportDesc: "Manage your prompts and settings",
-    exportData: "Export Data",
-    importData: "Import Data",
-    exportSuccess: "Export Successful",
-    importSuccess: "Import Successful",
-    
-    // Messages and notifications
     missingInfo: "Missing Information",
-    chooseCategoryDesc: "Please choose a category and describe your task",
+    chooseCategoryDesc: "Please choose a category and provide a description",
     enterOriginalPrompt: "Please enter your original prompt",
     promptCreatedSuccess: "Prompt Created Successfully",
-    promptCreatedDesc: "Your AI-generated prompt is ready to use",
+    promptCreatedDesc: "Your optimized prompt is ready to use",
     generationError: "Generation Error",
     copiedSuccess: "Copied Successfully",
-    promptCopiedClipboard: "The prompt has been copied to your clipboard",
-    
-    // Badges and labels
-    advancedAI: "Advanced AI",
-    noCode: "No Code"
+    promptCopiedClipboard: "Prompt copied to clipboard",
+    improvementSuccess: "Improvement Successful",
+    improvementSuccessDesc: "Your prompt has been enhanced"
   },
   fr: {
-    // Main navigation and titles
     title: "Laboratoire de Génération de Prompts",
-    subtitle: "Plateforme avancée de création de prompts alimentée par l'IA",
+    subtitle: "Créez des prompts optimisés avec l'assistance IA",
     generator: "Générateur",
     improvement: "Amélioration",
     advanced: "Avancé",
     library: "Bibliothèque",
     categories: "Catégories",
     integration: "Intégration",
+    advancedAI: "IA Avancée",
+    noCode: "Sans Code",
     
-    // Common actions
-    generate: "Générer",
-    copy: "Copier",
-    save: "Sauvegarder",
-    edit: "Modifier",
-    delete: "Supprimer",
-    cancel: "Annuler",
-    confirm: "Confirmer",
-    close: "Fermer",
-    next: "Suivant",
-    previous: "Précédent",
-    update: "Mettre à jour",
-    create: "Créer",
-    retry: "Réessayer",
-    
-    // Status and feedback
-    loading: "Chargement...",
-    success: "Succès",
-    error: "Erreur",
-    warning: "Attention",
-    info: "Information",
+    promptGeneratorTitle: "Générateur de Prompts IA",
+    promptGeneratorDesc: "Créez des prompts professionnels adaptés à vos besoins",
+    mainCategory: "Catégorie Principale",
     required: "(Requis)",
     optional: "(Optionnel)",
-    
-    // Prompt Generator
-    promptGeneratorTitle: "Générateur de Prompts IA",
-    promptGeneratorDesc: "Créez des prompts optimisés avec l'intelligence artificielle",
-    mainCategory: "Catégorie Principale",
+    selectDomain: "Sélectionnez un domaine",
     subcategory: "Sous-catégorie",
+    chooseSpecialization: "Choisissez une spécialisation",
     taskDescription: "Description de la Tâche",
+    taskDescriptionPlaceholder: "Décrivez ce que vous voulez accomplir...",
     mainObjective: "Objectif Principal",
+    mainObjectivePlaceholder: "Quel est votre objectif principal ?",
     targetAudience: "Public Cible",
+    targetAudiencePlaceholder: "Pour qui est-ce destiné ?",
     outputFormat: "Format de Sortie",
-    toneStyle: "Ton/Style",
+    chooseFormat: "Choisir le format",
+    toneStyle: "Ton et Style",
+    chooseTone: "Choisir le ton",
     approximateLength: "Longueur Approximative",
+    chooseLength: "Choisir la longueur",
+    generateWithAI: "Générer avec l'IA",
+    generatingWithAI: "Génération avec l'IA...",
+    aiGeneratedPrompt: "Prompt Généré par l'IA",
+    aiGeneratedPromptDesc: "Votre prompt optimisé est prêt",
+    copy: "Copier",
+    readyForGeneration: "Prêt pour la génération",
+    aiWillCreate: "L'IA va créer votre prompt parfait",
+    generatedByAI: "Généré par l'IA",
+    aiGeneratedDesc: "Ce prompt a été créé par intelligence artificielle",
     
-    // Categories
+    improvementTitle: "Amélioration de Prompt",
+    improvementDesc: "Améliorez vos prompts existants avec l'optimisation IA",
+    originalPrompt: "Prompt Original",
+    originalPromptPlaceholder: "Entrez votre prompt actuel...",
+    improvementObjective: "Objectif d'Amélioration",
+    improvementObjectivePlaceholder: "Quel aspect doit être amélioré ?",
+    improvePrompt: "Améliorer le Prompt",
+    improvingPrompt: "Amélioration du prompt...",
+    improvedPrompt: "Prompt Amélioré",
+    improvedPromptDesc: "Votre prompt amélioré avec des optimisations",
+    improvements: "Améliorations Apportées",
+    
     contentCreation: "Création de Contenu",
-    contentCreationDesc: "Rédaction, design, multimédia",
-    businessProfessional: "Business & Professionnel",
+    contentCreationDesc: "Rédaction, design, production média",
+    businessProfessional: "Business et Professionnel",
     businessProfessionalDesc: "Stratégie, management, communication",
-    educationTraining: "Éducation & Formation",
-    educationTrainingDesc: "Cours, évaluation, pédagogie",
-    technologyDevelopment: "Technologie & Développement",
-    technologyDevelopmentDesc: "Programmation, science des données, architecture",
-    analysisResearch: "Analyse & Recherche",
-    analysisResearchDesc: "Analyse de données, études, intelligence",
+    educationTraining: "Éducation et Formation",
+    educationTrainingDesc: "Apprentissage, enseignement, développement de compétences",
+    technologyDevelopment: "Technologie et Développement",
+    technologyDevelopmentDesc: "Programmation, systèmes, innovation",
+    analysisResearch: "Analyse et Recherche",
+    analysisResearchDesc: "Analyse de données, études, investigations",
     problemSolving: "Résolution de Problèmes",
-    problemSolvingDesc: "Diagnostic, optimisation, innovation",
-    communicationRelations: "Communication & Relations",
-    communicationRelationsDesc: "Relations client, négociation, présentation",
+    problemSolvingDesc: "Solutions, optimisation, innovation",
+    communicationRelations: "Communication et Relations",
+    communicationRelationsDesc: "Interaction, relations, collaboration",
     
-    // Subcategories
     writing: "Rédaction",
     artisticCreation: "Création Artistique",
-    videoAudio: "Vidéo & Audio",
+    videoAudio: "Vidéo et Audio",
     marketing: "Marketing",
     literature: "Littérature",
     strategy: "Stratégie",
@@ -373,7 +371,7 @@ export const translations = {
     dataAnalysisSubcat: "Analyse de Données",
     academicResearch: "Recherche Académique",
     competitiveIntelligence: "Intelligence Concurrentielle",
-    auditEvaluation: "Audit & Évaluation",
+    auditEvaluation: "Audit et Évaluation",
     forecasting: "Prévision",
     diagnosis: "Diagnostic",
     brainstorming: "Brainstorming",
@@ -386,263 +384,111 @@ export const translations = {
     presentation: "Présentation",
     publicRelations: "Relations Publiques",
     
-    // Output formats
     bulletList: "Liste à Puces",
     structuredParagraph: "Paragraphe Structuré",
     table: "Tableau",
     numberedSteps: "Étapes Numérotées",
     dialogue: "Dialogue",
     codeScript: "Code/Script",
-    structuredReport: "Rapport Structuré",
-    bulletPoints: "Points à Puces",
-    narrative: "Narratif",
-    stepByStep: "Étape par Étape",
-    qaFormat: "Format Q&R",
     
-    // Tones
     professional: "Professionnel",
     casual: "Décontracté",
     technical: "Technique",
     creative: "Créatif",
     persuasive: "Persuasif",
     educational: "Éducatif",
-    authoritative: "Autoritaire",
-    friendly: "Amical",
-    analytical: "Analytique",
-    descriptive: "Descriptif",
-    comparative: "Comparatif",
-    argumentative: "Argumentatif",
-    informative: "Informatif",
-    explanatory: "Explicatif",
-    instructional: "Instructionnel",
-    evaluative: "Évaluatif",
-    exploratory: "Exploratoire",
     
-    // Lengths
     short: "Court",
     medium: "Moyen",
     long: "Long",
     veryDetailed: "Très Détaillé",
-    brief: "Bref",
-    concise: "Concis",
-    detailed: "Détaillé",
-    comprehensive: "Complet",
-    extensive: "Étendu",
-    summary: "Résumé",
     
-    // Placeholders
-    selectDomain: "Sélectionnez un domaine...",
-    chooseSpecialization: "Choisissez une spécialisation...",
-    taskDescriptionPlaceholder: "Décrivez la tâche que vous voulez accomplir...",
-    mainObjectivePlaceholder: "Que voulez-vous accomplir ?",
-    targetAudiencePlaceholder: "Qui est votre public cible ?",
-    chooseFormat: "Choisissez un format...",
-    chooseTone: "Choisissez un ton...",
-    chooseLength: "Choisissez une longueur...",
-    
-    // Generation
-    generateWithAI: "Générer avec l'IA",
-    generatingWithAI: "Génération avec l'IA...",
-    aiGeneratedPrompt: "Prompt Généré par l'IA",
-    aiGeneratedPromptDesc: "Votre prompt optimisé créé par l'intelligence artificielle",
-    generatedByAI: "Généré par l'IA",
-    aiGeneratedDesc: "Ce prompt a été créé par l'intelligence artificielle et optimisé pour vos besoins.",
-    readyForGeneration: "Prêt pour la Génération",
-    aiWillCreate: "L'IA va créer un prompt optimisé basé sur vos spécifications.",
-    
-    // Prompt Improvement
-    improvementTitle: "Amélioration de Prompt",
-    improvementDesc: "Améliorez vos prompts existants avec l'assistance de l'IA",
-    originalPrompt: "Prompt Original",
-    improvementObjective: "Objectif d'Amélioration",
-    improvedPrompt: "Prompt Amélioré",
-    improvedPromptDesc: "Votre prompt amélioré avec les améliorations de l'IA",
-    improvements: "Améliorations Apportées",
-    originalPromptPlaceholder: "Collez votre prompt original ici...",
-    improvementObjectivePlaceholder: "Quel aspect aimeriez-vous améliorer ?",
-    improvePrompt: "Améliorer le Prompt",
-    improvingPrompt: "Amélioration du Prompt...",
-    improvementSuccess: "Amélioration Réussie",
-    improvementSuccessDesc: "Votre prompt a été amélioré avec succès",
-    
-    // Multi-Step Builder
-    multiStepBuilder: "Constructeur Multi-Étapes",
-    multiStepBuilderDesc: "Créez des prompts complexes étape par étape",
-    stepContext: "Contexte",
-    stepObjective: "Objectif",
-    stepConstraints: "Contraintes",
-    stepOutputFormat: "Format de Sortie",
-    stepReview: "Révision",
-    contextStep: "Étape 1 : Contexte",
-    objectiveStep: "Étape 2 : Objectif",
-    constraintsStep: "Étape 3 : Contraintes",
-    outputFormatStep: "Étape 4 : Format de Sortie",
-    reviewStep: "Étape 5 : Révision",
-    contextDescription: "Définir le contexte et l'arrière-plan",
-    objectiveDescription: "Spécifier votre objectif principal",
-    constraintsDescription: "Définir les contraintes et paramètres",
-    outputFormatDescription: "Choisir votre format de sortie préféré",
-    reviewDescription: "Réviser et finaliser votre prompt",
-    buildPrompt: "Construire le Prompt",
-    promptBuilt: "Prompt Construit",
-    promptBuiltDesc: "Votre prompt multi-étapes a été créé",
-    
-    // Library
-    allCategories: "Toutes les Catégories",
-    searchPrompts: "Rechercher des Prompts",
-    noPromptsFound: "Aucun Prompt Trouvé",
-    noPromptsFoundDesc: "Aucun prompt ne correspond à vos critères de recherche",
-    editPrompt: "Modifier le Prompt",
-    deletePrompt: "Supprimer le Prompt",
-    confirmDelete: "Confirmer la Suppression",
-    confirmDeleteDesc: "Êtes-vous sûr de vouloir supprimer ce prompt ?",
-    promptDeleted: "Prompt Supprimé",
-    promptDeletedDesc: "Le prompt a été supprimé avec succès",
-    savePrompt: "Sauvegarder le Prompt",
-    editPromptTitle: "Modifier le Prompt",
-    addNewPrompt: "Ajouter un Nouveau Prompt",
-    promptTitle: "Titre du Prompt",
-    promptContent: "Contenu du Prompt",
-    promptCategory: "Catégorie du Prompt",
-    promptTags: "Tags du Prompt",
-    tagsPlaceholder: "Entrez les tags séparés par des virgules",
-    promptSaved: "Prompt Sauvegardé",
-    promptSavedDesc: "Le prompt a été sauvegardé avec succès",
-    tags: "Tags",
-    filterByTags: "Filtrer par Tags",
-    clearFilters: "Effacer les Filtres",
-    viewPrompt: "Voir le Prompt",
-    usePrompt: "Utiliser le Prompt",
-    favorite: "Favori",
-    unfavorite: "Retirer des Favoris",
-    favorites: "Favoris",
-    recent: "Récent",
-    popular: "Populaire",
-    myPrompts: "Mes Prompts",
-    sharedPrompts: "Prompts Partagés",
-    share: "Partager",
-    duplicate: "Dupliquer",
-    rating: "Note",
-    ratePrompt: "Noter le Prompt",
-    reviews: "Avis",
-    addReview: "Ajouter un Avis",
-    helpful: "Utile",
-    notHelpful: "Pas Utile",
-    reportPrompt: "Signaler le Prompt",
-    promptReported: "Prompt Signalé",
-    
-    // Category Manager
-    categoryDeleted: "Catégorie Supprimée",
-    editCategory: "Modifier la Catégorie",
-    createNewCategory: "Créer une Nouvelle Catégorie",
-    colorTheme: "Thème de Couleur",
-    exampleUseCases: "Exemples d'Utilisation",
-    addCategory: "Ajouter une Catégorie",
-    
-    // Integration Panel
-    apiIntegrations: "Intégrations API",
-    apiIntegrationsDesc: "Connectez-vous aux services d'IA externes",
-    openaiIntegration: "Intégration OpenAI",
-    anthropicIntegration: "Intégration Anthropic",
-    openrouterIntegration: "Intégration OpenRouter",
-    apiKey: "Clé API",
-    enterApiKey: "Entrez votre clé API",
-    testConnection: "Tester la Connexion",
-    connectionSuccessful: "Connexion Réussie",
-    connectionFailed: "Connexion Échouée",
-    saveApiKey: "Sauvegarder la Clé API",
-    apiKeySaved: "Clé API Sauvegardée",
-    exportImport: "Export/Import",
-    exportImportDesc: "Gérez vos prompts et paramètres",
-    exportData: "Exporter les Données",
-    importData: "Importer les Données",
-    exportSuccess: "Export Réussi",
-    importSuccess: "Import Réussi",
-    
-    // Messages and notifications
     missingInfo: "Informations Manquantes",
-    chooseCategoryDesc: "Veuillez choisir une catégorie et décrire votre tâche",
+    chooseCategoryDesc: "Veuillez choisir une catégorie et fournir une description",
     enterOriginalPrompt: "Veuillez entrer votre prompt original",
     promptCreatedSuccess: "Prompt Créé avec Succès",
-    promptCreatedDesc: "Votre prompt généré par l'IA est prêt à être utilisé",
+    promptCreatedDesc: "Votre prompt optimisé est prêt à être utilisé",
     generationError: "Erreur de Génération",
     copiedSuccess: "Copié avec Succès",
-    promptCopiedClipboard: "Le prompt a été copié dans votre presse-papiers",
-    
-    // Badges and labels
-    advancedAI: "IA Avancée",
-    noCode: "Sans Code"
+    promptCopiedClipboard: "Prompt copié dans le presse-papiers",
+    improvementSuccess: "Amélioration Réussie",
+    improvementSuccessDesc: "Votre prompt a été amélioré"
   },
   ar: {
-    // Main navigation and titles
-    title: "مختبر مولد المطالبات",
-    subtitle: "منصة متقدمة لإنشاء المطالبات مدعومة بالذكاء الاصطناعي",
+    title: "مختبر مولد النصوص التوجيهية",
+    subtitle: "إنشاء نصوص توجيهية محسنة بمساعدة الذكاء الاصطناعي",
     generator: "المولد",
     improvement: "التحسين",
     advanced: "متقدم",
     library: "المكتبة",
     categories: "الفئات",
     integration: "التكامل",
+    advancedAI: "ذكاء اصطناعي متقدم",
+    noCode: "بدون كود",
     
-    // Common actions
-    generate: "توليد",
-    copy: "نسخ",
-    save: "حفظ",
-    edit: "تعديل",
-    delete: "حذف",
-    cancel: "إلغاء",
-    confirm: "تأكيد",
-    close: "إغلاق",
-    next: "التالي",
-    previous: "السابق",
-    update: "تحديث",
-    create: "إنشاء",
-    retry: "إعادة المحاولة",
-    
-    // Status and feedback
-    loading: "جاري التحميل...",
-    success: "نجح",
-    error: "خطأ",
-    warning: "تحذير",
-    info: "معلومات",
+    promptGeneratorTitle: "مولد النصوص التوجيهية بالذكاء الاصطناعي",
+    promptGeneratorDesc: "إنشاء نصوص توجيهية احترافية مخصصة لاحتياجاتك",
+    mainCategory: "الفئة الرئيسية",
     required: "(مطلوب)",
     optional: "(اختياري)",
-    
-    // Prompt Generator
-    promptGeneratorTitle: "مولد المطالبات بالذكاء الاصطناعي",
-    promptGeneratorDesc: "إنشاء مطالبات محسنة بالذكاء الاصطناعي",
-    mainCategory: "الفئة الرئيسية",
+    selectDomain: "اختر مجالاً",
     subcategory: "الفئة الفرعية",
+    chooseSpecialization: "اختر التخصص",
     taskDescription: "وصف المهمة",
+    taskDescriptionPlaceholder: "صف ما تريد إنجازه...",
     mainObjective: "الهدف الرئيسي",
+    mainObjectivePlaceholder: "ما هو هدفك الرئيسي؟",
     targetAudience: "الجمهور المستهدف",
+    targetAudiencePlaceholder: "لمن هذا؟",
     outputFormat: "تنسيق الإخراج",
-    toneStyle: "النبرة/الأسلوب",
+    chooseFormat: "اختر التنسيق",
+    toneStyle: "النبرة والأسلوب",
+    chooseTone: "اختر النبرة",
     approximateLength: "الطول التقريبي",
+    chooseLength: "اختر الطول",
+    generateWithAI: "إنتاج بالذكاء الاصطناعي",
+    generatingWithAI: "جاري الإنتاج بالذكاء الاصطناعي...",
+    aiGeneratedPrompt: "نص توجيهي مُنتج بالذكاء الاصطناعي",
+    aiGeneratedPromptDesc: "نصك التوجيهي المحسن جاهز",
+    copy: "نسخ",
+    readyForGeneration: "جاهز للإنتاج",
+    aiWillCreate: "الذكاء الاصطناعي سينشئ نصك التوجيهي المثالي",
+    generatedByAI: "مُنتج بالذكاء الاصطناعي",
+    aiGeneratedDesc: "هذا النص التوجيهي تم إنشاؤه بواسطة الذكاء الاصطناعي",
     
-    // Categories
+    improvementTitle: "تحسين النص التوجيهي",
+    improvementDesc: "حسن النصوص التوجيهية الموجودة بالتحسين بالذكاء الاصطناعي",
+    originalPrompt: "النص التوجيهي الأصلي",
+    originalPromptPlaceholder: "أدخل نصك التوجيهي الحالي...",
+    improvementObjective: "هدف التحسين",
+    improvementObjectivePlaceholder: "ما الجانب الذي يجب تحسينه؟",
+    improvePrompt: "حسن النص التوجيهي",
+    improvingPrompt: "جاري تحسين النص التوجيهي...",
+    improvedPrompt: "النص التوجيهي المحسن",
+    improvedPromptDesc: "نصك التوجيهي المحسن مع التحسينات",
+    improvements: "التحسينات المُدخلة",
+    
     contentCreation: "إنشاء المحتوى",
-    contentCreationDesc: "الكتابة، التصميم، الوسائط المتعددة",
-    businessProfessional: "الأعمال والمهنية",
-    businessProfessionalDesc: "الاستراتيجية، الإدارة، التواصل",
+    contentCreationDesc: "الكتابة، التصميم، إنتاج الوسائط",
+    businessProfessional: "الأعمال والمهني",
+    businessProfessionalDesc: "الإستراتيجية، الإدارة، التواصل",
     educationTraining: "التعليم والتدريب",
-    educationTrainingDesc: "الدورات، التقييم، التربية",
+    educationTrainingDesc: "التعلم، التدريس، تطوير المهارات",
     technologyDevelopment: "التكنولوجيا والتطوير",
-    technologyDevelopmentDesc: "البرمجة، علوم البيانات، الهندسة المعمارية",
+    technologyDevelopmentDesc: "البرمجة، الأنظمة، الابتكار",
     analysisResearch: "التحليل والبحث",
-    analysisResearchDesc: "تحليل البيانات، الدراسات، الذكاء",
-    problemSolving: "حل المشاكل",
-    problemSolvingDesc: "التشخيص، التحسين، الابتكار",
+    analysisResearchDesc: "تحليل البيانات، الدراسات، التحقيقات",
+    problemSolving: "حل المشكلات",
+    problemSolvingDesc: "الحلول، التحسين، الابتكار",
     communicationRelations: "التواصل والعلاقات",
-    communicationRelationsDesc: "علاقات العملاء، التفاوض، العرض",
+    communicationRelationsDesc: "التفاعل، العلاقات، التعاون",
     
-    // Subcategories
     writing: "الكتابة",
     artisticCreation: "الإبداع الفني",
     videoAudio: "الفيديو والصوت",
     marketing: "التسويق",
     literature: "الأدب",
-    strategy: "الاستراتيجية",
+    strategy: "الإستراتيجية",
     communication: "التواصل",
     hr: "الموارد البشرية",
     sales: "المبيعات",
@@ -650,10 +496,10 @@ export const translations = {
     courses: "الدورات",
     evaluation: "التقييم",
     research: "البحث",
-    pedagogy: "التربية",
+    pedagogy: "علم التربية",
     professionalTraining: "التدريب المهني",
     programming: "البرمجة",
-    dataScience: "علوم البيانات",
+    dataScience: "علم البيانات",
     cybersecurity: "الأمن السيبراني",
     architecture: "الهندسة المعمارية",
     devops: "DevOps",
@@ -670,194 +516,39 @@ export const translations = {
     customerRelations: "علاقات العملاء",
     internalCommunication: "التواصل الداخلي",
     negotiation: "التفاوض",
-    presentation: "العرض",
+    presentation: "العرض التقديمي",
     publicRelations: "العلاقات العامة",
     
-    // Output formats
     bulletList: "قائمة نقطية",
     structuredParagraph: "فقرة منظمة",
     table: "جدول",
     numberedSteps: "خطوات مرقمة",
     dialogue: "حوار",
     codeScript: "كود/نص برمجي",
-    structuredReport: "تقرير منظم",
-    bulletPoints: "نقاط محددة",
-    narrative: "سردي",
-    stepByStep: "خطوة بخطوة",
-    qaFormat: "صيغة سؤال وجواب",
     
-    // Tones
     professional: "مهني",
     casual: "غير رسمي",
     technical: "تقني",
     creative: "إبداعي",
-    persuasive: "مقنع",
+    persuasive: "إقناعي",
     educational: "تعليمي",
-    authoritative: "موثوق",
-    friendly: "ودود",
-    analytical: "تحليلي",
-    descriptive: "وصفي",
-    comparative: "مقارن",
-    argumentative: "جدلي",
-    informative: "إعلامي",
-    explanatory: "توضيحي",
-    instructional: "تعليمي",
-    evaluative: "تقييمي",
-    exploratory: "استكشافي",
     
-    // Lengths
     short: "قصير",
     medium: "متوسط",
     long: "طويل",
     veryDetailed: "مفصل جداً",
-    brief: "موجز",
-    concise: "مختصر",
-    detailed: "مفصل",
-    comprehensive: "شامل",
-    extensive: "واسع",
-    summary: "ملخص",
     
-    // Placeholders
-    selectDomain: "اختر مجالاً...",
-    chooseSpecialization: "اختر تخصصاً...",
-    taskDescriptionPlaceholder: "صف المهمة التي تريد إنجازها...",
-    mainObjectivePlaceholder: "ما الذي تريد تحقيقه؟",
-    targetAudiencePlaceholder: "من هو جمهورك المستهدف؟",
-    chooseFormat: "اختر تنسيقاً...",
-    chooseTone: "اختر نبرة...",
-    chooseLength: "اختر طولاً...",
-    
-    // Generation
-    generateWithAI: "توليد بالذكاء الاصطناعي",
-    generatingWithAI: "جاري التوليد بالذكاء الاصطناعي...",
-    aiGeneratedPrompt: "مطالبة مولدة بالذكاء الاصطناعي",
-    aiGeneratedPromptDesc: "مطالبتك المحسنة التي أنشأها الذكاء الاصطناعي",
-    generatedByAI: "مولد بالذكاء الاصطناعي",
-    aiGeneratedDesc: "تم إنشاء هذه المطالبة بواسطة الذكاء الاصطناعي وتحسينها لاحتياجاتك.",
-    readyForGeneration: "جاهز للتوليد",
-    aiWillCreate: "سيقوم الذكاء الاصطناعي بإنشاء مطالبة محسنة بناءً على مواصفاتك.",
-    
-    // Prompt Improvement
-    improvementTitle: "تحسين المطالبة",
-    improvementDesc: "حسن مطالباتك الموجودة بمساعدة الذكاء الاصطناعي",
-    originalPrompt: "المطالبة الأصلية",
-    improvementObjective: "هدف التحسين",
-    improvedPrompt: "المطالبة المحسنة",
-    improvedPromptDesc: "مطالبتك المحسنة مع تحسينات الذكاء الاصطناعي",
-    improvements: "التحسينات المطبقة",
-    originalPromptPlaceholder: "الصق مطالبتك الأصلية هنا...",
-    improvementObjectivePlaceholder: "أي جانب تود تحسينه؟",
-    improvePrompt: "تحسين المطالبة",
-    improvingPrompt: "جاري تحسين المطالبة...",
-    improvementSuccess: "نجح التحسين",
-    improvementSuccessDesc: "تم تحسين مطالبتك بنجاح",
-    
-    // Multi-Step Builder
-    multiStepBuilder: "منشئ متعدد الخطوات",
-    multiStepBuilderDesc: "إنشاء مطالبات معقدة خطوة بخطوة",
-    stepContext: "السياق",
-    stepObjective: "الهدف",
-    stepConstraints: "القيود",
-    stepOutputFormat: "تنسيق الإخراج",
-    stepReview: "المراجعة",
-    contextStep: "الخطوة 1: السياق",
-    objectiveStep: "الخطوة 2: الهدف",
-    constraintsStep: "الخطوة 3: القيود",
-    outputFormatStep: "الخطوة 4: تنسيق الإخراج",
-    reviewStep: "الخطوة 5: المراجعة",
-    contextDescription: "تحديد السياق والخلفية",
-    objectiveDescription: "تحديد هدفك الرئيسي",
-    constraintsDescription: "تعيين القيود والمعايير",
-    outputFormatDescription: "اختيار تنسيق الإخراج المفضل لديك",
-    reviewDescription: "مراجعة وإنهاء مطالبتك",
-    buildPrompt: "بناء المطالبة",
-    promptBuilt: "تم بناء المطالبة",
-    promptBuiltDesc: "تم إنشاء مطالبتك متعددة الخطوات",
-    
-    // Library
-    allCategories: "جميع الفئات",
-    searchPrompts: "البحث في المطالبات",
-    noPromptsFound: "لم يتم العثور على مطالبات",
-    noPromptsFoundDesc: "لا توجد مطالبات تطابق معايير البحث الخاصة بك",
-    editPrompt: "تعديل المطالبة",
-    deletePrompt: "حذف المطالبة",
-    confirmDelete: "تأكيد الحذف",
-    confirmDeleteDesc: "هل أنت متأكد من أنك تريد حذف هذه المطالبة؟",
-    promptDeleted: "تم حذف المطالبة",
-    promptDeletedDesc: "تم حذف المطالبة بنجاح",
-    savePrompt: "حفظ المطالبة",
-    editPromptTitle: "تعديل المطالبة",
-    addNewPrompt: "إضافة مطالبة جديدة",
-    promptTitle: "عنوان المطالبة",
-    promptContent: "محتوى المطالبة",
-    promptCategory: "فئة المطالبة",
-    promptTags: "علامات المطالبة",
-    tagsPlaceholder: "أدخل العلامات مفصولة بفواصل",
-    promptSaved: "تم حفظ المطالبة",
-    promptSavedDesc: "تم حفظ المطالبة بنجاح",
-    tags: "العلامات",
-    filterByTags: "تصفية بالعلامات",
-    clearFilters: "مسح المرشحات",
-    viewPrompt: "عرض المطالبة",
-    usePrompt: "استخدام المطالبة",
-    favorite: "مفضل",
-    unfavorite: "إزالة من المفضلة",
-    favorites: "المفضلة",
-    recent: "حديث",
-    popular: "شائع",
-    myPrompts: "مطالباتي",
-    sharedPrompts: "مطالبات مشتركة",
-    share: "مشاركة",
-    duplicate: "نسخ",
-    rating: "التقييم",
-    ratePrompt: "تقييم المطالبة",
-    reviews: "المراجعات",
-    addReview: "إضافة مراجعة",
-    helpful: "مفيد",
-    notHelpful: "غير مفيد",
-    reportPrompt: "الإبلاغ عن المطالبة",
-    promptReported: "تم الإبلاغ عن المطالبة",
-    
-    // Category Manager
-    categoryDeleted: "تم حذف الفئة",
-    editCategory: "تعديل الفئة",
-    createNewCategory: "إنشاء فئة جديدة",
-    colorTheme: "نمط الألوان",
-    exampleUseCases: "أمثلة الاستخدام",
-    addCategory: "إضافة فئة",
-    
-    // Integration Panel
-    apiIntegrations: "تكاملات API",
-    apiIntegrationsDesc: "الاتصال بخدمات الذكاء الاصطناعي الخارجية",
-    openaiIntegration: "تكامل OpenAI",
-    anthropicIntegration: "تكامل Anthropic",
-    openrouterIntegration: "تكامل OpenRouter",
-    apiKey: "مفتاح API",
-    enterApiKey: "أدخل مفتاح API الخاص بك",
-    testConnection: "اختبار الاتصال",
-    connectionSuccessful: "نجح الاتصال",
-    connectionFailed: "فشل الاتصال",
-    saveApiKey: "حفظ مفتاح API",
-    apiKeySaved: "تم حفظ مفتاح API",
-    exportImport: "تصدير/استيراد",
-    exportImportDesc: "إدارة المطالبات والإعدادات الخاصة بك",
-    exportData: "تصدير البيانات",
-    importData: "استيراد البيانات",
-    exportSuccess: "نجح التصدير",
-    importSuccess: "نجح الاستيراد",
-    
-    // Messages and notifications
     missingInfo: "معلومات مفقودة",
-    chooseCategoryDesc: "يرجى اختيار فئة ووصف مهمتك",
-    enterOriginalPrompt: "يرجى إدخال مطالبتك الأصلية",
-    promptCreatedSuccess: "تم إنشاء المطالبة بنجاح",
-    promptCreatedDesc: "مطالبتك المولدة بالذكاء الاصطناعي جاهزة للاستخدام",
-    generationError: "خطأ في التوليد",
+    chooseCategoryDesc: "يرجى اختيار فئة وتقديم وصف",
+    enterOriginalPrompt: "يرجى إدخال نصك التوجيهي الأصلي",
+    promptCreatedSuccess: "تم إنشاء النص التوجيهي بنجاح",
+    promptCreatedDesc: "نصك التوجيهي المحسن جاهز للاستخدام",
+    generationError: "خطأ في الإنتاج",
     copiedSuccess: "تم النسخ بنجاح",
-    promptCopiedClipboard: "تم نسخ المطالبة إلى الحافظة",
-    
-    // Badges and labels
-    advancedAI: "ذكاء اصطناعي متقدم",
-    noCode: "بدون كود"
+    promptCopiedClipboard: "تم نسخ النص التوجيهي إلى الحافظة",
+    improvementSuccess: "تم التحسين بنجاح",
+    improvementSuccessDesc: "تم تحسين نصك التوجيهي"
   }
 };
+
+export default translations;
