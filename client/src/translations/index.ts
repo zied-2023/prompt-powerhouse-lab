@@ -141,6 +141,11 @@ export interface TranslationKey {
   promptCopiedClipboard: string;
   improvementSuccess: string;
   improvementSuccessDesc: string;
+  
+  // Language names
+  french: string;
+  arabic: string;
+  english: string;
 }
 
 export const translations: Record<string, TranslationKey> = {
@@ -277,7 +282,11 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "Copied Successfully",
     promptCopiedClipboard: "Prompt copied to clipboard",
     improvementSuccess: "Improvement Successful",
-    improvementSuccessDesc: "Your prompt has been enhanced"
+    improvementSuccessDesc: "Your prompt has been enhanced",
+    
+    french: "Français",
+    arabic: "العربية",
+    english: "English"
   },
   fr: {
     title: "Laboratoire de Génération de Prompts",
@@ -412,7 +421,11 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "Copié avec Succès",
     promptCopiedClipboard: "Prompt copié dans le presse-papiers",
     improvementSuccess: "Amélioration Réussie",
-    improvementSuccessDesc: "Votre prompt a été amélioré"
+    improvementSuccessDesc: "Votre prompt a été amélioré",
+    
+    french: "Français",
+    arabic: "العربية",
+    english: "English"
   },
   ar: {
     title: "مختبر مولد النصوص التوجيهية",
@@ -547,7 +560,11 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "تم النسخ بنجاح",
     promptCopiedClipboard: "تم نسخ النص التوجيهي إلى الحافظة",
     improvementSuccess: "تم التحسين بنجاح",
-    improvementSuccessDesc: "تم تحسين نصك التوجيهي"
+    improvementSuccessDesc: "تم تحسين نصك التوجيهي",
+    
+    french: "Français",
+    arabic: "العربية",
+    english: "English"
   }
 };
 
