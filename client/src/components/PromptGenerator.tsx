@@ -237,6 +237,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       }
     } catch (error) {
       console.error('Erreur lors de la génération du prompt:', error);
+      console.error('Erreur:', error);
       throw error;
     }
   };
@@ -266,10 +267,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       console.error('Erreur:', error);
       
       let errorMessage = "Impossible de générer le prompt.";
-      if (error.message.includes('crédits')) {
-        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte Mistral.";
-      } else if (error.message.includes('connexion')) {
-        errorMessage = "Vérifiez votre connexion internet.";
+      if (error instanceof Error) {
+        if (error.message.includes('crédits')) {
+          errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte Mistral.";
+        } else if (error.message.includes('connexion')) {
+          errorMessage = "Vérifiez votre connexion internet.";
+        } else {
+          errorMessage = error.message;
+        }
       }
       
       toast({

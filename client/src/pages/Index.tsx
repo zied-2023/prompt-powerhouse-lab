@@ -16,6 +16,7 @@ import CategoryManager from "@/components/CategoryManager";
 import IntegrationPanel from "@/components/IntegrationPanel";
 import MultiStepPromptBuilder from "@/components/MultiStepPromptBuilder";
 import PromptImprovement from "@/components/PromptImprovement";
+import AdvancedPromptBuilder from "@/components/AdvancedPromptBuilder";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -122,7 +123,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="advanced" className="space-y-8">
-            <MultiStepPromptBuilder />
+            <AdvancedPromptBuilder />
           </TabsContent>
 
           <TabsContent value="library" className="space-y-8">
