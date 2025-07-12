@@ -142,6 +142,30 @@ export interface TranslationKey {
   improvementSuccess: string;
   improvementSuccessDesc: string;
   
+  // Library keys
+  promptTemplateLibrary: string;
+  browsePromptTemplates: string;
+  searchPrompts: string;
+  allCategories: string;
+  textGeneration: string;
+  imageCreation: string;
+  interactiveDialogue: string;
+  codeGeneration: string;
+  dataAnalysis: string;
+  creativeWriting: string;
+  blogPostGenerator: string;
+  productImagePrompt: string;
+  customerSupportChatbot: string;
+  reactComponentGenerator: string;
+  dataInsightsGenerator: string;
+  storyConceptGenerator: string;
+  preview: string;
+  copied: string;
+  promptCopied: string;
+  close: string;
+  copyTemplate: string;
+  noPromptsFound: string;
+  
   // Language names
   french: string;
   arabic: string;
@@ -283,6 +307,30 @@ export const translations: Record<string, TranslationKey> = {
     promptCopiedClipboard: "Prompt copied to clipboard",
     improvementSuccess: "Improvement Successful",
     improvementSuccessDesc: "Your prompt has been enhanced",
+
+    // Library translations
+    promptTemplateLibrary: "Template Library",
+    browsePromptTemplates: "Browse our collection of ready-to-use prompt templates",
+    searchPrompts: "Search prompts...",
+    allCategories: "All categories",
+    textGeneration: "Text Generation",
+    imageCreation: "Image Creation",
+    interactiveDialogue: "Interactive Dialogue",
+    codeGeneration: "Code Generation",
+    dataAnalysis: "Data Analysis",
+    creativeWriting: "Creative Writing",
+    blogPostGenerator: "Blog Post Generator",
+    productImagePrompt: "Product Image Prompt",
+    customerSupportChatbot: "Customer Support Chatbot",
+    reactComponentGenerator: "React Component Generator",
+    dataInsightsGenerator: "Data Insights Generator",
+    storyConceptGenerator: "Story Concept Generator",
+    preview: "Preview",
+    copied: "Copied!",
+    promptCopied: "Template copied to clipboard",
+    close: "Close",
+    copyTemplate: "Copy Template",
+    noPromptsFound: "No prompts found for your search",
     
     french: "Français",
     arabic: "العربية",
@@ -422,6 +470,30 @@ export const translations: Record<string, TranslationKey> = {
     promptCopiedClipboard: "Prompt copié dans le presse-papiers",
     improvementSuccess: "Amélioration Réussie",
     improvementSuccessDesc: "Votre prompt a été amélioré",
+
+    // Library translations
+    promptTemplateLibrary: "Bibliothèque de Templates",
+    browsePromptTemplates: "Parcourez notre collection de templates de prompts prêts à utiliser",
+    searchPrompts: "Rechercher des prompts...",
+    allCategories: "Toutes les catégories",
+    textGeneration: "Génération de texte",
+    imageCreation: "Création d'images",
+    interactiveDialogue: "Dialogue interactif",
+    codeGeneration: "Génération de code",
+    dataAnalysis: "Analyse de données",
+    creativeWriting: "Écriture créative",
+    blogPostGenerator: "Générateur d'articles de blog",
+    productImagePrompt: "Prompt d'image produit",
+    customerSupportChatbot: "Chatbot support client",
+    reactComponentGenerator: "Générateur de composant React",
+    dataInsightsGenerator: "Générateur d'insights de données",
+    storyConceptGenerator: "Générateur de concept d'histoire",
+    preview: "Aperçu",
+    copied: "Copié !",
+    promptCopied: "Template copié dans le presse-papiers",
+    close: "Fermer",
+    copyTemplate: "Copier le template",
+    noPromptsFound: "Aucun prompt trouvé pour votre recherche",
     
     french: "Français",
     arabic: "العربية",
