@@ -306,14 +306,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             </div>
             <span className="gradient-text">{t('promptGeneratorTitle')}</span>
           </CardTitle>
-          <CardDescription className="text-gray-600 font-medium">
+          <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
             {t('promptGeneratorDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Catégorie principale */}
           <div className="space-y-3">
-            <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="category" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('mainCategory')} {t('required')}
             </Label>
             <Select value={formData.category} onValueChange={handleCategoryChange}>
@@ -336,7 +336,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Sous-catégorie */}
           {formData.category && getSubcategories(formData.category).length > 0 && (
             <div className="space-y-3">
-              <Label htmlFor="subcategory" className="text-sm font-semibold text-gray-700">
+              <Label htmlFor="subcategory" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                 {t('subcategory')} {t('optional')}
               </Label>
               <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
@@ -356,7 +356,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Description principale */}
           <div className="space-y-3">
-            <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="description" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('taskDescription')} {t('required')}
             </Label>
             <Textarea
@@ -371,7 +371,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Objectif */}
           <div className="space-y-3">
-            <Label htmlFor="objective" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="objective" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('mainObjective')} {t('optional')}
             </Label>
             <Input
@@ -385,7 +385,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Public cible */}
           <div className="space-y-3">
-            <Label htmlFor="targetAudience" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="targetAudience" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('targetAudience')} {t('optional')}
             </Label>
             <Input
@@ -399,7 +399,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Format de sortie */}
           <div className="space-y-3">
-            <Label htmlFor="format" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="format" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('outputFormat')} {t('optional')}
             </Label>
             <Select value={formData.format} onValueChange={(value) => setFormData({...formData, format: value})}>
@@ -418,7 +418,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Ton/Style */}
           <div className="space-y-3">
-            <Label htmlFor="tone" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="tone" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('toneStyle')} {t('optional')}
             </Label>
             <Select value={formData.tone} onValueChange={(value) => setFormData({...formData, tone: value})}>
@@ -437,7 +437,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Longueur */}
           <div className="space-y-3">
-            <Label htmlFor="length" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="length" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('approximateLength')} {t('optional')}
             </Label>
             <Select value={formData.length} onValueChange={(value) => setFormData({...formData, length: value})}>

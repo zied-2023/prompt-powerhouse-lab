@@ -320,7 +320,7 @@ const AdvancedPromptBuilder = () => {
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <Label className="text-sm font-semibold text-gray-700">{label}</Label>
+          <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">{label}</Label>
           <Button 
             type="button" 
             size="sm" 
@@ -351,7 +351,7 @@ const AdvancedPromptBuilder = () => {
           </div>
         ))}
         {values.length === 0 && (
-          <div className="text-xs text-gray-500 italic">
+          <div className="text-xs text-gray-500 dark:text-gray-400 italic">
             Cliquez sur "Ajouter" pour commencer
           </div>
         )}
@@ -379,16 +379,16 @@ const AdvancedPromptBuilder = () => {
           <Accordion type="single" value={activeSection} onValueChange={setActiveSection} className="space-y-4">
             
             {/* Section 1: Context and Strategic Framework */}
-            <AccordionItem value="context" className="border border-gray-200 rounded-lg">
-              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <AccordionItem value="context" className="border border-gray-200 dark:border-gray-600 rounded-lg">
+              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-center space-x-3">
-                  <Target className="h-5 w-5 text-emerald-600" />
-                  <span className="font-semibold">1. Contexte et Cadrage Stratégique</span>
+                  <Target className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">1. Contexte et Cadrage Stratégique</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
                 <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">Domaine d'expertise</Label>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Domaine d'expertise</Label>
                   <Input
                     value={promptData.expertDomain}
                     onChange={(e) => updateField('expertDomain', e.target.value)}
@@ -397,7 +397,7 @@ const AdvancedPromptBuilder = () => {
                 </div>
                 
                 <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">Contexte situationnel</Label>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Contexte situationnel</Label>
                   <Textarea
                     value={promptData.situationalContext}
                     onChange={(e) => updateField('situationalContext', e.target.value)}
@@ -407,7 +407,7 @@ const AdvancedPromptBuilder = () => {
                 </div>
                 
                 <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">Historique et antécédents</Label>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Historique et antécédents</Label>
                   <Textarea
                     value={promptData.historyBackground}
                     onChange={(e) => updateField('historyBackground', e.target.value)}
@@ -429,7 +429,7 @@ const AdvancedPromptBuilder = () => {
                 />
                 
                 <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">Périmètre d'intervention</Label>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Périmètre d'intervention</Label>
                   <Textarea
                     value={promptData.interventionScope}
                     onChange={(e) => updateField('interventionScope', e.target.value)}
@@ -441,11 +441,11 @@ const AdvancedPromptBuilder = () => {
             </AccordionItem>
 
             {/* Section 2: Technical and Operational Constraints */}
-            <AccordionItem value="constraints" className="border border-gray-200 rounded-lg">
-              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <AccordionItem value="constraints" className="border border-gray-200 dark:border-gray-600 rounded-lg">
+              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-center space-x-3">
-                  <Settings className="h-5 w-5 text-orange-600" />
-                  <span className="font-semibold">2. Contraintes Techniques et Opérationnelles</span>
+                  <Settings className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">2. Contraintes Techniques et Opérationnelles</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
@@ -488,11 +488,11 @@ const AdvancedPromptBuilder = () => {
             </AccordionItem>
 
             {/* Section 3: Performance Criteria */}
-            <AccordionItem value="performance" className="border border-gray-200 rounded-lg">
-              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <AccordionItem value="performance" className="border border-gray-200 dark:border-gray-600 rounded-lg">
+              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-center space-x-3">
-                  <TrendingUp className="h-5 w-5 text-blue-600" />
-                  <span className="font-semibold">3. Critères de Performance et Mesures de Succès</span>
+                  <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">3. Critères de Performance et Mesures de Succès</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
@@ -529,11 +529,11 @@ const AdvancedPromptBuilder = () => {
             </AccordionItem>
 
             {/* Section 4: Stakeholders */}
-            <AccordionItem value="stakeholders" className="border border-gray-200 rounded-lg">
-              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <AccordionItem value="stakeholders" className="border border-gray-200 dark:border-gray-600 rounded-lg">
+              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-center space-x-3">
-                  <Users className="h-5 w-5 text-purple-600" />
-                  <span className="font-semibold">4. Analyse Écosystémique et Parties Prenantes</span>
+                  <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">4. Analyse Écosystémique et Parties Prenantes</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
@@ -556,7 +556,7 @@ const AdvancedPromptBuilder = () => {
                 />
                 
                 <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">Analyse des pouvoirs</Label>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Analyse des pouvoirs</Label>
                   <Textarea
                     value={promptData.powerAnalysis}
                     onChange={(e) => updateField('powerAnalysis', e.target.value)}
@@ -566,7 +566,7 @@ const AdvancedPromptBuilder = () => {
                 </div>
                 
                 <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">Matrice des intérêts</Label>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Matrice des intérêts</Label>
                   <Textarea
                     value={promptData.interestMatrix}
                     onChange={(e) => updateField('interestMatrix', e.target.value)}
@@ -578,11 +578,11 @@ const AdvancedPromptBuilder = () => {
             </AccordionItem>
 
             {/* Section 5: Needs Analysis */}
-            <AccordionItem value="needs" className="border border-gray-200 rounded-lg">
-              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <AccordionItem value="needs" className="border border-gray-200 dark:border-gray-600 rounded-lg">
+              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-center space-x-3">
-                  <CheckCircle className="h-5 w-5 text-green-600" />
-                  <span className="font-semibold">5. Analyse des Besoins et Attentes</span>
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">5. Analyse des Besoins et Attentes</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
@@ -605,7 +605,7 @@ const AdvancedPromptBuilder = () => {
                 />
                 
                 <div className="space-y-3">
-                  <Label className="text-sm font-semibold text-gray-700">Hiérarchisation des besoins</Label>
+                  <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Hiérarchisation des besoins</Label>
                   <Textarea
                     value={promptData.needsHierarchy}
                     onChange={(e) => updateField('needsHierarchy', e.target.value)}
@@ -623,17 +623,17 @@ const AdvancedPromptBuilder = () => {
             </AccordionItem>
 
             {/* Section 6: Output Specifications */}
-            <AccordionItem value="output" className="border border-gray-200 rounded-lg">
-              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <AccordionItem value="output" className="border border-gray-200 dark:border-gray-600 rounded-lg">
+              <AccordionTrigger className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700">
                 <div className="flex items-center space-x-3">
-                  <Sparkles className="h-5 w-5 text-pink-600" />
-                  <span className="font-semibold">6. Spécifications du Livrable</span>
+                  <Sparkles className="h-5 w-5 text-pink-600 dark:text-pink-400" />
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">6. Spécifications du Livrable</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 pb-4 space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-700">Niveau de détail</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Niveau de détail</Label>
                     <select
                       value={promptData.detailLevel}
                       onChange={(e) => updateField('detailLevel', e.target.value)}
@@ -647,7 +647,7 @@ const AdvancedPromptBuilder = () => {
                   </div>
                   
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-700">Ton et registre</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Ton et registre</Label>
                     <select
                       value={promptData.toneRegister}
                       onChange={(e) => updateField('toneRegister', e.target.value)}
@@ -663,7 +663,7 @@ const AdvancedPromptBuilder = () => {
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-700">Structure de réponse</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Structure de réponse</Label>
                     <select
                       value={promptData.responseStructure}
                       onChange={(e) => updateField('responseStructure', e.target.value)}
@@ -677,7 +677,7 @@ const AdvancedPromptBuilder = () => {
                   </div>
                   
                   <div className="space-y-3">
-                    <Label className="text-sm font-semibold text-gray-700">Longueur et densité</Label>
+                    <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Longueur et densité</Label>
                     <select
                       value={promptData.lengthDensity}
                       onChange={(e) => updateField('lengthDensity', e.target.value)}
@@ -751,14 +751,14 @@ const AdvancedPromptBuilder = () => {
                     Copier
                   </Button>
                 </div>
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 border border-emerald-200 max-h-96 overflow-y-auto">
-                  <pre className="whitespace-pre-wrap text-sm text-gray-800 leading-relaxed font-mono">
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl p-6 border border-emerald-200 dark:border-emerald-700 max-h-96 overflow-y-auto">
+                  <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-mono">
                     {generatedPrompt}
                   </pre>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2 text-emerald-600">
+              <div className="flex items-center space-x-2 text-emerald-600 dark:text-emerald-400">
                 <CheckCircle className="h-5 w-5" />
                 <span className="text-sm font-medium">
                   Prompt expert généré selon l'architecture de formulation complexe
@@ -767,13 +767,13 @@ const AdvancedPromptBuilder = () => {
             </>
           ) : (
             <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Settings className="h-8 w-8 text-emerald-600" />
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-800/30 dark:to-teal-800/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Settings className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-700 mb-2">
+              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200 mb-2">
                 Architecture de Prompt Prête
               </h3>
-              <p className="text-gray-500 text-sm">
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
                 Remplissez les sections pertinentes puis générez votre prompt expert multidimensionnel
               </p>
             </div>
