@@ -4,7 +4,9 @@ export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       queryFn: async ({ queryKey }) => {
-        const response = await fetch(queryKey[0] as string);
+        const response = await fetch(queryKey[0] as string, {
+          credentials: 'include', // Include cookies for session
+        });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -21,6 +23,7 @@ export const queryClient = new QueryClient({
 
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
   const response = await fetch(url, {
+    credentials: 'include', // Include cookies for session
     headers: {
       'Content-Type': 'application/json',
       ...options.headers,
@@ -29,8 +32,9 @@ export const apiRequest = async (url: string, options: RequestInit = {}) => {
   });
 
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    const errorText = await response.text();
+    throw new Error(`${response.status}: ${errorText || response.statusText}`);
   }
 
-  return response.json();
+  return response;
 };

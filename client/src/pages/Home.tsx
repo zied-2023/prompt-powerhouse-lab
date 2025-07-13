@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "wouter";
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
 
@@ -18,7 +18,6 @@ export default function Home() {
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center space-x-4">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={user?.profileImageUrl} />
               <AvatarFallback>
                 {user?.firstName?.[0]}{user?.lastName?.[0]}
               </AvatarFallback>
@@ -33,10 +32,11 @@ export default function Home() {
             </div>
           </div>
           <Button 
-            onClick={() => window.location.href = '/api/logout'}
+            onClick={() => logoutMutation.mutate()}
             variant="outline"
+            disabled={logoutMutation.isPending}
           >
-            Se déconnecter
+            {logoutMutation.isPending ? "Déconnexion..." : "Se déconnecter"}
           </Button>
         </div>
 

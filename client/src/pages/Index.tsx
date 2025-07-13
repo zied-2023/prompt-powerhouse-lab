@@ -25,7 +25,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, logoutMutation } = useAuth();
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -98,7 +98,6 @@ const Index = () => {
               {/* User Profile */}
               <div className="flex items-center space-x-2 ml-4">
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src={user?.profileImageUrl} />
                   <AvatarFallback>
                     {user?.firstName?.[0]}{user?.lastName?.[0]}
                   </AvatarFallback>
@@ -109,8 +108,9 @@ const Index = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => window.location.href = '/api/logout'}
+                  onClick={() => logoutMutation.mutate()}
                   className="ml-2"
+                  disabled={logoutMutation.isPending}
                 >
                   <LogOut className="h-4 w-4" />
                 </Button>

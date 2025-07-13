@@ -5,7 +5,6 @@ import {
   promptSessions,
   type User, 
   type InsertUser,
-  type UpsertUser,
   type Category,
   type InsertCategory,
   type Prompt,
@@ -13,11 +12,16 @@ import {
   type PromptSession,
   type InsertPromptSession
 } from "@shared/schema";
+import session from "express-session";
 
 export interface IStorage {
-  // User methods - Updated for Replit Auth
-  getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  // User methods for email/password auth
+  getUser(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
+  
+  // Session store
+  sessionStore: session.Store;
   
   // Category methods
   getCategories(): Promise<Category[]>;
@@ -27,7 +31,7 @@ export interface IStorage {
   deleteCategory(id: number): Promise<boolean>;
   
   // Prompt methods
-  getPrompts(userId?: string, categoryId?: number): Promise<Prompt[]>;
+  getPrompts(userId?: number, categoryId?: number): Promise<Prompt[]>;
   getPrompt(id: number): Promise<Prompt | undefined>;
   createPrompt(prompt: InsertPrompt): Promise<Prompt>;
   updatePrompt(id: number, prompt: Partial<InsertPrompt>): Promise<Prompt | undefined>;
@@ -35,7 +39,7 @@ export interface IStorage {
   
   // Prompt session methods
   getPromptSession(id: number): Promise<PromptSession | undefined>;
-  getPromptSessionsByUser(userId: string): Promise<PromptSession[]>;
+  getPromptSessionsByUser(userId: number): Promise<PromptSession[]>;
   createPromptSession(session: InsertPromptSession): Promise<PromptSession>;
   updatePromptSession(id: number, session: Partial<InsertPromptSession>): Promise<PromptSession | undefined>;
   deletePromptSession(id: number): Promise<boolean>;
@@ -43,25 +47,34 @@ export interface IStorage {
 
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
+import connectPg from "connect-pg-simple";
 
 export class DatabaseStorage implements IStorage {
-  // User methods - Updated for Replit Auth
-  async getUser(id: string): Promise<User | undefined> {
+  sessionStore: session.Store;
+
+  constructor() {
+    const PostgresSessionStore = connectPg(session);
+    this.sessionStore = new PostgresSessionStore({
+      conString: process.env.DATABASE_URL,
+      createTableIfMissing: true,
+    });
+  }
+
+  // User methods for email/password auth
+  async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
+      .values(insertUser)
       .returning();
     return user;
   }
@@ -99,7 +112,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Prompt methods
-  async getPrompts(userId?: string, categoryId?: number): Promise<Prompt[]> {
+  async getPrompts(userId?: number, categoryId?: number): Promise<Prompt[]> {
     if (userId && categoryId) {
       return await db.select().from(prompts).where(and(eq(prompts.userId, userId), eq(prompts.categoryId, categoryId)));
     } else if (userId) {
@@ -144,7 +157,7 @@ export class DatabaseStorage implements IStorage {
     return session || undefined;
   }
 
-  async getPromptSessionsByUser(userId: string): Promise<PromptSession[]> {
+  async getPromptSessionsByUser(userId: number): Promise<PromptSession[]> {
     return await db.select().from(promptSessions).where(eq(promptSessions.userId, userId));
   }
 

@@ -7,19 +7,19 @@ import { Route, Switch } from "wouter";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { queryClient } from "@/lib/queryClient";
-import { useAuth } from "@/hooks/useAuth";
+import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
-import Landing from "./pages/Landing";
+import AuthPage from "./pages/AuthPage";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
-        <Route path="/" component={Landing} />
+      {isLoading || !user ? (
+        <Route path="/" component={AuthPage} />
       ) : (
         <>
           <Route path="/" component={Home} />
@@ -40,11 +40,13 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <LanguageProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <Router />
-        </TooltipProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Router />
+          </TooltipProvider>
+        </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
   </QueryClientProvider>
