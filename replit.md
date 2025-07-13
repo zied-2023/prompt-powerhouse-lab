@@ -2,9 +2,14 @@
 
 ## Overview
 
-This is a full-stack web application built with React/TypeScript frontend and Express backend, designed as a prompt engineering platform called "Prompt Powerhouse". The application allows users to generate, improve, and manage AI prompts through a sophisticated interface with multi-language support and theme customization. The application now includes full database integration with PostgreSQL for persistent data storage.
+This is a full-stack web application built with React/TypeScript frontend and Express backend, designed as a prompt engineering platform called "PromptCraft". The application allows users to generate, improve, and manage AI prompts through a sophisticated interface with multi-language support and theme customization. The application now includes full database integration with PostgreSQL for persistent data storage.
 
 ## Recent Changes
+
+**July 13, 2025 - Site Title Update**
+- Changed application title from "Prompt Powerhouse" to "PromptCraft"
+- Updated HTML title tag and all translation files (English, French, Arabic)
+- Maintained consistent branding across all language versions
 
 **July 13, 2025 - Email/Password Authentication System**
 - Replaced Replit Auth with simple email/password authentication system

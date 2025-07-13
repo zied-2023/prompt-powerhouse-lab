@@ -174,7 +174,7 @@ export interface TranslationKey {
 
 export const translations: Record<string, TranslationKey> = {
   en: {
-    title: "Prompt Generator Lab",
+    title: "PromptCraft",
     subtitle: "Create optimized prompts with AI assistance",
     generator: "Generator",
     improvement: "Improvement",
@@ -337,7 +337,7 @@ export const translations: Record<string, TranslationKey> = {
     english: "English"
   },
   fr: {
-    title: "Laboratoire de Génération de Prompts",
+    title: "PromptCraft",
     subtitle: "Créez des prompts optimisés avec l'assistance IA",
     generator: "Générateur",
     improvement: "Amélioration",
@@ -500,7 +500,7 @@ export const translations: Record<string, TranslationKey> = {
     english: "English"
   },
   ar: {
-    title: "مختبر مولد النصوص التوجيهية",
+    title: "PromptCraft",
     subtitle: "إنشاء نصوص توجيهية محسنة بمساعدة الذكاء الاصطناعي",
     generator: "المولد",
     improvement: "التحسين",
