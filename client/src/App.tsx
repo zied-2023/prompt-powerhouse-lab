@@ -7,8 +7,34 @@ import { Route, Switch } from "wouter";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { queryClient } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/useAuth";
 import Index from "./pages/Index";
+import Landing from "./pages/Landing";
+import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+
+function Router() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  return (
+    <Switch>
+      {isLoading || !isAuthenticated ? (
+        <Route path="/" component={Landing} />
+      ) : (
+        <>
+          <Route path="/" component={Home} />
+          <Route path="/generator" component={Index} />
+          <Route path="/improvement" component={Index} />
+          <Route path="/advanced" component={Index} />
+          <Route path="/library" component={Index} />
+          <Route path="/categories" component={Index} />
+          <Route path="/integration" component={Index} />
+        </>
+      )}
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -17,11 +43,7 @@ const App = () => (
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <Switch>
-            <Route path="/" component={Index} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route component={NotFound} />
-          </Switch>
+          <Router />
         </TooltipProvider>
       </LanguageProvider>
     </ThemeProvider>

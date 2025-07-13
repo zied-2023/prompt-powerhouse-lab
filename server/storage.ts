@@ -5,6 +5,7 @@ import {
   promptSessions,
   type User, 
   type InsertUser,
+  type UpsertUser,
   type Category,
   type InsertCategory,
   type Prompt,
@@ -14,10 +15,9 @@ import {
 } from "@shared/schema";
 
 export interface IStorage {
-  // User methods
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  // User methods - Updated for Replit Auth
+  getUser(id: string): Promise<User | undefined>;
+  upsertUser(user: UpsertUser): Promise<User>;
   
   // Category methods
   getCategories(): Promise<Category[]>;
@@ -27,7 +27,7 @@ export interface IStorage {
   deleteCategory(id: number): Promise<boolean>;
   
   // Prompt methods
-  getPrompts(userId?: number, categoryId?: number): Promise<Prompt[]>;
+  getPrompts(userId?: string, categoryId?: number): Promise<Prompt[]>;
   getPrompt(id: number): Promise<Prompt | undefined>;
   createPrompt(prompt: InsertPrompt): Promise<Prompt>;
   updatePrompt(id: number, prompt: Partial<InsertPrompt>): Promise<Prompt | undefined>;
@@ -35,7 +35,7 @@ export interface IStorage {
   
   // Prompt session methods
   getPromptSession(id: number): Promise<PromptSession | undefined>;
-  getPromptSessionsByUser(userId: number): Promise<PromptSession[]>;
+  getPromptSessionsByUser(userId: string): Promise<PromptSession[]>;
   createPromptSession(session: InsertPromptSession): Promise<PromptSession>;
   updatePromptSession(id: number, session: Partial<InsertPromptSession>): Promise<PromptSession | undefined>;
   deletePromptSession(id: number): Promise<boolean>;
@@ -45,21 +45,23 @@ import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
-  // User methods
-  async getUser(id: number): Promise<User | undefined> {
+  // User methods - Updated for Replit Auth
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
-      .values(insertUser)
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
+        set: {
+          ...userData,
+          updatedAt: new Date(),
+        },
+      })
       .returning();
     return user;
   }
@@ -97,7 +99,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Prompt methods
-  async getPrompts(userId?: number, categoryId?: number): Promise<Prompt[]> {
+  async getPrompts(userId?: string, categoryId?: number): Promise<Prompt[]> {
     if (userId && categoryId) {
       return await db.select().from(prompts).where(and(eq(prompts.userId, userId), eq(prompts.categoryId, categoryId)));
     } else if (userId) {
@@ -142,7 +144,7 @@ export class DatabaseStorage implements IStorage {
     return session || undefined;
   }
 
-  async getPromptSessionsByUser(userId: number): Promise<PromptSession[]> {
+  async getPromptSessionsByUser(userId: string): Promise<PromptSession[]> {
     return await db.select().from(promptSessions).where(eq(promptSessions.userId, userId));
   }
 
