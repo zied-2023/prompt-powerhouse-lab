@@ -58,6 +58,11 @@ export class DatabaseStorage implements IStorage {
       conString: process.env.DATABASE_URL,
       createTableIfMissing: true,
     });
+    
+    // Handle session store errors to prevent uncaught exceptions
+    this.sessionStore.on('error', (err) => {
+      console.error('Session store error:', err);
+    });
   }
 
   // User methods for email/password auth
