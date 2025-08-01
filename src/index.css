@@ -125,62 +125,6 @@
     @apply bg-gradient-to-r from-violet-300 via-purple-300 to-blue-300 bg-clip-text text-transparent;
   }
   
-  .text-shadow {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  }
-  
-  .dark .text-shadow {
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  }
-  
-  /* Dark mode text improvements */
-  .dark .text-gray-700 {
-    @apply text-gray-200;
-  }
-  
-  .dark .text-gray-600 {
-    @apply text-gray-300;
-  }
-  
-  .dark .text-gray-500 {
-    @apply text-gray-400;
-  }
-  
-  .dark .text-gray-800 {
-    @apply text-gray-100;
-  }
-  
-  /* Dark mode border improvements */
-  .dark .border-gray-200 {
-    @apply border-gray-600;
-  }
-  
-  .dark .border-gray-300 {
-    @apply border-gray-500;
-  }
-  
-  /* Dark mode background improvements */
-  .dark .bg-white {
-    @apply bg-gray-800;
-  }
-  
-  .dark .bg-gray-50 {
-    @apply bg-gray-700;
-  }
-  
-  .dark .hover\:bg-gray-50:hover {
-    @apply bg-gray-700;
-  }
-  
-  /* Dark mode input and select improvements */
-  .dark input, .dark textarea, .dark select {
-    @apply bg-gray-700 border-gray-500 text-white placeholder-gray-400;
-  }
-  
-  .dark input:focus, .dark textarea:focus, .dark select:focus {
-    @apply border-gray-400 ring-gray-400;
-  }
-  
   .glow-effect {
     box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
   }
