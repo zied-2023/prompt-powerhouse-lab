@@ -5,8 +5,8 @@ import translations, { TranslationKey } from '@/translations';
 export const useTranslation = () => {
   const { language } = useLanguage();
   
-  const t = (key: TranslationKey): string => {
-    return translations[language][key] || translations.en[key] || translations.fr[key];
+  const t = (key: keyof TranslationKey | string): string => {
+    return translations[language]?.[key as keyof TranslationKey] || translations.en?.[key as keyof TranslationKey] || key;
   };
   
   return { t };
