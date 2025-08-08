@@ -164,7 +164,7 @@ const CategoryManager = () => {
     <div className="space-y-6">
       {/* Create/Edit Form */}
       {(isCreating || editingId) && (
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
           <CardHeader>
             <CardTitle>
               {editingId ? t('editCategory') : t('createNewCategory')}
@@ -237,7 +237,7 @@ const CategoryManager = () => {
       )}
 
       {/* Categories Overview */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -285,13 +285,13 @@ const CategoryManager = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <p className="text-sm text-gray-600 mb-3">
+                  <p className="text-sm text-muted-foreground mb-3">
                     {category.description}
                   </p>
                   
                   {category.examples.length > 0 && (
                     <div>
-                      <p className="text-xs font-medium text-gray-500 mb-2">{t('exampleUseCases')}:</p>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">{t('exampleUseCases')}:</p>
                       <div className="flex flex-wrap gap-1">
                         {category.examples.slice(0, 3).map((example, index) => (
                           <Badge key={index} variant="outline" className="text-xs">

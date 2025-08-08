@@ -128,7 +128,7 @@ const prompt = await client.generatePrompt({
   return (
     <div className="space-y-6">
       {/* API Configuration */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Settings className="h-5 w-5 text-purple-600" />
@@ -222,7 +222,7 @@ const prompt = await client.generatePrompt({
       </Card>
 
       {/* Widget Generator */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Zap className="h-5 w-5 text-blue-600" />
@@ -247,8 +247,8 @@ const prompt = await client.generatePrompt({
                   Copy
                 </Button>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 border">
-                <pre className="text-sm text-gray-800 overflow-x-auto">
+              <div className="bg-muted rounded-lg p-4 border">
+                <pre className="text-sm text-foreground overflow-x-auto">
                   {widgetCode}
                 </pre>
               </div>
@@ -260,7 +260,7 @@ const prompt = await client.generatePrompt({
       {/* Integration Methods */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {integrationMethods.map((method, index) => (
-          <Card key={index} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+          <Card key={index} className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
             <CardHeader>
               <CardTitle className="text-lg">{method.title}</CardTitle>
               <CardDescription>{method.description}</CardDescription>
@@ -268,7 +268,7 @@ const prompt = await client.generatePrompt({
             <CardContent className="space-y-4">
               <div>
                 <Label className="text-sm font-medium">Endpoint/Install</Label>
-                <code className="block text-sm bg-gray-100 p-2 rounded mt-1 break-all">
+                <code className="block text-sm bg-muted p-2 rounded mt-1 break-all">
                   {method.endpoint}
                 </code>
               </div>
@@ -284,8 +284,8 @@ const prompt = await client.generatePrompt({
                     <Copy className="h-3 w-3" />
                   </Button>
                 </div>
-                <div className="bg-gray-50 rounded-lg p-3 border">
-                  <pre className="text-xs text-gray-800 overflow-x-auto whitespace-pre-wrap">
+                <div className="bg-muted rounded-lg p-3 border">
+                  <pre className="text-xs text-foreground overflow-x-auto whitespace-pre-wrap">
                     {method.example}
                   </pre>
                 </div>
@@ -296,7 +296,7 @@ const prompt = await client.generatePrompt({
       </div>
 
       {/* Integration Instructions */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
         <CardHeader>
           <CardTitle>Integration Guide</CardTitle>
           <CardDescription>
@@ -307,7 +307,7 @@ const prompt = await client.generatePrompt({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h4 className="font-semibold mb-2">Lovable Integration</h4>
-              <ol className="text-sm space-y-1 text-gray-600">
+              <ol className="text-sm space-y-1 text-muted-foreground">
                 <li>1. Copy the generated widget code</li>
                 <li>2. Add it to your Lovable project's index.html</li>
                 <li>3. Configure the widget settings</li>
@@ -317,7 +317,7 @@ const prompt = await client.generatePrompt({
             
             <div>
               <h4 className="font-semibold mb-2">Webflow Integration</h4>
-              <ol className="text-sm space-y-1 text-gray-600">
+              <ol className="text-sm space-y-1 text-muted-foreground">
                 <li>1. Add an HTML embed element</li>
                 <li>2. Paste the widget code</li>
                 <li>3. Style the widget container</li>
@@ -327,7 +327,7 @@ const prompt = await client.generatePrompt({
 
             <div>
               <h4 className="font-semibold mb-2">Bubble Integration</h4>
-              <ol className="text-sm space-y-1 text-gray-600">
+              <ol className="text-sm space-y-1 text-muted-foreground">
                 <li>1. Use the API Connector plugin</li>
                 <li>2. Configure the REST API endpoints</li>
                 <li>3. Set up data types and workflows</li>
@@ -337,7 +337,7 @@ const prompt = await client.generatePrompt({
 
             <div>
               <h4 className="font-semibold mb-2">Zapier Integration</h4>
-              <ol className="text-sm space-y-1 text-gray-600">
+              <ol className="text-sm space-y-1 text-muted-foreground">
                 <li>1. Set up webhook triggers</li>
                 <li>2. Configure prompt generation actions</li>
                 <li>3. Map input/output data</li>

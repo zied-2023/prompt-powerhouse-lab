@@ -208,7 +208,7 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
               </div>
               <span className="gradient-text">{t('multiStepBuilder')}</span>
             </CardTitle>
-            <CardDescription className="text-gray-600 font-medium">
+            <CardDescription className="text-muted-foreground font-medium">
               {t('multiStepBuilderDesc')}
             </CardDescription>
           </CardHeader>
@@ -289,7 +289,7 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
                 </CardTitle>
               </div>
             </div>
-            <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
+            <CardDescription className="text-muted-foreground font-medium">
               {steps[currentStep - 1].description}
             </CardDescription>
           </CardHeader>

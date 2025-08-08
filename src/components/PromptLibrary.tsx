@@ -214,7 +214,7 @@ Output: [Detailed story concept with character profiles and plot structure]
   return (
     <div className="space-y-6">
       {/* Search and Filter */}
-      <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+      <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
         <CardHeader>
           <CardTitle>{t('promptTemplateLibrary')}</CardTitle>
           <CardDescription>
@@ -225,7 +225,7 @@ Output: [Detailed story concept with character profiles and plot structure]
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder={t('searchPrompts')}
                   value={searchTerm}
@@ -254,7 +254,7 @@ Output: [Detailed story concept with character profiles and plot structure]
       {/* Prompt Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredPrompts.map((prompt) => (
-          <Card key={prompt.id} className="bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300">
+          <Card key={prompt.id} className="bg-card/80 backdrop-blur-sm border border-border shadow-lg hover:shadow-xl transition-all duration-300">
             <CardHeader>
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -313,8 +313,8 @@ Output: [Detailed story concept with character profiles and plot structure]
               </div>
             </CardHeader>
             <CardContent>
-              <div className="bg-gray-50 rounded-lg p-4 border">
-                <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono">
+              <div className="bg-muted rounded-lg p-4 border">
+                <pre className="whitespace-pre-wrap text-sm text-foreground font-mono">
                   {selectedPrompt.prompt}
                 </pre>
               </div>
@@ -333,7 +333,7 @@ Output: [Detailed story concept with character profiles and plot structure]
       )}
 
       {filteredPrompts.length === 0 && (
-        <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg">
+        <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
           <CardContent className="text-center py-12">
             <Search className="h-12 w-12 mx-auto mb-4 text-gray-300" />
             <p className="text-gray-500">{t('noPromptsFound')}</p>
