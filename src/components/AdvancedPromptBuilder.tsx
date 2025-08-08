@@ -318,20 +318,20 @@ Veuillez générer une réponse qui respecte strictement tous les critères ci-d
         <TabsContent value="builder">
           <div className="space-y-8">
             <StepObjective
-              data={promptData.objective}
-              onUpdate={(objective) => setPromptData(prev => ({ ...prev, objective }))}
+              data={promptData}
+              updateData={(partial) => setPromptData(prev => ({ ...prev, ...partial }))}
             />
             <StepContext
-              data={promptData.context}
-              onUpdate={(context) => setPromptData(prev => ({ ...prev, context }))}
+              data={promptData}
+              updateData={(partial) => setPromptData(prev => ({ ...prev, ...partial }))}
             />
             <StepConstraints
-              data={promptData.requirements}
-              onUpdate={(requirements) => setPromptData(prev => ({ ...prev, requirements }))}
+              data={promptData}
+              updateData={(partial) => setPromptData(prev => ({ ...prev, ...partial }))}
             />
             <StepOutputFormat
-              data={promptData.outputFormat}
-              onUpdate={(outputFormat) => setPromptData(prev => ({ ...prev, outputFormat }))}
+              data={promptData}
+              updateData={(partial) => setPromptData(prev => ({ ...prev, ...partial }))}
             />
           </div>
         </TabsContent>
