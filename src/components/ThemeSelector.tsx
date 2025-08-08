@@ -14,7 +14,6 @@ const ThemeSelector = () => {
       variant="outline"
       size="sm"
       onClick={toggleTheme}
-      className="bg-white/80 border-white/30 hover:bg-white/90 text-gray-700 dark:bg-gray-800/80 dark:border-gray-600/40 dark:hover:bg-gray-700/90 dark:text-gray-200"
       title={theme === 'light' ? t('darkMode') : t('lightMode')}
     >
       {theme === 'light' ? (
