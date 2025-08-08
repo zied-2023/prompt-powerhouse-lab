@@ -90,7 +90,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-sans text-[17px] md:text-lg;
     font-feature-settings: "cv03", "cv04", "cv11";
   }
 
