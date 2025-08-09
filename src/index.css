@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -44,36 +43,48 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     --heading-foreground: 222.2 84% 4.9%;
+
+    /* Variables supplémentaires pour améliorer la lisibilité */
+    --dropdown-background: 0 0% 100%;
+    --dropdown-foreground: 222.2 84% 4.9%;
+    --dropdown-hover: 210 40% 96.1%;
+    --dropdown-selected: 222.2 47.4% 11.2%;
+    --dropdown-selected-foreground: 210 40% 98%;
+    --input-placeholder: 215.4 16.3% 46.9%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --foreground: 0 0% 98%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 13% 18%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 224 71% 7%;
+    /* MAXIMUM de contraste pour les popovers/dropdowns */
+    --popover: 220 13% 18%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 13% 25%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 0 0% 70%;
+    /* AMÉLIORATION MAJEURE du contraste pour les éléments muted */
+    --muted: 220 13% 25%;
+    --muted-foreground: 0 0% 85%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 13% 25%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    /* Bordures et inputs BEAUCOUP plus visibles */
+    --border: 220 13% 35%;
+    --input: 220 13% 25%;
     --ring: 262 83% 56%;
+
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -83,6 +94,14 @@
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     --heading-foreground: 0 0% 98%;
+
+    /* Variables ULTRA-CONTRASTÉES pour dropdowns */
+    --dropdown-background: 220 13% 18%;
+    --dropdown-foreground: 0 0% 98%;
+    --dropdown-hover: 220 13% 30%;
+    --dropdown-selected: 224.3 76.3% 48%;
+    --dropdown-selected-foreground: 0 0% 100%;
+    --input-placeholder: 0 0% 65%;
   }
 }
 
@@ -107,6 +126,37 @@
 
   [dir="rtl"] .flex-row-reverse {
     flex-direction: row-reverse;
+  }
+
+  /* Amélioration de la lisibilité des inputs et selects */
+  input, textarea, select {
+    background-color: hsl(var(--input)) !important;
+    color: hsl(var(--foreground)) !important;
+    border: 1px solid hsl(var(--border));
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: hsl(var(--input-placeholder)) !important;
+    opacity: 1;
+  }
+
+  /* FORCE la lisibilité en mode sombre */
+  .dark input, .dark textarea, .dark select {
+    background-color: hsl(var(--input)) !important;
+    color: hsl(var(--foreground)) !important;
+    border-color: hsl(var(--border));
+  }
+
+  .dark input::placeholder, .dark textarea::placeholder {
+    color: hsl(var(--input-placeholder)) !important;
+    opacity: 1;
+  }
+
+  .dark input:focus, .dark textarea:focus, .dark select:focus {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.3);
+    background-color: hsl(var(--input)) !important;
+    color: hsl(var(--foreground)) !important;
   }
 }
 
@@ -167,6 +217,142 @@
     animation: gradient-shift 3s ease infinite;
     background-size: 300% 300%;
   }
+
+  /* Amélioration des dropdowns/listes déroulantes */
+  .dropdown-menu {
+    background-color: hsl(var(--dropdown-background));
+    color: hsl(var(--dropdown-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    min-width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 50;
+  }
+
+  .dark .dropdown-menu {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+
+  .dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    color: hsl(var(--dropdown-foreground));
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .dropdown-item:hover, .dropdown-item:focus {
+    background-color: hsl(var(--dropdown-hover));
+    color: hsl(var(--dropdown-foreground));
+    outline: none;
+  }
+
+  .dropdown-item.selected {
+    background-color: hsl(var(--dropdown-selected));
+    color: hsl(var(--dropdown-selected-foreground));
+    font-weight: 500;
+  }
+
+  .dark .dropdown-item:hover, .dark .dropdown-item:focus {
+    background-color: hsl(var(--dropdown-hover));
+  }
+
+  /* Amélioration des zones de texte et inputs */
+  .improved-input {
+    background-color: hsl(var(--input));
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .improved-input:focus {
+    border-color: hsl(var(--ring));
+    box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+    outline: none;
+  }
+
+  .improved-input::placeholder {
+    color: hsl(var(--input-placeholder));
+    opacity: 0.8;
+  }
+
+  /* Amélioration des tooltips */
+  .tooltip {
+    background-color: hsl(var(--popover));
+    color: hsl(var(--popover-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 60;
+  }
+
+  .dark .tooltip {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Amélioration des modals/dialogs */
+  .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+  }
+
+  .dark .modal-overlay {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-content {
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .dark .modal-content {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Amélioration des tableaux */
+  .table-container {
+    background-color: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .table-header {
+    background-color: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  .table-row {
+    border-bottom: 1px solid hsl(var(--border));
+    transition: background-color 0.15s ease-in-out;
+  }
+
+  .table-row:hover {
+    background-color: hsl(var(--muted) / 0.5);
+  }
+
+  .table-cell {
+    padding: 12px 16px;
+    color: hsl(var(--foreground));
+    font-size: 14px;
+    line-height: 1.4;
+  }
 }
 
 @layer utilities {
@@ -185,6 +371,30 @@
   .hover-lift:hover {
     transform: translateY(-2px);
   }
+
+  /* Utilitaires pour la lisibilité améliorée */
+  .text-high-contrast {
+    color: hsl(var(--foreground));
+    font-weight: 500;
+  }
+
+  .dark .text-high-contrast {
+    color: hsl(var(--foreground));
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  }
+
+  .bg-readable {
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+  }
+
+  .border-subtle {
+    border-color: hsl(var(--border));
+  }
+
+  .dark .border-subtle {
+    border-color: hsl(var(--border));
+  }
 }
 
 @layer base {
@@ -194,17 +404,217 @@
     -webkit-font-smoothing: antialiased;
     letter-spacing: -0.01em;
   }
+
+  /* Amélioration de la lisibilité générale en mode sombre */
+  .dark h1, .dark h2, .dark h3 {
+    color: hsl(var(--heading-foreground));
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Amélioration du contraste pour les liens */
+  a {
+    color: hsl(var(--primary));
+    transition: color 0.15s ease-in-out;
+  }
+
+  a:hover {
+    color: hsl(var(--primary) / 0.8);
+  }
+
+  .dark a {
+    color: hsl(224.3 76.3% 58%);
+  }
+
+  .dark a:hover {
+    color: hsl(224.3 76.3% 68%);
+  }
 }
 
 @layer components {
+  /* Amélioration des menus et listbox avec MAXIMUM de contraste */
   [role="menu"], [role="listbox"] {
-    background-color: hsl(var(--popover));
-    color: hsl(var(--popover-foreground));
+    background-color: hsl(var(--dropdown-background)) !important;
+    color: hsl(var(--dropdown-foreground)) !important;
     border: 1px solid hsl(var(--border));
+    border-radius: calc(var(--radius) - 2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 4px;
   }
-  [role="menuitem"]:focus,
-  [role="option"][data-highlighted] {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
+
+  .dark [role="menu"], .dark [role="listbox"] {
+    background-color: hsl(var(--dropdown-background)) !important;
+    color: hsl(var(--dropdown-foreground)) !important;
+    border-color: hsl(var(--border));
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
   }
+
+  [role="menuitem"], [role="option"] {
+    padding: 8px 12px;
+    border-radius: calc(var(--radius) - 4px);
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    color: hsl(var(--dropdown-foreground)) !important;
+    font-size: 14px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  [role="menuitem"]:hover, [role="menuitem"]:focus,
+  [role="option"]:hover, [role="option"][data-highlighted] {
+    background-color: hsl(var(--dropdown-hover)) !important;
+    color: hsl(var(--dropdown-foreground)) !important;
+    outline: none;
+    font-weight: 600;
+  }
+
+  [role="menuitem"][data-selected], [role="option"][data-selected] {
+    background-color: hsl(var(--dropdown-selected)) !important;
+    color: hsl(var(--dropdown-selected-foreground)) !important;
+    font-weight: 700;
+  }
+
+  /* FORCE maximum de contraste pour le mode sombre */
+  .dark [role="menuitem"], .dark [role="option"] {
+    color: hsl(var(--dropdown-foreground)) !important;
+    font-weight: 500;
+  }
+
+  .dark [role="menuitem"]:hover, .dark [role="menuitem"]:focus, 
+  .dark [role="option"]:hover, .dark [role="option"][data-highlighted] {
+    background-color: hsl(var(--dropdown-hover)) !important;
+    color: hsl(var(--dropdown-foreground)) !important;
+    box-shadow: 0 0 0 1px hsl(var(--ring) / 0.3);
+  }
+
+  /* Amélioration des scrollbars en mode sombre */
+  .dark ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+    border-radius: 4px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+
+  /* Amélioration des badges et chips */
+  .badge {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border: 1px solid hsl(var(--border));
+    padding: 4px 8px;
+    border-radius: calc(var(--radius) - 4px);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .dark .badge {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+    border-color: hsl(var(--border));
+  }
+
+  /* Amélioration des notifications/alerts */
+  .alert {
+    background-color: hsl(var(--card));
+    color: hsl(var(--card-foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    padding: 16px;
+    margin: 8px 0;
+  }
+
+  .alert-error {
+    background-color: hsl(var(--destructive) / 0.1);
+    color: hsl(var(--destructive-foreground));
+    border-color: hsl(var(--destructive) / 0.3);
+  }
+
+  .dark .alert {
+    background-color: hsl(var(--card));
+    border-color: hsl(var(--border));
+  }
+
+  .dark .alert-error {
+    background-color: hsl(var(--destructive) / 0.15);
+    border-color: hsl(var(--destructive) / 0.4);
+  }
+}
+
+/* Animation pour les bordures animées */
+@keyframes gradient-shift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* RÈGLES GLOBALES ULTRA-SPÉCIFIQUES pour forcer la lisibilité en mode sombre */
+.dark * {
+  color-scheme: dark;
+}
+
+/* Force la lisibilité de TOUS les textes en mode sombre */
+.dark input, 
+.dark textarea, 
+.dark select, 
+.dark option,
+.dark [role="menuitem"], 
+.dark [role="option"],
+.dark .dropdown-item,
+.dark button,
+.dark div,
+.dark span,
+.dark p,
+.dark label {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Force les arrière-plans des éléments interactifs */
+.dark select,
+.dark input,
+.dark textarea {
+  background-color: hsl(220 13% 25%) !important;
+  border-color: hsl(220 13% 35%) !important;
+}
+
+/* Force les dropdowns/menus */
+.dark [role="menu"], 
+.dark [role="listbox"],
+.dark .dropdown-menu {
+  background-color: hsl(220 13% 18%) !important;
+  border-color: hsl(220 13% 35%) !important;
+}
+
+/* Force les options dans les dropdowns */
+.dark [role="menuitem"], 
+.dark [role="option"],
+.dark option {
+  background-color: transparent !important;
+  color: hsl(0 0% 98%) !important;
+}
+
+.dark [role="menuitem"]:hover, 
+.dark [role="option"]:hover,
+.dark [role="option"][data-highlighted] {
+  background-color: hsl(220 13% 30%) !important;
+  color: hsl(0 0% 100%) !important;
+}
+
+/* Placeholders ultra-visibles */
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: hsl(0 0% 70%) !important;
+  opacity: 1 !important;
 }
