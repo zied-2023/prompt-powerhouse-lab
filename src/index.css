@@ -72,7 +72,7 @@
 
     /* AMÉLIORATION MAJEURE du contraste pour les éléments muted */
     --muted: 220 13% 25%;
-    --muted-foreground: 0 0% 85%;
+    --muted-foreground: 0 0% 90%;
 
     --accent: 220 13% 25%;
     --accent-foreground: 0 0% 98%;
@@ -581,6 +581,72 @@
   color: hsl(0 0% 98%) !important;
 }
 
+/* AMÉLIORATION SPÉCIFIQUE pour les cartes de prompts */
+.dark .card,
+.dark [class*="card"],
+.dark [class*="Card"] {
+  background-color: hsl(220 13% 18%) !important;
+  border-color: hsl(220 13% 35%) !important;
+}
+
+/* Force TOUS les textes dans les cartes */
+.dark .card *,
+.dark [class*="card"] *,
+.dark [class*="Card"] * {
+  color: hsl(0 0% 95%) !important;
+}
+
+/* Spécifiquement pour les descriptions/sous-textes */
+.dark .card p,
+.dark .card span,
+.dark .card div:not([class*="title"]):not([class*="header"]),
+.dark [class*="description"],
+.dark [class*="subtitle"],
+.dark [class*="subtext"] {
+  color: hsl(0 0% 85%) !important;
+  opacity: 1 !important;
+}
+
+/* Force les titres de cartes à être ultra-visibles */
+.dark .card h1,
+.dark .card h2,
+.dark .card h3,
+.dark .card h4,
+.dark .card h5,
+.dark .card h6,
+.dark [class*="title"],
+.dark [class*="heading"] {
+  color: hsl(0 0% 98%) !important;
+  font-weight: 600 !important;
+}
+
+/* Force les badges/tags dans les cartes */
+.dark .badge,
+.dark [class*="badge"],
+.dark [class*="tag"],
+.dark [class*="chip"] {
+  background-color: hsl(220 13% 30%) !important;
+  color: hsl(0 0% 95%) !important;
+  border-color: hsl(220 13% 45%) !important;
+}
+
+/* Force les boutons dans les cartes */
+.dark .card button,
+.dark [class*="card"] button {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Force les liens dans les cartes */
+.dark .card a,
+.dark [class*="card"] a {
+  color: hsl(224.3 76.3% 65%) !important;
+}
+
+.dark .card a:hover,
+.dark [class*="card"] a:hover {
+  color: hsl(224.3 76.3% 75%) !important;
+}
+
 /* Force les arrière-plans des éléments interactifs */
 .dark select,
 .dark input,
@@ -617,4 +683,49 @@
 .dark textarea::placeholder {
   color: hsl(0 0% 70%) !important;
   opacity: 1 !important;
+}
+
+/* RÈGLES D'URGENCE - Si rien d'autre ne fonctionne */
+.dark-text-fix {
+  color: white !important;
+}
+
+.dark-bg-fix {
+  background-color: #2d3748 !important;
+  color: white !important;
+}
+
+/* Ciblage des composants React/Framework spécifiques */
+.dark [data-theme="dark"] *,
+.dark [data-mode="dark"] *,
+.dark .theme-dark *,
+.dark .dark-mode * {
+  color: hsl(0 0% 95%) !important;
+}
+
+/* Pour les frameworks CSS comme Radix UI, Headless UI, etc. */
+.dark [data-radix-portal] *,
+.dark [data-headlessui-portal] *,
+.dark .portal *,
+.dark .popover *,
+.dark .dropdown *,
+.dark .menu * {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Force tous les éléments textuels */
+.dark .text-gray-500,
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-muted,
+.dark .text-secondary {
+  color: hsl(0 0% 85%) !important;
+}
+
+/* Force les arrière-plans des composants */
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-white,
+.dark .bg-card {
+  background-color: hsl(220 13% 18%) !important;
 }
