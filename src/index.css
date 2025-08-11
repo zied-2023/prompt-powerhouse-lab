@@ -963,3 +963,118 @@
   color: hsl(0 0% 95%) !important;
   background-color: hsl(220 13% 15%) !important;
 }
+
+/* FORCE MAXIMALE POUR TOUS LES ARRIÈRE-PLANS ET TEXTES */
+
+/* Force tous les arrière-plans des cartes à être opaques */
+.dark .card,
+.dark [class*="card"],
+.dark .bg-card,
+.dark [class*="bg-card"] {
+  background-color: hsl(220 13% 18%) !important;
+  backdrop-filter: none !important;
+}
+
+/* Force tous les textes dans les cartes */
+.dark .card *,
+.dark [class*="card"] *,
+.dark .bg-card *,
+.dark [class*="bg-card"] * {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Titres spéciaux dans les cartes */
+.dark .card h1,
+.dark .card h2,
+.dark .card h3,
+.dark .card h4,
+.dark .card h5,
+.dark .card h6,
+.dark [class*="card"] h1,
+.dark [class*="card"] h2,
+.dark [class*="card"] h3,
+.dark [class*="card"] h4,
+.dark [class*="card"] h5,
+.dark [class*="card"] h6 {
+  color: hsl(0 0% 100%) !important;
+  font-weight: 600 !important;
+}
+
+/* Arrière-plans spéciaux pour les zones problématiques */
+.dark [style*="background-color: rgb(15"],
+.dark [style*="background-color: rgb(17"],
+.dark [style*="background-color: rgb(31"],
+.dark [style*="background: rgb(15"],
+.dark [style*="background: rgb(17"],
+.dark [style*="background: rgb(31"] {
+  background-color: hsl(220 13% 18%) !important;
+}
+
+/* Force les boutons preview et autres boutons spéciaux */
+.dark button,
+.dark [role="button"],
+.dark .btn {
+  background-color: hsl(220 13% 25%) !important;
+  color: hsl(0 0% 98%) !important;
+  border-color: hsl(0 0% 60%) !important;
+}
+
+.dark button:hover,
+.dark [role="button"]:hover {
+  background-color: hsl(220 13% 30%) !important;
+  color: hsl(0 0% 100%) !important;
+}
+
+/* Force tous les badges et étiquettes */
+.dark .badge,
+.dark [class*="badge"],
+.dark .tag,
+.dark [class*="tag"],
+.dark [data-radix-collection-item] {
+  background-color: hsl(220 13% 25%) !important;
+  color: hsl(0 0% 98%) !important;
+  border: 1px solid hsl(0 0% 60%) !important;
+}
+
+/* Force spécifiquement les éléments avec des classes de couleur */
+.dark .text-gray-300,
+.dark .text-gray-400,
+.dark .text-gray-500,
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-slate-400,
+.dark .text-slate-500,
+.dark .text-slate-600 {
+  color: hsl(0 0% 90%) !important;
+}
+
+/* Force les arrière-plans transparents à être opaques */
+.dark [class*="backdrop-blur"],
+.dark [style*="backdrop-filter"],
+.dark [class*="bg-opacity"],
+.dark [class*="bg-white/"],
+.dark [class*="bg-gray/"],
+.dark [class*="bg-slate/"] {
+  background-color: hsl(220 13% 18%) !important;
+  backdrop-filter: none !important;
+}
+
+/* Zone de recherche et sélecteurs */
+.dark input[type="search"],
+.dark input[placeholder*="search"],
+.dark input[placeholder*="Search"] {
+  background-color: hsl(220 13% 15%) !important;
+  color: hsl(0 0% 98%) !important;
+  border-color: hsl(0 0% 50%) !important;
+}
+
+/* Dropdown spéciaux */
+.dark [data-state="open"],
+.dark [data-state="closed"],
+.dark [role="listbox"],
+.dark [role="menu"] {
+  background-color: hsl(220 13% 18%) !important;
+  color: hsl(0 0% 98%) !important;
+  border: 1px solid hsl(0 0% 50%) !important;
+  z-index: 9999 !important;
+}
