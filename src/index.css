@@ -860,3 +860,106 @@
 .dark [style*="rgb(31"] * {
   color: hsl(0 0% 98%) !important;
 }
+
+/* STYLES SPÉCIFIQUES POUR BIBLIOTHÈQUE ET CATÉGORIES */
+
+/* Cartes avec transparence */
+.dark .bg-card\/80,
+.dark [class*="bg-card/"] {
+  background-color: hsl(220 13% 18%) !important;
+  color: hsl(0 0% 98%) !important;
+}
+
+.dark .bg-card\/80 *,
+.dark [class*="bg-card/"] * {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Badges colorés pour les catégories */
+.dark .bg-blue-100 {
+  background-color: hsl(210 100% 20%) !important;
+  color: hsl(210 100% 90%) !important;
+  border-color: hsl(210 100% 30%) !important;
+}
+
+.dark .bg-green-100 {
+  background-color: hsl(120 60% 20%) !important;
+  color: hsl(120 60% 90%) !important;
+  border-color: hsl(120 60% 30%) !important;
+}
+
+.dark .bg-purple-100 {
+  background-color: hsl(280 60% 20%) !important;
+  color: hsl(280 60% 90%) !important;
+  border-color: hsl(280 60% 30%) !important;
+}
+
+.dark .bg-orange-100 {
+  background-color: hsl(30 100% 20%) !important;
+  color: hsl(30 100% 90%) !important;
+  border-color: hsl(30 100% 30%) !important;
+}
+
+.dark .bg-red-100 {
+  background-color: hsl(0 70% 20%) !important;
+  color: hsl(0 70% 90%) !important;
+  border-color: hsl(0 70% 30%) !important;
+}
+
+.dark .bg-indigo-100 {
+  background-color: hsl(240 70% 20%) !important;
+  color: hsl(240 70% 90%) !important;
+  border-color: hsl(240 70% 30%) !important;
+}
+
+/* Descriptions et textes dans les cartes */
+.dark .text-muted-foreground {
+  color: hsl(0 0% 85%) !important;
+}
+
+/* Badges avec variant outline */
+.dark [data-radix-collection-item],
+.dark .badge,
+.dark [class*="badge"] {
+  background-color: hsl(220 13% 25%) !important;
+  color: hsl(0 0% 95%) !important;
+  border-color: hsl(0 0% 60%) !important;
+}
+
+/* Sélecteurs et dropdowns */
+.dark select,
+.dark [role="combobox"],
+.dark [data-state] {
+  background-color: hsl(220 13% 18%) !important;
+  color: hsl(0 0% 98%) !important;
+  border-color: hsl(0 0% 40%) !important;
+}
+
+.dark select option {
+  background-color: hsl(220 13% 18%) !important;
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Focus et hover états */
+.dark .hover\:shadow-md:hover,
+.dark .hover\:shadow-lg:hover,
+.dark .hover\:shadow-xl:hover {
+  box-shadow: 0 4px 25px -5px hsl(0 0% 0% / 0.4) !important;
+}
+
+/* Modales et overlays */
+.dark .fixed.inset-0 {
+  background-color: hsl(0 0% 0% / 0.8) !important;
+}
+
+.dark .fixed.inset-0 .bg-muted {
+  background-color: hsl(220 13% 15%) !important;
+  color: hsl(0 0% 95%) !important;
+}
+
+/* Texte monospace dans les modales */
+.dark .font-mono,
+.dark pre {
+  color: hsl(0 0% 95%) !important;
+  background-color: hsl(220 13% 15%) !important;
+}
