@@ -781,3 +781,82 @@
 .dark a:hover {
   color: hsl(210 100% 90%) !important;
 }
+
+/* STYLES SPÉCIFIQUES POUR LES CARTES ET COMPOSANTS */
+
+/* Cartes et conteneurs */
+.dark .card *,
+.dark [class*="card"] *,
+.dark .bg-card *,
+.dark [style*="background"] * {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Badges et étiquettes */
+.dark .badge,
+.dark [class*="badge"],
+.dark .tag,
+.dark [class*="tag"] {
+  color: hsl(0 0% 98%) !important;
+  background-color: hsl(220 13% 25%) !important;
+}
+
+/* Titres dans les cartes */
+.dark .card h1,
+.dark .card h2,
+.dark .card h3,
+.dark .card h4,
+.dark .card h5,
+.dark .card h6,
+.dark [class*="card"] h1,
+.dark [class*="card"] h2,
+.dark [class*="card"] h3,
+.dark [class*="card"] h4,
+.dark [class*="card"] h5,
+.dark [class*="card"] h6 {
+  color: hsl(0 0% 100%) !important;
+  font-weight: 600 !important;
+}
+
+/* Descriptions et textes secondaires */
+.dark .description,
+.dark [class*="description"],
+.dark .text-sm,
+.dark [class*="text-sm"],
+.dark .text-xs,
+.dark [class*="text-xs"] {
+  color: hsl(0 0% 88%) !important;
+}
+
+/* Boutons dans les cartes */
+.dark .card button,
+.dark [class*="card"] button,
+.dark button[class*="outline"],
+.dark button[class*="secondary"] {
+  color: hsl(0 0% 98%) !important;
+  border-color: hsl(0 0% 60%) !important;
+}
+
+/* Éléments interactifs */
+.dark [role="menuitem"],
+.dark [role="option"],
+.dark .dropdown-item,
+.dark [class*="dropdown"] * {
+  color: hsl(0 0% 98%) !important;
+}
+
+/* Icônes */
+.dark svg,
+.dark [class*="icon"] {
+  color: hsl(0 0% 90%) !important;
+  fill: hsl(0 0% 90%) !important;
+}
+
+/* Force maximale pour les zones problématiques */
+.dark .bg-gray-900 *,
+.dark .bg-slate-900 *,
+.dark [style*="rgb(15"] *,
+.dark [style*="rgb(17"] *,
+.dark [style*="rgb(31"] * {
+  color: hsl(0 0% 98%) !important;
+}
