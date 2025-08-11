@@ -729,3 +729,55 @@
 .dark .bg-card {
   background-color: hsl(220 13% 18%) !important;
 }
+
+/* CORRECTION FORCÉE POUR TEXTE CLAIR EN MODE SOMBRE */
+
+.dark {
+  /* Variables corrigées pour plus de clarté */
+  --foreground: 0 0% 98% !important;
+  --muted-foreground: 0 0% 85% !important;
+  --card-foreground: 0 0% 98% !important;
+  --secondary-foreground: 0 0% 98% !important;
+}
+
+/* Force tous les textes à être clairs en mode sombre */
+.dark * {
+  color: hsl(0 0% 95%) !important;
+}
+
+/* Exceptions pour conserver certaines couleurs */
+.dark .gradient-text {
+  color: transparent !important; /* Garde le gradient */
+}
+
+.dark button {
+  color: hsl(0 0% 95%) !important;
+}
+
+.dark input, .dark textarea, .dark select {
+  color: hsl(0 0% 95%) !important;
+  background-color: hsl(220 13% 18%) !important;
+}
+
+/* Textes spécifiques très clairs */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: hsl(0 0% 98%) !important;
+}
+
+.dark p, .dark span, .dark div {
+  color: hsl(0 0% 90%) !important;
+}
+
+/* Placeholders et textes d'aide */
+.dark ::placeholder {
+  color: hsl(0 0% 70%) !important;
+}
+
+/* Amélioration du contraste pour les liens */
+.dark a {
+  color: hsl(210 100% 80%) !important;
+}
+
+.dark a:hover {
+  color: hsl(210 100% 90%) !important;
+}
