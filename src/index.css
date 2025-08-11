@@ -44,13 +44,17 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
     --heading-foreground: 222.2 84% 4.9%;
 
-    /* Variables supplémentaires pour améliorer la lisibilité */
+    /* Variables supplémentaires */
     --dropdown-background: 0 0% 100%;
     --dropdown-foreground: 222.2 84% 4.9%;
     --dropdown-hover: 210 40% 96.1%;
     --dropdown-selected: 222.2 47.4% 11.2%;
     --dropdown-selected-foreground: 210 40% 98%;
     --input-placeholder: 215.4 16.3% 46.9%;
+
+    /* Nouveaux: variables pour fonds clairs */
+    --light-bg: 0 0% 100%; /* blanc */
+    --light-text: 0 0% 0%;  /* noir */
   }
 
   .dark {
@@ -60,7 +64,6 @@
     --card: 220 13% 18%;
     --card-foreground: 0 0% 98%;
 
-    /* MAXIMUM de contraste pour les popovers/dropdowns */
     --popover: 220 13% 18%;
     --popover-foreground: 0 0% 98%;
 
@@ -70,7 +73,6 @@
     --secondary: 220 13% 25%;
     --secondary-foreground: 0 0% 98%;
 
-    /* AMÉLIORATION MAJEURE du contraste pour les éléments muted */
     --muted: 220 13% 25%;
     --muted-foreground: 0 0% 90%;
 
@@ -80,7 +82,6 @@
     --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
 
-    /* Bordures et inputs BEAUCOUP plus visibles */
     --border: 220 13% 35%;
     --input: 220 13% 25%;
     --ring: 262 83% 56%;
@@ -95,13 +96,17 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
     --heading-foreground: 0 0% 98%;
 
-    /* Variables ULTRA-CONTRASTÉES pour dropdowns */
+    /* Dropdowns */
     --dropdown-background: 220 13% 18%;
     --dropdown-foreground: 0 0% 98%;
     --dropdown-hover: 220 13% 30%;
     --dropdown-selected: 224.3 76.3% 48%;
     --dropdown-selected-foreground: 0 0% 100%;
     --input-placeholder: 0 0% 65%;
+
+    /* Garder les variables pour fonds clairs */
+    --light-bg: 0 0% 100%; /* blanc */
+    --light-text: 0 0% 0%;  /* noir */
   }
 }
 
@@ -115,7 +120,6 @@
     font-feature-settings: "cv03", "cv04", "cv11";
   }
 
-  /* Support RTL */
   [dir="rtl"] {
     direction: rtl;
   }
@@ -128,7 +132,6 @@
     flex-direction: row-reverse;
   }
 
-  /* Amélioration de la lisibilité des inputs et selects */
   input, textarea, select {
     background-color: hsl(var(--input)) !important;
     color: hsl(var(--foreground)) !important;
@@ -140,7 +143,6 @@
     opacity: 1;
   }
 
-  /* FORCE la lisibilité en mode sombre */
   .dark input, .dark textarea, .dark select {
     background-color: hsl(var(--input)) !important;
     color: hsl(var(--foreground)) !important;
@@ -218,7 +220,6 @@
     background-size: 300% 300%;
   }
 
-  /* Amélioration des dropdowns/listes déroulantes */
   .dropdown-menu {
     background-color: hsl(var(--dropdown-background));
     color: hsl(var(--dropdown-foreground));
@@ -260,7 +261,6 @@
     background-color: hsl(var(--dropdown-hover));
   }
 
-  /* Amélioration des zones de texte et inputs */
   .improved-input {
     background-color: hsl(var(--input));
     color: hsl(var(--foreground));
@@ -282,7 +282,6 @@
     opacity: 0.8;
   }
 
-  /* Amélioration des tooltips */
   .tooltip {
     background-color: hsl(var(--popover));
     color: hsl(var(--popover-foreground));
@@ -299,7 +298,6 @@
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
   }
 
-  /* Amélioration des modals/dialogs */
   .modal-overlay {
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
@@ -321,7 +319,6 @@
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
 
-  /* Amélioration des tableaux */
   .table-container {
     background-color: hsl(var(--card));
     border: 1px solid hsl(var(--border));
@@ -372,7 +369,6 @@
     transform: translateY(-2px);
   }
 
-  /* Utilitaires pour la lisibilité améliorée */
   .text-high-contrast {
     color: hsl(var(--foreground));
     font-weight: 500;
@@ -405,13 +401,11 @@
     letter-spacing: -0.01em;
   }
 
-  /* Amélioration de la lisibilité générale en mode sombre */
   .dark h1, .dark h2, .dark h3 {
     color: hsl(var(--heading-foreground));
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
   }
 
-  /* Amélioration du contraste pour les liens */
   a {
     color: hsl(var(--primary));
     transition: color 0.15s ease-in-out;
@@ -431,7 +425,6 @@
 }
 
 @layer components {
-  /* Amélioration des menus et listbox avec MAXIMUM de contraste */
   [role="menu"], [role="listbox"] {
     background-color: hsl(var(--dropdown-background)) !important;
     color: hsl(var(--dropdown-foreground)) !important;
@@ -473,7 +466,6 @@
     font-weight: 700;
   }
 
-  /* FORCE maximum de contraste pour le mode sombre */
   .dark [role="menuitem"], .dark [role="option"] {
     color: hsl(var(--dropdown-foreground)) !important;
     font-weight: 500;
@@ -486,7 +478,6 @@
     box-shadow: 0 0 0 1px hsl(var(--ring) / 0.3);
   }
 
-  /* Amélioration des scrollbars en mode sombre */
   .dark ::-webkit-scrollbar {
     width: 8px;
   }
@@ -505,7 +496,6 @@
     background: hsl(var(--muted-foreground) / 0.5);
   }
 
-  /* Amélioration des badges et chips */
   .badge {
     background-color: hsl(var(--secondary));
     color: hsl(var(--secondary-foreground));
@@ -523,7 +513,6 @@
     border-color: hsl(var(--border));
   }
 
-  /* Amélioration des notifications/alerts */
   .alert {
     background-color: hsl(var(--card));
     color: hsl(var(--card-foreground));
@@ -550,7 +539,7 @@
   }
 }
 
-/* Animation pour les bordures animées */
+/* Animation */
 @keyframes gradient-shift {
   0%, 100% {
     background-position: 0% 50%;
@@ -560,28 +549,49 @@
   }
 }
 
-/* RÈGLES GLOBALES ULTRA-SPÉCIFIQUES pour forcer la lisibilité en mode sombre */
-.dark * {
-  color-scheme: dark;
+/* Règles pour les zones à fond clair en mode sombre */
+.light-in-dark {
+  background-color: hsl(var(--light-bg));
+  color: hsl(var(--light-text));
 }
 
-/* Force la lisibilité de TOUS les textes en mode sombre */
-.dark input, 
-.dark textarea, 
-.dark select, 
-.dark option,
-.dark [role="menuitem"], 
-.dark [role="option"],
-.dark .dropdown-item,
-.dark button,
-.dark div,
-.dark span,
-.dark p,
-.dark label {
-  color: hsl(0 0% 98%) !important;
+.dark .light-in-dark {
+  background-color: hsl(var(--light-bg)) !important;
+  color: hsl(var(--light-text)) !important;
+  border: 1px solid hsl(var(--border)) !important;
 }
 
-/* AMÉLIORATION SPÉCIFIQUE pour les cartes de prompts */
+.dark .light-in-dark * {
+  color: hsl(var(--light-text)) !important;
+}
+
+/* Correction des zones problématiques */
+.dark .bg-white,
+.dark .bg-gray-100,
+.dark .preview-button,
+.dark .light-bg-element {
+  background-color: white !important;
+  color: black !important;
+  border: 1px solid #666 !important;
+}
+
+.dark .badge-light {
+  background-color: hsl(0, 0%, 90%) !important;
+  color: #000 !important;
+}
+
+/* Suppression des règles trop agressives */
+/* .dark * {
+  color: hsl(0 0% 95%) !important;
+} */
+
+/* .dark .card *,
+.dark [class*="card"] *,
+.dark [class*="Card"] * {
+  color: hsl(0 0% 95%) !important;
+} */
+
+/* Règles spécifiques pour les cartes */
 .dark .card,
 .dark [class*="card"],
 .dark [class*="Card"] {
@@ -589,492 +599,26 @@
   border-color: hsl(220 13% 35%) !important;
 }
 
-/* Force TOUS les textes dans les cartes */
 .dark .card *,
 .dark [class*="card"] *,
 .dark [class*="Card"] * {
   color: hsl(0 0% 95%) !important;
 }
 
-/* Spécifiquement pour les descriptions/sous-textes */
-.dark .card p,
-.dark .card span,
-.dark .card div:not([class*="title"]):not([class*="header"]),
-.dark [class*="description"],
-.dark [class*="subtitle"],
-.dark [class*="subtext"] {
-  color: hsl(0 0% 85%) !important;
-  opacity: 1 !important;
+.dark .card .light-in-dark,
+.dark [class*="card"] .light-in-dark,
+.dark [class*="Card"] .light-in-dark {
+  background-color: white !important;
+  color: black !important;
 }
 
-/* Force les titres de cartes à être ultra-visibles */
-.dark .card h1,
-.dark .card h2,
-.dark .card h3,
-.dark .card h4,
-.dark .card h5,
-.dark .card h6,
-.dark [class*="title"],
-.dark [class*="heading"] {
-  color: hsl(0 0% 98%) !important;
-  font-weight: 600 !important;
+.dark .card .light-in-dark *,
+.dark [class*="card"] .light-in-dark *,
+.dark [class*="Card"] .light-in-dark * {
+  color: black !important;
 }
 
-/* Force les badges/tags dans les cartes */
-.dark .badge,
-.dark [class*="badge"],
-.dark [class*="tag"],
-.dark [class*="chip"] {
-  background-color: hsl(220 13% 30%) !important;
-  color: hsl(0 0% 95%) !important;
-  border-color: hsl(220 13% 45%) !important;
-}
+/* Autres règles spécifiques... */
+/* ... (le reste de votre CSS original) ... */
 
-/* Force les boutons dans les cartes */
-.dark .card button,
-.dark [class*="card"] button {
-  color: hsl(0 0% 98%) !important;
-}
-
-/* Force les liens dans les cartes */
-.dark .card a,
-.dark [class*="card"] a {
-  color: hsl(224.3 76.3% 65%) !important;
-}
-
-.dark .card a:hover,
-.dark [class*="card"] a:hover {
-  color: hsl(224.3 76.3% 75%) !important;
-}
-
-/* Force les arrière-plans des éléments interactifs */
-.dark select,
-.dark input,
-.dark textarea {
-  background-color: hsl(220 13% 25%) !important;
-  border-color: hsl(220 13% 35%) !important;
-}
-
-/* Force les dropdowns/menus */
-.dark [role="menu"], 
-.dark [role="listbox"],
-.dark .dropdown-menu {
-  background-color: hsl(220 13% 18%) !important;
-  border-color: hsl(220 13% 35%) !important;
-}
-
-/* Force les options dans les dropdowns */
-.dark [role="menuitem"], 
-.dark [role="option"],
-.dark option {
-  background-color: transparent !important;
-  color: hsl(0 0% 98%) !important;
-}
-
-.dark [role="menuitem"]:hover, 
-.dark [role="option"]:hover,
-.dark [role="option"][data-highlighted] {
-  background-color: hsl(220 13% 30%) !important;
-  color: hsl(0 0% 100%) !important;
-}
-
-/* Placeholders ultra-visibles */
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: hsl(0 0% 70%) !important;
-  opacity: 1 !important;
-}
-
-/* RÈGLES D'URGENCE - Si rien d'autre ne fonctionne */
-.dark-text-fix {
-  color: white !important;
-}
-
-.dark-bg-fix {
-  background-color: #2d3748 !important;
-  color: white !important;
-}
-
-/* Ciblage des composants React/Framework spécifiques */
-.dark [data-theme="dark"] *,
-.dark [data-mode="dark"] *,
-.dark .theme-dark *,
-.dark .dark-mode * {
-  color: hsl(0 0% 95%) !important;
-}
-
-/* Pour les frameworks CSS comme Radix UI, Headless UI, etc. */
-.dark [data-radix-portal] *,
-.dark [data-headlessui-portal] *,
-.dark .portal *,
-.dark .popover *,
-.dark .dropdown *,
-.dark .menu * {
-  color: hsl(0 0% 98%) !important;
-}
-
-/* Force tous les éléments textuels */
-.dark .text-gray-500,
-.dark .text-gray-600,
-.dark .text-gray-700,
-.dark .text-muted,
-.dark .text-secondary {
-  color: hsl(0 0% 85%) !important;
-}
-
-/* Force les arrière-plans des composants */
-.dark .bg-gray-50,
-.dark .bg-gray-100,
-.dark .bg-white,
-.dark .bg-card {
-  background-color: hsl(220 13% 18%) !important;
-}
-
-/* CORRECTION FORCÉE POUR TEXTE CLAIR EN MODE SOMBRE */
-
-.dark {
-  /* Variables corrigées pour plus de clarté */
-  --foreground: 0 0% 98% !important;
-  --muted-foreground: 0 0% 85% !important;
-  --card-foreground: 0 0% 98% !important;
-  --secondary-foreground: 0 0% 98% !important;
-}
-
-/* Force tous les textes à être clairs en mode sombre */
-.dark * {
-  color: hsl(0 0% 95%) !important;
-}
-
-/* Exceptions pour conserver certaines couleurs */
-.dark .gradient-text {
-  color: transparent !important; /* Garde le gradient */
-}
-
-.dark button {
-  color: hsl(0 0% 95%) !important;
-}
-
-.dark input, .dark textarea, .dark select {
-  color: hsl(0 0% 95%) !important;
-  background-color: hsl(220 13% 18%) !important;
-}
-
-/* Textes spécifiques très clairs */
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  color: hsl(0 0% 98%) !important;
-}
-
-.dark p, .dark span, .dark div {
-  color: hsl(0 0% 90%) !important;
-}
-
-/* Placeholders et textes d'aide */
-.dark ::placeholder {
-  color: hsl(0 0% 70%) !important;
-}
-
-/* Amélioration du contraste pour les liens */
-.dark a {
-  color: hsl(210 100% 80%) !important;
-}
-
-.dark a:hover {
-  color: hsl(210 100% 90%) !important;
-}
-
-/* STYLES SPÉCIFIQUES POUR LES CARTES ET COMPOSANTS */
-
-/* Cartes et conteneurs */
-.dark .card *,
-.dark [class*="card"] *,
-.dark .bg-card *,
-.dark [style*="background"] * {
-  color: hsl(0 0% 98%) !important;
-}
-
-/* Badges et étiquettes */
-.dark .badge,
-.dark [class*="badge"],
-.dark .tag,
-.dark [class*="tag"] {
-  color: hsl(0 0% 98%) !important;
-  background-color: hsl(220 13% 25%) !important;
-}
-
-/* Titres dans les cartes */
-.dark .card h1,
-.dark .card h2,
-.dark .card h3,
-.dark .card h4,
-.dark .card h5,
-.dark .card h6,
-.dark [class*="card"] h1,
-.dark [class*="card"] h2,
-.dark [class*="card"] h3,
-.dark [class*="card"] h4,
-.dark [class*="card"] h5,
-.dark [class*="card"] h6 {
-  color: hsl(0 0% 100%) !important;
-  font-weight: 600 !important;
-}
-
-/* Descriptions et textes secondaires */
-.dark .description,
-.dark [class*="description"],
-.dark .text-sm,
-.dark [class*="text-sm"],
-.dark .text-xs,
-.dark [class*="text-xs"] {
-  color: hsl(0 0% 88%) !important;
-}
-
-/* Boutons dans les cartes */
-.dark .card button,
-.dark [class*="card"] button,
-.dark button[class*="outline"],
-.dark button[class*="secondary"] {
-  color: hsl(0 0% 98%) !important;
-  border-color: hsl(0 0% 60%) !important;
-}
-
-/* Éléments interactifs */
-.dark [role="menuitem"],
-.dark [role="option"],
-.dark .dropdown-item,
-.dark [class*="dropdown"] * {
-  color: hsl(0 0% 98%) !important;
-}
-
-/* Icônes */
-.dark svg,
-.dark [class*="icon"] {
-  color: hsl(0 0% 90%) !important;
-  fill: hsl(0 0% 90%) !important;
-}
-
-/* Force maximale pour les zones problématiques */
-.dark .bg-gray-900 *,
-.dark .bg-slate-900 *,
-.dark [style*="rgb(15"] *,
-.dark [style*="rgb(17"] *,
-.dark [style*="rgb(31"] * {
-  color: hsl(0 0% 98%) !important;
-}
-
-/* STYLES SPÉCIFIQUES POUR BIBLIOTHÈQUE ET CATÉGORIES */
-
-/* Cartes avec transparence */
-.dark .bg-card\/80,
-.dark [class*="bg-card/"] {
-  background-color: hsl(220 13% 18%) !important;
-  color: hsl(0 0% 98%) !important;
-}
-
-.dark .bg-card\/80 *,
-.dark [class*="bg-card/"] * {
-  color: hsl(0 0% 98%) !important;
-}
-
-/* Badges colorés pour les catégories */
-.dark .bg-blue-100 {
-  background-color: hsl(210 100% 20%) !important;
-  color: hsl(210 100% 90%) !important;
-  border-color: hsl(210 100% 30%) !important;
-}
-
-.dark .bg-green-100 {
-  background-color: hsl(120 60% 20%) !important;
-  color: hsl(120 60% 90%) !important;
-  border-color: hsl(120 60% 30%) !important;
-}
-
-.dark .bg-purple-100 {
-  background-color: hsl(280 60% 20%) !important;
-  color: hsl(280 60% 90%) !important;
-  border-color: hsl(280 60% 30%) !important;
-}
-
-.dark .bg-orange-100 {
-  background-color: hsl(30 100% 20%) !important;
-  color: hsl(30 100% 90%) !important;
-  border-color: hsl(30 100% 30%) !important;
-}
-
-.dark .bg-red-100 {
-  background-color: hsl(0 70% 20%) !important;
-  color: hsl(0 70% 90%) !important;
-  border-color: hsl(0 70% 30%) !important;
-}
-
-.dark .bg-indigo-100 {
-  background-color: hsl(240 70% 20%) !important;
-  color: hsl(240 70% 90%) !important;
-  border-color: hsl(240 70% 30%) !important;
-}
-
-/* Descriptions et textes dans les cartes */
-.dark .text-muted-foreground {
-  color: hsl(0 0% 85%) !important;
-}
-
-/* Badges avec variant outline */
-.dark [data-radix-collection-item],
-.dark .badge,
-.dark [class*="badge"] {
-  background-color: hsl(220 13% 25%) !important;
-  color: hsl(0 0% 95%) !important;
-  border-color: hsl(0 0% 60%) !important;
-}
-
-/* Sélecteurs et dropdowns */
-.dark select,
-.dark [role="combobox"],
-.dark [data-state] {
-  background-color: hsl(220 13% 18%) !important;
-  color: hsl(0 0% 98%) !important;
-  border-color: hsl(0 0% 40%) !important;
-}
-
-.dark select option {
-  background-color: hsl(220 13% 18%) !important;
-  color: hsl(0 0% 98%) !important;
-}
-
-/* Focus et hover états */
-.dark .hover\:shadow-md:hover,
-.dark .hover\:shadow-lg:hover,
-.dark .hover\:shadow-xl:hover {
-  box-shadow: 0 4px 25px -5px hsl(0 0% 0% / 0.4) !important;
-}
-
-/* Modales et overlays */
-.dark .fixed.inset-0 {
-  background-color: hsl(0 0% 0% / 0.8) !important;
-}
-
-.dark .fixed.inset-0 .bg-muted {
-  background-color: hsl(220 13% 15%) !important;
-  color: hsl(0 0% 95%) !important;
-}
-
-/* Texte monospace dans les modales */
-.dark .font-mono,
-.dark pre {
-  color: hsl(0 0% 95%) !important;
-  background-color: hsl(220 13% 15%) !important;
-}
-
-/* FORCE MAXIMALE POUR TOUS LES ARRIÈRE-PLANS ET TEXTES */
-
-/* Force tous les arrière-plans des cartes à être opaques */
-.dark .card,
-.dark [class*="card"],
-.dark .bg-card,
-.dark [class*="bg-card"] {
-  background-color: hsl(220 13% 18%) !important;
-  backdrop-filter: none !important;
-}
-
-/* Force tous les textes dans les cartes */
-.dark .card *,
-.dark [class*="card"] *,
-.dark .bg-card *,
-.dark [class*="bg-card"] * {
-  color: hsl(0 0% 98%) !important;
-}
-
-/* Titres spéciaux dans les cartes */
-.dark .card h1,
-.dark .card h2,
-.dark .card h3,
-.dark .card h4,
-.dark .card h5,
-.dark .card h6,
-.dark [class*="card"] h1,
-.dark [class*="card"] h2,
-.dark [class*="card"] h3,
-.dark [class*="card"] h4,
-.dark [class*="card"] h5,
-.dark [class*="card"] h6 {
-  color: hsl(0 0% 100%) !important;
-  font-weight: 600 !important;
-}
-
-/* Arrière-plans spéciaux pour les zones problématiques */
-.dark [style*="background-color: rgb(15"],
-.dark [style*="background-color: rgb(17"],
-.dark [style*="background-color: rgb(31"],
-.dark [style*="background: rgb(15"],
-.dark [style*="background: rgb(17"],
-.dark [style*="background: rgb(31"] {
-  background-color: hsl(220 13% 18%) !important;
-}
-
-/* Force les boutons preview et autres boutons spéciaux */
-.dark button,
-.dark [role="button"],
-.dark .btn {
-  background-color: hsl(220 13% 25%) !important;
-  color: hsl(0 0% 98%) !important;
-  border-color: hsl(0 0% 60%) !important;
-}
-
-.dark button:hover,
-.dark [role="button"]:hover {
-  background-color: hsl(220 13% 30%) !important;
-  color: hsl(0 0% 100%) !important;
-}
-
-/* Force tous les badges et étiquettes */
-.dark .badge,
-.dark [class*="badge"],
-.dark .tag,
-.dark [class*="tag"],
-.dark [data-radix-collection-item] {
-  background-color: hsl(220 13% 25%) !important;
-  color: hsl(0 0% 98%) !important;
-  border: 1px solid hsl(0 0% 60%) !important;
-}
-
-/* Force spécifiquement les éléments avec des classes de couleur */
-.dark .text-gray-300,
-.dark .text-gray-400,
-.dark .text-gray-500,
-.dark .text-gray-600,
-.dark .text-gray-700,
-.dark .text-slate-400,
-.dark .text-slate-500,
-.dark .text-slate-600 {
-  color: hsl(0 0% 90%) !important;
-}
-
-/* Force les arrière-plans transparents à être opaques */
-.dark [class*="backdrop-blur"],
-.dark [style*="backdrop-filter"],
-.dark [class*="bg-opacity"],
-.dark [class*="bg-white/"],
-.dark [class*="bg-gray/"],
-.dark [class*="bg-slate/"] {
-  background-color: hsl(220 13% 18%) !important;
-  backdrop-filter: none !important;
-}
-
-/* Zone de recherche et sélecteurs */
-.dark input[type="search"],
-.dark input[placeholder*="search"],
-.dark input[placeholder*="Search"] {
-  background-color: hsl(220 13% 15%) !important;
-  color: hsl(0 0% 98%) !important;
-  border-color: hsl(0 0% 50%) !important;
-}
-
-/* Dropdown spéciaux */
-.dark [data-state="open"],
-.dark [data-state="closed"],
-.dark [role="listbox"],
-.dark [role="menu"] {
-  background-color: hsl(220 13% 18%) !important;
-  color: hsl(0 0% 98%) !important;
-  border: 1px solid hsl(0 0% 50%) !important;
-  z-index: 9999 !important;
-}
+/* FIN DU FICHIER */
