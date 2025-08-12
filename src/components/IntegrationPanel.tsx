@@ -205,14 +205,14 @@ const prompt = await client.generatePrompt({
             </Button>
             
             {connectionStatus === 'connected' && (
-              <Badge className="bg-green-100 text-green-800 border-green-200">
+              <Badge className="bg-green-500/10 text-green-700 border-green-500/20 dark:bg-green-400/10 dark:text-green-300 dark:border-green-400/20">
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Connected
               </Badge>
             )}
             
             {connectionStatus === 'error' && (
-              <Badge className="bg-red-100 text-red-800 border-red-200">
+              <Badge className="bg-red-500/10 text-red-700 border-red-500/20 dark:bg-red-400/10 dark:text-red-300 dark:border-red-400/20">
                 <AlertCircle className="h-3 w-3 mr-1" />
                 Error
               </Badge>
