@@ -508,9 +508,32 @@
   }
 
   .dark .badge {
-    background-color: hsl(var(--secondary));
-    color: hsl(var(--secondary-foreground));
-    border-color: hsl(var(--border));
+    background-color: hsl(240 5.9% 10%) !important;
+    color: hsl(0 0% 95%) !important;
+    border-color: hsl(220 13% 35%) !important;
+    font-weight: 600;
+  }
+
+  /* Badges spécifiques pour une meilleure lisibilité */
+  .dark .badge[data-variant="secondary"],
+  .dark .badge-secondary {
+    background-color: hsl(220 13% 15%) !important;
+    color: hsl(0 0% 98%) !important;
+    border: 1px solid hsl(220 13% 40%) !important;
+  }
+
+  .dark .badge[data-variant="outline"],
+  .dark .badge-outline {
+    background-color: hsl(220 13% 18%) !important;
+    color: hsl(0 0% 95%) !important;
+    border: 1px solid hsl(220 13% 50%) !important;
+  }
+
+  .dark .badge[data-variant="default"],
+  .dark .badge-default {
+    background-color: hsl(224.3 76.3% 48%) !important;
+    color: hsl(0 0% 100%) !important;
+    border: none !important;
   }
 
   .alert {
