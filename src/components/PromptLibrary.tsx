@@ -261,7 +261,7 @@ Output: [Detailed story concept with character profiles and plot structure]
                   <CardTitle className="text-lg">{prompt.title}</CardTitle>
                   <CardDescription className="mt-2">{prompt.description}</CardDescription>
                 </div>
-                <Badge variant="outline" className="ml-2 bg-purple-50 text-purple-700 border-purple-200">
+                <Badge variant="outline" className="ml-2">
                   {categories.find(cat => cat.value === prompt.category)?.label || prompt.category.replace('-', ' ')}
                 </Badge>
               </div>

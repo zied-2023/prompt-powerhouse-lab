@@ -536,6 +536,44 @@
     border: none !important;
   }
 
+  /* Forcer les badges colorés à être lisibles en mode sombre */
+  .dark .badge {
+    background-color: hsl(220 13% 15%) !important;
+    color: hsl(0 0% 95%) !important;
+    border: 1px solid hsl(220 13% 40%) !important;
+  }
+
+  /* Règles spécifiques pour les couleurs de badges */
+  .dark [class*="bg-green"] {
+    background-color: hsl(142 76% 20%) !important;
+    color: hsl(142 76% 85%) !important;
+    border-color: hsl(142 76% 30%) !important;
+  }
+
+  .dark [class*="bg-purple"] {
+    background-color: hsl(271 76% 20%) !important;
+    color: hsl(271 76% 85%) !important;
+    border-color: hsl(271 76% 30%) !important;
+  }
+
+  .dark [class*="bg-orange"] {
+    background-color: hsl(25 76% 20%) !important;
+    color: hsl(25 76% 85%) !important;
+    border-color: hsl(25 76% 30%) !important;
+  }
+
+  .dark [class*="bg-red"] {
+    background-color: hsl(0 76% 20%) !important;
+    color: hsl(0 76% 85%) !important;
+    border-color: hsl(0 76% 30%) !important;
+  }
+
+  .dark [class*="bg-indigo"] {
+    background-color: hsl(243 76% 20%) !important;
+    color: hsl(243 76% 85%) !important;
+    border-color: hsl(243 76% 30%) !important;
+  }
+
   .alert {
     background-color: hsl(var(--card));
     color: hsl(var(--card-foreground));

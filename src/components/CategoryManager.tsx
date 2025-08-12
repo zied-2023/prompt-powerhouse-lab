@@ -67,12 +67,12 @@ const CategoryManager = () => {
   });
 
   const colorOptions = [
-    { value: 'blue', label: t('blue'), class: 'bg-blue-100 text-blue-800 border-blue-200' },
-    { value: 'green', label: t('green'), class: 'bg-green-100 text-green-800 border-green-200' },
-    { value: 'purple', label: t('purple'), class: 'bg-purple-100 text-purple-800 border-purple-200' },
-    { value: 'orange', label: t('orange'), class: 'bg-orange-100 text-orange-800 border-orange-200' },
-    { value: 'red', label: t('red'), class: 'bg-red-100 text-red-800 border-red-200' },
-    { value: 'indigo', label: t('indigo'), class: 'bg-indigo-100 text-indigo-800 border-indigo-200' }
+    { value: 'blue', label: t('blue'), class: 'bg-primary/10 text-primary border-primary/20' },
+    { value: 'green', label: t('green'), class: 'bg-green-500/10 text-green-700 border-green-500/20 dark:bg-green-400/10 dark:text-green-300 dark:border-green-400/20' },
+    { value: 'purple', label: t('purple'), class: 'bg-purple-500/10 text-purple-700 border-purple-500/20 dark:bg-purple-400/10 dark:text-purple-300 dark:border-purple-400/20' },
+    { value: 'orange', label: t('orange'), class: 'bg-orange-500/10 text-orange-700 border-orange-500/20 dark:bg-orange-400/10 dark:text-orange-300 dark:border-orange-400/20' },
+    { value: 'red', label: t('red'), class: 'bg-red-500/10 text-red-700 border-red-500/20 dark:bg-red-400/10 dark:text-red-300 dark:border-red-400/20' },
+    { value: 'indigo', label: t('indigo'), class: 'bg-indigo-500/10 text-indigo-700 border-indigo-500/20 dark:bg-indigo-400/10 dark:text-indigo-300 dark:border-indigo-400/20' }
   ];
 
   const getColorClass = (color) => {
@@ -190,7 +190,7 @@ const CategoryManager = () => {
                   id="color"
                   value={formData.color}
                   onChange={(e) => setFormData({...formData, color: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   {colorOptions.map(option => (
                     <option key={option.value} value={option.value}>
