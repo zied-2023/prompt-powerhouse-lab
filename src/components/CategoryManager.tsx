@@ -164,12 +164,12 @@ const CategoryManager = () => {
     <div className="space-y-6">
       {/* Create/Edit Form */}
       {(isCreating || editingId) && (
-        <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
+        <Card className="bg-card border border-border shadow-lg">
           <CardHeader>
-            <CardTitle>
+            <CardTitle className="text-card-foreground">
               {editingId ? t('editCategory') : t('createNewCategory')}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-muted-foreground">
               {editingId ? 'Modify the category details below' : 'Add a new category for organizing prompts'}
             </CardDescription>
           </CardHeader>
@@ -190,7 +190,7 @@ const CategoryManager = () => {
                   id="color"
                   value={formData.color}
                   onChange={(e) => setFormData({...formData, color: e.target.value})}
-                  className="w-full px-3 py-2 border border-input bg-background text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full px-3 py-2 border border-input bg-input text-foreground rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
                 >
                   {colorOptions.map(option => (
                     <option key={option.value} value={option.value}>
@@ -237,12 +237,12 @@ const CategoryManager = () => {
       )}
 
       {/* Categories Overview */}
-      <Card className="bg-card/80 backdrop-blur-sm border border-border shadow-lg">
+      <Card className="bg-card border border-border shadow-lg">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>{t('categories')}</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-card-foreground">{t('categories')}</CardTitle>
+              <CardDescription className="text-muted-foreground">
                 Manage and organize your prompt categories for better organization
               </CardDescription>
             </div>
@@ -257,7 +257,7 @@ const CategoryManager = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.map((category) => (
-              <Card key={category.id} className="border-2 hover:shadow-md transition-shadow">
+              <Card key={category.id} className="bg-card border-2 border-border hover:shadow-md transition-shadow">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <Badge className={getColorClass(category.color)}>
@@ -277,7 +277,7 @@ const CategoryManager = () => {
                         size="sm"
                         onClick={() => handleDelete(category.id)}
                         disabled={isCreating || editingId}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-destructive hover:text-destructive/80"
                       >
                         <Trash2 className="h-3 w-3" />
                       </Button>
