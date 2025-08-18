@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, Copy, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import ThemeSelector from '@/components/ThemeSelector';
+import LanguageSelector from '@/components/LanguageSelector';
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -138,15 +140,24 @@ const SimplePromptGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* En-tête */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">Générateur de Prompt Simple</h1>
-          <p className="text-muted-foreground">
-            Créez des prompts efficaces en quelques clics
-          </p>
+    <div className="min-h-screen bg-background">
+      {/* Barre supérieure */}
+      <div className="flex justify-end items-center p-4 border-b border-border">
+        <div className="flex items-center gap-3">
+          <ThemeSelector />
+          <LanguageSelector />
         </div>
+      </div>
+      
+      <div className="p-4">
+        <div className="max-w-4xl mx-auto space-y-6">
+          {/* En-tête */}
+          <div className="text-center space-y-2">
+            <h1 className="text-3xl font-bold text-foreground">Générateur de Prompt Simple</h1>
+            <p className="text-muted-foreground">
+              Créez des prompts efficaces en quelques clics
+            </p>
+          </div>
 
         {/* Formulaire de génération */}
         <Card>
@@ -248,6 +259,7 @@ const SimplePromptGenerator = () => {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
     </div>
   );
