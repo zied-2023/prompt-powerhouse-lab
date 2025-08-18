@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import ThemeSelector from "@/components/ThemeSelector";
 import LanguageSelector from "@/components/LanguageSelector";
+import { AuthButtons } from "@/components/auth/AuthButtons";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const Landing = () => {
           <div className="flex items-center space-x-4">
             <ThemeSelector />
             <LanguageSelector />
+            <AuthButtons />
           </div>
         </div>
       </header>
