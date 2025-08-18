@@ -46,7 +46,7 @@ const Index = () => {
                 <h1 className="text-3xl font-bold gradient-text text-shadow">
                   {t('title')}
                 </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">{t('subtitle')}</p>
+                <p className="text-sm text-muted-foreground font-medium">{t('subtitle')}</p>
               </div>
             </div>
             <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
