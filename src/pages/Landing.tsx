@@ -80,7 +80,7 @@ const Landing = () => {
             {/* CTA Button */}
             <Button 
               size="lg" 
-              onClick={() => navigate('/app')}
+              onClick={() => navigate('/generator')}
               className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
             >
               Commencer Maintenant
