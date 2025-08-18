@@ -312,10 +312,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               {t('mainCategory')} {t('required')}
             </Label>
             <Select value={formData.category} onValueChange={handleCategoryChange}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
                 <SelectValue placeholder={t('selectDomain')} />
               </SelectTrigger>
-              <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
+              <SelectContent className="shadow-xl z-50 max-h-80">
                 {categories.map((cat) => (
                     <SelectItem key={cat.value} value={cat.value} className="font-medium py-3 px-4 hover:bg-accent cursor-pointer">
                       <div className="flex flex-col">
@@ -335,10 +335,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
                 {t('subcategory')} {t('optional')}
               </Label>
               <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
-                <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+                <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
                   <SelectValue placeholder={t('chooseSpecialization')} />
                 </SelectTrigger>
-                <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
+                <SelectContent className="shadow-xl z-50 max-h-80">
                   {getSubcategories(formData.category).map((subcat) => (
                     <SelectItem key={subcat.value} value={subcat.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
                       <div className="text-foreground">{subcat.label}</div>
@@ -359,7 +359,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               placeholder={t('taskDescriptionPlaceholder')}
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px] bg-white"
+              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px]"
               rows={4}
             />
           </div>
@@ -374,7 +374,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               placeholder={t('mainObjectivePlaceholder')}
               value={formData.objective}
               onChange={(e) => setFormData({...formData, objective: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 bg-white"
+              className="animated-border hover:shadow-lg transition-all duration-200"
             />
           </div>
 
@@ -388,7 +388,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               placeholder={t('targetAudiencePlaceholder')}
               value={formData.targetAudience}
               onChange={(e) => setFormData({...formData, targetAudience: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 bg-white"
+              className="animated-border hover:shadow-lg transition-all duration-200"
             />
           </div>
 
@@ -398,10 +398,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               {t('outputFormat')} {t('optional')}
             </Label>
             <Select value={formData.format} onValueChange={(value) => setFormData({...formData, format: value})}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
                 <SelectValue placeholder={t('chooseFormat')} />
               </SelectTrigger>
-              <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
+              <SelectContent className="shadow-xl z-50">
                 {outputFormats.map((format) => (
                   <SelectItem key={format.value} value={format.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
                     {format.label}
@@ -417,10 +417,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               {t('toneStyle')} {t('optional')}
             </Label>
             <Select value={formData.tone} onValueChange={(value) => setFormData({...formData, tone: value})}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
                 <SelectValue placeholder={t('chooseTone')} />
               </SelectTrigger>
-              <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
+              <SelectContent className="shadow-xl z-50">
                 {toneOptions.map((tone) => (
                   <SelectItem key={tone.value} value={tone.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
                     {tone.label}
@@ -436,10 +436,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               {t('approximateLength')} {t('optional')}
             </Label>
             <Select value={formData.length} onValueChange={(value) => setFormData({...formData, length: value})}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 bg-white">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
                 <SelectValue placeholder={t('chooseLength')} />
               </SelectTrigger>
-              <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
+              <SelectContent className="shadow-xl z-50">
                 {lengthOptions.map((length) => (
                   <SelectItem key={length.value} value={length.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
                     {length.label}
