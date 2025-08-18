@@ -301,14 +301,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             </div>
             <span className="gradient-text">{t('promptGeneratorTitle')}</span>
           </CardTitle>
-          <CardDescription className="text-muted-foreground font-medium">
+          <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
             {t('promptGeneratorDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Catégorie principale */}
           <div className="space-y-3">
-            <Label htmlFor="category" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="category" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('mainCategory')} {t('required')}
             </Label>
             <Select value={formData.category} onValueChange={handleCategoryChange}>
@@ -331,7 +331,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Sous-catégorie */}
           {formData.category && getSubcategories(formData.category).length > 0 && (
             <div className="space-y-3">
-              <Label htmlFor="subcategory" className="text-sm font-semibold text-foreground">
+              <Label htmlFor="subcategory" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                 {t('subcategory')} {t('optional')}
               </Label>
               <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
@@ -351,7 +351,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Description principale */}
           <div className="space-y-3">
-            <Label htmlFor="description" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="description" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('taskDescription')} {t('required')}
             </Label>
             <Textarea
@@ -359,14 +359,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               placeholder={t('taskDescriptionPlaceholder')}
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px]"
+              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px] bg-white dark:bg-gray-800"
               rows={4}
             />
           </div>
 
           {/* Objectif */}
           <div className="space-y-3">
-            <Label htmlFor="objective" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="objective" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('mainObjective')} {t('optional')}
             </Label>
             <Input
@@ -374,13 +374,13 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               placeholder={t('mainObjectivePlaceholder')}
               value={formData.objective}
               onChange={(e) => setFormData({...formData, objective: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200"
+              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800"
             />
           </div>
 
           {/* Public cible */}
           <div className="space-y-3">
-            <Label htmlFor="targetAudience" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="targetAudience" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('targetAudience')} {t('optional')}
             </Label>
             <Input
@@ -388,13 +388,13 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               placeholder={t('targetAudiencePlaceholder')}
               value={formData.targetAudience}
               onChange={(e) => setFormData({...formData, targetAudience: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200"
+              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800"
             />
           </div>
 
           {/* Format de sortie */}
           <div className="space-y-3">
-            <Label htmlFor="format" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="format" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('outputFormat')} {t('optional')}
             </Label>
             <Select value={formData.format} onValueChange={(value) => setFormData({...formData, format: value})}>
@@ -413,7 +413,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Ton/Style */}
           <div className="space-y-3">
-            <Label htmlFor="tone" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="tone" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('toneStyle')} {t('optional')}
             </Label>
             <Select value={formData.tone} onValueChange={(value) => setFormData({...formData, tone: value})}>
@@ -432,7 +432,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Longueur */}
           <div className="space-y-3">
-            <Label htmlFor="length" className="text-sm font-semibold text-foreground">
+            <Label htmlFor="length" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
               {t('approximateLength')} {t('optional')}
             </Label>
             <Select value={formData.length} onValueChange={(value) => setFormData({...formData, length: value})}>
@@ -481,25 +481,25 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </Button>
             )}
           </CardTitle>
-          <CardDescription className="text-muted-foreground font-medium">
+          <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
             {t('aiGeneratedPromptDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {generatedPrompt ? (
             <div className="glass-card border-white/30 p-6 rounded-xl">
-              <pre className="whitespace-pre-wrap text-sm text-foreground font-mono leading-relaxed max-h-96 overflow-y-auto">
+              <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-mono leading-relaxed max-h-96 overflow-y-auto">
                 {generatedPrompt}
               </pre>
-              <div className="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                <p className="text-sm text-emerald-700 font-medium">
+              <div className="mt-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700">
+                <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
                   🤖 <strong>{t('generatedByAI')} :</strong> {t('aiGeneratedDesc')}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="text-center py-16 text-muted-foreground">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-violet-100 to-purple-100 rounded-2xl flex items-center justify-center">
+            <div className="text-center py-16 text-gray-500">
+              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 rounded-2xl flex items-center justify-center">
                 <Zap className="h-8 w-8 text-violet-400" />
               </div>
               <p className="font-medium text-lg mb-2">{t('readyForGeneration')}</p>
