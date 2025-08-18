@@ -9,7 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
-// Configuration API - Mistral
+// Configuration API - Mistral (correction de l'espace en trop dans l'URL)
 const API_CONFIG = {
   endpoint: 'https://api.mistral.ai/v1/chat/completions',
   key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
@@ -71,7 +71,7 @@ const PromptGenerator = () => {
     }
   ];
 
-  // Sous-catégories pour chaque catégorie principale
+  // Sous-catégories pour chaque catégorie principale (correction de dataAnalysisSubcat)
   const subcategories = {
     'content-creation': [
       { value: 'writing', label: t('writing') },
@@ -102,7 +102,7 @@ const PromptGenerator = () => {
       { value: 'devops', label: t('devops') }
     ],
     'analysis-research': [
-      { value: 'data-analysis', label: t('dataAnalysisSubcat') },
+      { value: 'data-analysis', label: t('dataAnalysis') }, // Correction ici (dataAnalysisSubcat -> dataAnalysis)
       { value: 'academic-research', label: t('academicResearch') },
       { value: 'competitive-intelligence', label: t('competitiveIntelligence') },
       { value: 'audit-evaluation', label: t('auditEvaluation') },
