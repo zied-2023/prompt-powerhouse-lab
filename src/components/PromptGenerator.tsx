@@ -301,14 +301,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             </div>
             <span className="gradient-text">{t('promptGeneratorTitle')}</span>
           </CardTitle>
-          <CardDescription className="text-gray-600 font-medium">
+          <CardDescription className="text-muted-foreground font-medium">
             {t('promptGeneratorDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Catégorie principale */}
           <div className="space-y-3">
-            <Label htmlFor="category" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="category" className="text-sm font-semibold text-foreground">
               {t('mainCategory')} {t('required')}
             </Label>
             <Select value={formData.category} onValueChange={handleCategoryChange}>
@@ -317,11 +317,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
                 {categories.map((cat) => (
-                  <SelectItem key={cat.value} value={cat.value} className="font-medium py-3 px-4 hover:bg-gray-50 cursor-pointer">
-                    <div className="flex flex-col">
-                      <div className="font-semibold text-gray-800">{cat.label}</div>
-                      <div className="text-xs text-gray-500 mt-1">{cat.description}</div>
-                    </div>
+                    <SelectItem key={cat.value} value={cat.value} className="font-medium py-3 px-4 hover:bg-accent cursor-pointer">
+                      <div className="flex flex-col">
+                        <div className="font-semibold text-foreground">{cat.label}</div>
+                        <div className="text-xs text-muted-foreground mt-1">{cat.description}</div>
+                      </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -331,7 +331,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           {/* Sous-catégorie */}
           {formData.category && getSubcategories(formData.category).length > 0 && (
             <div className="space-y-3">
-              <Label htmlFor="subcategory" className="text-sm font-semibold text-gray-700">
+              <Label htmlFor="subcategory" className="text-sm font-semibold text-foreground">
                 {t('subcategory')} {t('optional')}
               </Label>
               <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
@@ -340,8 +340,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
                 </SelectTrigger>
                 <SelectContent className="bg-white border-gray-200 shadow-xl z-50 max-h-80">
                   {getSubcategories(formData.category).map((subcat) => (
-                    <SelectItem key={subcat.value} value={subcat.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
-                      <div className="text-gray-800">{subcat.label}</div>
+                    <SelectItem key={subcat.value} value={subcat.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
+                      <div className="text-foreground">{subcat.label}</div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -351,7 +351,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Description principale */}
           <div className="space-y-3">
-            <Label htmlFor="description" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="description" className="text-sm font-semibold text-foreground">
               {t('taskDescription')} {t('required')}
             </Label>
             <Textarea
@@ -366,7 +366,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Objectif */}
           <div className="space-y-3">
-            <Label htmlFor="objective" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="objective" className="text-sm font-semibold text-foreground">
               {t('mainObjective')} {t('optional')}
             </Label>
             <Input
@@ -380,7 +380,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Public cible */}
           <div className="space-y-3">
-            <Label htmlFor="targetAudience" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="targetAudience" className="text-sm font-semibold text-foreground">
               {t('targetAudience')} {t('optional')}
             </Label>
             <Input
@@ -394,7 +394,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Format de sortie */}
           <div className="space-y-3">
-            <Label htmlFor="format" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="format" className="text-sm font-semibold text-foreground">
               {t('outputFormat')} {t('optional')}
             </Label>
             <Select value={formData.format} onValueChange={(value) => setFormData({...formData, format: value})}>
@@ -403,7 +403,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
                 {outputFormats.map((format) => (
-                  <SelectItem key={format.value} value={format.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
+                  <SelectItem key={format.value} value={format.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
                     {format.label}
                   </SelectItem>
                 ))}
@@ -413,7 +413,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Ton/Style */}
           <div className="space-y-3">
-            <Label htmlFor="tone" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="tone" className="text-sm font-semibold text-foreground">
               {t('toneStyle')} {t('optional')}
             </Label>
             <Select value={formData.tone} onValueChange={(value) => setFormData({...formData, tone: value})}>
@@ -422,7 +422,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
                 {toneOptions.map((tone) => (
-                  <SelectItem key={tone.value} value={tone.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
+                  <SelectItem key={tone.value} value={tone.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
                     {tone.label}
                   </SelectItem>
                 ))}
@@ -432,7 +432,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
           {/* Longueur */}
           <div className="space-y-3">
-            <Label htmlFor="length" className="text-sm font-semibold text-gray-700">
+            <Label htmlFor="length" className="text-sm font-semibold text-foreground">
               {t('approximateLength')} {t('optional')}
             </Label>
             <Select value={formData.length} onValueChange={(value) => setFormData({...formData, length: value})}>
@@ -441,7 +441,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </SelectTrigger>
               <SelectContent className="bg-white border-gray-200 shadow-xl z-50">
                 {lengthOptions.map((length) => (
-                  <SelectItem key={length.value} value={length.value} className="font-medium py-2 px-4 hover:bg-gray-50 cursor-pointer">
+                  <SelectItem key={length.value} value={length.value} className="font-medium py-2 px-4 hover:bg-accent cursor-pointer">
                     {length.label}
                   </SelectItem>
                 ))}
@@ -481,14 +481,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </Button>
             )}
           </CardTitle>
-          <CardDescription className="text-gray-600 font-medium">
+          <CardDescription className="text-muted-foreground font-medium">
             {t('aiGeneratedPromptDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           {generatedPrompt ? (
             <div className="glass-card border-white/30 p-6 rounded-xl">
-              <pre className="whitespace-pre-wrap text-sm text-gray-800 font-mono leading-relaxed max-h-96 overflow-y-auto">
+              <pre className="whitespace-pre-wrap text-sm text-foreground font-mono leading-relaxed max-h-96 overflow-y-auto">
                 {generatedPrompt}
               </pre>
               <div className="mt-4 p-4 bg-emerald-50 rounded-lg border border-emerald-200">
@@ -498,7 +498,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               </div>
             </div>
           ) : (
-            <div className="text-center py-16 text-gray-500">
+            <div className="text-center py-16 text-muted-foreground">
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-violet-100 to-purple-100 rounded-2xl flex items-center justify-center">
                 <Zap className="h-8 w-8 text-violet-400" />
               </div>
