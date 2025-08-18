@@ -7,6 +7,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Loader2, Copy, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+// Configuration API - Mistral
+const API_CONFIG = {
+  endpoint: 'https://api.mistral.ai/v1/chat/completions',
+  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
+  model: 'mistral-large-latest'
+};
+
 const SimplePromptGenerator = () => {
   const [objective, setObjective] = useState('');
   const [tone, setTone] = useState('');
@@ -38,31 +45,74 @@ const SimplePromptGenerator = () => {
     setIsLoading(true);
     
     try {
-      // Simulation d'appel API - remplacer par votre vraie logique
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Construction du prompt pour l'API Mistral
+      let userPrompt = `Je veux créer un prompt optimisé pour atteindre cet objectif: "${objective}"`;
       
-      const toneText = tone ? ` avec un ton ${tone}` : '';
-      const generatedPrompt = `Créez un contenu détaillé pour atteindre l'objectif suivant : "${objective}"${toneText}. 
-
-Assurez-vous d'inclure :
-- Une introduction engageante
-- Des points clés structurés
-- Des exemples concrets
-- Une conclusion actionnable
-
-Adaptez le style et le niveau de détail selon le contexte et l'audience cible.`;
-
-      setResult(generatedPrompt);
+      if (tone) {
+        const selectedTone = toneOptions.find(t => t.value === tone);
+        userPrompt += `\n\nTon souhaité: ${selectedTone?.label}`;
+      }
       
-      toast({
-        title: "Succès",
-        description: "Prompt généré avec succès !",
-        variant: "default"
+      userPrompt += `\n\nVeuillez créer un prompt clair, précis et efficace qui m'aidera à atteindre cet objectif. Le prompt doit être directement utilisable.`;
+
+      const response = await fetch(API_CONFIG.endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${API_CONFIG.key}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: API_CONFIG.model,
+          messages: [
+            {
+              role: 'system',
+              content: 'Tu es un expert en création de prompts. Tu dois créer des prompts clairs, précis et efficaces. Réponds directement avec le prompt optimisé, sans préambule ni explication supplémentaire.'
+            },
+            {
+              role: 'user',
+              content: userPrompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1000
+        })
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        if (response.status === 402) {
+          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte Mistral.');
+        }
+        
+        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.choices && data.choices[0] && data.choices[0].message) {
+        setResult(data.choices[0].message.content);
+        toast({
+          title: "Succès",
+          description: "Prompt généré avec succès !",
+          variant: "default"
+        });
+      } else {
+        throw new Error('Réponse API invalide');
+      }
     } catch (error) {
+      console.error('Erreur lors de la génération:', error);
+      
+      let errorMessage = "Une erreur est survenue lors de la génération";
+      if (error.message.includes('crédits')) {
+        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte Mistral.";
+      } else if (error.message.includes('connexion')) {
+        errorMessage = "Vérifiez votre connexion internet.";
+      }
+      
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la génération",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
