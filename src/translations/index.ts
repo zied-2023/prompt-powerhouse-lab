@@ -71,6 +71,20 @@ export interface TranslationKey {
   objectiveStepDesc: string;
   contextStep: string;
   contextStepDesc: string;
+  
+  // Advanced prompt builder keys
+  advancedStepObjective: string;
+  advancedStepObjectiveDesc: string;
+  advancedStepContext: string;
+  advancedStepContextDesc: string;
+  advancedStepAudience: string;
+  advancedStepAudienceDesc: string;
+  advancedStepTone: string;
+  advancedStepToneDesc: string;
+  advancedStepConstraints: string;
+  advancedStepConstraintsDesc: string;
+  advancedStepOptimization: string;
+  advancedStepOptimizationDesc: string;
   outputFormatStep: string;
   outputFormatStepDesc: string;
   constraintsStep: string;
@@ -306,6 +320,20 @@ export const translations: Record<string, TranslationKey> = {
     objectiveStepDesc: "Define your main goal and objective",
     contextStep: "Context",
     contextStepDesc: "Provide background information and context",
+    
+    // Advanced prompt builder keys
+    advancedStepObjective: "Define Objective",
+    advancedStepObjectiveDesc: "Specify clearly what you want to get from the AI",
+    advancedStepContext: "Context & Situation",
+    advancedStepContextDesc: "Provide necessary context for a relevant response",
+    advancedStepAudience: "Target Audience",
+    advancedStepAudienceDesc: "Define your audience to adapt tone and level",
+    advancedStepTone: "Tone & Style",
+    advancedStepToneDesc: "Choose appropriate communication tone and style",
+    advancedStepConstraints: "Constraints & Specifications",
+    advancedStepConstraintsDesc: "Define limitations and specific requirements",
+    advancedStepOptimization: "Final Optimization",
+    advancedStepOptimizationDesc: "Refine and optimize your prompt with AI",
     outputFormatStep: "Output Format",
     outputFormatStepDesc: "Choose the desired output format",
     constraintsStep: "Constraints",
@@ -500,6 +528,20 @@ export const translations: Record<string, TranslationKey> = {
     objectiveStepDesc: "Définir votre objectif principal",
     contextStep: "Contexte",
     contextStepDesc: "Fournir des informations contextuelles",
+    
+    // Advanced prompt builder keys
+    advancedStepObjective: "Définir l'Objectif",
+    advancedStepObjectiveDesc: "Précisez clairement ce que vous voulez obtenir de l'IA",
+    advancedStepContext: "Contexte & Situation",
+    advancedStepContextDesc: "Fournissez le contexte nécessaire pour une réponse pertinente",
+    advancedStepAudience: "Public Cible",
+    advancedStepAudienceDesc: "Définissez votre audience pour adapter le ton et le niveau",
+    advancedStepTone: "Ton & Style",
+    advancedStepToneDesc: "Choisissez le ton et le style de communication appropriés",
+    advancedStepConstraints: "Contraintes & Spécifications",
+    advancedStepConstraintsDesc: "Définissez les limitations et exigences spécifiques",
+    advancedStepOptimization: "Optimisation Finale",
+    advancedStepOptimizationDesc: "Affinez et optimisez votre prompt avec l'IA",
     outputFormatStep: "Format de Sortie",
     outputFormatStepDesc: "Choisir le format de sortie désiré",
     constraintsStep: "Contraintes",
@@ -756,6 +798,20 @@ export const translations: Record<string, TranslationKey> = {
     objectiveStepDesc: "تحديد هدفك الرئيسي",
     contextStep: "السياق",
     contextStepDesc: "توفير معلومات السياق والخلفية",
+    
+    // Advanced prompt builder keys
+    advancedStepObjective: "تحديد الهدف",
+    advancedStepObjectiveDesc: "حدد بوضوح ما تريد الحصول عليه من الذكاء الاصطناعي",
+    advancedStepContext: "السياق والموقف",
+    advancedStepContextDesc: "قدم السياق اللازم للحصول على إجابة مناسبة",
+    advancedStepAudience: "الجمهور المستهدف",
+    advancedStepAudienceDesc: "حدد جمهورك لتكييف النبرة والمستوى",
+    advancedStepTone: "النبرة والأسلوب",
+    advancedStepToneDesc: "اختر نبرة وأسلوب التواصل المناسبين",
+    advancedStepConstraints: "القيود والمواصفات",
+    advancedStepConstraintsDesc: "حدد القيود والمتطلبات المحددة",
+    advancedStepOptimization: "التحسين النهائي",
+    advancedStepOptimizationDesc: "صقل وحسن نصك التوجيهي بالذكاء الاصطناعي",
     outputFormatStep: "تنسيق الإخراج",
     outputFormatStepDesc: "اختيار تنسيق الإخراج المطلوب",
     constraintsStep: "القيود",

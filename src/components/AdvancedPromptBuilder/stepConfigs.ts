@@ -1,11 +1,11 @@
 import { Target, Users, Palette, FileText, Lightbulb, Settings } from 'lucide-react';
 import { StepConfig } from './types';
 
-export const stepConfigs: StepConfig[] = [
+export const getStepConfigs = (t: (key: string) => string): StepConfig[] => [
   {
     id: 0,
-    title: "Définir l'Objectif",
-    description: "Précisez clairement ce que vous voulez obtenir de l'IA",
+    title: t('advancedStepObjective'),
+    description: t('advancedStepObjectiveDesc'),
     icon: Target,
     component: 'ObjectiveStep',
     required: true,
@@ -23,8 +23,8 @@ export const stepConfigs: StepConfig[] = [
   },
   {
     id: 1,
-    title: "Contexte & Situation",
-    description: "Fournissez le contexte nécessaire pour une réponse pertinente",
+    title: t('advancedStepContext'),
+    description: t('advancedStepContextDesc'),
     icon: FileText,
     component: 'ContextStep',
     required: false,
@@ -42,8 +42,8 @@ export const stepConfigs: StepConfig[] = [
   },
   {
     id: 2,
-    title: "Public Cible",
-    description: "Définissez votre audience pour adapter le ton et le niveau",
+    title: t('advancedStepAudience'),
+    description: t('advancedStepAudienceDesc'),
     icon: Users,
     component: 'AudienceStep',
     required: false,
@@ -61,8 +61,8 @@ export const stepConfigs: StepConfig[] = [
   },
   {
     id: 3,
-    title: "Ton & Style",
-    description: "Choisissez le ton et le style de communication appropriés",
+    title: t('advancedStepTone'),
+    description: t('advancedStepToneDesc'),
     icon: Palette,
     component: 'ToneStep',
     required: false,
@@ -75,8 +75,8 @@ export const stepConfigs: StepConfig[] = [
   },
   {
     id: 4,
-    title: "Contraintes & Spécifications",
-    description: "Définissez les limitations et exigences spécifiques",
+    title: t('advancedStepConstraints'),
+    description: t('advancedStepConstraintsDesc'),
     icon: Settings,
     component: 'ConstraintsStep',
     required: false,
@@ -89,8 +89,8 @@ export const stepConfigs: StepConfig[] = [
   },
   {
     id: 5,
-    title: "Optimisation Finale",
-    description: "Affinez et optimisez votre prompt avec l'IA",
+    title: t('advancedStepOptimization'),
+    description: t('advancedStepOptimizationDesc'),
     icon: Lightbulb,
     component: 'OptimizationStep',
     required: false,

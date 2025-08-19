@@ -27,11 +27,12 @@ import SmartSuggestions from './SmartSuggestions';
 import LivePreview from './LivePreview';
 import ValidationFeedback from './ValidationFeedback';
 import { PromptData, StepConfig } from './types';
-import { stepConfigs } from './stepConfigs';
+import { getStepConfigs } from './stepConfigs';
 import { validateStep, calculateOverallProgress } from './utils';
 
 const AdvancedPromptBuilder = () => {
   const { t } = useTranslation();
+  const stepConfigs = getStepConfigs(t);
   
   // États principaux
   const [currentStep, setCurrentStep] = useState(0);
