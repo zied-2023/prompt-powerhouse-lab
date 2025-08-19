@@ -8,17 +8,17 @@ export const getStepConfigs = (t: (key: string) => string): StepConfig[] => [
     description: t('advancedStepObjectiveDesc'),
     icon: Target,
     component: 'ObjectiveStep',
-    required: true,
+    required: false,
     estimatedTime: "2-3 min",
     tips: [
-      "Soyez spécifique sur le type de contenu désiré",
-      "Mentionnez le format de sortie (liste, paragraphe, code, etc.)",
-      "Indiquez la longueur approximative souhaitée"
+      t('objectiveTip1'),
+      t('objectiveTip2'),
+      t('objectiveTip3')
     ],
     examples: [
-      "Créer un plan marketing pour une startup technologique",
-      "Rédiger un email de suivi commercial professionnel",
-      "Générer du code Python pour analyser des données CSV"
+      t('objectiveExample1'),
+      t('objectiveExample2'),
+      t('objectiveExample3')
     ]
   },
   {
@@ -30,14 +30,14 @@ export const getStepConfigs = (t: (key: string) => string): StepConfig[] => [
     required: false,
     estimatedTime: "3-4 min",
     tips: [
-      "Décrivez la situation actuelle ou le problème à résoudre",
-      "Mentionnez les ressources ou contraintes disponibles",
-      "Ajoutez des informations sur l'environnement d'utilisation"
+      t('contextTip1'),
+      t('contextTip2'),
+      t('contextTip3')
     ],
     examples: [
-      "Entreprise B2B de 50 employés, budget marketing limité",
-      "Client potentiel rencontré en salon, intérêt pour nos services",
-      "Dataset de 10 000 lignes avec colonnes: nom, âge, ville, revenus"
+      t('contextExample1'),
+      t('contextExample2'),
+      t('contextExample3')
     ]
   },
   {
@@ -49,14 +49,14 @@ export const getStepConfigs = (t: (key: string) => string): StepConfig[] => [
     required: false,
     estimatedTime: "2 min",
     tips: [
-      "Précisez le niveau d'expertise (débutant, intermédiaire, expert)",
-      "Mentionnez la fonction ou le rôle de votre audience",
-      "Indiquez leurs préférences ou contraintes spécifiques"
+      t('audienceTip1'),
+      t('audienceTip2'),
+      t('audienceTip3')
     ],
     examples: [
-      "Directeurs marketing de PME, 5-10 ans d'expérience",
-      "Prospects B2B, décideurs techniques, budget 50k-200k€",
-      "Développeurs Python junior à intermédiaire"
+      t('audienceExample1'),
+      t('audienceExample2'),
+      t('audienceExample3')
     ]
   },
   {
@@ -68,9 +68,9 @@ export const getStepConfigs = (t: (key: string) => string): StepConfig[] => [
     required: false,
     estimatedTime: "1-2 min",
     tips: [
-      "Adaptez le ton à votre audience et contexte",
-      "Considérez la formalité requise",
-      "Pensez à l'émotion que vous voulez transmettre"
+      t('toneTip1'),
+      t('toneTip2'),
+      t('toneTip3')
     ]
   },
   {
@@ -82,9 +82,9 @@ export const getStepConfigs = (t: (key: string) => string): StepConfig[] => [
     required: false,
     estimatedTime: "2-3 min",
     tips: [
-      "Mentionnez les contraintes de longueur",
-      "Spécifiez les éléments à éviter ou inclure obligatoirement",
-      "Indiquez les standards ou normes à respecter"
+      t('constraintsTip1'),
+      t('constraintsTip2'),
+      t('constraintsTip3')
     ]
   },
   {
@@ -96,9 +96,9 @@ export const getStepConfigs = (t: (key: string) => string): StepConfig[] => [
     required: false,
     estimatedTime: "3-5 min",
     tips: [
-      "Testez votre prompt avec des variations",
-      "Utilisez les suggestions d'amélioration",
-      "Vérifiez la cohérence globale"
+      t('optimizationTip1'),
+      t('optimizationTip2'),
+      t('optimizationTip3')
     ]
   }
 ];

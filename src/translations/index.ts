@@ -265,6 +265,37 @@ export interface TranslationKey {
   suggestedOptimizations: string;
   configSummary: string;
   
+  // Tips for each step
+  objectiveTip1: string;
+  objectiveTip2: string;
+  objectiveTip3: string;
+  contextTip1: string;
+  contextTip2: string;
+  contextTip3: string;
+  audienceTip1: string;
+  audienceTip2: string;
+  audienceTip3: string;
+  toneTip1: string;
+  toneTip2: string;
+  toneTip3: string;
+  constraintsTip1: string;
+  constraintsTip2: string;
+  constraintsTip3: string;
+  optimizationTip1: string;
+  optimizationTip2: string;
+  optimizationTip3: string;
+  
+  // Examples for each step
+  objectiveExample1: string;
+  objectiveExample2: string;
+  objectiveExample3: string;
+  contextExample1: string;
+  contextExample2: string;
+  contextExample3: string;
+  audienceExample1: string;
+  audienceExample2: string;
+  audienceExample3: string;
+  
   // Tone options
   friendly: string;
   formal: string;
@@ -553,11 +584,11 @@ export const translations: Record<string, TranslationKey> = {
     inspirationExamples: "Inspiration examples",
     targetAiModel: "Target AI Model (optional)",
     selectAiModel: "Select an AI model",
-    mainObjectiveRequired: "Main objective *",
+    mainObjectiveRequired: "Main objective",
     contextOptional: "Context and situation (optional)",
     audiencePlaceholder: "Describe your audience: expertise level, role, preferences...",
     responseFormat: "Response format",
-    constraintsSpecs: "Constraints and specifications",
+    constraintsSpecs: "Constraints and specifications (optional)",
     addConstraint: "Add",
     noConstraintsDefined: "No constraints defined",
     addConstraintButton: "Add a constraint",
@@ -566,6 +597,37 @@ export const translations: Record<string, TranslationKey> = {
     keywordsPlaceholder: "word1, word2, word3...",
     suggestedOptimizations: "Suggested optimizations",
     configSummary: "Configuration summary",
+    
+    // Tips for each step
+    objectiveTip1: "Be specific about the type of content desired",
+    objectiveTip2: "Mention the output format (list, paragraph, code, etc.)",
+    objectiveTip3: "Indicate the approximate desired length",
+    contextTip1: "Describe the current situation or problem to solve",
+    contextTip2: "Mention available resources or constraints",
+    contextTip3: "Add information about the usage environment",
+    audienceTip1: "Specify expertise level (beginner, intermediate, expert)",
+    audienceTip2: "Mention the role or function of your audience",
+    audienceTip3: "Indicate their specific preferences or constraints",
+    toneTip1: "Adapt the tone to your audience and context",
+    toneTip2: "Consider the required formality",
+    toneTip3: "Think about the emotion you want to convey",
+    constraintsTip1: "Mention length constraints",
+    constraintsTip2: "Specify elements to avoid or include",
+    constraintsTip3: "Indicate standards or norms to respect",
+    optimizationTip1: "Test your prompt with variations",
+    optimizationTip2: "Use improvement suggestions",
+    optimizationTip3: "Check overall consistency",
+    
+    // Examples for each step
+    objectiveExample1: "Create a marketing plan for a tech startup",
+    objectiveExample2: "Write a professional follow-up sales email",
+    objectiveExample3: "Generate Python code to analyze CSV data",
+    contextExample1: "B2B company with 50 employees, limited marketing budget",
+    contextExample2: "Potential client met at trade show, interested in our services",
+    contextExample3: "Dataset of 10,000 rows with columns: name, age, city, income",
+    audienceExample1: "SME marketing directors, 5-10 years experience",
+    audienceExample2: "B2B prospects, technical decision makers, 50k-200k€ budget",
+    audienceExample3: "Junior to intermediate Python developers",
     
     // Tone options
     friendly: "Friendly",
@@ -853,7 +915,7 @@ export const translations: Record<string, TranslationKey> = {
     inspirationExamples: "Exemples d'inspiration",
     targetAiModel: "Modèle d'IA ciblé (optionnel)",
     selectAiModel: "Sélectionnez un modèle d'IA",
-    mainObjectiveRequired: "Objectif principal *",
+    mainObjectiveRequired: "Objectif principal",
     contextOptional: "Contexte et situation (optionnel)",
     audiencePlaceholder: "Décrivez votre audience: niveau d'expertise, rôle, préférences...",
     responseFormat: "Format de la réponse",
@@ -907,7 +969,38 @@ export const translations: Record<string, TranslationKey> = {
     excellent2: "Excellent",
     good: "Bon",
     needsImprovement: "À améliorer",
-    criteriaValidated: "critères validés"
+    criteriaValidated: "critères validés",
+    
+    // Tips for each step
+    objectiveTip1: "Soyez spécifique sur le type de contenu désiré",
+    objectiveTip2: "Mentionnez le format de sortie (liste, paragraphe, code, etc.)",
+    objectiveTip3: "Indiquez la longueur approximative souhaitée",
+    contextTip1: "Décrivez la situation actuelle ou le problème à résoudre",
+    contextTip2: "Mentionnez les ressources ou contraintes disponibles",
+    contextTip3: "Ajoutez des informations sur l'environnement d'utilisation",
+    audienceTip1: "Précisez le niveau d'expertise (débutant, intermédiaire, expert)",
+    audienceTip2: "Mentionnez la fonction ou le rôle de votre audience",
+    audienceTip3: "Indiquez leurs préférences ou contraintes spécifiques",
+    toneTip1: "Adaptez le ton à votre audience et contexte",
+    toneTip2: "Considérez la formalité requise",
+    toneTip3: "Pensez à l'émotion que vous voulez transmettre",
+    constraintsTip1: "Mentionnez les contraintes de longueur",
+    constraintsTip2: "Spécifiez les éléments à éviter ou inclure",
+    constraintsTip3: "Indiquez les standards ou normes à respecter",
+    optimizationTip1: "Testez votre prompt avec des variations",
+    optimizationTip2: "Utilisez les suggestions d'amélioration",
+    optimizationTip3: "Vérifiez la cohérence globale",
+    
+    // Examples for each step
+    objectiveExample1: "Créer un plan marketing pour une startup technologique",
+    objectiveExample2: "Rédiger un email de suivi commercial professionnel",
+    objectiveExample3: "Générer du code Python pour analyser des données CSV",
+    contextExample1: "Entreprise B2B de 50 employés, budget marketing limité",
+    contextExample2: "Client potentiel rencontré en salon, intérêt pour nos services",
+    contextExample3: "Dataset de 10 000 lignes avec colonnes: nom, âge, ville, revenus",
+    audienceExample1: "Directeurs marketing de PME, 5-10 ans d'expérience",
+    audienceExample2: "Prospects B2B, décideurs techniques, budget 50k-200k€",
+    audienceExample3: "Développeurs Python junior à intermédiaire"
   },
   ar: {
     title: "AutoPrompt",
@@ -1153,11 +1246,11 @@ export const translations: Record<string, TranslationKey> = {
     inspirationExamples: "أمثلة ملهمة",
     targetAiModel: "نموذج الذكاء الاصطناعي المستهدف (اختياري)",
     selectAiModel: "اختر نموذج ذكاء اصطناعي",
-    mainObjectiveRequired: "الهدف الرئيسي *",
+    mainObjectiveRequired: "الهدف الرئيسي",
     contextOptional: "السياق والوضع (اختياري)",
     audiencePlaceholder: "اوصف جمهورك: مستوى الخبرة، الدور، التفضيلات...",
     responseFormat: "تنسيق الاستجابة",
-    constraintsSpecs: "القيود والمواصفات",
+    constraintsSpecs: "القيود والمواصفات (اختياري)",
     addConstraint: "إضافة",
     noConstraintsDefined: "لم يتم تحديد قيود",
     addConstraintButton: "إضافة قيد",
@@ -1166,6 +1259,37 @@ export const translations: Record<string, TranslationKey> = {
     keywordsPlaceholder: "كلمة1، كلمة2، كلمة3...",
     suggestedOptimizations: "تحسينات مقترحة",
     configSummary: "ملخص الإعداد",
+    
+    // Tips for each step
+    objectiveTip1: "كن محدداً حول نوع المحتوى المطلوب",
+    objectiveTip2: "اذكر تنسيق الإخراج (قائمة، فقرة، كود، إلخ)",
+    objectiveTip3: "حدد الطول التقريبي المطلوب",
+    contextTip1: "اوصف الوضع الحالي أو المشكلة المراد حلها",
+    contextTip2: "اذكر الموارد أو القيود المتاحة",
+    contextTip3: "أضف معلومات حول بيئة الاستخدام",
+    audienceTip1: "حدد مستوى الخبرة (مبتدئ، متوسط، خبير)",
+    audienceTip2: "اذكر وظيفة أو دور جمهورك",
+    audienceTip3: "حدد تفضيلاتهم أو قيودهم المحددة",
+    toneTip1: "كيّف النبرة مع جمهورك وسياقك",
+    toneTip2: "اعتبر الرسمية المطلوبة",
+    toneTip3: "فكر في المشاعر التي تريد نقلها",
+    constraintsTip1: "اذكر قيود الطول",
+    constraintsTip2: "حدد العناصر التي يجب تجنبها أو تضمينها",
+    constraintsTip3: "حدد المعايير أو القواعد التي يجب احترامها",
+    optimizationTip1: "اختبر برومبتك مع تغييرات",
+    optimizationTip2: "استخدم اقتراحات التحسين",
+    optimizationTip3: "تحقق من التماسك العام",
+    
+    // Examples for each step
+    objectiveExample1: "إنشاء خطة تسويقية لشركة ناشئة تقنية",
+    objectiveExample2: "كتابة إيميل متابعة مبيعات مهني",
+    objectiveExample3: "إنتاج كود Python لتحليل بيانات CSV",
+    contextExample1: "شركة B2B بـ 50 موظف، ميزانية تسويق محدودة",
+    contextExample2: "عميل محتمل التقيت به في معرض، مهتم بخدماتنا",
+    contextExample3: "مجموعة بيانات من 10,000 صف بأعمدة: اسم، عمر، مدينة، دخل",
+    audienceExample1: "مديري تسويق شركات صغيرة ومتوسطة، خبرة 5-10 سنوات",
+    audienceExample2: "عملاء محتملين B2B، متخذي قرارات تقنية، ميزانية 50ك-200ك€",
+    audienceExample3: "مطوري Python من مبتدئ إلى متوسط",
     
     // Tone options
     friendly: "ودود",

@@ -140,7 +140,7 @@ const ObjectiveStep: React.FC<{
       
       <div>
         <Label htmlFor="objective" className="text-sm font-medium">
-          {t('mainObjective')}
+          {t('mainObjectiveRequired')} ({t('optional')})
         </Label>
         <Textarea
           id="objective"
@@ -242,7 +242,7 @@ const ToneStep: React.FC<{
       
       <div>
         <Label htmlFor="outputFormat" className="text-sm font-medium">
-          {t('outputFormat')}
+          {t('outputFormat')} ({t('optional')})
         </Label>
         <Select
           value={data.outputFormat}
@@ -345,7 +345,7 @@ const ConstraintsStep: React.FC<{
       {/* Mots-clés */}
       <div>
         <Label htmlFor="keywords" className="text-sm font-medium">
-          {t('importantKeywords')}
+          {t('importantKeywords')} ({t('optional')})
         </Label>
         <Input
           id="keywords"
