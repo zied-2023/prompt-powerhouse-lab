@@ -4,57 +4,67 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Arrière-plan principal - légèrement teinté pour plus de douceur */
+    --background: 225 25% 98%;
+    --foreground: 220 15% 15%;
 
+    /* Cartes avec un blanc très légèrement teinté */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 15% 15%;
 
+    /* Popovers avec arrière-plan doux */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 15% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Couleur primaire moderne - violet doux */
+    --primary: 250 75% 60%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Couleur secondaire - gris-bleu moderne */
+    --secondary: 215 25% 92%;
+    --secondary-foreground: 220 15% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Couleurs muted plus douces */
+    --muted: 215 20% 94%;
+    --muted-foreground: 220 10% 50%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Couleur d'accent - bleu-violet clair */
+    --accent: 240 30% 94%;
+    --accent-foreground: 250 75% 60%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive moderne */
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Bordures plus subtiles */
+    --border: 220 15% 88%;
+    --input: 220 15% 92%;
+    --ring: 250 75% 60%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    /* Sidebar avec couleurs harmonieuses */
+    --sidebar-background: 220 20% 97%;
+    --sidebar-foreground: 220 15% 30%;
+    --sidebar-primary: 250 75% 60%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --heading-foreground: 222.2 84% 4.9%;
+    --sidebar-accent: 240 25% 93%;
+    --sidebar-accent-foreground: 220 15% 25%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 250 75% 60%;
+    --heading-foreground: 220 15% 15%;
 
-    /* Variables supplémentaires */
+    /* Variables supplémentaires améliorées */
     --dropdown-background: 0 0% 100%;
-    --dropdown-foreground: 222.2 84% 4.9%;
-    --dropdown-hover: 210 40% 96.1%;
-    --dropdown-selected: 222.2 47.4% 11.2%;
-    --dropdown-selected-foreground: 210 40% 98%;
-    --input-placeholder: 215.4 16.3% 46.9%;
+    --dropdown-foreground: 220 15% 15%;
+    --dropdown-hover: 240 30% 94%;
+    --dropdown-selected: 250 75% 60%;
+    --dropdown-selected-foreground: 0 0% 98%;
+    --input-placeholder: 220 10% 55%;
 
-    /* Nouveaux: variables pour fonds clairs */
-    --light-bg: 0 0% 100%; /* blanc */
-    --light-text: 0 0% 0%;  /* noir */
+    /* Variables pour fonds clairs améliorées */
+    --light-bg: 225 25% 98%;
+    --light-text: 220 15% 15%;
   }
 
   .dark {
