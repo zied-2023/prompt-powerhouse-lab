@@ -140,7 +140,7 @@ const ObjectiveStep: React.FC<{
       
       <div>
         <Label htmlFor="objective" className="text-sm font-medium">
-          {t('mainObjectiveRequired')}
+          {t('mainObjective')}
         </Label>
         <Textarea
           id="objective"

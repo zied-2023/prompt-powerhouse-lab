@@ -28,7 +28,7 @@ import LivePreview from './LivePreview';
 import ValidationFeedback from './ValidationFeedback';
 import { PromptData, StepConfig } from './types';
 import { getStepConfigs } from './stepConfigs';
-import { validateStep, calculateOverallProgress } from './utils';
+import { validateStep, calculateOverallProgress, getStepSuggestions } from './utils';
 
 const AdvancedPromptBuilder = () => {
   const { t } = useTranslation();
@@ -57,6 +57,7 @@ const AdvancedPromptBuilder = () => {
   // États de l'UI
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [stepSuggestions, setStepSuggestions] = useState<string[]>([]);
   const [generatedPrompt, setGeneratedPrompt] = useState('');
 
   // Sauvegarde automatique
@@ -73,14 +74,16 @@ const AdvancedPromptBuilder = () => {
     return () => clearTimeout(saveTimer);
   }, [currentStep, promptData, completedSteps]);
 
-  // Validation en temps réel
+  // Suggestions en temps réel (plus de validation bloquante)
   useEffect(() => {
     const errors = validateStep(currentStep, promptData);
-    setValidationErrors(errors);
+    const stepSuggs = getStepSuggestions(currentStep, promptData);
     
-    if (errors.length === 0 && promptData.objective) {
-      setCompletedSteps(prev => new Set([...prev, currentStep]));
-    }
+    setValidationErrors(errors);
+    setStepSuggestions(stepSuggs);
+    
+    // Marquer l'étape comme visitée (plus de condition stricte)
+    setCompletedSteps(prev => new Set([...prev, currentStep]));
   }, [currentStep, promptData]);
 
   // Génération de suggestions contextuelles
@@ -95,23 +98,13 @@ const AdvancedPromptBuilder = () => {
   }, [currentStep, promptData]);
 
   const handleStepChange = (newStep: number) => {
-    // Validation avant changement d'étape
-    const canNavigate = newStep <= currentStep + 1 || completedSteps.has(newStep - 1);
-    
-    if (canNavigate) {
-      setCurrentStep(newStep);
-      setShowPreview(false);
-    } else {
-      toast({
-        title: "Étape non accessible",
-        description: "Complétez les étapes précédentes pour continuer.",
-        variant: "destructive"
-      });
-    }
+    // Navigation libre - plus de restrictions
+    setCurrentStep(newStep);
+    setShowPreview(false);
   };
 
   const handleNext = () => {
-    if (validationErrors.length === 0 && currentStep < stepConfigs.length - 1) {
+    if (currentStep < stepConfigs.length - 1) {
       setCurrentStep(currentStep + 1);
     }
   };
@@ -237,18 +230,21 @@ const AdvancedPromptBuilder = () => {
                       </div>
                     </div>
                     
-                    {validationErrors.length === 0 && promptData.objective && (
+                    {stepSuggestions.length === 0 && (
                       <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200">
                         <CheckCircle className="h-3 w-3 mr-1" />
-                        Valide
+                        Complet
                       </Badge>
                     )}
                   </div>
                 </CardHeader>
 
                 <CardContent className="space-y-6">
-                  {/* Feedback de validation */}
-                  <ValidationFeedback errors={validationErrors} />
+                  {/* Feedback de suggestions */}
+                  <ValidationFeedback 
+                    errors={validationErrors} 
+                    suggestions={stepSuggestions}
+                  />
                   
                   {/* Contenu de l'étape */}
                   <StepContent
@@ -273,7 +269,6 @@ const AdvancedPromptBuilder = () => {
                     {!isLastStep ? (
                       <Button
                         onClick={handleNext}
-                        disabled={validationErrors.length > 0}
                         className="flex items-center space-x-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
                       >
                         <span>Suivant</span>
@@ -282,7 +277,7 @@ const AdvancedPromptBuilder = () => {
                     ) : (
                       <Button
                         onClick={generatePrompt}
-                        disabled={isGenerating || validationErrors.length > 0}
+                        disabled={isGenerating}
                         className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
                       >
                         {isGenerating ? (

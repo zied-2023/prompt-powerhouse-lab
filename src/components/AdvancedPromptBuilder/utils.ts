@@ -1,32 +1,46 @@
 import { PromptData } from './types';
 
 export function validateStep(stepIndex: number, data: PromptData): string[] {
-  const errors: string[] = [];
+  // Plus de validations bloquantes - tout est maintenant optionnel ou suggéré
+  return [];
+}
+
+export function getStepSuggestions(stepIndex: number, data: PromptData): string[] {
+  const suggestions: string[] = [];
   
   switch (stepIndex) {
     case 0: // Objectif
       if (!data.objective.trim()) {
-        errors.push("L'objectif principal est obligatoire");
-      } else if (data.objective.length < 10) {
-        errors.push("L'objectif doit être plus détaillé (minimum 10 caractères)");
+        suggestions.push("Un objectif principal aiderait à créer un prompt plus précis");
+      } else if (data.objective.length < 5) {
+        suggestions.push("Détailler davantage l'objectif améliorera la qualité du prompt");
       }
       break;
       
-    case 1: // Contexte (maintenant optionnel)
-      // Plus d'erreur obligatoire
+    case 1: // Contexte
+      if (!data.context.trim()) {
+        suggestions.push("Ajouter du contexte permettra une réponse plus adaptée");
+      }
       break;
       
-    case 2: // Audience (maintenant optionnel)
-      // Plus d'erreur obligatoire
+    case 2: // Audience
+      if (!data.audience.trim()) {
+        suggestions.push("Définir votre audience aidera à adapter le ton");
+      }
       break;
       
-    case 3: // Ton (maintenant optionnel)
-      // Plus d'erreur obligatoire
+    case 3: // Ton
+      if (!data.tone) {
+        suggestions.push("Choisir un ton améliorera la cohérence de la réponse");
+      }
+      if (!data.outputFormat) {
+        suggestions.push("Spécifier un format de sortie structurera mieux la réponse");
+      }
       break;
       
     case 4: // Contraintes
-      if (data.constraints.length === 0) {
-        // Optionnel, pas d'erreur
+      if (data.constraints.length === 0 && data.keywords.length === 0) {
+        suggestions.push("Ajouter des contraintes ou mots-clés affinera le résultat");
       }
       break;
       
@@ -34,7 +48,7 @@ export function validateStep(stepIndex: number, data: PromptData): string[] {
       break;
   }
   
-  return errors;
+  return suggestions;
 }
 
 export function calculateOverallProgress(completedSteps: Set<number>, totalSteps: number): number {
@@ -52,15 +66,8 @@ export function calculateStepProgress(stepIndex: number, data: PromptData): numb
 }
 
 function getRequiredFieldsForStep(stepIndex: number): string[] {
-  switch (stepIndex) {
-    case 0: return ['objective'];
-    case 1: return []; // Plus obligatoire
-    case 2: return []; // Plus obligatoire
-    case 3: return []; // Plus obligatoire
-    case 4: return []; // Optionnel
-    case 5: return []; // Optionnel
-    default: return [];
-  }
+  // Plus de champs obligatoires - tout est maintenant optionnel
+  return [];
 }
 
 function getFieldValue(data: PromptData, field: string): any {
