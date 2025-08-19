@@ -243,6 +243,29 @@ export interface TranslationKey {
   tipObjective1: string;
   tipObjective2: string;
   tipObjective3: string;
+  
+  // StepContext keys
+  contextBackground: string;
+  contextBackgroundPlaceholder: string;
+  industry: string;
+  selectIndustry: string;
+  technology: string;
+  healthcare: string;
+  finance: string;
+  education: string;
+  retail: string;
+  manufacturing: string;
+  consulting: string;
+  media: string;
+  other: string;
+  contextConstraints: string;
+  addConstraint: string;
+  constraintPlaceholder: string;
+  noConstraintsYet: string;
+  stepContextTips: string;
+  tipContext1: string;
+  tipContext2: string;
+  tipContext3: string;
 }
 
 export const translations: Record<string, TranslationKey> = {
@@ -481,7 +504,30 @@ export const translations: Record<string, TranslationKey> = {
     stepObjectiveTips: "Goal Setting Tips",
     tipObjective1: "Make your main objective clear and specific",
     tipObjective2: "Add measurable sub-targets",
-    tipObjective3: "Define clear and verifiable success criteria"
+    tipObjective3: "Define clear and verifiable success criteria",
+    
+    // StepContext keys
+    contextBackground: "Context & Background",
+    contextBackgroundPlaceholder: "Provide relevant background information and context...",
+    industry: "Industry",
+    selectIndustry: "Select industry",
+    technology: "Technology",
+    healthcare: "Healthcare",
+    finance: "Finance",
+    education: "Education",
+    retail: "Retail",
+    manufacturing: "Manufacturing",
+    consulting: "Consulting",
+    media: "Media",
+    other: "Other",
+    contextConstraints: "Context Constraints",
+    addConstraint: "Add Constraint",
+    constraintPlaceholder: "Enter a specific constraint...",
+    noConstraintsYet: "No constraints yet",
+    stepContextTips: "Context Tips",
+    tipContext1: "Provide clear and relevant background information",
+    tipContext2: "Define your target audience precisely",
+    tipContext3: "Add specific constraints to guide the output"
   },
   fr: {
     title: "AutoPrompt",
@@ -718,7 +764,30 @@ export const translations: Record<string, TranslationKey> = {
     stepObjectiveTips: "Conseils pour Définir les Objectifs",
     tipObjective1: "Rendez votre objectif principal clair et spécifique",
     tipObjective2: "Ajoutez des sous-objectifs mesurables",
-    tipObjective3: "Définissez des critères de succès clairs et vérifiables"
+    tipObjective3: "Définissez des critères de succès clairs et vérifiables",
+    
+    // StepContext keys
+    contextBackground: "Contexte et Arrière-plan",
+    contextBackgroundPlaceholder: "Fournissez des informations contextuelles et d'arrière-plan pertinentes...",
+    industry: "Secteur",
+    selectIndustry: "Sélectionnez le secteur",
+    technology: "Technologie",
+    healthcare: "Santé",
+    finance: "Finance",
+    education: "Éducation",
+    retail: "Commerce de détail",
+    manufacturing: "Fabrication",
+    consulting: "Conseil",
+    media: "Médias",
+    other: "Autre",
+    contextConstraints: "Contraintes de Contexte",
+    addConstraint: "Ajouter Contrainte",
+    constraintPlaceholder: "Entrez une contrainte spécifique...",
+    noConstraintsYet: "Aucune contrainte encore",
+    stepContextTips: "Conseils de Contexte",
+    tipContext1: "Fournissez des informations contextuelles claires et pertinentes",
+    tipContext2: "Définissez votre public cible avec précision",
+    tipContext3: "Ajoutez des contraintes spécifiques pour guider le résultat"
   },
   ar: {
     title: "AutoPrompt",
@@ -955,7 +1024,30 @@ export const translations: Record<string, TranslationKey> = {
     stepObjectiveTips: "نصائح لتحديد الأهداف",
     tipObjective1: "اجعل الهدف الرئيسي واضحاً ومحدداً",
     tipObjective2: "أضف أهدافاً فرعية قابلة للقياس",
-    tipObjective3: "حدد معايير نجاح واضحة وقابلة للتحقق"
+    tipObjective3: "حدد معايير نجاح واضحة وقابلة للتحقق",
+    
+    // StepContext keys
+    contextBackground: "السياق والخلفية",
+    contextBackgroundPlaceholder: "قدم معلومات السياق والخلفية ذات الصلة...",
+    industry: "الصناعة",
+    selectIndustry: "اختر الصناعة",
+    technology: "التكنولوجيا",
+    healthcare: "الرعاية الصحية",
+    finance: "المالية",
+    education: "التعليم",
+    retail: "البيع بالتجزئة",
+    manufacturing: "التصنيع",
+    consulting: "الاستشارات",
+    media: "الإعلام",
+    other: "أخرى",
+    contextConstraints: "قيود السياق",
+    addConstraint: "إضافة قيد",
+    constraintPlaceholder: "أدخل قيداً محدداً...",
+    noConstraintsYet: "لا توجد قيود حتى الآن",
+    stepContextTips: "نصائح السياق",
+    tipContext1: "قدم معلومات سياق واضحة وذات صلة",
+    tipContext2: "حدد جمهورك المستهدف بدقة",
+    tipContext3: "أضف قيود محددة لتوجيه المخرجات"
   }
 };
 
