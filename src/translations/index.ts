@@ -337,6 +337,20 @@ export interface TranslationKey {
   good: string;
   needsImprovement: string;
   criteriaValidated: string;
+  
+  // Missing translation keys
+  specificTargets: string;
+  contextBackground: string;
+  contextBackgroundPlaceholder: string;
+  industry: string;
+  selectIndustry: string;
+  contextConstraints: string;
+  noConstraintsYet: string;
+  stepContextTips: string;
+  tipContext1: string;
+  tipContext2: string;
+  tipContext3: string;
+  notSpecified: string;
 }
 
 export const translations: Record<string, TranslationKey> = {
@@ -669,7 +683,21 @@ export const translations: Record<string, TranslationKey> = {
     excellent2: "Excellent",
     good: "Good",
     needsImprovement: "Needs improvement",
-    criteriaValidated: "criteria validated"
+    criteriaValidated: "criteria validated",
+    
+    // Missing translation keys
+    specificTargets: "Specific Targets",
+    contextBackground: "Background Context",
+    contextBackgroundPlaceholder: "Describe the situation, problem, or context...",
+    industry: "Industry",
+    selectIndustry: "Select an industry",
+    contextConstraints: "Context Constraints",
+    noConstraintsYet: "No constraints defined yet",
+    stepContextTips: "Context Step Tips",
+    tipContext1: "Describe the current situation or problem to solve",
+    tipContext2: "Mention available resources or constraints",
+    tipContext3: "Add information about the usage environment",
+    notSpecified: "Not specified"
   },
   fr: {
     title: "AutoPrompt",
@@ -970,6 +998,20 @@ export const translations: Record<string, TranslationKey> = {
     good: "Bon",
     needsImprovement: "À améliorer",
     criteriaValidated: "critères validés",
+    
+    // Missing translation keys
+    specificTargets: "Cibles Spécifiques",
+    contextBackground: "Contexte de Fond",
+    contextBackgroundPlaceholder: "Décrivez la situation, le problème ou le contexte...",
+    industry: "Secteur d'Activité",
+    selectIndustry: "Sélectionnez un secteur",
+    contextConstraints: "Contraintes du Contexte",
+    noConstraintsYet: "Aucune contrainte définie pour le moment",
+    stepContextTips: "Conseils pour l'Étape Contexte",
+    tipContext1: "Décrivez la situation actuelle ou le problème à résoudre",
+    tipContext2: "Mentionnez les ressources ou contraintes disponibles",
+    tipContext3: "Ajoutez des informations sur l'environnement d'utilisation",
+    notSpecified: "Non spécifié",
     
     // Tips for each step
     objectiveTip1: "Soyez spécifique sur le type de contenu désiré",
@@ -1331,7 +1373,21 @@ export const translations: Record<string, TranslationKey> = {
     excellent2: "ممتاز",
     good: "جيد",
     needsImprovement: "يحتاج تحسين",
-    criteriaValidated: "معايير مصادق عليها"
+    criteriaValidated: "معايير مصادق عليها",
+    
+    // Missing translation keys
+    specificTargets: "الأهداف المحددة",
+    contextBackground: "خلفية السياق",
+    contextBackgroundPlaceholder: "صف الموقف أو المشكلة أو السياق...",
+    industry: "القطاع",
+    selectIndustry: "اختر قطاعاً",
+    contextConstraints: "قيود السياق",
+    noConstraintsYet: "لا توجد قيود محددة بعد",
+    stepContextTips: "نصائح خطوة السياق",
+    tipContext1: "صف الوضع الحالي أو المشكلة المراد حلها",
+    tipContext2: "اذكر الموارد أو القيود المتاحة",
+    tipContext3: "أضف معلومات حول بيئة الاستخدام",
+    notSpecified: "غير محدد"
   }
 };
 
