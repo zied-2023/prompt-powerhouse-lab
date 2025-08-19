@@ -40,7 +40,7 @@ const Index = () => {
                 <img 
                   src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
                   alt="AutoPrompt Logo" 
-                  className="w-12 h-12 object-contain"
+                  className="w-16 h-16 object-contain"
                 />
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full animate-pulse"></div>
               </div>
