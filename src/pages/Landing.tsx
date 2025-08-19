@@ -39,10 +39,12 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <div className="p-2 bg-gradient-to-r from-violet-600 to-blue-600 rounded-lg">
-              <Sparkles className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-xl font-display font-bold gradient-text">PromptCraft</span>
+            <img 
+              src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+              alt="AutoPrompt Logo" 
+              className="h-10 w-10 object-contain"
+            />
+            <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
           </div>
           <div className="flex items-center space-x-4">
             <ThemeSelector />

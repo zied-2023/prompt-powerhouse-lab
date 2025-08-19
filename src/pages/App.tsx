@@ -37,9 +37,11 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div className={`flex items-center space-x-4 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-br from-violet-600 via-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg glow-effect">
-                  <Brain className="h-7 w-7 text-white" />
-                </div>
+                <img 
+                  src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+                  alt="AutoPrompt Logo" 
+                  className="w-12 h-12 object-contain"
+                />
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full animate-pulse"></div>
               </div>
               <div>
