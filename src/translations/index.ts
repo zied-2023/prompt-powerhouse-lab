@@ -231,6 +231,18 @@ export interface TranslationKey {
   promptCopiedClipboard: string;
   improvementSuccess: string;
   improvementSuccessDesc: string;
+  
+  // StepObjective keys
+  specificTargets: string;
+  addTarget: string;
+  targetPlaceholder: string;
+  noTargetsYet: string;
+  successCriteria: string;
+  successCriteriaPlaceholder: string;
+  stepObjectiveTips: string;
+  tipObjective1: string;
+  tipObjective2: string;
+  tipObjective3: string;
 }
 
 export const translations: Record<string, TranslationKey> = {
@@ -457,7 +469,19 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "Copied Successfully",
     promptCopiedClipboard: "Prompt copied to clipboard",
     improvementSuccess: "Improvement Successful",
-    improvementSuccessDesc: "Your prompt has been enhanced"
+    improvementSuccessDesc: "Your prompt has been enhanced",
+    
+    // StepObjective keys
+    specificTargets: "Specific Targets",
+    addTarget: "Add Target",
+    targetPlaceholder: "Enter a specific target...",
+    noTargetsYet: "No specific targets yet",
+    successCriteria: "Success Criteria",
+    successCriteriaPlaceholder: "How will you measure success for this objective?",
+    stepObjectiveTips: "Goal Setting Tips",
+    tipObjective1: "Make your main objective clear and specific",
+    tipObjective2: "Add measurable sub-targets",
+    tipObjective3: "Define clear and verifiable success criteria"
   },
   fr: {
     title: "AutoPrompt",
@@ -682,7 +706,19 @@ export const translations: Record<string, TranslationKey> = {
     color: "Couleur",
     addCategory: "Ajouter Catégorie",
     updateCategory: "Mettre à Jour Catégorie",
-    improvementSuccessDesc: "Votre prompt a été amélioré"
+    improvementSuccessDesc: "Votre prompt a été amélioré",
+    
+    // StepObjective keys
+    specificTargets: "Objectifs Spécifiques",
+    addTarget: "Ajouter Objectif",
+    targetPlaceholder: "Entrez un objectif spécifique...",
+    noTargetsYet: "Aucun objectif spécifique encore",
+    successCriteria: "Critères de Réussite",
+    successCriteriaPlaceholder: "Comment mesurerez-vous le succès de cet objectif ?",
+    stepObjectiveTips: "Conseils pour Définir les Objectifs",
+    tipObjective1: "Rendez votre objectif principal clair et spécifique",
+    tipObjective2: "Ajoutez des sous-objectifs mesurables",
+    tipObjective3: "Définissez des critères de succès clairs et vérifiables"
   },
   ar: {
     title: "AutoPrompt",
@@ -907,7 +943,19 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "تم النسخ بنجاح",
     promptCopiedClipboard: "تم نسخ النص التوجيهي إلى الحافظة",
     improvementSuccess: "تم التحسين بنجاح",
-    improvementSuccessDesc: "تم تحسين نصك التوجيهي"
+    improvementSuccessDesc: "تم تحسين نصك التوجيهي",
+    
+    // StepObjective keys
+    specificTargets: "الأهداف المحددة",
+    addTarget: "إضافة هدف",
+    targetPlaceholder: "أدخل هدفاً محدداً...",
+    noTargetsYet: "لا توجد أهداف محددة حتى الآن",
+    successCriteria: "معايير النجاح",
+    successCriteriaPlaceholder: "كيف ستقيس نجاح هذا الهدف؟",
+    stepObjectiveTips: "نصائح لتحديد الأهداف",
+    tipObjective1: "اجعل الهدف الرئيسي واضحاً ومحدداً",
+    tipObjective2: "أضف أهدافاً فرعية قابلة للقياس",
+    tipObjective3: "حدد معايير نجاح واضحة وقابلة للتحقق"
   }
 };
 
