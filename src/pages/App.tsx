@@ -14,7 +14,7 @@ import PromptGenerator from "@/components/PromptGenerator";
 import PromptLibrary from "@/components/PromptLibrary";
 import CategoryManager from "@/components/CategoryManager";
 import IntegrationPanel from "@/components/IntegrationPanel";
-import MultiStepPromptBuilder from "@/components/MultiStepPromptBuilder";
+import AdvancedPromptBuilder from "@/components/AdvancedPromptBuilder";
 import PromptImprovement from "@/components/PromptImprovement";
 
 const Index = () => {
@@ -122,7 +122,7 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="advanced" className="space-y-8">
-            <MultiStepPromptBuilder />
+            <AdvancedPromptBuilder />
           </TabsContent>
 
           <TabsContent value="library" className="space-y-8">
