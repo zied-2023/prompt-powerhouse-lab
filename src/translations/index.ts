@@ -284,7 +284,6 @@ export interface TranslationKey {
   selectStyle: string;
   analytical: string;
   descriptive: string;
-  comparative: string;
   argumentative: string;
   instructional: string;
   consultative: string;
@@ -301,6 +300,28 @@ export interface TranslationKey {
   tipConstraints3: string;
   selectTone: string;
   selectLength: string;
+  
+  // StepOutputFormat keys
+  outputStructure: string;
+  selectStructure: string;
+  hierarchical: string;
+  sequential: string;
+  modular: string;
+  matrix: string;
+  flowchart: string;
+  comparative: string;
+  requiredSections: string;
+  addSection: string;
+  sectionPlaceholder: string;
+  noSectionsYet: string;
+  expectedDeliverables: string;
+  addDeliverable: string;
+  deliverablePlaceholder: string;
+  noDeliverablesYet: string;
+  stepOutputFormatTips: string;
+  tipOutputFormat1: string;
+  tipOutputFormat2: string;
+  tipOutputFormat3: string;
 }
 
 export const translations: Record<string, TranslationKey> = {
@@ -597,7 +618,28 @@ export const translations: Record<string, TranslationKey> = {
     tipConstraints2: "Select appropriate length for your needs",
     tipConstraints3: "Define technical level based on your audience",
     selectTone: "Select tone",
-    selectLength: "Select length"
+    selectLength: "Select length",
+    
+    // StepOutputFormat keys
+    outputStructure: "Output Structure",
+    selectStructure: "Select structure",
+    hierarchical: "Hierarchical",
+    sequential: "Sequential",
+    modular: "Modular",
+    matrix: "Matrix",
+    flowchart: "Flowchart",
+    requiredSections: "Required Sections",
+    addSection: "Add Section",
+    sectionPlaceholder: "Enter section name...",
+    noSectionsYet: "No sections yet",
+    expectedDeliverables: "Expected Deliverables",
+    addDeliverable: "Add Deliverable",
+    deliverablePlaceholder: "Enter deliverable...",
+    noDeliverablesYet: "No deliverables yet",
+    stepOutputFormatTips: "Output Format Tips",
+    tipOutputFormat1: "Choose structure that best fits your content",
+    tipOutputFormat2: "Define clear sections to organize information",
+    tipOutputFormat3: "Specify expected deliverables for clarity"
   },
   fr: {
     title: "AutoPrompt",
@@ -892,7 +934,28 @@ export const translations: Record<string, TranslationKey> = {
     tipConstraints2: "Sélectionnez une longueur appropriée pour vos besoins",
     tipConstraints3: "Définissez le niveau technique en fonction de votre audience",
     selectTone: "Sélectionner le ton",
-    selectLength: "Sélectionner la longueur"
+    selectLength: "Sélectionner la longueur",
+    
+    // StepOutputFormat keys
+    outputStructure: "Structure de Sortie",
+    selectStructure: "Sélectionner la structure",
+    hierarchical: "Hiérarchique",
+    sequential: "Séquentiel",
+    modular: "Modulaire",
+    matrix: "Matrice",
+    flowchart: "Diagramme de flux",
+    requiredSections: "Sections Requises",
+    addSection: "Ajouter Section",
+    sectionPlaceholder: "Entrez le nom de la section...",
+    noSectionsYet: "Aucune section pour l'instant",
+    expectedDeliverables: "Livrables Attendus",
+    addDeliverable: "Ajouter Livrable",
+    deliverablePlaceholder: "Entrez le livrable...",
+    noDeliverablesYet: "Aucun livrable pour l'instant",
+    stepOutputFormatTips: "Conseils de Format de Sortie",
+    tipOutputFormat1: "Choisissez la structure qui correspond le mieux à votre contenu",
+    tipOutputFormat2: "Définissez des sections claires pour organiser l'information",
+    tipOutputFormat3: "Spécifiez les livrables attendus pour plus de clarté"
   },
   ar: {
     title: "AutoPrompt",
@@ -1187,7 +1250,28 @@ export const translations: Record<string, TranslationKey> = {
     tipConstraints2: "اختر طولاً مناسباً لاحتياجاتك",
     tipConstraints3: "حدد المستوى التقني بناءً على جمهورك",
     selectTone: "اختر النبرة",
-    selectLength: "اختر الطول"
+    selectLength: "اختر الطول",
+    
+    // StepOutputFormat keys
+    outputStructure: "هيكل الإخراج",
+    selectStructure: "اختر الهيكل",
+    hierarchical: "هرمي",
+    sequential: "متسلسل",
+    modular: "وحدوي",
+    matrix: "مصفوفة",
+    flowchart: "مخطط التدفق",
+    requiredSections: "الأقسام المطلوبة",
+    addSection: "إضافة قسم",
+    sectionPlaceholder: "أدخل اسم القسم...",
+    noSectionsYet: "لا توجد أقسام حتى الآن",
+    expectedDeliverables: "المخرجات المتوقعة",
+    addDeliverable: "إضافة مخرج",
+    deliverablePlaceholder: "أدخل المخرج...",
+    noDeliverablesYet: "لا توجد مخرجات حتى الآن",
+    stepOutputFormatTips: "نصائح تنسيق الإخراج",
+    tipOutputFormat1: "اختر الهيكل الذي يناسب محتواك بشكل أفضل",
+    tipOutputFormat2: "حدد أقسام واضحة لتنظيم المعلومات",
+    tipOutputFormat3: "حدد المخرجات المتوقعة من أجل الوضوح"
   }
 };
 
