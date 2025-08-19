@@ -266,6 +266,41 @@ export interface TranslationKey {
   tipContext1: string;
   tipContext2: string;
   tipContext3: string;
+  
+  // StepConstraints keys
+  technicalLevel: string;
+  selectTechnicalLevel: string;
+  beginner: string;
+  intermediate: string;
+  expert: string;
+  responseFormat: string;
+  selectFormat: string;
+  structuredReport: string;
+  bulletPoints: string;
+  narrative: string;
+  stepByStep: string;
+  qaFormat: string;
+  writingStyle: string;
+  selectStyle: string;
+  analytical: string;
+  descriptive: string;
+  comparative: string;
+  argumentative: string;
+  instructional: string;
+  consultative: string;
+  authoritative: string;
+  friendly: string;
+  brief: string;
+  concise: string;
+  detailed: string;
+  comprehensive: string;
+  extensive: string;
+  stepConstraintsTips: string;
+  tipConstraints1: string;
+  tipConstraints2: string;
+  tipConstraints3: string;
+  selectTone: string;
+  selectLength: string;
 }
 
 export const translations: Record<string, TranslationKey> = {
@@ -527,7 +562,42 @@ export const translations: Record<string, TranslationKey> = {
     stepContextTips: "Context Tips",
     tipContext1: "Provide clear and relevant background information",
     tipContext2: "Define your target audience precisely",
-    tipContext3: "Add specific constraints to guide the output"
+    tipContext3: "Add specific constraints to guide the output",
+    
+    // StepConstraints keys
+    technicalLevel: "Technical Level",
+    selectTechnicalLevel: "Select technical level",
+    beginner: "Beginner",
+    intermediate: "Intermediate",
+    expert: "Expert",
+    responseFormat: "Response Format",
+    selectFormat: "Select format",
+    structuredReport: "Structured Report",
+    bulletPoints: "Bullet Points",
+    narrative: "Narrative",
+    stepByStep: "Step by Step",
+    qaFormat: "Q&A Format",
+    writingStyle: "Writing Style",
+    selectStyle: "Select style",
+    analytical: "Analytical",
+    descriptive: "Descriptive",
+    comparative: "Comparative",
+    argumentative: "Argumentative",
+    instructional: "Instructional",
+    consultative: "Consultative",
+    authoritative: "Authoritative",
+    friendly: "Friendly",
+    brief: "Brief",
+    concise: "Concise",
+    detailed: "Detailed",
+    comprehensive: "Comprehensive",
+    extensive: "Extensive",
+    stepConstraintsTips: "Constraint Tips",
+    tipConstraints1: "Choose tone and style that match your objective",
+    tipConstraints2: "Select appropriate length for your needs",
+    tipConstraints3: "Define technical level based on your audience",
+    selectTone: "Select tone",
+    selectLength: "Select length"
   },
   fr: {
     title: "AutoPrompt",
@@ -787,7 +857,42 @@ export const translations: Record<string, TranslationKey> = {
     stepContextTips: "Conseils de Contexte",
     tipContext1: "Fournissez des informations contextuelles claires et pertinentes",
     tipContext2: "Définissez votre public cible avec précision",
-    tipContext3: "Ajoutez des contraintes spécifiques pour guider le résultat"
+    tipContext3: "Ajoutez des contraintes spécifiques pour guider le résultat",
+    
+    // StepConstraints keys
+    technicalLevel: "Niveau Technique",
+    selectTechnicalLevel: "Sélectionner le niveau technique",
+    beginner: "Débutant",
+    intermediate: "Intermédiaire",
+    expert: "Expert",
+    responseFormat: "Format de Réponse",
+    selectFormat: "Sélectionner le format",
+    structuredReport: "Rapport Structuré",
+    bulletPoints: "Points à Puces",
+    narrative: "Narratif",
+    stepByStep: "Étape par Étape",
+    qaFormat: "Format Q&R",
+    writingStyle: "Style d'Écriture",
+    selectStyle: "Sélectionner le style",
+    analytical: "Analytique",
+    descriptive: "Descriptif",
+    comparative: "Comparatif",
+    argumentative: "Argumentatif",
+    instructional: "Instructionnel",
+    consultative: "Consultatif",
+    authoritative: "Autoritaire",
+    friendly: "Amical",
+    brief: "Bref",
+    concise: "Concis",
+    detailed: "Détaillé",
+    comprehensive: "Complet",
+    extensive: "Étendu",
+    stepConstraintsTips: "Conseils de Contraintes",
+    tipConstraints1: "Choisissez un ton et un style qui correspondent à votre objectif",
+    tipConstraints2: "Sélectionnez une longueur appropriée pour vos besoins",
+    tipConstraints3: "Définissez le niveau technique en fonction de votre audience",
+    selectTone: "Sélectionner le ton",
+    selectLength: "Sélectionner la longueur"
   },
   ar: {
     title: "AutoPrompt",
@@ -1047,7 +1152,42 @@ export const translations: Record<string, TranslationKey> = {
     stepContextTips: "نصائح السياق",
     tipContext1: "قدم معلومات سياق واضحة وذات صلة",
     tipContext2: "حدد جمهورك المستهدف بدقة",
-    tipContext3: "أضف قيود محددة لتوجيه المخرجات"
+    tipContext3: "أضف قيود محددة لتوجيه المخرجات",
+    
+    // StepConstraints keys
+    technicalLevel: "المستوى التقني",
+    selectTechnicalLevel: "اختر المستوى التقني",
+    beginner: "مبتدئ",
+    intermediate: "متوسط",
+    expert: "خبير",
+    responseFormat: "تنسيق الاستجابة",
+    selectFormat: "اختر التنسيق",
+    structuredReport: "تقرير منظم",
+    bulletPoints: "نقاط نقطية",
+    narrative: "سرد",
+    stepByStep: "خطوة بخطوة",
+    qaFormat: "تنسيق سؤال وجواب",
+    writingStyle: "أسلوب الكتابة",
+    selectStyle: "اختر الأسلوب",
+    analytical: "تحليلي",
+    descriptive: "وصفي",
+    comparative: "مقارن",
+    argumentative: "جدلي",
+    instructional: "تعليمي",
+    consultative: "استشاري",
+    authoritative: "موثوق",
+    friendly: "ودود",
+    brief: "موجز",
+    concise: "مختصر",
+    detailed: "مفصل",
+    comprehensive: "شامل",
+    extensive: "واسع",
+    stepConstraintsTips: "نصائح القيود",
+    tipConstraints1: "اختر نبرة وأسلوب يتماشى مع هدفك",
+    tipConstraints2: "اختر طولاً مناسباً لاحتياجاتك",
+    tipConstraints3: "حدد المستوى التقني بناءً على جمهورك",
+    selectTone: "اختر النبرة",
+    selectLength: "اختر الطول"
   }
 };
 
