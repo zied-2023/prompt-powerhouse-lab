@@ -158,7 +158,7 @@ const ContextStep: React.FC<{
   <div className="space-y-4">
     <div>
       <Label htmlFor="context" className="text-sm font-medium">
-        Contexte et situation *
+        Contexte et situation (optionnel)
       </Label>
       <Textarea
         id="context"
@@ -179,7 +179,7 @@ const AudienceStep: React.FC<{
   <div className="space-y-4">
     <div>
       <Label htmlFor="audience" className="text-sm font-medium">
-        Public cible *
+        Public cible (optionnel)
       </Label>
       <Textarea
         id="audience"
@@ -200,7 +200,7 @@ const ToneStep: React.FC<{
   <div className="space-y-4">
     <div>
       <Label htmlFor="tone" className="text-sm font-medium">
-        Ton et style *
+        Ton et style (optionnel)
       </Label>
       <Select
         value={data.tone}

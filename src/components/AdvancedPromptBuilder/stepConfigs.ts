@@ -27,7 +27,7 @@ export const stepConfigs: StepConfig[] = [
     description: "Fournissez le contexte nécessaire pour une réponse pertinente",
     icon: FileText,
     component: 'ContextStep',
-    required: true,
+    required: false,
     estimatedTime: "3-4 min",
     tips: [
       "Décrivez la situation actuelle ou le problème à résoudre",
@@ -46,7 +46,7 @@ export const stepConfigs: StepConfig[] = [
     description: "Définissez votre audience pour adapter le ton et le niveau",
     icon: Users,
     component: 'AudienceStep',
-    required: true,
+    required: false,
     estimatedTime: "2 min",
     tips: [
       "Précisez le niveau d'expertise (débutant, intermédiaire, expert)",
@@ -65,7 +65,7 @@ export const stepConfigs: StepConfig[] = [
     description: "Choisissez le ton et le style de communication appropriés",
     icon: Palette,
     component: 'ToneStep',
-    required: true,
+    required: false,
     estimatedTime: "1-2 min",
     tips: [
       "Adaptez le ton à votre audience et contexte",

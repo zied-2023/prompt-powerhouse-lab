@@ -12,24 +12,16 @@ export function validateStep(stepIndex: number, data: PromptData): string[] {
       }
       break;
       
-    case 1: // Contexte
-      if (!data.context.trim()) {
-        errors.push("Le contexte est obligatoire pour une réponse pertinente");
-      } else if (data.context.length < 20) {
-        errors.push("Ajoutez plus de détails au contexte (minimum 20 caractères)");
-      }
+    case 1: // Contexte (maintenant optionnel)
+      // Plus d'erreur obligatoire
       break;
       
-    case 2: // Audience
-      if (!data.audience.trim()) {
-        errors.push("Définissez votre public cible");
-      }
+    case 2: // Audience (maintenant optionnel)
+      // Plus d'erreur obligatoire
       break;
       
-    case 3: // Ton
-      if (!data.tone.trim()) {
-        errors.push("Sélectionnez un ton approprié");
-      }
+    case 3: // Ton (maintenant optionnel)
+      // Plus d'erreur obligatoire
       break;
       
     case 4: // Contraintes
@@ -62,9 +54,9 @@ export function calculateStepProgress(stepIndex: number, data: PromptData): numb
 function getRequiredFieldsForStep(stepIndex: number): string[] {
   switch (stepIndex) {
     case 0: return ['objective'];
-    case 1: return ['context'];
-    case 2: return ['audience'];
-    case 3: return ['tone'];
+    case 1: return []; // Plus obligatoire
+    case 2: return []; // Plus obligatoire
+    case 3: return []; // Plus obligatoire
     case 4: return []; // Optionnel
     case 5: return []; // Optionnel
     default: return [];
