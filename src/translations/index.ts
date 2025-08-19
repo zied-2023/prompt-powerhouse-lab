@@ -245,6 +245,67 @@ export interface TranslationKey {
   promptCopiedClipboard: string;
   improvementSuccess: string;
   improvementSuccessDesc: string;
+  
+  // Advanced Builder UI Labels
+  tipsForStep: string;
+  inspirationExamples: string;
+  targetAiModel: string;
+  selectAiModel: string;
+  mainObjectiveRequired: string;
+  contextOptional: string;
+  audiencePlaceholder: string;
+  responseFormat: string;
+  constraintsSpecs: string;
+  addConstraint: string;
+  noConstraintsDefined: string;
+  addConstraintButton: string;
+  constraintPlaceholder: string;
+  importantKeywords: string;
+  keywordsPlaceholder: string;
+  suggestedOptimizations: string;
+  configSummary: string;
+  
+  // Tone options
+  friendly: string;
+  formal: string;
+  
+  // Output formats
+  paragraphs: string;
+  bulletPoints: string;
+  numberedList: string;
+  stepByStep: string;
+  jsonFormat: string;
+  
+  // Suggestions
+  alternatives: string;
+  additions: string;
+  upcomingSuggestions: string;
+  aiSuggestions: string;
+  continueSteps: string;
+  quickActions: string;
+  addExamples: string;
+  addFormat: string;
+  addConstraints: string;
+  promptQuality: string;
+  excellent: string;
+  
+  // Live Preview
+  livePreview: string;
+  realTimeUpdate: string;
+  characters: string;
+  words: string;
+  qualityScore: string;
+  download: string;
+  preview: string;
+  raw: string;
+  optimized: string;
+  readingTime: string;
+  
+  // Quality indicators
+  excellent2: string;
+  good: string;
+  needsImprovement: string;
+  criteriaValidated: string;
 }
 
 export const translations: Record<string, TranslationKey> = {
@@ -322,18 +383,18 @@ export const translations: Record<string, TranslationKey> = {
     contextStepDesc: "Provide background information and context",
     
     // Advanced prompt builder keys
-    advancedStepObjective: "Define Objective",
-    advancedStepObjectiveDesc: "Specify clearly what you want to get from the AI",
-    advancedStepContext: "Context & Situation",
-    advancedStepContextDesc: "Provide necessary context for a relevant response",
-    advancedStepAudience: "Target Audience",
-    advancedStepAudienceDesc: "Define your audience to adapt tone and level",
+    advancedStepObjective: "Objective",
+    advancedStepObjectiveDesc: "Clearly define your main objective",
+    advancedStepContext: "Context",
+    advancedStepContextDesc: "Specify the situation and environment",
+    advancedStepAudience: "Audience",
+    advancedStepAudienceDesc: "Identify your target audience",
     advancedStepTone: "Tone & Style",
-    advancedStepToneDesc: "Choose appropriate communication tone and style",
-    advancedStepConstraints: "Constraints & Specifications",
-    advancedStepConstraintsDesc: "Define limitations and specific requirements",
-    advancedStepOptimization: "Final Optimization",
-    advancedStepOptimizationDesc: "Refine and optimize your prompt with AI",
+    advancedStepToneDesc: "Choose the appropriate tone and format",
+    advancedStepConstraints: "Constraints",
+    advancedStepConstraintsDesc: "Add specifications and limitations",
+    advancedStepOptimization: "Optimization",
+    advancedStepOptimizationDesc: "Optimize and finalize your prompt",
     outputFormatStep: "Output Format",
     outputFormatStepDesc: "Choose the desired output format",
     constraintsStep: "Constraints",
@@ -485,7 +546,68 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "Copied Successfully",
     promptCopiedClipboard: "Prompt copied to clipboard",
     improvementSuccess: "Improvement Successful",
-    improvementSuccessDesc: "Your prompt has been enhanced"
+    improvementSuccessDesc: "Your prompt has been enhanced",
+    
+    // Advanced Builder UI Labels
+    tipsForStep: "Tips for this step",
+    inspirationExamples: "Inspiration examples",
+    targetAiModel: "Target AI Model (optional)",
+    selectAiModel: "Select an AI model",
+    mainObjectiveRequired: "Main objective *",
+    contextOptional: "Context and situation (optional)",
+    audiencePlaceholder: "Describe your audience: expertise level, role, preferences...",
+    responseFormat: "Response format",
+    constraintsSpecs: "Constraints and specifications",
+    addConstraint: "Add",
+    noConstraintsDefined: "No constraints defined",
+    addConstraintButton: "Add a constraint",
+    constraintPlaceholder: "Describe a constraint...",
+    importantKeywords: "Important keywords (separated by commas)",
+    keywordsPlaceholder: "word1, word2, word3...",
+    suggestedOptimizations: "Suggested optimizations",
+    configSummary: "Configuration summary",
+    
+    // Tone options
+    friendly: "Friendly",
+    formal: "Formal",
+    
+    // Output formats
+    paragraphs: "Paragraphs",
+    bulletPoints: "Bullet points",
+    numberedList: "Numbered list",
+    stepByStep: "Detailed steps",
+    jsonFormat: "JSON format",
+    
+    // Suggestions
+    alternatives: "Alternatives",
+    additions: "Additions",
+    upcomingSuggestions: "Upcoming suggestions",
+    aiSuggestions: "AI Suggestions",
+    continueSteps: "Continue filling the steps to receive personalized suggestions.",
+    quickActions: "Quick actions",
+    addExamples: "+ Examples",
+    addFormat: "+ Format",
+    addConstraints: "+ Constraints",
+    promptQuality: "Prompt quality",
+    excellent: "Excellent! Your prompt is well structured.",
+    
+    // Live Preview
+    livePreview: "Live Preview",
+    realTimeUpdate: "Real-time update",
+    characters: "characters",
+    words: "words",
+    qualityScore: "Quality Score",
+    download: "Download",
+    preview: "Preview",
+    raw: "Raw",
+    optimized: "Optimized",
+    readingTime: "min read",
+    
+    // Quality indicators
+    excellent2: "Excellent",
+    good: "Good",
+    needsImprovement: "Needs improvement",
+    criteriaValidated: "criteria validated"
   },
   fr: {
     title: "AutoPrompt",
@@ -517,9 +639,40 @@ export const translations: Record<string, TranslationKey> = {
     dataAnalysisDesc: "Extraire des insights de données avec l'IA",
     marketingAutomation: "Automatisation Marketing",
     marketingAutomationDesc: "Automatiser les campagnes et contenus marketing",
+    creativeWriting: "Écriture Créative",
+    creativeWritingDesc: "Écrire des histoires créatives, poésie et fiction",
     blogPostGenerator: "Générateur d'Articles de Blog",
     customerSupportChatbot: "Chatbot Support Client",
     reactComponentGenerator: "Générateur de Composants React",
+    
+    // Colors
+    blue: "Bleu",
+    green: "Vert",
+    purple: "Violet",
+    orange: "Orange",
+    red: "Rouge",
+    indigo: "Indigo",
+    
+    // Category Manager UI
+    validationError: "Erreur de Validation",
+    nameDescriptionRequired: "Le nom et la description sont requis",
+    categoryCreated: "Catégorie Créée",
+    categoryUpdated: "Catégorie Mise à Jour",
+    categoryDeleted: "Catégorie Supprimée",
+    addNewCategory: "Ajouter Nouvelle Catégorie",
+    editCategory: "Modifier Catégorie",
+    deleteCategory: "Supprimer Catégorie",
+    confirmDelete: "Êtes-vous sûr de vouloir supprimer cette catégorie ?",
+    cancel: "Annuler",
+    save: "Sauvegarder",
+    edit: "Modifier",
+    delete: "Supprimer",
+    categoryName: "Nom de Catégorie",
+    categoryDescription: "Description de Catégorie",
+    examples: "Exemples",
+    color: "Couleur",
+    addCategory: "Ajouter Catégorie",
+    updateCategory: "Mettre à Jour Catégorie",
     
     // Multi-step builder keys
     stepTitle: "Étape",
@@ -530,18 +683,18 @@ export const translations: Record<string, TranslationKey> = {
     contextStepDesc: "Fournir des informations contextuelles",
     
     // Advanced prompt builder keys
-    advancedStepObjective: "Définir l'Objectif",
-    advancedStepObjectiveDesc: "Précisez clairement ce que vous voulez obtenir de l'IA",
-    advancedStepContext: "Contexte & Situation",
-    advancedStepContextDesc: "Fournissez le contexte nécessaire pour une réponse pertinente",
-    advancedStepAudience: "Public Cible",
-    advancedStepAudienceDesc: "Définissez votre audience pour adapter le ton et le niveau",
+    advancedStepObjective: "Objectif",
+    advancedStepObjectiveDesc: "Définissez clairement votre objectif principal",
+    advancedStepContext: "Contexte",
+    advancedStepContextDesc: "Précisez la situation et l'environnement",
+    advancedStepAudience: "Audience",
+    advancedStepAudienceDesc: "Identifiez votre public cible",
     advancedStepTone: "Ton & Style",
-    advancedStepToneDesc: "Choisissez le ton et le style de communication appropriés",
-    advancedStepConstraints: "Contraintes & Spécifications",
-    advancedStepConstraintsDesc: "Définissez les limitations et exigences spécifiques",
-    advancedStepOptimization: "Optimisation Finale",
-    advancedStepOptimizationDesc: "Affinez et optimisez votre prompt avec l'IA",
+    advancedStepToneDesc: "Choisissez le ton et le format appropriés",
+    advancedStepConstraints: "Contraintes",
+    advancedStepConstraintsDesc: "Ajoutez des spécifications et limites",
+    advancedStepOptimization: "Optimisation",
+    advancedStepOptimizationDesc: "Optimisez et finalisez votre prompt",
     outputFormatStep: "Format de Sortie",
     outputFormatStepDesc: "Choisir le format de sortie désiré",
     constraintsStep: "Contraintes",
@@ -693,38 +846,68 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "Copié avec Succès",
     promptCopiedClipboard: "Prompt copié dans le presse-papiers",
     improvementSuccess: "Amélioration Réussie",
-    creativeWriting: "Écriture Créative",
-    creativeWritingDesc: "Écrire des histoires créatives, poésie et fiction",
+    improvementSuccessDesc: "Votre prompt a été amélioré",
     
-    // Colors
-    blue: "Bleu",
-    green: "Vert", 
-    purple: "Violet",
-    orange: "Orange",
-    red: "Rouge",
-    indigo: "Indigo",
+    // Advanced Builder UI Labels
+    tipsForStep: "Conseils pour cette étape",
+    inspirationExamples: "Exemples d'inspiration",
+    targetAiModel: "Modèle d'IA ciblé (optionnel)",
+    selectAiModel: "Sélectionnez un modèle d'IA",
+    mainObjectiveRequired: "Objectif principal *",
+    contextOptional: "Contexte et situation (optionnel)",
+    audiencePlaceholder: "Décrivez votre audience: niveau d'expertise, rôle, préférences...",
+    responseFormat: "Format de la réponse",
+    constraintsSpecs: "Contraintes et spécifications",
+    addConstraint: "Ajouter",
+    noConstraintsDefined: "Aucune contrainte définie",
+    addConstraintButton: "Ajouter une contrainte",
+    constraintPlaceholder: "Décrivez une contrainte...",
+    importantKeywords: "Mots-clés importants (séparés par des virgules)",
+    keywordsPlaceholder: "mot1, mot2, mot3...",
+    suggestedOptimizations: "Optimisations suggérées",
+    configSummary: "Résumé de votre configuration",
     
-    // Category Manager UI
-    validationError: "Erreur de Validation",
-    nameDescriptionRequired: "Le nom et la description sont requis",
-    categoryCreated: "Catégorie Créée",
-    categoryUpdated: "Catégorie Mise à Jour", 
-    categoryDeleted: "Catégorie Supprimée",
-    addNewCategory: "Ajouter Nouvelle Catégorie",
-    editCategory: "Modifier Catégorie",
-    deleteCategory: "Supprimer Catégorie",
-    confirmDelete: "Êtes-vous sûr de vouloir supprimer cette catégorie ?",
-    cancel: "Annuler",
-    save: "Sauvegarder",
-    edit: "Modifier",
-    delete: "Supprimer", 
-    categoryName: "Nom de Catégorie",
-    categoryDescription: "Description de Catégorie",
-    examples: "Exemples",
-    color: "Couleur",
-    addCategory: "Ajouter Catégorie",
-    updateCategory: "Mettre à Jour Catégorie",
-    improvementSuccessDesc: "Votre prompt a été amélioré"
+    // Tone options
+    friendly: "Amical",
+    formal: "Formel",
+    
+    // Output formats
+    paragraphs: "Paragraphes",
+    bulletPoints: "Listes à puces",
+    numberedList: "Liste numérotée",
+    stepByStep: "Étapes détaillées",
+    jsonFormat: "Format JSON",
+    
+    // Suggestions
+    alternatives: "Alternatives",
+    additions: "Ajouts",
+    upcomingSuggestions: "Suggestions à venir",
+    aiSuggestions: "Suggestions IA",
+    continueSteps: "Continuez à remplir les étapes pour recevoir des suggestions personnalisées.",
+    quickActions: "Actions rapides",
+    addExamples: "+ Exemples",
+    addFormat: "+ Format",
+    addConstraints: "+ Contraintes",
+    promptQuality: "Qualité du prompt",
+    excellent: "Excellent ! Votre prompt est bien structuré.",
+    
+    // Live Preview
+    livePreview: "Aperçu Live",
+    realTimeUpdate: "Mise à jour en temps réel",
+    characters: "caractères",
+    words: "mots",
+    qualityScore: "Score de Qualité",
+    download: "Télécharger",
+    preview: "Aperçu",
+    raw: "Brut",
+    optimized: "Optimisé",
+    readingTime: "min de lecture",
+    
+    // Quality indicators
+    excellent2: "Excellent",
+    good: "Bon",
+    needsImprovement: "À améliorer",
+    criteriaValidated: "critères validés"
   },
   ar: {
     title: "AutoPrompt",
@@ -800,18 +983,18 @@ export const translations: Record<string, TranslationKey> = {
     contextStepDesc: "توفير معلومات السياق والخلفية",
     
     // Advanced prompt builder keys
-    advancedStepObjective: "تحديد الهدف",
-    advancedStepObjectiveDesc: "حدد بوضوح ما تريد الحصول عليه من الذكاء الاصطناعي",
-    advancedStepContext: "السياق والموقف",
-    advancedStepContextDesc: "قدم السياق اللازم للحصول على إجابة مناسبة",
-    advancedStepAudience: "الجمهور المستهدف",
-    advancedStepAudienceDesc: "حدد جمهورك لتكييف النبرة والمستوى",
+    advancedStepObjective: "الهدف",
+    advancedStepObjectiveDesc: "حدد هدفك الرئيسي بوضوح",
+    advancedStepContext: "السياق",
+    advancedStepContextDesc: "حدد الوضع والبيئة",
+    advancedStepAudience: "الجمهور",
+    advancedStepAudienceDesc: "حدد جمهورك المستهدف",
     advancedStepTone: "النبرة والأسلوب",
-    advancedStepToneDesc: "اختر نبرة وأسلوب التواصل المناسبين",
-    advancedStepConstraints: "القيود والمواصفات",
-    advancedStepConstraintsDesc: "حدد القيود والمتطلبات المحددة",
-    advancedStepOptimization: "التحسين النهائي",
-    advancedStepOptimizationDesc: "صقل وحسن نصك التوجيهي بالذكاء الاصطناعي",
+    advancedStepToneDesc: "اختر النبرة والتنسيق المناسب",
+    advancedStepConstraints: "القيود",
+    advancedStepConstraintsDesc: "أضف المواصفات والحدود",
+    advancedStepOptimization: "التحسين",
+    advancedStepOptimizationDesc: "حسّن واكمل برومبتك",
     outputFormatStep: "تنسيق الإخراج",
     outputFormatStepDesc: "اختيار تنسيق الإخراج المطلوب",
     constraintsStep: "القيود",
@@ -835,7 +1018,7 @@ export const translations: Record<string, TranslationKey> = {
     timeConstraintsPlaceholder: "حدد قيود الوقت...",
     budgetConstraints: "قيود الميزانية",
     budgetConstraintsPlaceholder: "حدد قيود الميزانية...",
-    finalPrompt: "النص التوجيهي النهائي",
+    finalPrompt: "البرومبت النهائي",
     finalPromptDesc: "نصك التوجيهي متعدد الخطوات الكامل",
     generateFinalPrompt: "إنتاج النص التوجيهي النهائي",
     generatingFinalPrompt: "جاري إنتاج النص التوجيهي النهائي...",
@@ -963,7 +1146,68 @@ export const translations: Record<string, TranslationKey> = {
     copiedSuccess: "تم النسخ بنجاح",
     promptCopiedClipboard: "تم نسخ النص التوجيهي إلى الحافظة",
     improvementSuccess: "تم التحسين بنجاح",
-    improvementSuccessDesc: "تم تحسين نصك التوجيهي"
+    improvementSuccessDesc: "تم تحسين نصك التوجيهي",
+    
+    // Advanced Builder UI Labels
+    tipsForStep: "نصائح لهذه الخطوة",
+    inspirationExamples: "أمثلة ملهمة",
+    targetAiModel: "نموذج الذكاء الاصطناعي المستهدف (اختياري)",
+    selectAiModel: "اختر نموذج ذكاء اصطناعي",
+    mainObjectiveRequired: "الهدف الرئيسي *",
+    contextOptional: "السياق والوضع (اختياري)",
+    audiencePlaceholder: "اوصف جمهورك: مستوى الخبرة، الدور، التفضيلات...",
+    responseFormat: "تنسيق الاستجابة",
+    constraintsSpecs: "القيود والمواصفات",
+    addConstraint: "إضافة",
+    noConstraintsDefined: "لم يتم تحديد قيود",
+    addConstraintButton: "إضافة قيد",
+    constraintPlaceholder: "اوصف قيداً...",
+    importantKeywords: "الكلمات المفتاحية المهمة (مفصولة بفواصل)",
+    keywordsPlaceholder: "كلمة1، كلمة2، كلمة3...",
+    suggestedOptimizations: "تحسينات مقترحة",
+    configSummary: "ملخص الإعداد",
+    
+    // Tone options
+    friendly: "ودود",
+    formal: "رسمي",
+    
+    // Output formats
+    paragraphs: "فقرات",
+    bulletPoints: "نقاط",
+    numberedList: "قائمة مرقمة",
+    stepByStep: "خطوات مفصلة",
+    jsonFormat: "تنسيق JSON",
+    
+    // Suggestions
+    alternatives: "بدائل",
+    additions: "إضافات",
+    upcomingSuggestions: "اقتراحات قادمة",
+    aiSuggestions: "اقتراحات الذكاء الاصطناعي",
+    continueSteps: "تابع ملء الخطوات لتلقي اقتراحات شخصية.",
+    quickActions: "إجراءات سريعة",
+    addExamples: "+ أمثلة",
+    addFormat: "+ تنسيق",
+    addConstraints: "+ قيود",
+    promptQuality: "جودة البرومبت",
+    excellent: "ممتاز! برومبتك جيد التنظيم.",
+    
+    // Live Preview
+    livePreview: "معاينة مباشرة",
+    realTimeUpdate: "تحديث في الوقت الفعلي",
+    characters: "حروف",
+    words: "كلمات",
+    qualityScore: "نقاط الجودة",
+    download: "تحميل",
+    preview: "معاينة",
+    raw: "خام",
+    optimized: "محسن",
+    readingTime: "دقيقة قراءة",
+    
+    // Quality indicators
+    excellent2: "ممتاز",
+    good: "جيد",
+    needsImprovement: "يحتاج تحسين",
+    criteriaValidated: "معايير مصادق عليها"
   }
 };
 

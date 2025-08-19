@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({
   onCopy,
   onDownload
 }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('preview');
   
   const preview = generatePromptPreview(data);
@@ -46,7 +48,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center text-lg">
               <Eye className="h-5 w-5 text-blue-500 mr-2" />
-              Aperçu Live
+              {t('livePreview')}
             </CardTitle>
           </CardHeader>
           
@@ -59,11 +61,11 @@ const LivePreview: React.FC<LivePreviewProps> = ({
             
             {/* Métriques rapides */}
             <div className="flex items-center justify-between mt-3 text-xs text-gray-500">
-              <span>Mise à jour en temps réel</span>
+              <span>{t('realTimeUpdate')}</span>
               <div className="flex items-center space-x-3">
-                <span>{preview.length} caractères</span>
+                <span>{preview.length} {t('characters')}</span>
                 <span>•</span>
-                <span>{preview.split(' ').length} mots</span>
+                <span>{preview.split(' ').length} {t('words')}</span>
               </div>
             </div>
           </CardContent>
@@ -76,7 +78,7 @@ const LivePreview: React.FC<LivePreviewProps> = ({
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-2">
               <BarChart3 className="h-4 w-4 text-emerald-500" />
-              <span className="font-medium text-sm">Score de Qualité</span>
+              <span className="font-medium text-sm">{t('qualityScore')}</span>
             </div>
             <Badge 
               className={`${
@@ -106,10 +108,10 @@ const LivePreview: React.FC<LivePreviewProps> = ({
           
           <div className="flex items-center justify-between text-xs">
             <span className="text-gray-500">
-              {qualityScore >= 80 ? '🎉 Excellent' : qualityScore >= 60 ? '👍 Bon' : '⚠️ À améliorer'}
+              {qualityScore >= 80 ? `🎉 ${t('excellent2')}` : qualityScore >= 60 ? `👍 ${t('good')}` : `⚠️ ${t('needsImprovement')}`}
             </span>
             <span className="text-gray-500">
-              {getQualityDetails(qualityScore).length} critères validés
+              {getQualityDetails(qualityScore).length} {t('criteriaValidated')}
             </span>
           </div>
         </CardContent>

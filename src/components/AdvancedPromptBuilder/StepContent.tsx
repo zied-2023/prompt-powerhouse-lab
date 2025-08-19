@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,8 @@ const StepContent: React.FC<StepContentProps> = ({
   onChange,
   suggestions
 }) => {
+  const { t } = useTranslation();
+  
   const renderContent = () => {
     switch (stepConfig.component) {
       case 'ObjectiveStep':
@@ -51,7 +54,7 @@ const StepContent: React.FC<StepContentProps> = ({
               <Lightbulb className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
               <div>
                 <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                  💡 Conseils pour cette étape
+                  💡 {t('tipsForStep')}
                 </h4>
                 <ul className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
                   {stepConfig.tips.map((tip, index) => (
@@ -76,7 +79,7 @@ const StepContent: React.FC<StepContentProps> = ({
           <CardContent className="p-4">
             <h4 className="font-medium text-emerald-900 dark:text-emerald-100 mb-3 flex items-center">
               <Sparkles className="h-4 w-4 mr-2" />
-              Exemples d'inspiration
+              {t('inspirationExamples')}
             </h4>
             <div className="space-y-2">
               {stepConfig.examples.map((example, index) => (
@@ -108,150 +111,168 @@ const ObjectiveStep: React.FC<{
   data: PromptData;
   onChange: (data: PromptData) => void;
   suggestions: string[];
-}> = ({ data, onChange, suggestions }) => (
-  <div className="space-y-4">
-    <div>
-      <Label htmlFor="aiModel" className="text-sm font-medium">
-        Modèle d'IA ciblé (optionnel)
-      </Label>
-      <Select
-        value={data.aiModel}
-        onValueChange={(value) => onChange({ ...data, aiModel: value })}
-      >
-        <SelectTrigger className="mt-2">
-          <SelectValue placeholder="Sélectionnez un modèle d'IA" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="gpt-4">GPT-4</SelectItem>
-          <SelectItem value="gpt-3.5">GPT-3.5</SelectItem>
-          <SelectItem value="claude">Claude</SelectItem>
-          <SelectItem value="midjourney">Midjourney</SelectItem>
-          <SelectItem value="dall-e">DALL-E</SelectItem>
-          <SelectItem value="stable-diffusion">Stable Diffusion</SelectItem>
-        </SelectContent>
-      </Select>
+}> = ({ data, onChange, suggestions }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="aiModel" className="text-sm font-medium">
+          {t('targetAiModel')}
+        </Label>
+        <Select
+          value={data.aiModel}
+          onValueChange={(value) => onChange({ ...data, aiModel: value })}
+        >
+          <SelectTrigger className="mt-2">
+            <SelectValue placeholder={t('selectAiModel')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="gpt-4">GPT-4</SelectItem>
+            <SelectItem value="gpt-3.5">GPT-3.5</SelectItem>
+            <SelectItem value="claude">Claude</SelectItem>
+            <SelectItem value="midjourney">Midjourney</SelectItem>
+            <SelectItem value="dall-e">DALL-E</SelectItem>
+            <SelectItem value="stable-diffusion">Stable Diffusion</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div>
+        <Label htmlFor="objective" className="text-sm font-medium">
+          {t('mainObjectiveRequired')}
+        </Label>
+        <Textarea
+          id="objective"
+          value={data.objective}
+          onChange={(e) => onChange({ ...data, objective: e.target.value })}
+          placeholder={t('mainObjectivePlaceholder')}
+          className="mt-2 min-h-[120px]"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          {data.objective.length}/500 {t('characters')}
+        </p>
+      </div>
     </div>
-    
-    <div>
-      <Label htmlFor="objective" className="text-sm font-medium">
-        Objectif principal *
-      </Label>
-      <Textarea
-        id="objective"
-        value={data.objective}
-        onChange={(e) => onChange({ ...data, objective: e.target.value })}
-        placeholder="Décrivez précisément ce que vous voulez obtenir de l'IA..."
-        className="mt-2 min-h-[120px]"
-      />
-      <p className="text-xs text-gray-500 mt-1">
-        {data.objective.length}/500 caractères
-      </p>
-    </div>
-  </div>
-);
+  );
+};
 
 const ContextStep: React.FC<{
   data: PromptData;
   onChange: (data: PromptData) => void;
   suggestions: string[];
-}> = ({ data, onChange }) => (
-  <div className="space-y-4">
-    <div>
-      <Label htmlFor="context" className="text-sm font-medium">
-        Contexte et situation (optionnel)
-      </Label>
-      <Textarea
-        id="context"
-        value={data.context}
-        onChange={(e) => onChange({ ...data, context: e.target.value })}
-        placeholder="Décrivez le contexte, la situation actuelle, les contraintes, l'environnement d'utilisation..."
-        className="mt-2 min-h-[150px]"
-      />
+}> = ({ data, onChange }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="context" className="text-sm font-medium">
+          {t('contextOptional')}
+        </Label>
+        <Textarea
+          id="context"
+          value={data.context}
+          onChange={(e) => onChange({ ...data, context: e.target.value })}
+          placeholder={t('contextPlaceholder')}
+          className="mt-2 min-h-[150px]"
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const AudienceStep: React.FC<{
   data: PromptData;
   onChange: (data: PromptData) => void;
   suggestions: string[];
-}> = ({ data, onChange }) => (
-  <div className="space-y-4">
-    <div>
-      <Label htmlFor="audience" className="text-sm font-medium">
-        Public cible (optionnel)
-      </Label>
-      <Textarea
-        id="audience"
-        value={data.audience}
-        onChange={(e) => onChange({ ...data, audience: e.target.value })}
-        placeholder="Décrivez votre audience: niveau d'expertise, rôle, préférences..."
-        className="mt-2 min-h-[100px]"
-      />
+}> = ({ data, onChange }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="audience" className="text-sm font-medium">
+          {t('targetAudience')} ({t('optional')})
+        </Label>
+        <Textarea
+          id="audience"
+          value={data.audience}
+          onChange={(e) => onChange({ ...data, audience: e.target.value })}
+          placeholder={t('audiencePlaceholder')}
+          className="mt-2 min-h-[100px]"
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const ToneStep: React.FC<{
   data: PromptData;
   onChange: (data: PromptData) => void;
   suggestions: string[];
-}> = ({ data, onChange }) => (
-  <div className="space-y-4">
-    <div>
-      <Label htmlFor="tone" className="text-sm font-medium">
-        Ton et style (optionnel)
-      </Label>
-      <Select
-        value={data.tone}
-        onValueChange={(value) => onChange({ ...data, tone: value })}
-      >
-        <SelectTrigger className="mt-2">
-          <SelectValue placeholder="Choisissez un ton" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="professional">Professionnel</SelectItem>
-          <SelectItem value="friendly">Amical</SelectItem>
-          <SelectItem value="formal">Formel</SelectItem>
-          <SelectItem value="casual">Décontracté</SelectItem>
-          <SelectItem value="technical">Technique</SelectItem>
-          <SelectItem value="creative">Créatif</SelectItem>
-          <SelectItem value="persuasive">Persuasif</SelectItem>
-          <SelectItem value="educational">Éducatif</SelectItem>
-        </SelectContent>
-      </Select>
+}> = ({ data, onChange }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-4">
+      <div>
+        <Label htmlFor="tone" className="text-sm font-medium">
+          {t('toneStyle')} ({t('optional')})
+        </Label>
+        <Select
+          value={data.tone}
+          onValueChange={(value) => onChange({ ...data, tone: value })}
+        >
+          <SelectTrigger className="mt-2">
+            <SelectValue placeholder={t('chooseTone')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="professional">{t('professional')}</SelectItem>
+            <SelectItem value="friendly">{t('friendly')}</SelectItem>
+            <SelectItem value="formal">{t('formal')}</SelectItem>
+            <SelectItem value="casual">{t('casual')}</SelectItem>
+            <SelectItem value="technical">{t('technical')}</SelectItem>
+            <SelectItem value="creative">{t('creative')}</SelectItem>
+            <SelectItem value="persuasive">{t('persuasive')}</SelectItem>
+            <SelectItem value="educational">{t('educational')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      
+      <div>
+        <Label htmlFor="outputFormat" className="text-sm font-medium">
+          {t('outputFormat')}
+        </Label>
+        <Select
+          value={data.outputFormat}
+          onValueChange={(value) => onChange({ ...data, outputFormat: value })}
+        >
+          <SelectTrigger className="mt-2">
+            <SelectValue placeholder={t('responseFormat')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="paragraph">{t('paragraphs')}</SelectItem>
+            <SelectItem value="bullet-points">{t('bulletPoints')}</SelectItem>
+            <SelectItem value="numbered-list">{t('numberedList')}</SelectItem>
+            <SelectItem value="table">{t('table')}</SelectItem>
+            <SelectItem value="code">{t('codeScript')}</SelectItem>
+            <SelectItem value="step-by-step">{t('stepByStep')}</SelectItem>
+            <SelectItem value="json">{t('jsonFormat')}</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
     </div>
-    
-    <div>
-      <Label htmlFor="outputFormat" className="text-sm font-medium">
-        Format de sortie souhaité
-      </Label>
-      <Select
-        value={data.outputFormat}
-        onValueChange={(value) => onChange({ ...data, outputFormat: value })}
-      >
-        <SelectTrigger className="mt-2">
-          <SelectValue placeholder="Format de la réponse" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="paragraph">Paragraphes</SelectItem>
-          <SelectItem value="bullet-points">Listes à puces</SelectItem>
-          <SelectItem value="numbered-list">Liste numérotée</SelectItem>
-          <SelectItem value="table">Tableau</SelectItem>
-          <SelectItem value="code">Code</SelectItem>
-          <SelectItem value="step-by-step">Étapes détaillées</SelectItem>
-          <SelectItem value="json">Format JSON</SelectItem>
-        </SelectContent>
-      </Select>
-    </div>
-  </div>
-);
+  );
+};
 
 const ConstraintsStep: React.FC<{
   data: PromptData;
   onChange: (data: PromptData) => void;
   suggestions: string[];
 }> = ({ data, onChange }) => {
+  const { t } = useTranslation();
+  
   const addConstraint = () => {
     onChange({ ...data, constraints: [...data.constraints, ''] });
   };
@@ -272,7 +293,7 @@ const ConstraintsStep: React.FC<{
       <div>
         <div className="flex items-center justify-between mb-3">
           <Label className="text-sm font-medium">
-            Contraintes et spécifications
+            {t('constraintsSpecs')}
           </Label>
           <Button
             onClick={addConstraint}
@@ -281,7 +302,7 @@ const ConstraintsStep: React.FC<{
             className="text-xs"
           >
             <Plus className="h-3 w-3 mr-1" />
-            Ajouter
+            {t('addConstraint')}
           </Button>
         </div>
         
@@ -289,11 +310,11 @@ const ConstraintsStep: React.FC<{
           <Card className="bg-gray-50 dark:bg-gray-800/50 border-dashed">
             <CardContent className="p-6 text-center">
               <p className="text-sm text-gray-500 mb-3">
-                Aucune contrainte définie
+                {t('noConstraintsDefined')}
               </p>
               <Button onClick={addConstraint} variant="ghost" size="sm">
                 <Plus className="h-4 w-4 mr-2" />
-                Ajouter une contrainte
+                {t('addConstraintButton')}
               </Button>
             </CardContent>
           </Card>
@@ -304,7 +325,7 @@ const ConstraintsStep: React.FC<{
                 <Input
                   value={constraint}
                   onChange={(e) => updateConstraint(index, e.target.value)}
-                  placeholder="Décrivez une contrainte..."
+                  placeholder={t('constraintPlaceholder')}
                   className="flex-1"
                 />
                 <Button
@@ -324,7 +345,7 @@ const ConstraintsStep: React.FC<{
       {/* Mots-clés */}
       <div>
         <Label htmlFor="keywords" className="text-sm font-medium">
-          Mots-clés importants (séparés par des virgules)
+          {t('importantKeywords')}
         </Label>
         <Input
           id="keywords"
@@ -333,7 +354,7 @@ const ConstraintsStep: React.FC<{
             ...data, 
             keywords: e.target.value.split(',').map(k => k.trim()).filter(k => k)
           })}
-          placeholder="mot1, mot2, mot3..."
+          placeholder={t('keywordsPlaceholder')}
           className="mt-2"
         />
       </div>
@@ -345,49 +366,53 @@ const OptimizationStep: React.FC<{
   data: PromptData;
   onChange: (data: PromptData) => void;
   suggestions: string[];
-}> = ({ data, onChange, suggestions }) => (
-  <div className="space-y-4">
-    <Card className="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border-violet-200 dark:border-violet-700">
-      <CardContent className="p-4">
-        <h4 className="font-medium text-violet-900 dark:text-violet-100 mb-3">
-          🚀 Optimisations suggérées
-        </h4>
-        <div className="space-y-2">
-          {suggestions.length === 0 ? (
-            <p className="text-sm text-violet-700 dark:text-violet-300">
-              Vos données semblent complètes ! Vous pouvez générer votre prompt optimisé.
-            </p>
-          ) : (
-            suggestions.map((suggestion, index) => (
-              <div key={index} className="flex items-start space-x-2">
-                <Badge variant="secondary" className="bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 text-xs">
-                  {index + 1}
-                </Badge>
-                <p className="text-sm text-violet-800 dark:text-violet-200 flex-1">
-                  {suggestion}
-                </p>
-              </div>
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
-    
-    <div>
-      <Label className="text-sm font-medium">
-        Résumé de votre configuration
-      </Label>
-      <Card className="mt-2 bg-gray-50 dark:bg-gray-800/50">
-        <CardContent className="p-4 text-sm space-y-2">
-          <div><strong>Objectif:</strong> {data.objective || 'Non défini'}</div>
-          <div><strong>Public:</strong> {data.audience || 'Non défini'}</div>
-          <div><strong>Ton:</strong> {data.tone || 'Non défini'}</div>
-          <div><strong>Contraintes:</strong> {data.constraints.length} élément(s)</div>
-          <div><strong>Mots-clés:</strong> {data.keywords.length} élément(s)</div>
+}> = ({ data, onChange, suggestions }) => {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="space-y-4">
+      <Card className="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 border-violet-200 dark:border-violet-700">
+        <CardContent className="p-4">
+          <h4 className="font-medium text-violet-900 dark:text-violet-100 mb-3">
+            🚀 {t('suggestedOptimizations')}
+          </h4>
+          <div className="space-y-2">
+            {suggestions.length === 0 ? (
+              <p className="text-sm text-violet-700 dark:text-violet-300">
+                {t('excellent')}
+              </p>
+            ) : (
+              suggestions.map((suggestion, index) => (
+                <div key={index} className="flex items-start space-x-2">
+                  <Badge variant="secondary" className="bg-violet-100 dark:bg-violet-900/50 text-violet-700 dark:text-violet-300 text-xs">
+                    {index + 1}
+                  </Badge>
+                  <p className="text-sm text-violet-800 dark:text-violet-200 flex-1">
+                    {suggestion}
+                  </p>
+                </div>
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
+      
+      <div>
+        <Label className="text-sm font-medium">
+          {t('configSummary')}
+        </Label>
+        <Card className="mt-2 bg-gray-50 dark:bg-gray-800/50">
+          <CardContent className="p-4 text-sm space-y-2">
+            <div><strong>{t('objective')}:</strong> {data.objective || 'Non défini'}</div>
+            <div><strong>{t('targetAudience')}:</strong> {data.audience || 'Non défini'}</div>
+            <div><strong>{t('toneStyle')}:</strong> {data.tone || 'Non défini'}</div>
+            <div><strong>Contraintes:</strong> {data.constraints.length} élément(s)</div>
+            <div><strong>Mots-clés:</strong> {data.keywords.length} élément(s)</div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default StepContent;

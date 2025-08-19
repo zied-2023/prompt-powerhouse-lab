@@ -1,3 +1,4 @@
+import { useTranslation } from "@/hooks/useTranslation";
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,21 +14,23 @@ const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({
   suggestions,
   onApplySuggestion
 }) => {
+  const { t } = useTranslation();
+  
   const suggestionCategories = [
     {
-      title: "Améliorations",
+      title: t('improvements'),
       icon: TrendingUp,
       color: "blue",
       suggestions: suggestions.slice(0, 2)
     },
     {
-      title: "Alternatives",
+      title: t('alternatives'),
       icon: Wand2,
       color: "purple",
       suggestions: suggestions.slice(2, 4)
     },
     {
-      title: "Ajouts",
+      title: t('additions'),
       icon: Plus,
       color: "emerald",
       suggestions: suggestions.slice(4, 6)
@@ -40,10 +43,10 @@ const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({
         <CardContent className="p-6 text-center">
           <Lightbulb className="h-12 w-12 text-gray-400 mx-auto mb-3" />
           <h3 className="font-medium text-gray-600 dark:text-gray-400 mb-2">
-            Suggestions à venir
+            {t('upcomingSuggestions')}
           </h3>
           <p className="text-sm text-gray-500">
-            Continuez à remplir les étapes pour recevoir des suggestions personnalisées.
+            {t('continueSteps')}
           </p>
         </CardContent>
       </Card>
@@ -55,7 +58,7 @@ const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center text-lg">
           <Lightbulb className="h-5 w-5 text-yellow-500 mr-2" />
-          Suggestions IA
+          {t('aiSuggestions')}
         </CardTitle>
       </CardHeader>
       
@@ -120,32 +123,32 @@ const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({
         <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
           <h4 className="font-medium text-sm text-gray-700 dark:text-gray-300 mb-2 flex items-center">
             <Wand2 className="h-4 w-4 mr-1" />
-            Actions rapides
+            {t('quickActions')}
           </h4>
           <div className="flex flex-wrap gap-2">
             <Button
               size="sm"
               variant="outline"
               className="text-xs h-7 px-2"
-              onClick={() => onApplySuggestion("Ajouter des exemples concrets")}
+              onClick={() => onApplySuggestion(t('addExamples'))}
             >
-              + Exemples
+              {t('addExamples')}
             </Button>
             <Button
               size="sm"
               variant="outline"
               className="text-xs h-7 px-2"
-              onClick={() => onApplySuggestion("Préciser le format de sortie")}
+              onClick={() => onApplySuggestion(t('addFormat'))}
             >
-              + Format
+              {t('addFormat')}
             </Button>
             <Button
               size="sm"
               variant="outline"
               className="text-xs h-7 px-2"
-              onClick={() => onApplySuggestion("Définir des contraintes")}
+              onClick={() => onApplySuggestion(t('addConstraints'))}
             >
-              + Contraintes
+              {t('addConstraints')}
             </Button>
           </div>
         </div>
@@ -154,7 +157,7 @@ const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({
         <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-2">
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              Qualité du prompt
+              {t('promptQuality')}
             </span>
             <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
               85%
@@ -167,7 +170,7 @@ const SmartSuggestions: React.FC<SmartSuggestionsProps> = ({
             />
           </div>
           <p className="text-xs text-gray-500 mt-1">
-            Excellent ! Votre prompt est bien structuré.
+            {t('excellent')}
           </p>
         </div>
       </CardContent>
