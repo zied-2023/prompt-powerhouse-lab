@@ -10,7 +10,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
 import ThemeSelector from "@/components/ThemeSelector";
-import { AuthButtons } from "@/components/auth/AuthButtons";
+import { LogoutButton } from "@/components/auth/LogoutButton";
 import PromptGenerator from "@/components/PromptGenerator";
 import PromptLibrary from "@/components/PromptLibrary";
 import CategoryManager from "@/components/CategoryManager";
@@ -55,7 +55,7 @@ const Index = () => {
             <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <ThemeSelector />
               <LanguageSelector />
-              <AuthButtons />
+              <LogoutButton />
               <Badge variant="secondary" className="bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900 dark:to-green-900 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700 shadow-sm">
                 <Sparkles className="h-3 w-3 mr-1" />
                 {t('advancedAI')}
