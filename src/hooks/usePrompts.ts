@@ -19,9 +19,9 @@ export const usePrompts = () => {
     setIsSaving(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!user) {
+      if (!session?.user) {
         toast({
           title: "Authentification requise",
           description: "Veuillez vous connecter pour sauvegarder vos prompts",
@@ -33,7 +33,7 @@ export const usePrompts = () => {
       const { data, error } = await supabase
         .from('prompts')
         .insert({
-          user_id: user.id,
+          user_id: session.user.id,
           title: promptData.title,
           content: promptData.content,
           description: promptData.description,
@@ -77,16 +77,16 @@ export const usePrompts = () => {
     setIsLoading(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { session } } = await supabase.auth.getSession();
       
-      if (!user) {
+      if (!session?.user) {
         return [];
       }
 
       const { data, error } = await supabase
         .from('prompts')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
