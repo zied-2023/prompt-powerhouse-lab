@@ -8,6 +8,7 @@ import { Loader2, Copy, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ThemeSelector from '@/components/ThemeSelector';
 import LanguageSelector from '@/components/LanguageSelector';
+import { AuthButtons } from '@/components/auth/AuthButtons';
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -142,8 +143,10 @@ const SimplePromptGenerator = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Barre supérieure */}
-      <div className="flex justify-end items-center p-4 border-b border-border">
+      <div className="flex justify-between items-center p-4 border-b border-border">
+        <div></div>
         <div className="flex items-center gap-3">
+          <AuthButtons />
           <ThemeSelector />
           <LanguageSelector />
         </div>
