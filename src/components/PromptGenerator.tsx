@@ -6,8 +6,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Zap, Copy, Sparkles, Wand2 } from "lucide-react";
+import { Zap, Copy, Sparkles, Wand2, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { usePrompts } from "@/hooks/usePrompts";
 
 // Configuration API - Mistral (correction de l'espace en trop dans l'URL)
 const API_CONFIG = {
@@ -18,6 +19,7 @@ const API_CONFIG = {
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
+  const { savePrompt, isSaving } = usePrompts();
   const [formData, setFormData] = useState({
     category: '',
     subcategory: '',
@@ -290,6 +292,34 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
     });
   };
 
+  const handleSavePrompt = async () => {
+    if (!generatedPrompt) {
+      toast({
+        title: "Aucun prompt à sauvegarder",
+        description: "Générez d'abord un prompt avant de le sauvegarder",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
+    const subcategoryLabel = formData.subcategory ? 
+      getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
+
+    let title = `Prompt ${categoryLabel}`;
+    if (subcategoryLabel) {
+      title += ` - ${subcategoryLabel}`;
+    }
+
+    await savePrompt({
+      title: title,
+      content: generatedPrompt,
+      description: formData.description,
+      category: formData.category,
+      tags: [formData.category, formData.subcategory, formData.tone].filter(Boolean)
+    });
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Formulaire */}
@@ -475,10 +505,26 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           <CardTitle className="flex items-center justify-between text-2xl">
             <span className="gradient-text">{t('aiGeneratedPrompt')}</span>
             {generatedPrompt && (
-              <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
-                <Copy className="h-4 w-4 mr-2" />
-                {t('copy')}
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
+                  <Copy className="h-4 w-4 mr-2" />
+                  {t('copy')}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleSavePrompt} 
+                  disabled={isSaving}
+                  className="hover-lift glass-card border-white/30"
+                >
+                  {isSaving ? (
+                    <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+                </Button>
+              </div>
             )}
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">

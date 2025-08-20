@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { toast } from "@/hooks/use-toast";
 import { ChevronLeft, ChevronRight, Sparkles, Target, Users, Zap, CheckCircle, AlertCircle, Eye, Save, Info } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { usePrompts } from "@/hooks/usePrompts";
 import StepObjective from "./MultiStepPromptBuilder/StepObjective";
 import StepContext from "./MultiStepPromptBuilder/StepContext";
 import StepConstraints from "./MultiStepPromptBuilder/StepConstraints";
@@ -42,6 +43,7 @@ interface PromptData {
 
 const MultiStepPromptBuilder = () => {
   const { t } = useTranslation();
+  const { savePrompt, isSaving } = usePrompts();
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState('');
@@ -308,6 +310,27 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
     toast({
       title: t('copiedSuccess'),
       description: t('promptCopiedClipboard'),
+    });
+  };
+
+  const handleSavePrompt = async () => {
+    if (!generatedPrompt) {
+      toast({
+        title: "Aucun prompt à sauvegarder",
+        description: "Générez d'abord un prompt avant de le sauvegarder",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const title = `Prompt Multi-étapes - ${promptData.objective.mainGoal.slice(0, 50)}`;
+
+    await savePrompt({
+      title: title,
+      content: generatedPrompt,
+      description: promptData.objective.mainGoal,
+      category: 'multi-step',
+      tags: [promptData.context.industry, promptData.requirements.tone].filter(Boolean)
     });
   };
 
@@ -581,9 +604,24 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <CardTitle className="gradient-text">{t('advancedPromptResult')}</CardTitle>
-                <Button variant="outline" size="sm" onClick={copyToClipboard}>
-                  {t('copy')}
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={copyToClipboard}>
+                    {t('copy')}
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleSavePrompt} 
+                    disabled={isSaving}
+                  >
+                    {isSaving ? (
+                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                    ) : (
+                      <Save className="h-4 w-4 mr-2" />
+                    )}
+                    {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>

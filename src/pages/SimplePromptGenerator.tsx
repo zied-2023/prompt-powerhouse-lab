@@ -4,11 +4,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Copy, CheckCircle } from 'lucide-react';
+import { Loader2, Copy, CheckCircle, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import ThemeSelector from '@/components/ThemeSelector';
 import LanguageSelector from '@/components/LanguageSelector';
 import { AuthButtons } from '@/components/auth/AuthButtons';
+import { usePrompts } from '@/hooks/usePrompts';
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -23,6 +24,7 @@ const SimplePromptGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
   const { toast } = useToast();
+  const { savePrompt, isSaving } = usePrompts();
 
   const toneOptions = [
     { value: 'professional', label: 'Professionnel' },
@@ -140,6 +142,31 @@ const SimplePromptGenerator = () => {
     }
   };
 
+  const handleSavePrompt = async () => {
+    if (!result) {
+      toast({
+        title: "Aucun prompt à sauvegarder",
+        description: "Générez d'abord un prompt avant de le sauvegarder",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const selectedTone = toneOptions.find(t => t.value === tone);
+    let title = "Prompt Simple";
+    if (selectedTone) {
+      title += ` - ${selectedTone.label}`;
+    }
+
+    await savePrompt({
+      title: title,
+      content: result,
+      description: objective,
+      category: 'simple-generation',
+      tags: [tone].filter(Boolean)
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Barre supérieure */}
@@ -248,15 +275,31 @@ const SimplePromptGenerator = () => {
                       {result}
                     </pre>
                   </div>
-                  <Button 
-                    onClick={copyToClipboard}
-                    variant="outline" 
-                    size="sm"
-                    className="flex items-center gap-2"
-                  >
-                    <Copy className="h-4 w-4" />
-                    Copier le Prompt
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={copyToClipboard}
+                      variant="outline" 
+                      size="sm"
+                      className="flex items-center gap-2"
+                    >
+                      <Copy className="h-4 w-4" />
+                      Copier le Prompt
+                    </Button>
+                    <Button 
+                      onClick={handleSavePrompt}
+                      variant="outline" 
+                      size="sm"
+                      disabled={isSaving}
+                      className="flex items-center gap-2"
+                    >
+                      {isSaving ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                      {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+                    </Button>
+                  </div>
                 </div>
               ) : null}
             </CardContent>
