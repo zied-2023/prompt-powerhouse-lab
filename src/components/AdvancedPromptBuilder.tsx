@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "@/hooks/useTranslation";
+import { usePrompts } from "@/hooks/usePrompts";
 import { 
   Sparkles, 
   FileText, 
@@ -19,7 +20,8 @@ import {
   Code,
   Layers,
   Target,
-  Brain
+  Brain,
+  Save
 } from "lucide-react";
 
 import StepObjective from "./MultiStepPromptBuilder/StepObjective";
@@ -80,6 +82,7 @@ interface PromptData {
 
 const AdvancedPromptBuilder = () => {
   const { t } = useTranslation();
+  const { savePrompt, isSaving } = usePrompts();
   const [activeTab, setActiveTab] = useState("builder");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState('');
@@ -240,6 +243,34 @@ Veuillez générer une réponse qui respecte strictement tous les critères ci-d
     });
   };
 
+  const handleSavePrompt = async () => {
+    if (!generatedPrompt.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Aucun prompt généré à sauvegarder",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const saveData = {
+      title: `Prompt avancé - ${promptData.objective.mainGoal.substring(0, 50) || 'Sans titre'}`,
+      content: generatedPrompt,
+      description: `Prompt avancé généré avec builder multi-étapes`,
+      category: "Avancé",
+      tags: ["avancé", "multi-étapes", "builder"],
+      is_public: false
+    };
+
+    const result = await savePrompt(saveData);
+    if (result) {
+      toast({
+        title: "Prompt sauvegardé",
+        description: "Votre prompt avancé a été sauvegardé avec succès !",
+      });
+    }
+  };
+
   const calculateProgress = () => {
     let completedSteps = 0;
     let totalSteps = 4;
@@ -373,6 +404,19 @@ Veuillez générer une réponse qui respecte strictement tous les critères ci-d
                       <Button onClick={downloadPrompt} size="sm" variant="outline">
                         <Download className="h-4 w-4 mr-2" />
                         Télécharger
+                      </Button>
+                      <Button 
+                        onClick={handleSavePrompt} 
+                        size="sm" 
+                        variant="outline"
+                        disabled={isSaving}
+                      >
+                        {isSaving ? (
+                          <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                        ) : (
+                          <Save className="h-4 w-4 mr-2" />
+                        )}
+                        Sauvegarder
                       </Button>
                     </div>
                   </div>

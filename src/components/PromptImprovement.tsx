@@ -5,8 +5,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, Copy, TrendingUp, CheckCircle } from "lucide-react";
+import { RefreshCw, Copy, TrendingUp, CheckCircle, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { usePrompts } from "@/hooks/usePrompts";
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -17,6 +18,7 @@ const API_CONFIG = {
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
+  const { savePrompt, isSaving } = usePrompts();
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [improvementObjective, setImprovementObjective] = useState('');
   const [improvedPrompt, setImprovedPrompt] = useState('');
@@ -151,6 +153,34 @@ Réponds au format suivant:
     });
   };
 
+  const handleSavePrompt = async () => {
+    if (!improvedPrompt.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Aucun prompt amélioré à sauvegarder",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const promptData = {
+      title: `Prompt amélioré - ${new Date().toLocaleDateString()}`,
+      content: improvedPrompt,
+      description: `Prompt amélioré à partir de: "${originalPrompt.substring(0, 100)}..."`,
+      category: "Amélioration",
+      tags: ["amélioration", "optimisé"],
+      is_public: false
+    };
+
+    const result = await savePrompt(promptData);
+    if (result) {
+      toast({
+        title: "Prompt sauvegardé",
+        description: "Votre prompt amélioré a été sauvegardé avec succès !",
+      });
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {/* Formulaire d'amélioration */}
@@ -222,10 +252,26 @@ Réponds au format suivant:
           <CardTitle className="flex items-center justify-between text-2xl">
             <span className="gradient-text">{t('improvedPrompt')}</span>
             {improvedPrompt && (
-              <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
-                <Copy className="h-4 w-4 mr-2" />
-                {t('copy')}
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
+                  <Copy className="h-4 w-4 mr-2" />
+                  {t('copy')}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleSavePrompt}
+                  disabled={isSaving}
+                  className="hover-lift glass-card border-white/30"
+                >
+                  {isSaving ? (
+                    <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  Sauvegarder
+                </Button>
+              </div>
             )}
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
