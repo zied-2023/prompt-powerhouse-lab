@@ -7,6 +7,7 @@ export interface TranslationKey {
   advanced: string;
   library: string;
   categories: string;
+  history: string;
   integration: string;
   advancedAI: string;
   noCode: string;
@@ -333,6 +334,7 @@ export const translations: Record<string, TranslationKey> = {
     advanced: "Advanced",
     library: "Library",
     categories: "Categories",
+    history: "History",
     integration: "Integration",
     advancedAI: "Advanced AI",
     noCode: "No Code",
@@ -649,6 +651,7 @@ export const translations: Record<string, TranslationKey> = {
     advanced: "Avancé",
     library: "Bibliothèque",
     categories: "Catégories",
+    history: "Historique",
     integration: "Intégration",
     advancedAI: "IA Avancée",
     noCode: "Sans Code",
@@ -965,6 +968,7 @@ export const translations: Record<string, TranslationKey> = {
     advanced: "متقدم",
     library: "المكتبة",
     categories: "الفئات",
+    history: "التاريخ",
     integration: "التكامل",
     advancedAI: "ذكاء اصطناعي متقدم",
     noCode: "بدون كود",

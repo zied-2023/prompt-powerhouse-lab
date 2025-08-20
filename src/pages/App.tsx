@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp } from "lucide-react";
+import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -17,6 +17,7 @@ import CategoryManager from "@/components/CategoryManager";
 import IntegrationPanel from "@/components/IntegrationPanel";
 import AdvancedPromptBuilder from "@/components/AdvancedPromptBuilder";
 import PromptImprovement from "@/components/PromptImprovement";
+import PromptHistory from "@/components/PromptHistory";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -72,7 +73,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
+          <TabsList className="grid w-full grid-cols-7 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
@@ -109,6 +110,13 @@ const Index = () => {
               <span>{t('categories')}</span>
             </TabsTrigger>
             <TabsTrigger 
+              value="history" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <History className="h-4 w-4" />
+              <span>{t('history')}</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="integration" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
             >
@@ -135,6 +143,10 @@ const Index = () => {
 
           <TabsContent value="categories" className="space-y-8">
             <CategoryManager />
+          </TabsContent>
+
+          <TabsContent value="history" className="space-y-8">
+            <PromptHistory />
           </TabsContent>
 
           <TabsContent value="integration" className="space-y-8">
