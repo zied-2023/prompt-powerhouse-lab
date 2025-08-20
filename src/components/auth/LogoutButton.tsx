@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export const LogoutButton = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleLogout = async () => {
     try {
@@ -24,6 +26,9 @@ export const LogoutButton = () => {
         description: "Vous avez été déconnecté avec succès",
         variant: "default"
       });
+      
+      // Rediriger vers la page d'accueil
+      navigate("/");
     } catch (error) {
       toast({
         title: "Erreur",
