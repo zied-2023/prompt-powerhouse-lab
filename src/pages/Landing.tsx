@@ -143,7 +143,7 @@ const Landing = () => {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8 animate-fade-in">
+            <div className="flex justify-center items-center mb-8 animate-fade-in">
               <Button 
                 size="lg" 
                 onClick={() => navigate('/generator')}
@@ -151,14 +151,6 @@ const Landing = () => {
               >
                 Commencer Gratuitement
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={() => navigate('/app')}
-                className="text-lg px-8 py-6 border-2 border-violet-200 dark:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-all duration-300"
-              >
-                Mode Avancé
               </Button>
             </div>
 
