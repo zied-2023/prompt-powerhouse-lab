@@ -26,31 +26,44 @@ interface StepTemplatesProps {
 const StepTemplates: React.FC<StepTemplatesProps> = ({ onSelectTemplate }) => {
   const { t } = useTranslation();
 
+  const handleTemplateClick = (template: Template) => {
+    // Applique le template avec des valeurs concrètes
+    onSelectTemplate(template);
+    
+    // Affiche un toast pour confirmer l'application du template
+    import("@/hooks/use-toast").then(({ toast }) => {
+      toast({
+        title: "Template appliqué",
+        description: `Le template "${template.name}" a été appliqué à votre prompt. Personnalisez maintenant les champs selon vos besoins.`,
+      });
+    });
+  };
+
   const templates: Template[] = [
     {
       id: 'content-creation',
       name: 'Création de Contenu',
-      description: 'Template pour créer du contenu engageant',
+      description: 'Template pour créer du contenu engageant pour les réseaux sociaux',
       category: 'Créatif',
       icon: <FileText className="h-5 w-5" />,
       structure: {
-        objective: 'Créer un contenu [type] pour [audience cible] qui [action souhaitée]',
-        context: 'Le contenu sera publié sur [plateforme] pour atteindre [objectif business]',
-        constraints: 'Longueur: [nombre de mots], Ton: [style], Références: [sources]',
-        format: 'Structure avec introduction, corps principal et conclusion'
+        objective: 'Créer un contenu engageant pour Instagram qui génère de l\'engagement et augmente la visibilité de la marque',
+        context: 'Le contenu sera publié sur Instagram pour une marque de mode ciblant les jeunes adultes de 18-35 ans',
+        constraints: 'Longueur: 150-200 mots, Ton: décontracté et inspirant, Inclure 3-5 hashtags pertinents',
+        format: 'Post Instagram avec accroche, corps du texte et call-to-action'
       }
     },
     {
       id: 'code-generation',
       name: 'Génération de Code',
-      description: 'Template pour générer du code propre',
+      description: 'Template pour générer du code React propre et maintenable',
       category: 'Technique',
       icon: <Code className="h-5 w-5" />,
       structure: {
-        objective: 'Écrire du code [langage] pour [fonctionnalité] qui respecte [standards]',
-        context: 'Projet: [description], Framework: [tech stack], Contraintes: [limitations]',
-        constraints: 'Performance, sécurité, maintenabilité, documentation',
-        format: 'Code commenté avec exemples d\'utilisation'
+        objective: 'Écrire un composant React TypeScript pour un système de gestion de tâches qui respecte les bonnes pratiques',
+        context: 'Projet: Application de productivité, Framework: React + TypeScript + Tailwind CSS, Base de données: Supabase',
+        constraints: 'Performance optimisée, accessibilité WCAG, tests unitaires inclus, documentation complète',
+        format: 'Code TypeScript avec interfaces, hooks personnalisés et exemples d\'utilisation'
       }
     },
     {
@@ -154,12 +167,12 @@ const StepTemplates: React.FC<StepTemplatesProps> = ({ onSelectTemplate }) => {
                 </div>
               </div>
               <Button 
-                onClick={() => onSelectTemplate(template)}
+                onClick={() => handleTemplateClick(template)}
                 size="sm" 
-                className="w-full"
-                variant="outline"
+                className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-200"
+                variant="default"
               >
-                Utiliser ce Template
+                ✨ Appliquer ce Template
               </Button>
             </CardContent>
           </Card>
