@@ -43,6 +43,10 @@
 
     --radius: 0.75rem;
 
+    /* Animation Variables */
+    --animation-duration: 300ms;
+    --animation-ease: cubic-bezier(0.4, 0, 0.2, 1);
+
     /* Sidebar avec couleurs harmonieuses */
     --sidebar-background: 220 20% 97%;
     --sidebar-foreground: 220 15% 30%;
@@ -622,7 +626,7 @@
   }
 }
 
-/* Animation */
+/* Professional Animations */
 @keyframes gradient-shift {
   0%, 100% {
     background-position: 0% 50%;
@@ -630,6 +634,71 @@
   50% {
     background-position: 100% 50%;
   }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Animation Classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.4s ease-out forwards;
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.6s ease-out forwards;
 }
 
 /* Règles pour les zones à fond clair en mode sombre */

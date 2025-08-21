@@ -4,12 +4,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Copy, CheckCircle, Save } from 'lucide-react';
+import { Loader2, Copy, CheckCircle, Save, ArrowLeft, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 import ThemeSelector from '@/components/ThemeSelector';
 import LanguageSelector from '@/components/LanguageSelector';
 import { AuthButtons } from '@/components/auth/AuthButtons';
 import { usePrompts } from '@/hooks/usePrompts';
+import SEOHead from '@/components/SEOHead';
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -168,35 +170,88 @@ const SimplePromptGenerator = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Barre supérieure */}
-      <div className="flex justify-between items-center p-4 border-b border-border">
-        <div></div>
-        <div className="flex items-center gap-3">
-          <AuthButtons />
-          <ThemeSelector />
-          <LanguageSelector />
-        </div>
-      </div>
-      
-      <div className="p-4">
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* En-tête */}
-          <div className="text-center space-y-2">
-            <h1 className="text-3xl font-bold text-foreground">Générateur de Prompt Simple</h1>
-            <p className="text-muted-foreground">
-              Créez des prompts efficaces en quelques clics
-            </p>
+    <>
+      <SEOHead 
+        title="Générateur de Prompts IA Simple - AutoPrompt"
+        description="Créez des prompts IA optimisés rapidement avec notre générateur simple. Interface intuitive, différents tons disponibles, sauvegarde et copie facile."
+        keywords="générateur prompt, IA simple, création prompt rapide, optimisation prompt, assistant IA, générateur contenu"
+      />
+      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20">
+        {/* Header professionnel */}
+        <header className="bg-background/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-4">
+                <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+                  <img 
+                    src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+                    alt="AutoPrompt Logo" 
+                    className="h-10 w-10 object-contain"
+                  />
+                  <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+                </Link>
+                <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
+                  <span>•</span>
+                  <span>Générateur Simple</span>
+                </div>
+              </div>
+              
+              <nav className="hidden md:flex items-center space-x-6">
+                <Link to="/app" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Mode Avancé
+                </Link>
+                <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                  Accueil
+                </Link>
+              </nav>
+              
+              <div className="flex items-center space-x-3">
+                <AuthButtons />
+                <ThemeSelector />
+                <LanguageSelector />
+              </div>
+            </div>
           </div>
+        </header>
+        
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-4xl mx-auto space-y-8">
+            {/* Breadcrumb */}
+            <nav className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <Link to="/" className="hover:text-primary transition-colors">Accueil</Link>
+              <span>•</span>
+              <span className="text-foreground">Générateur Simple</span>
+            </nav>
 
-        {/* Formulaire de génération */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl text-foreground">Paramètres du Prompt</CardTitle>
-            <CardDescription>
-              Décrivez votre objectif et sélectionnez un style optionnel
-            </CardDescription>
-          </CardHeader>
+            {/* Hero Section */}
+            <div className="text-center space-y-4 animate-fade-in">
+              <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-full border border-violet-200 dark:border-violet-700 mb-4">
+                <Sparkles className="h-4 w-4 mr-2 text-violet-600 dark:text-violet-300" />
+                <span className="text-sm font-medium text-violet-700 dark:text-violet-300">
+                  Générateur IA Simple et Rapide
+                </span>
+              </div>
+              <h1 className="text-4xl md:text-5xl font-display font-bold gradient-text leading-tight">
+                Créez des Prompts
+                <br />
+                <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                  Efficaces
+                </span>
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Transformez vos idées en prompts optimisés en quelques clics. 
+                Interface simple, résultats professionnels.
+              </p>
+            </div>
+
+            {/* Formulaire de génération */}
+            <Card className="bg-card/60 backdrop-blur-sm border-border/50 shadow-xl animate-fade-in">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-2xl font-display font-bold text-foreground">Configuration du Prompt</CardTitle>
+                <CardDescription className="text-base">
+                  Décrivez votre objectif et personnalisez le style pour obtenir le prompt parfait
+                </CardDescription>
+              </CardHeader>
           <CardContent className="space-y-4">
             {/* Zone objectif */}
             <div className="space-y-2">
@@ -251,15 +306,20 @@ const SimplePromptGenerator = () => {
           </CardContent>
         </Card>
 
-        {/* Zone de résultat */}
-        {(result || isLoading) && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl text-foreground">
-                {result && <CheckCircle className="h-5 w-5 text-green-500" />}
-                Résultat
-              </CardTitle>
-            </CardHeader>
+            {/* Zone de résultat */}
+            {(result || isLoading) && (
+              <Card className="bg-card/60 backdrop-blur-sm border-border/50 shadow-xl animate-scale-in">
+                <CardHeader className="text-center pb-4">
+                  <CardTitle className="flex items-center justify-center gap-2 text-2xl font-display font-bold text-foreground">
+                    {result && <CheckCircle className="h-6 w-6 text-green-500" />}
+                    Votre Prompt Optimisé
+                  </CardTitle>
+                  {result && (
+                    <CardDescription>
+                      Prompt généré avec succès ! Vous pouvez le copier ou le sauvegarder.
+                    </CardDescription>
+                  )}
+                </CardHeader>
             <CardContent>
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
@@ -268,46 +328,71 @@ const SimplePromptGenerator = () => {
                     <span className="text-muted-foreground">Génération de votre prompt personnalisé...</span>
                   </div>
                 </div>
-              ) : result ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-muted rounded-lg border">
-                    <pre className="whitespace-pre-wrap text-sm text-foreground font-mono leading-relaxed">
-                      {result}
-                    </pre>
+                ) : result ? (
+                  <div className="space-y-6">
+                    <div className="p-6 bg-gradient-to-r from-violet-50 to-blue-50 dark:from-violet-900/20 dark:to-blue-900/20 rounded-xl border border-violet-200/50 dark:border-violet-700/50">
+                      <div className="prose prose-sm max-w-none">
+                        <pre className="whitespace-pre-wrap text-foreground font-mono leading-relaxed text-base bg-transparent border-none p-0 m-0">
+                          {result}
+                        </pre>
+                      </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <Button 
+                        onClick={copyToClipboard}
+                        variant="outline" 
+                        size="lg"
+                        className="flex items-center gap-2 border-violet-200 dark:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20"
+                      >
+                        <Copy className="h-4 w-4" />
+                        Copier le Prompt
+                      </Button>
+                      <Button 
+                        onClick={handleSavePrompt}
+                        size="lg"
+                        disabled={isSaving}
+                        className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0"
+                      >
+                        {isSaving ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Save className="h-4 w-4" />
+                        )}
+                        {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={copyToClipboard}
-                      variant="outline" 
-                      size="sm"
-                      className="flex items-center gap-2"
-                    >
-                      <Copy className="h-4 w-4" />
-                      Copier le Prompt
-                    </Button>
-                    <Button 
-                      onClick={handleSavePrompt}
-                      variant="outline" 
-                      size="sm"
-                      disabled={isSaving}
-                      className="flex items-center gap-2"
-                    >
-                      {isSaving ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Save className="h-4 w-4" />
-                      )}
-                      {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
-                    </Button>
-                  </div>
-                </div>
               ) : null}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Section d'aide */}
+          <Card className="bg-gradient-to-r from-violet-600/10 to-blue-600/10 backdrop-blur-sm border-violet-200/50 dark:border-violet-700/50">
+            <CardContent className="p-6 text-center">
+              <h3 className="text-lg font-semibold text-foreground mb-2">Besoin de plus de fonctionnalités ?</h3>
+              <p className="text-muted-foreground mb-4">
+                Découvrez notre mode avancé avec workflows multi-étapes, logique conditionnelle et bien plus.
+              </p>
+              <Link to="/app">
+                <Button variant="outline" className="border-violet-200 dark:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20">
+                  Explorer le Mode Avancé
+                </Button>
+              </Link>
             </CardContent>
           </Card>
-        )}
         </div>
+      </main>
+
+      {/* Floating Elements */}
+      <div className="fixed top-1/4 left-8 animate-float">
+        <div className="w-12 h-12 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full opacity-20 blur-xl"></div>
+      </div>
+      <div className="fixed bottom-1/4 right-12 animate-float" style={{ animationDelay: '1s' }}>
+        <div className="w-16 h-16 bg-gradient-to-r from-blue-400 to-emerald-400 rounded-full opacity-20 blur-xl"></div>
       </div>
     </div>
+  </>
   );
 };
 
