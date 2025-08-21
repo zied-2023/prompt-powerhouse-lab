@@ -3,8 +3,10 @@ import React from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Lightbulb } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
 interface StepOutputFormatProps {
@@ -14,6 +16,46 @@ interface StepOutputFormatProps {
 
 const StepOutputFormat = ({ data, updateData }: StepOutputFormatProps) => {
   const { t } = useTranslation();
+
+  // Suggestions pour les sections selon la structure
+  const sectionSuggestions = {
+    'hierarchical': ['Résumé exécutif', 'Analyse détaillée', 'Recommandations', 'Plan d\'action', 'Annexes'],
+    'sequential': ['Introduction', 'Étape 1', 'Étape 2', 'Étape 3', 'Conclusion'],
+    'modular': ['Module A - Analyse', 'Module B - Conception', 'Module C - Implémentation', 'Module D - Validation'],
+    'comparative': ['Option A', 'Option B', 'Analyse comparative', 'Recommandation finale'],
+    'default': ['Introduction', 'Développement', 'Conclusion', 'Recommandations']
+  };
+
+  // Suggestions pour les livrables
+  const deliverableSuggestions = [
+    'Document PDF de 10-15 pages',
+    'Présentation PowerPoint de 20 slides',
+    'Rapport d\'analyse avec graphiques',
+    'Plan d\'action détaillé avec timeline',
+    'Guide pratique étape par étape',
+    'Tableau de bord avec KPIs',
+    'Checklist opérationnelle'
+  ];
+
+  const addSectionFromSuggestion = (suggestion: string) => {
+    const newSections = [...(data.outputFormat?.sections || []), suggestion];
+    updateData({
+      outputFormat: {
+        ...data.outputFormat,
+        sections: newSections
+      }
+    });
+  };
+
+  const addDeliverableFromSuggestion = (suggestion: string) => {
+    const newDeliverables = [...(data.outputFormat?.deliverables || []), suggestion];
+    updateData({
+      outputFormat: {
+        ...data.outputFormat,
+        deliverables: newDeliverables
+      }
+    });
+  };
 
   const structureOptions = [
     { value: 'hierarchical', label: t('hierarchical') },
@@ -127,6 +169,28 @@ const StepOutputFormat = ({ data, updateData }: StepOutputFormatProps) => {
           </Button>
         </div>
         
+        {/* Suggestions pour les sections */}
+        <Card className="border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-indigo-900/10">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Lightbulb className="h-4 w-4 text-indigo-600" />
+              <span className="text-sm font-medium text-indigo-700 dark:text-indigo-300">Sections suggérées</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {(sectionSuggestions[data.outputFormat?.structure as keyof typeof sectionSuggestions] || sectionSuggestions.default).map((suggestion, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/30 text-xs border-indigo-300 dark:border-indigo-600 transition-colors"
+                  onClick={() => addSectionFromSuggestion(suggestion)}
+                >
+                  + {suggestion}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        
         <div className="space-y-2">
           {data.outputFormat?.sections?.map((section: string, index: number) => (
             <div key={index} className="flex items-center space-x-2">
@@ -170,6 +234,28 @@ const StepOutputFormat = ({ data, updateData }: StepOutputFormatProps) => {
             <span>{t('addDeliverable')}</span>
           </Button>
         </div>
+        
+        {/* Suggestions pour les livrables */}
+        <Card className="border-pink-200 dark:border-pink-800 bg-pink-50/50 dark:bg-pink-900/10">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <Lightbulb className="h-4 w-4 text-pink-600" />
+              <span className="text-sm font-medium text-pink-700 dark:text-pink-300">Livrables courants</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {deliverableSuggestions.map((suggestion, index) => (
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="cursor-pointer hover:bg-pink-100 dark:hover:bg-pink-900/30 text-xs border-pink-300 dark:border-pink-600 transition-colors"
+                  onClick={() => addDeliverableFromSuggestion(suggestion)}
+                >
+                  + {suggestion}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
         
         <div className="space-y-2">
           {data.outputFormat?.deliverables?.map((deliverable: string, index: number) => (
