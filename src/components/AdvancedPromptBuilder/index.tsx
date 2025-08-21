@@ -146,43 +146,29 @@ const AdvancedPromptBuilder = () => {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-blue-900 p-4">
+        <div className="max-w-4xl mx-auto">
           
           {/* En-tête avec progression */}
-          <Card className="mb-6 border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
+          <Card className="mb-6 border-0 shadow-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                    <Brain className="h-6 w-6 text-white" />
+                  <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg">
+                    <Brain className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <CardTitle className="text-2xl bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                      Assistant de Prompts Avancé
+                    <CardTitle className="text-xl bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                      Générateur de Prompts Avancé
                     </CardTitle>
-                    <p className="text-muted-foreground mt-1">
-                      Créez des prompts ultra-précis guidé par l'IA
+                    <p className="text-muted-foreground text-sm">
+                      Créez des prompts optimisés étape par étape
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  {lastSaved && (
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Badge variant="outline" className="text-xs">
-                          <Save className="h-3 w-3 mr-1" />
-                          Sauvegardé
-                        </Badge>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Dernière sauvegarde: {lastSaved.toLocaleTimeString()}
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
-                  
-                  <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
+                  <Badge className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs">
                     Étape {currentStep + 1}/{stepConfigs.length}
                   </Badge>
                 </div>
@@ -191,150 +177,159 @@ const AdvancedPromptBuilder = () => {
               {/* Barre de progression globale */}
               <div className="space-y-2 mt-4">
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Progression globale</span>
-                  <span>{Math.round(overallProgress)}% complété</span>
+                  <span>Progression</span>
+                  <span>{Math.round(overallProgress)}%</span>
                 </div>
                 <Progress 
                   value={overallProgress} 
-                  className="h-3 bg-gray-100 dark:bg-gray-700"
+                  className="h-2 bg-gray-100 dark:bg-gray-700"
                 />
               </div>
             </CardHeader>
           </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            {/* Navigation des étapes (sidebar) */}
-            <div className="lg:col-span-3">
-              <StepSelector
-                steps={stepConfigs}
-                currentStep={currentStep}
-                completedSteps={completedSteps}
-                onStepChange={handleStepChange}
-                validationErrors={validationErrors}
-              />
-            </div>
-
-            {/* Contenu principal */}
-            <div className="lg:col-span-6">
-              <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm min-h-[600px]">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <currentStepConfig.icon className="h-6 w-6 text-violet-600" />
-                      <div>
-                        <CardTitle className="text-xl">{currentStepConfig.title}</CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {currentStepConfig.description}
-                        </p>
+          {/* Sections colorées selon les images */}
+          <div className="space-y-4">
+            {stepConfigs.map((step, index) => {
+              const isCurrentStep = index === currentStep;
+              const isCompleted = completedSteps.has(index);
+              
+              // Couleurs selon les images fournies
+              const getStepColors = (stepIndex: number) => {
+                const colors = [
+                  { bg: 'bg-green-50 dark:bg-green-900/20', border: 'border-green-200 dark:border-green-700', accent: 'text-green-700 dark:text-green-300', icon: 'bg-green-100 dark:bg-green-800' },
+                  { bg: 'bg-blue-50 dark:bg-blue-900/20', border: 'border-blue-200 dark:border-blue-700', accent: 'text-blue-700 dark:text-blue-300', icon: 'bg-blue-100 dark:bg-blue-800' },
+                  { bg: 'bg-purple-50 dark:bg-purple-900/20', border: 'border-purple-200 dark:border-purple-700', accent: 'text-purple-700 dark:text-purple-300', icon: 'bg-purple-100 dark:bg-purple-800' },
+                  { bg: 'bg-yellow-50 dark:bg-yellow-900/20', border: 'border-yellow-200 dark:border-yellow-700', accent: 'text-yellow-700 dark:text-yellow-300', icon: 'bg-yellow-100 dark:bg-yellow-800' },
+                  { bg: 'bg-red-50 dark:bg-red-900/20', border: 'border-red-200 dark:border-red-700', accent: 'text-red-700 dark:text-red-300', icon: 'bg-red-100 dark:bg-red-800' },
+                  { bg: 'bg-indigo-50 dark:bg-indigo-900/20', border: 'border-indigo-200 dark:border-indigo-700', accent: 'text-indigo-700 dark:text-indigo-300', icon: 'bg-indigo-100 dark:bg-indigo-800' }
+                ];
+                return colors[stepIndex % colors.length];
+              };
+              
+              const colors = getStepColors(index);
+              
+              return (
+                <Card 
+                  key={step.id}
+                  className={`${colors.bg} ${colors.border} ${isCurrentStep ? 'ring-2 ring-offset-2 ring-blue-500 shadow-lg' : 'shadow-sm'} 
+                    transition-all duration-200 cursor-pointer hover:shadow-md`}
+                  onClick={() => handleStepChange(index)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 ${colors.icon} rounded-lg flex items-center justify-center`}>
+                          <step.icon className={`h-4 w-4 ${colors.accent}`} />
+                        </div>
+                        <div>
+                          <CardTitle className={`text-lg ${colors.accent} flex items-center gap-2`}>
+                            {index + 1}. {step.title}
+                            {isCompleted && <CheckCircle className="h-4 w-4 text-emerald-600" />}
+                          </CardTitle>
+                          <p className="text-sm text-muted-foreground">
+                            {step.description}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className={`text-xs ${colors.accent}`}>
+                          {step.estimatedTime}
+                        </Badge>
                       </div>
                     </div>
-                    
-                    {stepSuggestions.length === 0 && (
-                      <Badge variant="secondary" className="bg-emerald-50 text-emerald-700 border-emerald-200">
-                        <CheckCircle className="h-3 w-3 mr-1" />
-                        Complet
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
+                  </CardHeader>
 
-                <CardContent className="space-y-6">
-                  {/* Feedback de suggestions */}
-                  <ValidationFeedback 
-                    errors={validationErrors} 
-                    suggestions={stepSuggestions}
-                  />
-                  
-                  {/* Contenu de l'étape */}
-                  <StepContent
-                    stepConfig={currentStepConfig}
-                    data={promptData}
-                    onChange={setPromptData}
-                    suggestions={suggestions}
-                  />
-                  
-                  {/* Navigation */}
-                  <div className="flex justify-between pt-6 border-t">
-                    <Button
-                      onClick={handlePrevious}
-                      disabled={currentStep === 0}
-                      variant="outline"
-                      className="flex items-center space-x-2"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                      <span>Précédent</span>
-                    </Button>
-                    
-                    {!isLastStep ? (
-                      <Button
-                        onClick={handleNext}
-                        className="flex items-center space-x-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
-                      >
-                        <span>Suivant</span>
-                        <ArrowRight className="h-4 w-4" />
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={generatePrompt}
-                        disabled={isGenerating}
-                        className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
-                      >
-                        {isGenerating ? (
-                          <>
-                            <RefreshCw className="h-4 w-4 animate-spin" />
-                            <span>Génération...</span>
-                          </>
+                  {isCurrentStep && (
+                    <CardContent className="space-y-4">
+                      {/* Feedback de validation */}
+                      <ValidationFeedback 
+                        errors={validationErrors} 
+                        suggestions={stepSuggestions}
+                      />
+                      
+                      {/* Contenu de l'étape */}
+                      <StepContent
+                        stepConfig={step}
+                        data={promptData}
+                        onChange={setPromptData}
+                        suggestions={suggestions}
+                      />
+                      
+                      {/* Navigation */}
+                      <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-600">
+                        <Button
+                          onClick={handlePrevious}
+                          disabled={currentStep === 0}
+                          variant="outline"
+                          size="sm"
+                          className="flex items-center space-x-2"
+                        >
+                          <ArrowLeft className="h-4 w-4" />
+                          <span>Précédent</span>
+                        </Button>
+                        
+                        {!isLastStep ? (
+                          <Button
+                            onClick={handleNext}
+                            size="sm"
+                            className="flex items-center space-x-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
+                          >
+                            <span>Suivant</span>
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
                         ) : (
-                          <>
-                            <Sparkles className="h-4 w-4" />
-                            <span>Générer le Prompt</span>
-                          </>
+                          <Button
+                            onClick={generatePrompt}
+                            disabled={isGenerating}
+                            size="sm"
+                            className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700"
+                          >
+                            {isGenerating ? (
+                              <>
+                                <RefreshCw className="h-4 w-4 animate-spin" />
+                                <span>Génération...</span>
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4" />
+                                <span>Générer le Prompt Optimisé</span>
+                              </>
+                            )}
+                          </Button>
                         )}
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                      </div>
+                    </CardContent>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
 
-            {/* Panneau latéral (suggestions et prévisualisation) */}
-            <div className="lg:col-span-3 space-y-6">
-              {/* Suggestions intelligentes */}
-              <SmartSuggestions
-                suggestions={suggestions}
-                onApplySuggestion={(suggestion) => {
-                  // Logique d'application des suggestions
-                  toast({
-                    title: "Suggestion appliquée",
-                    description: "La suggestion a été intégrée à votre prompt."
-                  });
+          {/* Prévisualisation en temps réel */}
+          {(promptData.objective || showPreview) && (
+            <Card className="mt-6 border-0 shadow-lg bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+              <LivePreview
+                data={promptData}
+                generatedPrompt={generatedPrompt}
+                onCopy={() => {
+                  navigator.clipboard.writeText(generatedPrompt);
+                  toast({ title: "Copié !", description: "Prompt copié dans le presse-papiers." });
+                }}
+                onDownload={() => {
+                  const blob = new Blob([generatedPrompt], { type: 'text/plain' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'prompt-optimise.txt';
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  toast({ title: "Téléchargé !", description: "Prompt sauvegardé." });
                 }}
               />
-              
-              {/* Prévisualisation en temps réel */}
-              {(promptData.objective || showPreview) && (
-                <LivePreview
-                  data={promptData}
-                  generatedPrompt={generatedPrompt}
-                  onCopy={() => {
-                    navigator.clipboard.writeText(generatedPrompt);
-                    toast({ title: "Copié !", description: "Prompt copié dans le presse-papiers." });
-                  }}
-                  onDownload={() => {
-                    const blob = new Blob([generatedPrompt], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'prompt-optimise.txt';
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    toast({ title: "Téléchargé !", description: "Prompt sauvegardé." });
-                  }}
-                />
-              )}
-            </div>
-          </div>
+            </Card>
+          )}
         </div>
       </div>
     </TooltipProvider>
