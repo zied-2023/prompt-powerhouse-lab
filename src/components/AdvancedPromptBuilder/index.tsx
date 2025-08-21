@@ -249,6 +249,17 @@ const AdvancedPromptBuilder = () => {
                         suggestions={stepSuggestions}
                       />
                       
+                      {/* Suggestions intelligentes */}
+                      {suggestions.length > 0 && (
+                        <SmartSuggestions
+                          suggestions={suggestions}
+                          onApplySuggestion={(suggestion) => {
+                            // Appliquer la suggestion selon l'étape actuelle
+                            applySuggestionToStep(currentStep, suggestion, promptData, setPromptData);
+                          }}
+                        />
+                      )}
+                      
                       {/* Contenu de l'étape */}
                       <StepContent
                         stepConfig={step}
@@ -337,16 +348,114 @@ const AdvancedPromptBuilder = () => {
 };
 
 // Fonctions utilitaires
+function applySuggestionToStep(step: number, suggestion: string, data: PromptData, setData: (data: PromptData) => void) {
+  switch (step) {
+    case 0: // Objectif
+      if (suggestion.includes('créer un article')) {
+        setData({ ...data, objective: 'Créer un article de blog informatif et engageant' });
+      } else if (suggestion.includes('générer du code')) {
+        setData({ ...data, objective: 'Générer du code fonctionnel et bien documenté' });
+      } else if (suggestion.includes('analyser des données')) {
+        setData({ ...data, objective: 'Analyser des données et fournir des insights utiles' });
+      }
+      break;
+    case 1: // Contexte
+      if (suggestion.includes('entreprise')) {
+        setData({ ...data, context: 'Dans le contexte d\'une entreprise moderne...' });
+      } else if (suggestion.includes('éducation')) {
+        setData({ ...data, context: 'Dans un environnement éducatif...' });
+      }
+      break;
+    case 2: // Audience
+      if (suggestion.includes('débutants')) {
+        setData({ ...data, audience: 'Débutants sans expérience préalable' });
+      } else if (suggestion.includes('experts')) {
+        setData({ ...data, audience: 'Professionnels expérimentés dans le domaine' });
+      }
+      break;
+    case 3: // Ton
+      if (suggestion.includes('professionnel')) {
+        setData({ ...data, tone: 'professional' });
+      } else if (suggestion.includes('créatif')) {
+        setData({ ...data, tone: 'creative' });
+      }
+      break;
+    case 4: // Contraintes
+      if (suggestion.includes('longueur')) {
+        setData({ ...data, constraints: [...data.constraints, 'Maximum 500 mots'] });
+      } else if (suggestion.includes('format')) {
+        setData({ ...data, outputFormat: 'bullet-points' });
+      }
+      break;
+  }
+}
+
 async function getContextualSuggestions(step: number, data: PromptData): Promise<string[]> {
-  // Simulation de suggestions basées sur l'IA
+  // Suggestions contextuelles basées sur l'étape et les données existantes
   const suggestionsByStep = {
-    0: ["Essayez d'être spécifique sur le type de contenu", "Mentionnez le format de sortie souhaité"],
-    1: ["Ajoutez des détails sur le contexte d'utilisation", "Précisez l'environnement ou la situation"],
-    2: ["Définissez le niveau d'expertise de votre audience", "Mentionnez leurs préférences ou contraintes"],
-    // ... autres étapes
+    0: [ // Objectif
+      "Créer un article de blog informatif et engageant",
+      "Générer du code fonctionnel et bien documenté", 
+      "Analyser des données et fournir des insights utiles",
+      "Rédiger un email professionnel persuasif",
+      "Expliquer un concept complexe simplement",
+      "Créer un tutoriel étape par étape"
+    ],
+    1: [ // Contexte
+      "Dans le contexte d'une entreprise moderne",
+      "Dans un environnement éducatif",
+      "Pour une audience internationale",
+      "Dans le domaine de la technologie",
+      "Pour un usage personnel",
+      "Dans un contexte créatif"
+    ],
+    2: [ // Audience
+      "Débutants sans expérience préalable",
+      "Professionnels expérimentés dans le domaine",
+      "Étudiants universitaires",
+      "Dirigeants d'entreprise",
+      "Grand public",
+      "Experts techniques"
+    ],
+    3: [ // Ton et Style
+      "Adopter un ton professionnel et formel",
+      "Utiliser un style créatif et inspirant",
+      "Employer un langage technique précis",
+      "Privilégier un ton amical et accessible",
+      "Adopter une approche pédagogique",
+      "Utiliser un style persuasif"
+    ],
+    4: [ // Contraintes
+      "Limiter la longueur à 500 mots maximum",
+      "Utiliser un format de liste à puces",
+      "Inclure des exemples concrets",
+      "Éviter le jargon technique",
+      "Structurer en sections courtes",
+      "Ajouter des appels à l'action"
+    ],
+    5: [ // Optimisation
+      "Ajouter des mots-clés pertinents",
+      "Améliorer la structure du prompt",
+      "Préciser le format de sortie souhaité",
+      "Enrichir le contexte fourni",
+      "Définir des critères de qualité",
+      "Inclure des exemples de référence"
+    ]
   };
   
-  return suggestionsByStep[step] || [];
+  // Filtrer les suggestions basées sur les données existantes
+  let suggestions = suggestionsByStep[step] || [];
+  
+  // Personnalisation basée sur les données déjà saisies
+  if (step === 1 && data.objective.includes('code')) {
+    suggestions = suggestions.filter(s => s.includes('technologie') || s.includes('technique'));
+  }
+  
+  if (step === 2 && data.context.includes('entreprise')) {
+    suggestions = suggestions.filter(s => s.includes('professionnel') || s.includes('dirigeants'));
+  }
+  
+  return suggestions.slice(0, 6); // Limiter à 6 suggestions
 }
 
 function buildFinalPrompt(data: PromptData): string {
