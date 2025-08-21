@@ -18,7 +18,6 @@ import IntegrationPanel from "@/components/IntegrationPanel";
 import AdvancedPromptBuilder from "@/components/AdvancedPromptBuilder";
 import PromptImprovement from "@/components/PromptImprovement";
 import PromptHistory from "@/components/PromptHistory";
-import RealTimePreview from "@/components/RealTimePreview";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -127,29 +126,11 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="generator" className="space-y-8">
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              <div className="xl:col-span-2">
-                <PromptGenerator />
-              </div>
-              <div className="xl:col-span-1">
-                <div className="sticky top-24">
-                  <RealTimePreview />
-                </div>
-              </div>
-            </div>
+            <PromptGenerator />
           </TabsContent>
 
           <TabsContent value="improvement" className="space-y-8">
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-              <div className="xl:col-span-2">
-                <PromptImprovement />
-              </div>
-              <div className="xl:col-span-1">
-                <div className="sticky top-24">
-                  <RealTimePreview />
-                </div>
-              </div>
-            </div>
+            <PromptImprovement />
           </TabsContent>
 
           <TabsContent value="advanced" className="space-y-8">
