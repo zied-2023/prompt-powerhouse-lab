@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     // Get the OpenAI API key from Supabase secrets
-    const openaiApiKey = Deno.env.get('OPEN_AI')
+    const openaiApiKey = Deno.env.get('OPEN_AI') || Deno.env.get('OPENAI_API_KEY')
     
     if (!openaiApiKey) {
       return new Response(
