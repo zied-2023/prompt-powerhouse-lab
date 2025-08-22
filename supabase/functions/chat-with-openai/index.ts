@@ -14,10 +14,14 @@ serve(async (req) => {
   try {
     // Use the provided OpenAI API key
     const openaiApiKey = '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'
+    
+    console.log('API Key used:', openaiApiKey.substring(0, 20) + '...')
 
     // Parse the request body
     const body = await req.json()
-    const { messages, model = 'gpt-4', max_tokens = 1000, temperature = 0.7 } = body
+    const { messages, model = 'gpt-4o-mini', max_tokens = 1000, temperature = 0.7 } = body
+    
+    console.log('Request data:', { model, messages: messages.length, max_tokens, temperature })
 
     // Make request to OpenAI API
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -33,6 +37,8 @@ serve(async (req) => {
         temperature,
       }),
     })
+    
+    console.log('OpenAI response status:', response.status)
 
     const data = await response.json()
 
