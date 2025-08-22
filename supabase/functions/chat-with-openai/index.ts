@@ -12,8 +12,8 @@ serve(async (req) => {
   }
 
   try {
-    // Use the provided OpenAI API key
-    const openaiApiKey = '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'
+    // Use the OpenAI API key from Supabase secrets
+    const openaiApiKey = Deno.env.get('OPEN_AI')
     
     console.log('API Key used:', openaiApiKey.substring(0, 20) + '...')
 
