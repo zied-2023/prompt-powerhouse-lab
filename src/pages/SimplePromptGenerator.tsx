@@ -210,9 +210,6 @@ const SimplePromptGenerator = () => {
               </div>
               
               <nav className="hidden md:flex items-center space-x-6">
-                <Link to="/app" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Mode Avancé
-                </Link>
                 <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   Accueil
                 </Link>
