@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     // Use the DeepSeek API key from Supabase secrets
-    const deepseekApiKey = Deno.env.get('deepseek') || Deno.env.get('DEEPSEEK_API_KEY')
+    const deepseekApiKey = Deno.env.get('DEEPSEEK_V3_API_KEY') || Deno.env.get('deepseek') || Deno.env.get('DEEPSEEK_API_KEY')
     
     if (!deepseekApiKey) {
       console.error('DeepSeek API key not found in environment variables')
