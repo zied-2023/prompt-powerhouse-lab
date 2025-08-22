@@ -12,18 +12,8 @@ serve(async (req) => {
   }
 
   try {
-    // Get the OpenAI API key from Supabase secrets
-    const openaiApiKey = Deno.env.get('OPEN_AI')
-    
-    if (!openaiApiKey) {
-      return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      )
-    }
+    // Use the provided OpenAI API key
+    const openaiApiKey = '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'
 
     // Parse the request body
     const body = await req.json()
