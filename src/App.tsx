@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Landing from "./pages/Landing";
 import AppPage from "./pages/App";
+import AppWithSupabase from "./pages/AppWithSupabase";
 import SimplePromptGenerator from "./pages/SimplePromptGenerator";
 import ApiTest from "./pages/ApiTest";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/app" element={<AppPage />} />
+              <Route path="/app-openai" element={<AppWithSupabase />} />
               <Route path="/generator" element={<SimplePromptGenerator />} />
               <Route path="/api-test" element={<ApiTest />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
