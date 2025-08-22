@@ -12,14 +12,14 @@ serve(async (req) => {
   }
 
   try {
-    // Use the OpenAI API key from Supabase secrets
-    const openaiApiKey = Deno.env.get('openai_key')
+    // Use the Mistral API key from Supabase secrets
+    const mistralApiKey = Deno.env.get('MISTRAL_API_KEY')
     
-    if (!openaiApiKey) {
-      console.error('OpenAI API key not found in environment variables')
+    if (!mistralApiKey) {
+      console.error('Mistral API key not found in environment variables')
       console.log('Available env vars:', Object.keys(Deno.env.toObject()))
       return new Response(
-        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        JSON.stringify({ error: 'Mistral API key not configured' }),
         { 
           status: 500, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -27,22 +27,20 @@ serve(async (req) => {
       )
     }
     
-    console.log('API Key found:', openaiApiKey ? 'Yes' : 'No')
-    console.log('API Key length:', openaiApiKey.length)
-    console.log('API Key starts with sk-:', openaiApiKey.startsWith('sk-'))
-    console.log('Full API Key:', openaiApiKey) // Temporaire pour diagnostic
+    console.log('Mistral API Key found:', mistralApiKey ? 'Yes' : 'No')
+    console.log('API Key length:', mistralApiKey.length)
 
     // Parse the request body
     const body = await req.json()
-    const { messages, model = 'gpt-4o-mini', max_tokens = 1000, temperature = 0.7 } = body
+    const { messages, model = 'mistral-small-latest', max_tokens = 1000, temperature = 0.7 } = body
     
     console.log('Request data:', { model, messages: messages.length, max_tokens, temperature })
 
-    // Make request to OpenAI API
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Make request to Mistral API
+    const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
+        'Authorization': `Bearer ${mistralApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -53,13 +51,13 @@ serve(async (req) => {
       }),
     })
     
-    console.log('OpenAI response status:', response.status)
+    console.log('Mistral response status:', response.status)
 
     const data = await response.json()
 
     if (!response.ok) {
       return new Response(
-        JSON.stringify({ error: data.error?.message || 'OpenAI API error' }),
+        JSON.stringify({ error: data.error?.message || 'Mistral API error' }),
         { 
           status: response.status, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
