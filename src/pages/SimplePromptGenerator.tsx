@@ -384,27 +384,19 @@ const SimplePromptGenerator = () => {
               <p className="text-muted-foreground mb-4">
                 Découvrez notre mode avancé avec workflows multi-étapes, logique conditionnelle et bien plus.
               </p>
-              {user ? (
-                <Link to="/app">
-                  <Button variant="outline" className="border-violet-200 dark:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20">
-                    Explorer le Mode Avancé
-                  </Button>
-                </Link>
-              ) : (
-                <Button 
-                  variant="outline" 
-                  disabled 
-                  className="border-muted-foreground/20 text-muted-foreground cursor-not-allowed opacity-50"
-                  onClick={() => toast({
-                    title: "Connexion requise",
-                    description: "Vous devez vous connecter pour accéder au mode avancé",
-                    variant: "destructive"
-                  })}
-                >
-                  <Lock className="h-4 w-4 mr-2" />
-                  Explorer le Mode Avancé
-                </Button>
-              )}
+              <Button 
+                variant="outline" 
+                disabled 
+                className="border-muted-foreground/20 text-muted-foreground cursor-not-allowed opacity-50"
+                onClick={() => toast({
+                  title: "Fonctionnalité non disponible",
+                  description: "Le mode avancé n'est pas accessible depuis cette interface",
+                  variant: "destructive"
+                })}
+              >
+                <Lock className="h-4 w-4 mr-2" />
+                Explorer le Mode Avancé
+              </Button>
             </CardContent>
           </Card>
         </div>
