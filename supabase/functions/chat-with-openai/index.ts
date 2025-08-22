@@ -17,6 +17,7 @@ serve(async (req) => {
     
     if (!openaiApiKey) {
       console.error('OpenAI API key not found in environment variables')
+      console.log('Available env vars:', Object.keys(Deno.env.toObject()))
       return new Response(
         JSON.stringify({ error: 'OpenAI API key not configured' }),
         { 
@@ -27,7 +28,9 @@ serve(async (req) => {
     }
     
     console.log('API Key found:', openaiApiKey ? 'Yes' : 'No')
-    console.log('API Key prefix:', openaiApiKey.substring(0, 10) + '...')
+    console.log('API Key length:', openaiApiKey.length)
+    console.log('API Key starts with sk-:', openaiApiKey.startsWith('sk-'))
+    console.log('Full API Key:', openaiApiKey) // Temporaire pour diagnostic
 
     // Parse the request body
     const body = await req.json()
