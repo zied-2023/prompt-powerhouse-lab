@@ -215,10 +215,10 @@ const SimplePromptGenerator = () => {
                 </Link>
               </nav>
               
-              <div className="flex items-center space-x-3">
-                <AuthButtons />
+              <div className="flex items-center space-x-4">
                 <ThemeSelector />
                 <LanguageSelector />
+                <AuthButtons />
               </div>
             </div>
           </div>
