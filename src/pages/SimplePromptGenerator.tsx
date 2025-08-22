@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Copy, CheckCircle, Save, ArrowLeft, Sparkles } from 'lucide-react';
+import { Loader2, Copy, CheckCircle, Save, ArrowLeft, Sparkles, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import ThemeSelector from '@/components/ThemeSelector';
@@ -12,6 +12,8 @@ import LanguageSelector from '@/components/LanguageSelector';
 import { AuthButtons } from '@/components/auth/AuthButtons';
 import { usePrompts } from '@/hooks/usePrompts';
 import SEOHead from '@/components/SEOHead';
+import { supabase } from '@/integrations/supabase/client';
+import { User } from '@supabase/supabase-js';
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -25,8 +27,23 @@ const SimplePromptGenerator = () => {
   const [tone, setTone] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
+  const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
   const { savePrompt, isSaving } = usePrompts();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const toneOptions = [
     { value: 'professional', label: 'Professionnel' },
@@ -374,11 +391,27 @@ const SimplePromptGenerator = () => {
               <p className="text-muted-foreground mb-4">
                 Découvrez notre mode avancé avec workflows multi-étapes, logique conditionnelle et bien plus.
               </p>
-              <Link to="/app">
-                <Button variant="outline" className="border-violet-200 dark:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20">
+              {user ? (
+                <Link to="/app">
+                  <Button variant="outline" className="border-violet-200 dark:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20">
+                    Explorer le Mode Avancé
+                  </Button>
+                </Link>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  disabled 
+                  className="border-muted-foreground/20 text-muted-foreground cursor-not-allowed opacity-50"
+                  onClick={() => toast({
+                    title: "Connexion requise",
+                    description: "Vous devez vous connecter pour accéder au mode avancé",
+                    variant: "destructive"
+                  })}
+                >
+                  <Lock className="h-4 w-4 mr-2" />
                   Explorer le Mode Avancé
                 </Button>
-              </Link>
+              )}
             </CardContent>
           </Card>
         </div>
