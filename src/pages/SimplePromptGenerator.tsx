@@ -207,10 +207,6 @@ const SimplePromptGenerator = () => {
                   />
                   <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
                 </Link>
-                <div className="hidden md:flex items-center space-x-2 text-sm text-muted-foreground">
-                  <span>•</span>
-                  <span>Générateur Simple</span>
-                </div>
               </div>
               
               <nav className="hidden md:flex items-center space-x-6">
