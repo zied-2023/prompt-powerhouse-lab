@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     // Use the Mistral API key from Supabase secrets
-    const mistralApiKey = Deno.env.get('MISTRAL_API_KEY')
+    const mistralApiKey = Deno.env.get('MISTRAL_API_KEY') || Deno.env.get('mistral')
     
     if (!mistralApiKey) {
       console.error('Mistral API key not found in environment variables')
