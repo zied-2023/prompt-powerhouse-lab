@@ -80,7 +80,7 @@ const AppWithSupabase = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-10 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
+          <TabsList className="grid w-full grid-cols-10 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl overflow-x-auto">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
