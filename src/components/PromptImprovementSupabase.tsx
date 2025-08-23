@@ -68,9 +68,10 @@ Conserve l'intention originale tout en optimisant la formulation et la structure
               content: userPrompt
             }
           ],
-          model: 'gpt-4',
+          model: 'gpt-4o-mini',
           max_tokens: 1000,
-          temperature: 0.7
+          temperature: 0.7,
+          provider: 'openai'
         }
       });
 
