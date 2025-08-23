@@ -27,7 +27,7 @@ const AppWithSupabase = () => {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
-  const { credits, loading: creditsLoading } = useUserCredits();
+  const { credits, isLoading: creditsLoading } = useUserCredits();
 
   // Fonction pour déterminer le style du badge crédits
   const getCreditBadgeStyle = () => {
@@ -110,34 +110,45 @@ const AppWithSupabase = () => {
               </div>
             </div>
 
-            {/* Section Crédits et Actions */}
-            <div className={`flex items-center gap-3 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
-              {/* Badge Crédits avec indicateur de statut */}
-              <div className="flex items-center gap-2">
-                <Badge 
-                  variant={badgeStyle.variant}
-                  className={badgeStyle.className}
-                >
-                  <Coins className="h-3 w-3 mr-1" />
-                  {creditsLoading ? (
-                    <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></div>
-                  ) : (
-                    <>
-                      {credits?.remaining_credits || 0} crédit{(credits?.remaining_credits || 0) > 1 ? 's' : ''}
-                    </>
-                  )}
-                </Badge>
+            {/* Section Crédits - Plus visible */}
+            <div className={`flex items-center gap-4 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
+              {/* Badge Crédits LARGE et visible */}
+              <div className="flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-500/30 flex items-center justify-center border-2 border-yellow-400/50">
+                    <Coins className="h-5 w-5 text-yellow-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1">
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">
+                        {creditsLoading ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        ) : (
+                          credits?.remaining_credits || 0
+                        )}
+                      </span>
+                      <span className="text-sm text-muted-foreground">crédit{(credits?.remaining_credits || 0) > 1 ? 's' : ''}</span>
+                    </div>
+                    <Badge 
+                      variant={badgeStyle.variant}
+                      className={`${badgeStyle.className} text-xs px-2 py-0.5 w-fit`}
+                    >
+                      {credits?.remaining_credits === 0 ? "Épuisé" :
+                       credits?.remaining_credits && credits.remaining_credits < 10 ? "Faible" : "Bon"}
+                    </Badge>
+                  </div>
+                </div>
 
-                {/* Bouton d'achat avec style adaptatif */}
+                {/* Bouton d'achat TRÈS visible */}
                 <Dialog open={creditDialogOpen} onOpenChange={setCreditDialogOpen}>
                   <DialogTrigger asChild>
                     <Button 
                       variant={credits?.remaining_credits && credits.remaining_credits > 10 ? "outline" : "default"}
-                      size="sm"
-                      className={buttonStyle.className}
+                      size="lg"
+                      className={`${buttonStyle.className} font-semibold text-sm px-6 py-2.5 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200`}
                       disabled={creditsLoading}
                     >
-                      <ButtonIcon className="h-4 w-4 mr-1" />
+                      <ButtonIcon className="h-5 w-5 mr-2" />
                       {buttonStyle.text}
                     </Button>
                   </DialogTrigger>
@@ -152,7 +163,7 @@ const AppWithSupabase = () => {
                       </DialogTitle>
                     </DialogHeader>
                     <div className="mt-4">
-                      <CreditManager onPurchaseComplete={() => setCreditDialogOpen(false)} />
+                      <CreditManager />
                     </div>
                   </DialogContent>
                 </Dialog>
