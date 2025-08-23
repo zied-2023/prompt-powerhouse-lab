@@ -58,10 +58,6 @@ const Index = () => {
               <ThemeSelector />
               <LanguageSelector />
               <LogoutButton />
-              <Badge variant="secondary" className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 shadow-sm">
-                <Zap className="h-3 w-3 mr-1" />
-                {t('noCode')}
-              </Badge>
             </div>
           </div>
         </div>
