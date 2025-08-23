@@ -96,7 +96,7 @@ const Index = () => {
             <div className={`flex items-center space-x-4 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+                  src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png"
                   alt="AutoPrompt Logo" 
                   className="w-16 h-16 object-contain"
                 />
@@ -109,8 +109,8 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground font-medium">{t('subtitle')}</p>
               </div>
             </div>
-            {/* Section Crédits - Plus visible */}
-            <div className={`flex items-center gap-4 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
+            {/* Section Crédits - Alignée à droite */}
+            <div className={`flex items-center gap-4 ml-auto ${isRTL ? 'flex-row-reverse mr-auto ml-0' : ''}`}>
               {/* Badge Crédits LARGE et visible */}
               <div className="flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30">
                 <div className="flex items-center gap-2">
