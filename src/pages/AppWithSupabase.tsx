@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key } from "lucide-react";
+import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -18,11 +18,14 @@ import AdvancedPromptBuilder from "@/components/AdvancedPromptBuilder";
 import AdvancedTemplates from "@/components/AdvancedTemplates";
 import PromptImprovementSupabase from "@/components/PromptImprovementSupabase";
 import PromptHistory from "@/components/PromptHistory";
+import CreditManager from "@/components/CreditManager";
+import { useUserCredits } from "@/hooks/useUserCredits";
 
 const AppWithSupabase = () => {
   const [activeTab, setActiveTab] = useState("generator");
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
+  const { credits } = useUserCredits();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900 relative overflow-hidden">
@@ -54,6 +57,10 @@ const AppWithSupabase = () => {
               </div>
             </div>
             <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
+              <Badge variant={credits?.remaining_credits && credits.remaining_credits > 0 ? "default" : "destructive"} className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 shadow-sm">
+                <Coins className="h-3 w-3 mr-1" />
+                {credits?.remaining_credits || 0} crédits
+              </Badge>
               <ThemeSelector />
               <LanguageSelector />
               <LogoutButton />
@@ -73,7 +80,7 @@ const AppWithSupabase = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-9 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
+          <TabsList className="grid w-full grid-cols-10 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
@@ -131,6 +138,13 @@ const AppWithSupabase = () => {
               <span>{t('integration')}</span>
             </TabsTrigger>
             <TabsTrigger 
+              value="credits" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <Coins className="h-4 w-4" />
+              <span>Crédits</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="api-test" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
             >
@@ -169,6 +183,10 @@ const AppWithSupabase = () => {
 
           <TabsContent value="integration" className="space-y-8">
             <IntegrationPanel />
+          </TabsContent>
+
+          <TabsContent value="credits" className="space-y-8">
+            <CreditManager />
           </TabsContent>
 
           <TabsContent value="api-test" className="space-y-8">
