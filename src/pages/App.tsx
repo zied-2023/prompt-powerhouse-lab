@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key } from "lucide-react";
+import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -19,11 +20,65 @@ import AdvancedPromptBuilder from "@/components/AdvancedPromptBuilder";
 import AdvancedTemplates from "@/components/AdvancedTemplates";
 import PromptImprovement from "@/components/PromptImprovement";
 import PromptHistory from "@/components/PromptHistory";
+import { useUserCredits } from "@/hooks/useUserCredits";
+import CreditManager from "@/components/CreditManager";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
+  const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
+  const { credits, isLoading: creditsLoading } = useUserCredits();
+
+  // Fonction pour déterminer le style du badge crédits
+  const getCreditBadgeStyle = () => {
+    if (creditsLoading) return { variant: "secondary" as const, className: "animate-pulse" };
+    
+    const remaining = credits?.remaining_credits || 0;
+    if (remaining === 0) {
+      return { 
+        variant: "destructive" as const, 
+        className: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 border-red-300 dark:border-red-700" 
+      };
+    } else if (remaining < 10) {
+      return { 
+        variant: "secondary" as const, 
+        className: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200 border-orange-300 dark:border-orange-700" 
+      };
+    }
+    return { 
+      variant: "default" as const, 
+      className: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 border-green-300 dark:border-green-700" 
+    };
+  };
+
+  const badgeStyle = getCreditBadgeStyle();
+
+  // Fonction pour déterminer le style du bouton d'achat
+  const getButtonStyle = () => {
+    const remaining = credits?.remaining_credits || 0;
+    if (remaining === 0) {
+      return {
+        text: "Acheter Crédits",
+        className: "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white border-0",
+        icon: CreditCard
+      };
+    } else if (remaining < 10) {
+      return {
+        text: "Recharger",
+        className: "bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white border-0",
+        icon: Coins
+      };
+    }
+    return {
+      text: "Acheter Crédits",
+      className: "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0",
+      icon: ShoppingCart
+    };
+  };
+
+  const buttonStyle = getButtonStyle();
+  const ButtonIcon = buttonStyle.icon;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900 relative overflow-hidden">
@@ -54,10 +109,68 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground font-medium">{t('subtitle')}</p>
               </div>
             </div>
-            <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
-              <ThemeSelector />
-              <LanguageSelector />
-              <LogoutButton />
+            {/* Section Crédits - Plus visible */}
+            <div className={`flex items-center gap-4 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
+              {/* Badge Crédits LARGE et visible */}
+              <div className="flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-500/30 flex items-center justify-center border-2 border-yellow-400/50">
+                    <Coins className="h-5 w-5 text-yellow-500" />
+                  </div>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1">
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">
+                        {creditsLoading ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
+                        ) : (
+                          credits?.remaining_credits || 0
+                        )}
+                      </span>
+                      <span className="text-sm text-muted-foreground">crédit{(credits?.remaining_credits || 0) > 1 ? 's' : ''}</span>
+                    </div>
+                    <Badge 
+                      variant={badgeStyle.variant}
+                      className={`${badgeStyle.className} text-xs px-2 py-0.5 w-fit`}
+                    >
+                      {credits?.remaining_credits === 0 ? "Épuisé" :
+                       credits?.remaining_credits && credits.remaining_credits < 10 ? "Faible" : "Bon"}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Bouton d'achat TRÈS visible */}
+                <Dialog open={creditDialogOpen} onOpenChange={setCreditDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      variant={credits?.remaining_credits && credits.remaining_credits > 10 ? "outline" : "default"}
+                      size="lg"
+                      className={`${buttonStyle.className} font-semibold text-sm px-6 py-2.5 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200`}
+                      disabled={creditsLoading}
+                    >
+                      <ButtonIcon className="h-5 w-5 mr-2" />
+                      {buttonStyle.text}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle className="flex items-center gap-2">
+                        <Coins className="h-5 w-5" />
+                        Gestion des Crédits
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="mt-4">
+                      <CreditManager />
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {/* Actions du header */}
+              <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                <ThemeSelector />
+                <LanguageSelector />
+                <LogoutButton />
+              </div>
             </div>
           </div>
         </div>
