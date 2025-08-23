@@ -84,6 +84,31 @@ export function useUserCredits() {
     }
   };
 
+  // Default plans (fallback if database is empty)
+  const defaultPlans: SubscriptionPlan[] = [
+    {
+      id: 'starter',
+      name: 'Starter',
+      credits: 100,
+      price_tnd: 15,
+      description: 'Parfait pour commencer'
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      credits: 500,
+      price_tnd: 50,
+      description: 'Pour les utilisateurs réguliers'
+    },
+    {
+      id: 'premium',
+      name: 'Premium',
+      credits: 1500,
+      price_tnd: 120,
+      description: 'Pour les power users'
+    }
+  ];
+
   // Fetch subscription plans
   const fetchPlans = async () => {
     try {
@@ -95,12 +120,15 @@ export function useUserCredits() {
 
       if (error) {
         console.error('Error fetching plans:', error);
+        setPlans(defaultPlans);
         return;
       }
 
-      setPlans(data || []);
+      // If no plans in database, use default plans
+      setPlans(data && data.length > 0 ? data : defaultPlans);
     } catch (error) {
       console.error('Error in fetchPlans:', error);
+      setPlans(defaultPlans);
     }
   };
 
