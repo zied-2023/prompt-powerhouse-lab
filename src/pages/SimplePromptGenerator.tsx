@@ -11,6 +11,7 @@ import ThemeSelector from '@/components/ThemeSelector';
 import LanguageSelector from '@/components/LanguageSelector';
 import { AuthButtons } from '@/components/auth/AuthButtons';
 import { usePrompts } from '@/hooks/usePrompts';
+import { useUserCredits } from '@/hooks/useUserCredits';
 import SEOHead from '@/components/SEOHead';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
@@ -28,9 +29,9 @@ const SimplePromptGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
   const [user, setUser] = useState<User | null>(null);
-  const [requestCount, setRequestCount] = useState(0);
   const { toast } = useToast();
   const { savePrompt, isSaving } = usePrompts();
+  const { credits, useCredit, isLoading: creditsLoading } = useUserCredits();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -67,16 +68,33 @@ const SimplePromptGenerator = () => {
       return;
     }
 
-    if (requestCount >= 2) {
+    // Check if user has credits available
+    if (!user) {
       toast({
-        title: "Limite atteinte",
-        description: "Vous avez atteint la limite de 2 requêtes pour cette session.",
+        title: "Connexion requise",
+        description: "Veuillez vous connecter pour générer des prompts.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!credits || credits.remaining_credits <= 0) {
+      toast({
+        title: "Crédits épuisés",
+        description: "Vous n'avez plus de crédits disponibles. Rechargez votre compte pour continuer.",
         variant: "destructive"
       });
       return;
     }
 
     setIsLoading(true);
+    
+    // Use a credit before making the request
+    const creditUsed = await useCredit();
+    if (!creditUsed) {
+      setIsLoading(false);
+      return;
+    }
     
     try {
       // Construction du prompt pour l'API Mistral
@@ -126,10 +144,9 @@ const SimplePromptGenerator = () => {
       
       if (data.choices && data.choices[0] && data.choices[0].message) {
         setResult(data.choices[0].message.content);
-        setRequestCount(prev => prev + 1);
         toast({
           title: "Succès",
-          description: `Prompt généré avec succès ! (${requestCount + 1}/2 requêtes utilisées)`,
+          description: `Prompt généré avec succès ! Crédits restants: ${credits?.remaining_credits - 1}`,
           variant: "default"
         });
       } else {
@@ -308,22 +325,36 @@ const SimplePromptGenerator = () => {
               </Select>
             </div>
 
-            {/* Compteur de requêtes */}
-            {requestCount > 0 && (
-              <div className="text-center text-sm text-muted-foreground">
-                {requestCount}/2 requêtes utilisées
+            {/* Affichage des crédits */}
+            {user && credits && !creditsLoading && (
+              <div className="text-center p-3 bg-muted/50 rounded-lg">
+                <div className="text-sm font-medium">
+                  Crédits disponibles: {credits.remaining_credits}/{credits.total_credits}
+                </div>
+                {credits.remaining_credits <= 2 && credits.remaining_credits > 0 && (
+                  <div className="text-xs text-amber-600 mt-1">
+                    Plus que {credits.remaining_credits} crédit{credits.remaining_credits > 1 ? 's' : ''} !
+                  </div>
+                )}
+                {credits.remaining_credits === 0 && (
+                  <div className="text-xs text-destructive mt-1">
+                    Aucun crédit disponible. Rechargez votre compte.
+                  </div>
+                )}
               </div>
             )}
 
             {/* Bouton générer */}
             <Button 
               onClick={generatePrompt}
-              disabled={isLoading || !objective.trim() || requestCount >= 2}
+              disabled={isLoading || !objective.trim() || !user || (credits && credits.remaining_credits <= 0) || creditsLoading}
               className="w-full"
               size="lg"
             >
-              {requestCount >= 2 ? (
-                'Limite de requêtes atteinte'
+              {!user ? (
+                'Connexion requise'
+              ) : credits && credits.remaining_credits <= 0 ? (
+                'Aucun crédit disponible'
               ) : isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
