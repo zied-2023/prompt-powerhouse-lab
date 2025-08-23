@@ -28,6 +28,7 @@ const SimplePromptGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const [requestCount, setRequestCount] = useState(0);
   const { toast } = useToast();
   const { savePrompt, isSaving } = usePrompts();
 
@@ -61,6 +62,15 @@ const SimplePromptGenerator = () => {
       toast({
         title: "Erreur",
         description: "Veuillez renseigner votre objectif",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (requestCount >= 2) {
+      toast({
+        title: "Limite atteinte",
+        description: "Vous avez atteint la limite de 2 requêtes pour cette session.",
         variant: "destructive"
       });
       return;
@@ -116,9 +126,10 @@ const SimplePromptGenerator = () => {
       
       if (data.choices && data.choices[0] && data.choices[0].message) {
         setResult(data.choices[0].message.content);
+        setRequestCount(prev => prev + 1);
         toast({
           title: "Succès",
-          description: "Prompt généré avec succès !",
+          description: `Prompt généré avec succès ! (${requestCount + 1}/2 requêtes utilisées)`,
           variant: "default"
         });
       } else {
@@ -297,14 +308,23 @@ const SimplePromptGenerator = () => {
               </Select>
             </div>
 
+            {/* Compteur de requêtes */}
+            {requestCount > 0 && (
+              <div className="text-center text-sm text-muted-foreground">
+                {requestCount}/2 requêtes utilisées
+              </div>
+            )}
+
             {/* Bouton générer */}
             <Button 
               onClick={generatePrompt}
-              disabled={isLoading || !objective.trim()}
+              disabled={isLoading || !objective.trim() || requestCount >= 2}
               className="w-full"
               size="lg"
             >
-              {isLoading ? (
+              {requestCount >= 2 ? (
+                'Limite de requêtes atteinte'
+              ) : isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Génération en cours...
