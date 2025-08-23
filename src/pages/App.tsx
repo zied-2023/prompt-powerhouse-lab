@@ -58,10 +58,6 @@ const Index = () => {
               <ThemeSelector />
               <LanguageSelector />
               <LogoutButton />
-              <Badge variant="secondary" className="bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900 dark:to-green-900 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700 shadow-sm">
-                <Sparkles className="h-3 w-3 mr-1" />
-                {t('advancedAI')}
-              </Badge>
               <Badge variant="secondary" className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 shadow-sm">
                 <Zap className="h-3 w-3 mr-1" />
                 {t('noCode')}
