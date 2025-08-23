@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -61,6 +62,27 @@ const AppWithSupabase = () => {
                 <Coins className="h-3 w-3 mr-1" />
                 {credits?.remaining_credits || 0} crédits
               </Badge>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 hover:from-violet-200 hover:to-purple-200 dark:hover:from-violet-800 dark:hover:to-purple-800"
+                  >
+                    <Coins className="h-4 w-4 mr-2" />
+                    Gérer les Crédits
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2">
+                      <Coins className="h-5 w-5" />
+                      Gestion des Crédits
+                    </DialogTitle>
+                  </DialogHeader>
+                  <CreditManager />
+                </DialogContent>
+              </Dialog>
               <ThemeSelector />
               <LanguageSelector />
               <LogoutButton />
@@ -80,7 +102,7 @@ const AppWithSupabase = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-10 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl overflow-x-auto">
+          <TabsList className="grid w-full grid-cols-9 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl overflow-x-auto">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
@@ -138,13 +160,6 @@ const AppWithSupabase = () => {
               <span>{t('integration')}</span>
             </TabsTrigger>
             <TabsTrigger 
-              value="credits" 
-              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
-            >
-              <Coins className="h-4 w-4" />
-              <span>Crédits</span>
-            </TabsTrigger>
-            <TabsTrigger 
               value="api-test" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
             >
@@ -185,9 +200,6 @@ const AppWithSupabase = () => {
             <IntegrationPanel />
           </TabsContent>
 
-          <TabsContent value="credits" className="space-y-8">
-            <CreditManager />
-          </TabsContent>
 
           <TabsContent value="api-test" className="space-y-8">
             <div className="text-center py-12">
