@@ -57,7 +57,7 @@ const AppWithSupabase = () => {
                 <p className="text-sm text-muted-foreground font-medium">{t('subtitle')} avec clé API Supabase</p>
               </div>
             </div>
-            <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
+            <div className={`flex items-center gap-2 flex-wrap ${isRTL ? 'flex-row-reverse' : ''}`}>
               <Badge variant={credits?.remaining_credits && credits.remaining_credits > 0 ? "default" : "destructive"} className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 shadow-sm">
                 <Coins className="h-3 w-3 mr-1" />
                 {credits?.remaining_credits || 0} crédits
@@ -67,10 +67,10 @@ const AppWithSupabase = () => {
                   <Button 
                     variant="outline" 
                     size="sm"
-                    className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 hover:from-violet-200 hover:to-purple-200 dark:hover:from-violet-800 dark:hover:to-purple-800"
+                    className="bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900 dark:to-green-900 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700 hover:from-emerald-200 hover:to-green-200 dark:hover:from-emerald-800 dark:hover:to-green-800 shadow-sm font-medium"
                   >
-                    <Coins className="h-4 w-4 mr-2" />
-                    Gérer les Crédits
+                    <Coins className="h-4 w-4 mr-1" />
+                    Acheter Crédits
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
@@ -83,17 +83,21 @@ const AppWithSupabase = () => {
                   <CreditManager />
                 </DialogContent>
               </Dialog>
-              <ThemeSelector />
-              <LanguageSelector />
-              <LogoutButton />
-              <Badge variant="secondary" className="bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900 dark:to-green-900 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700 shadow-sm">
-                <Sparkles className="h-3 w-3 mr-1" />
-                OpenAI API
-              </Badge>
-              <Badge variant="secondary" className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 shadow-sm">
-                <Zap className="h-3 w-3 mr-1" />
-                Supabase
-              </Badge>
+              <div className="flex items-center gap-2">
+                <ThemeSelector />
+                <LanguageSelector />
+                <LogoutButton />
+              </div>
+              <div className="flex items-center gap-1 flex-wrap">
+                <Badge variant="secondary" className="bg-gradient-to-r from-emerald-100 to-green-100 dark:from-emerald-900 dark:to-green-900 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700 shadow-sm">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  OpenAI API
+                </Badge>
+                <Badge variant="secondary" className="bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900 dark:to-purple-900 text-violet-700 dark:text-violet-300 border-violet-200 dark:border-violet-700 shadow-sm">
+                  <Zap className="h-3 w-3 mr-1" />
+                  Supabase
+                </Badge>
+              </div>
             </div>
           </div>
         </div>
