@@ -134,7 +134,10 @@ export function useUserCredits() {
 
   // Use a credit (increment used_credits)
   const useCredit = async (): Promise<boolean> => {
+    console.log('useCredit called, current credits:', credits);
+    
     if (!credits || credits.remaining_credits <= 0) {
+      console.log('No credits available:', credits);
       toast({
         title: "Crédits épuisés",
         description: "Vous n'avez plus de crédits disponibles. Rechargez votre compte pour continuer.",
@@ -144,6 +147,8 @@ export function useUserCredits() {
     }
 
     try {
+      console.log('Updating credits in database, incrementing used_credits to:', credits.used_credits + 1);
+      
       const { data, error } = await supabase
         .from('user_credits')
         .update({
@@ -163,10 +168,15 @@ export function useUserCredits() {
         return false;
       }
 
-      setCredits({
+      console.log('Credit update successful, new data:', data);
+      
+      const newCredits = {
         ...data,
         remaining_credits: data.total_credits - data.used_credits
-      });
+      };
+      
+      console.log('Setting new credits state:', newCredits);
+      setCredits(newCredits);
 
       return true;
     } catch (error) {

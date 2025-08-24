@@ -8,6 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { RefreshCw, Copy, TrendingUp, CheckCircle, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
+import { useUserCredits } from "@/hooks/useUserCredits";
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -19,6 +20,7 @@ const API_CONFIG = {
 const PromptImprovement = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
+  const { credits, useCredit } = useUserCredits();
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [improvementObjective, setImprovementObjective] = useState('');
   const [improvedPrompt, setImprovedPrompt] = useState('');
@@ -120,9 +122,15 @@ Réponds au format suivant:
           setImprovements(improvementsList);
         }
         
+        // Décompter le crédit après le succès de la génération
+        const creditUsed = await useCredit();
+        if (!creditUsed) {
+          throw new Error('Impossible de décompter le crédit');
+        }
+        
         toast({
           title: t('improvementSuccess'),
-          description: t('improvementSuccessDesc'),
+          description: `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
         });
       } else {
         throw new Error('Format de réponse API inattendu');
