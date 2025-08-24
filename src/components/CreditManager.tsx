@@ -82,30 +82,17 @@ const CreditManager = () => {
           throw new Error('URL de paiement non reçue');
         }
       } else {
-        // Méthodes de paiement tunisiennes (Démo)
-        const { data, error } = await supabase.functions.invoke('create-tunisian-payment', {
-          body: {
-            method: paymentMethod,
-            planId: plan.priceId,
-            amount: plan.price,
-            credits: plan.credits,
-          },
+        // Redirection vers le simulateur pour tous les paiements en mode MVP
+        const params = new URLSearchParams({
+          planId: plan.id,
+          credits: plan.credits.toString(),
+          amount: plan.price.toString(),
+          planName: plan.name,
+          paymentMethod
         });
-
-        if (error) throw error;
-
-        if (data?.success && data.redirect_url) {
-          toast({
-            title: "Redirection vers le paiement",
-            description: `${data.message} - En mode démo`,
-            duration: 3000,
-          });
-          
-          // Simulation d'une redirection (en mode démo)
-          setTimeout(() => {
-            alert(`🇹🇳 Mode Démo - ${paymentMethod.toUpperCase()}\n\nRedirection simulée vers:\n${data.redirect_url}\n\nCommande: ${data.order_id}\n\nEn production, vous seriez redirigé vers la plateforme de paiement tunisienne.`);
-          }, 1000);
-        }
+        
+        window.location.href = `/payment-simulator?${params.toString()}`;
+        return;
       }
 
     } catch (error) {

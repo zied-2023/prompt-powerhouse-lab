@@ -46,6 +46,22 @@ const PaymentSimulator = () => {
     credits: 250,
     email: 'test@example.com'
   });
+
+  // Récupération des paramètres URL pour préremplir les données
+  React.useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const credits = params.get('credits');
+    const amount = params.get('amount');
+    const planName = params.get('planName');
+    
+    if (credits && amount) {
+      setOrderData(prev => ({
+        ...prev,
+        credits: parseInt(credits),
+        amount: parseFloat(amount)
+      }));
+    }
+  }, []);
   
   const [paymentResult, setPaymentResult] = useState<PaymentResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
