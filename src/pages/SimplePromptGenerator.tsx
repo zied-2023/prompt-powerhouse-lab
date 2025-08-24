@@ -89,13 +89,6 @@ const SimplePromptGenerator = () => {
 
     setIsLoading(true);
     
-    // Use a credit before making the request
-    const creditUsed = await useCredit();
-    if (!creditUsed) {
-      setIsLoading(false);
-      return;
-    }
-    
     try {
       // Construction du prompt pour l'API Mistral
       let userPrompt = `Je veux créer un prompt optimisé pour atteindre cet objectif: "${objective}"`;
@@ -143,6 +136,12 @@ const SimplePromptGenerator = () => {
       const data = await response.json();
       
       if (data.choices && data.choices[0] && data.choices[0].message) {
+        // Décompter le crédit seulement après le succès de la génération
+        const creditUsed = await useCredit();
+        if (!creditUsed) {
+          throw new Error('Impossible de décompter le crédit');
+        }
+        
         setResult(data.choices[0].message.content);
         toast({
           title: "Succès",
