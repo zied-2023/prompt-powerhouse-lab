@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Coins, CreditCard, Zap, Star, Crown, Sparkles } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Coins, CreditCard, Zap, Star, Crown, Sparkles, MapPin } from "lucide-react";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
@@ -42,8 +43,9 @@ const CreditManager = () => {
   const { credits, refetchCredits } = useUserCredits();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'monetique' | 'edinar'>('stripe');
 
-  // Fonction pour créer une session Stripe Checkout
+  // Fonction pour gérer les achats avec différentes méthodes de paiement
   const handlePurchase = async (plan: typeof CREDIT_PLANS[0]) => {
     setLoading(true);
     setSelectedPlan(plan.id);
@@ -60,26 +62,50 @@ const CreditManager = () => {
         return;
       }
 
-      // Appel à votre fonction Edge de Supabase pour créer la session Stripe
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: {
-          priceId: plan.priceId,
-          credits: plan.credits,
-          userId: user.id,
-          userEmail: user.email,
-          planName: plan.name
+      if (paymentMethod === 'stripe') {
+        // Méthode Stripe existante
+        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+          body: {
+            priceId: plan.priceId,
+            credits: plan.credits,
+            userId: user.id,
+            userEmail: user.email,
+            planName: plan.name
+          }
+        });
+
+        if (error) throw error;
+
+        if (data?.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error('URL de paiement non reçue');
         }
-      });
-
-      if (error) {
-        throw error;
-      }
-
-      if (data?.url) {
-        // Redirection vers Stripe Checkout
-        window.location.href = data.url;
       } else {
-        throw new Error('URL de paiement non reçue');
+        // Méthodes de paiement tunisiennes (Démo)
+        const { data, error } = await supabase.functions.invoke('create-tunisian-payment', {
+          body: {
+            method: paymentMethod,
+            planId: plan.priceId,
+            amount: plan.price,
+            credits: plan.credits,
+          },
+        });
+
+        if (error) throw error;
+
+        if (data?.success && data.redirect_url) {
+          toast({
+            title: "Redirection vers le paiement",
+            description: `${data.message} - En mode démo`,
+            duration: 3000,
+          });
+          
+          // Simulation d'une redirection (en mode démo)
+          setTimeout(() => {
+            alert(`🇹🇳 Mode Démo - ${paymentMethod.toUpperCase()}\n\nRedirection simulée vers:\n${data.redirect_url}\n\nCommande: ${data.order_id}\n\nEn production, vous seriez redirigé vers la plateforme de paiement tunisienne.`);
+          }, 1000);
+        }
       }
 
     } catch (error) {
@@ -140,6 +166,41 @@ const CreditManager = () => {
             <div>Restants</div>
           </div>
         </div>
+      </div>
+
+      {/* Sélecteur de méthode de paiement */}
+      <div className="space-y-2">
+        <label className="text-sm font-medium text-foreground">Méthode de paiement</label>
+        <Select value={paymentMethod} onValueChange={(value: 'stripe' | 'monetique' | 'edinar') => setPaymentMethod(value)}>
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="stripe">
+              <div className="flex items-center space-x-2">
+                <CreditCard className="h-4 w-4" />
+                <span>Stripe (International)</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="monetique">
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4" />
+                <span>Monétique Tunisie (Démo)</span>
+              </div>
+            </SelectItem>
+            <SelectItem value="edinar">
+              <div className="flex items-center space-x-2">
+                <MapPin className="h-4 w-4" />
+                <span>e-DINAR (Démo)</span>
+              </div>
+            </SelectItem>
+          </SelectContent>
+        </Select>
+        {paymentMethod !== 'stripe' && (
+          <div className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded">
+            🇹🇳 Mode démonstration avec valeurs théoriques
+          </div>
+        )}
       </div>
 
       {/* Plans de crédits - Version compacte */}
