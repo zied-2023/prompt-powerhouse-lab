@@ -12,6 +12,7 @@ import AppPage from "./pages/App";
 import AppWithSupabase from "./pages/AppWithSupabase";
 import SimplePromptGenerator from "./pages/SimplePromptGenerator";
 import ApiTest from "./pages/ApiTest";
+import PaymentSimulatorPage from "./pages/PaymentSimulator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/app-openai" element={<AppWithSupabase />} />
               <Route path="/generator" element={<SimplePromptGenerator />} />
               <Route path="/api-test" element={<ApiTest />} />
+              <Route path="/payment-simulator" element={<PaymentSimulatorPage />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
