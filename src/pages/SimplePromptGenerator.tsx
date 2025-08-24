@@ -397,7 +397,7 @@ const SimplePromptGenerator = () => {
                         </pre>
                       </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <div className="flex justify-center">
                       <Button 
                         onClick={copyToClipboard}
                         variant="outline" 
@@ -406,19 +406,6 @@ const SimplePromptGenerator = () => {
                       >
                         <Copy className="h-4 w-4" />
                         Copier le Prompt
-                      </Button>
-                      <Button 
-                        onClick={handleSavePrompt}
-                        size="lg"
-                        disabled={isSaving}
-                        className="flex items-center gap-2 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0"
-                      >
-                        {isSaving ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Save className="h-4 w-4" />
-                        )}
-                        {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
                       </Button>
                     </div>
                   </div>
