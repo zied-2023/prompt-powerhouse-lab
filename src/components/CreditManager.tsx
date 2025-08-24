@@ -113,159 +113,127 @@ const CreditManager = () => {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Statut actuel des crédits */}
-      <Card className="glass-card border-white/30 dark:border-gray-700/30 shadow-xl">
-        <CardHeader className="text-center">
-          <CardTitle className="flex items-center justify-center space-x-2 text-2xl">
-            <Coins className="h-8 w-8 text-yellow-500" />
-            <span>Mes Crédits</span>
-          </CardTitle>
-          <CardDescription>
-            Gérez vos crédits pour générer des prompts et utiliser les fonctionnalités avancées
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400/20 to-orange-500/20 border-4 border-yellow-400/30">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-yellow-600 dark:text-yellow-400">
-                {credits?.remaining_credits || 0}
-              </div>
-              <div className="text-sm text-muted-foreground">crédits</div>
+    <div className="w-full max-w-md mx-auto space-y-6">
+      {/* Statut actuel des crédits - Version compacte */}
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400/20 to-orange-500/20 border-2 border-yellow-400/30">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+              {credits?.remaining_credits || 0}
             </div>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="glass-card p-4 border-white/20 dark:border-gray-700/20">
-              <div className="font-semibold text-green-600 dark:text-green-400">Total utilisé</div>
-              <div className="text-2xl font-bold">{credits?.used_credits || 0}</div>
-            </div>
-            <div className="glass-card p-4 border-white/20 dark:border-gray-700/20">
-              <div className="font-semibold text-blue-600 dark:text-blue-400">Total disponible</div>
-              <div className="text-2xl font-bold">{credits?.total_credits || 0}</div>
-            </div>
-            <div className="glass-card p-4 border-white/20 dark:border-gray-700/20">
-              <div className="font-semibold text-purple-600 dark:text-purple-400">Restants</div>
-              <div className="text-2xl font-bold">{credits?.remaining_credits || 0}</div>
-            </div>
+        </div>
+        <div className="text-sm text-muted-foreground">Crédits disponibles</div>
+        
+        {/* Statistiques en ligne */}
+        <div className="flex justify-between text-xs text-muted-foreground bg-muted/30 rounded-lg p-3">
+          <div className="text-center">
+            <div className="font-bold text-foreground">{credits?.used_credits || 0}</div>
+            <div>Utilisés</div>
           </div>
+          <div className="text-center">
+            <div className="font-bold text-foreground">{credits?.total_credits || 0}</div>
+            <div>Total</div>
+          </div>
+          <div className="text-center">
+            <div className="font-bold text-foreground">{credits?.remaining_credits || 0}</div>
+            <div>Restants</div>
+          </div>
+        </div>
+      </div>
 
-          <Button 
-            onClick={handleRestoreCredits}
-            variant="outline" 
-            size="sm"
-            className="mt-4"
-          >
-            <Zap className="h-4 w-4 mr-2" />
-            Actualiser
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Plans de crédits */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Plans de crédits - Version compacte */}
+      <div className="space-y-3">
         {CREDIT_PLANS.map((plan) => (
           <Card 
             key={plan.id} 
-            className={`glass-card border-white/30 dark:border-gray-700/30 shadow-xl relative overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl ${
-              plan.popular ? 'ring-2 ring-violet-400/50 dark:ring-violet-500/50' : ''
+            className={`relative overflow-hidden transition-all duration-200 hover:shadow-lg border ${
+              plan.popular 
+                ? 'border-violet-200 dark:border-violet-700 bg-violet-50/50 dark:bg-violet-900/10' 
+                : 'border-border'
             }`}
           >
             {plan.popular && (
-              <div className="absolute top-0 right-0 bg-gradient-to-br from-violet-500 to-purple-600 text-white px-4 py-1 text-xs font-semibold transform rotate-12 translate-x-4 -translate-y-1">
-                <Star className="inline h-3 w-3 mr-1" />
-                POPULAIRE
+              <div className="absolute top-2 right-2">
+                <Badge variant="secondary" className="bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300 text-xs">
+                  Populaire
+                </Badge>
               </div>
             )}
             
-            <CardHeader className="text-center pb-4">
-              <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full mb-4 ${
-                plan.id === 'starter' ? 'bg-green-100 dark:bg-green-900' :
-                plan.id === 'pro' ? 'bg-violet-100 dark:bg-violet-900' :
-                'bg-orange-100 dark:bg-orange-900'
-              }`}>
-                {plan.id === 'starter' && <Coins className="h-8 w-8 text-green-600 dark:text-green-400" />}
-                {plan.id === 'pro' && <Crown className="h-8 w-8 text-violet-600 dark:text-violet-400" />}
-                {plan.id === 'enterprise' && <Sparkles className="h-8 w-8 text-orange-600 dark:text-orange-400" />}
-              </div>
-              
-              <CardTitle className="text-2xl">{plan.name}</CardTitle>
-              <div className="text-center">
-                <span className="text-4xl font-bold">{plan.credits}</span>
-                <span className="text-muted-foreground ml-2">crédits</span>
-              </div>
-              <div className="text-center">
-                <span className="text-3xl font-bold text-green-600 dark:text-green-400">
-                  {plan.price}€
-                </span>
-                <span className="text-muted-foreground ml-1">
-                  ({(plan.price / plan.credits * 100).toFixed(1)}¢/crédit)
-                </span>
-              </div>
-            </CardHeader>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                {/* Info du plan */}
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                    plan.id === 'starter' ? 'bg-green-100 dark:bg-green-900' :
+                    plan.id === 'pro' ? 'bg-violet-100 dark:bg-violet-900' :
+                    'bg-orange-100 dark:bg-orange-900'
+                  }`}>
+                    {plan.id === 'starter' && <Coins className="h-5 w-5 text-green-600 dark:text-green-400" />}
+                    {plan.id === 'pro' && <Crown className="h-5 w-5 text-violet-600 dark:text-violet-400" />}
+                    {plan.id === 'enterprise' && <Sparkles className="h-5 w-5 text-orange-600 dark:text-orange-400" />}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm">{plan.name}</div>
+                    <div className="text-xs text-muted-foreground">{plan.credits} crédits</div>
+                  </div>
+                </div>
 
-            <CardContent className="space-y-4">
-              <Button 
-                onClick={() => handlePurchase(plan)}
-                disabled={loading}
-                className={`w-full ${
-                  plan.popular 
-                    ? 'bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white' 
-                    : 'bg-gradient-to-r from-gray-200 to-gray-300 hover:from-gray-300 hover:to-gray-400 dark:from-gray-700 dark:to-gray-600 text-gray-900 dark:text-white'
-                } shadow-lg hover:shadow-xl transition-all duration-300`}
-                size="lg"
-              >
-                {loading && selectedPlan === plan.id ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                    <span>Traitement...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <CreditCard className="h-4 w-4" />
-                    <span>Acheter</span>
-                  </div>
-                )}
-              </Button>
+                {/* Prix et bouton */}
+                <div className="text-right space-y-2">
+                  <div className="text-lg font-bold">{plan.price}€</div>
+                  <Button 
+                    onClick={() => handlePurchase(plan)}
+                    disabled={loading}
+                    className={`w-full text-xs h-8 ${
+                      plan.popular 
+                        ? 'bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white' 
+                        : ''
+                    }`}
+                    variant={plan.popular ? 'default' : 'outline'}
+                    size="sm"
+                  >
+                    {loading && selectedPlan === plan.id ? (
+                      <div className="flex items-center space-x-1">
+                        <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-current"></div>
+                        <span>...</span>
+                      </div>
+                    ) : (
+                      'Acheter'
+                    )}
+                  </Button>
+                </div>
+              </div>
 
-              <div className="space-y-2">
-                <div className="text-sm font-semibold text-muted-foreground">Inclus :</div>
-                {plan.features.map((feature, index) => (
-                  <div key={index} className="flex items-center space-x-2 text-sm">
-                    <div className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></div>
-                    <span>{feature}</span>
-                  </div>
-                ))}
+              {/* Features condensées */}
+              <div className="mt-3 pt-3 border-t border-border/50">
+                <div className="text-xs text-muted-foreground space-y-1">
+                  {plan.features.slice(0, 2).map((feature, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <div className="w-1 h-1 bg-green-500 rounded-full flex-shrink-0"></div>
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                  {plan.features.length > 2 && (
+                    <div className="text-xs text-muted-foreground/70">
+                      +{plan.features.length - 2} autres avantages
+                    </div>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
 
-      {/* Informations de sécurité */}
-      <Card className="glass-card border-white/30 dark:border-gray-700/30 shadow-xl">
-        <CardContent className="p-6">
-          <div className="flex items-start space-x-4">
-            <div className="flex-shrink-0">
-              <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                <CreditCard className="h-4 w-4 text-green-600 dark:text-green-400" />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold">Paiement sécurisé par Stripe</h3>
-              <p className="text-sm text-muted-foreground">
-                Tous les paiements sont traités de manière sécurisée par Stripe. 
-                Nous ne stockons aucune information de carte bancaire sur nos serveurs.
-              </p>
-              <div className="flex space-x-4 text-xs text-muted-foreground">
-                <span>✓ Cryptage SSL 256-bit</span>
-                <span>✓ Conforme PCI DSS</span>
-                <span>✓ Remboursement sous 30 jours</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Info sécurité - Version minimale */}
+      <div className="text-center">
+        <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
+          <CreditCard className="h-3 w-3" />
+          <span>Paiement sécurisé par Stripe</span>
+        </div>
+      </div>
     </div>
   );
 };
