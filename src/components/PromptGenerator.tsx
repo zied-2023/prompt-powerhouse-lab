@@ -9,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { Zap, Copy, Sparkles, Wand2, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
+import { useUserCredits } from "@/hooks/useUserCredits";
 
 // Configuration API - Mistral (correction de l'espace en trop dans l'URL)
 const API_CONFIG = {
@@ -20,6 +21,7 @@ const API_CONFIG = {
 const PromptGenerator = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
+  const { credits, useCredit } = useUserCredits();
   const [formData, setFormData] = useState({
     category: '',
     subcategory: '',
@@ -258,11 +260,17 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
     try {
       const aiGeneratedPrompt = await generatePromptWithAI(formData);
       
+      // Décompter le crédit après le succès de la génération
+      const creditUsed = await useCredit();
+      if (!creditUsed) {
+        throw new Error('Impossible de décompter le crédit');
+      }
+      
       setGeneratedPrompt(aiGeneratedPrompt);
       
       toast({
         title: t('promptCreatedSuccess'),
-        description: t('promptCreatedDesc'),
+        description: `${t('promptCreatedDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
       });
     } catch (error) {
       console.error('Erreur:', error);
