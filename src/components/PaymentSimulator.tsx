@@ -49,16 +49,26 @@ const PaymentSimulator = () => {
 
   // Récupération des paramètres URL pour préremplir les données
   React.useEffect(() => {
+    console.log('PaymentSimulator monté');
     const params = new URLSearchParams(window.location.search);
+    console.log('Paramètres URL:', Object.fromEntries(params));
+    
     const credits = params.get('credits');
     const amount = params.get('amount');
     const planName = params.get('planName');
     
+    console.log('Paramètres récupérés:', { credits, amount, planName });
+    
     if (credits && amount) {
+      const newData = {
+        credits: parseInt(credits),
+        amount: parseFloat(amount),
+        email: 'test@example.com'
+      };
+      console.log('Mise à jour orderData:', newData);
       setOrderData(prev => ({
         ...prev,
-        credits: parseInt(credits),
-        amount: parseFloat(amount)
+        ...newData
       }));
     }
   }, []);
