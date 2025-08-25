@@ -109,8 +109,8 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground font-medium">{t('subtitle')}</p>
               </div>
             </div>
-            {/* Section Crédits - Alignée à droite */}
-            <div className={`flex items-center gap-4 ml-auto ${isRTL ? 'flex-row-reverse mr-auto ml-0' : ''}`}>
+            {/* Section droite - Actions et crédits */}
+            <div className={`flex flex-col items-end gap-3 ml-auto ${isRTL ? 'items-start mr-auto ml-0' : ''}`}>
               {/* Badge Crédits LARGE et visible */}
               <div className="flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30">
                 <div className="flex items-center gap-2">
