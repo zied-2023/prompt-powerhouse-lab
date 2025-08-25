@@ -30,6 +30,29 @@ const Index = () => {
   const { isRTL } = useLanguage();
   const { credits, isLoading: creditsLoading, refetchCredits } = useUserCredits();
 
+  // Force une mise à jour des crédits toutes les 5 secondes quand l'app est visible
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      if (!document.hidden) {
+        refetchCredits();
+      }
+    }, 5000);
+
+    // Écoute les événements de visibilité pour rafraîchir quand l'utilisateur revient
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        refetchCredits();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [refetchCredits]);
+
   // Fonction pour déterminer le style du badge crédits
   const getCreditBadgeStyle = () => {
     if (creditsLoading) return { variant: "secondary" as const, className: "animate-pulse" };

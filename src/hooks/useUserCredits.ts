@@ -222,6 +222,28 @@ export function useUserCredits() {
   useEffect(() => {
     fetchUserCredits();
     fetchPlans();
+
+    // Écouter les changements de crédits en temps réel
+    const channel = supabase
+      .channel('user_credits_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_credits'
+        },
+        (payload) => {
+          console.log('Real-time credit update:', payload);
+          // Rafraîchir les crédits quand il y a un changement
+          fetchUserCredits();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return {
