@@ -179,7 +179,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-9 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
+          <TabsList className="grid w-full grid-cols-8 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
@@ -236,13 +236,6 @@ const Index = () => {
               <Code className="h-4 w-4" />
               <span>{t('integration')}</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="api-test" 
-              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
-            >
-              <Key className="h-4 w-4" />
-              <span>API Test</span>
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="generator" className="space-y-8">
@@ -277,24 +270,6 @@ const Index = () => {
             <IntegrationPanel />
           </TabsContent>
 
-          <TabsContent value="api-test" className="space-y-8">
-            <div className="text-center py-12">
-              <div className="glass-card border-white/30 dark:border-gray-700/30 shadow-xl p-8 max-w-md mx-auto">
-                <Key className="h-16 w-16 mx-auto mb-4 text-violet-500" />
-                <h3 className="text-xl font-semibold mb-2">Centre de Test API</h3>
-                <p className="text-muted-foreground mb-6">
-                  Testez vos clés API dans un environnement dédié et sécurisé
-                </p>
-                <Button 
-                  onClick={() => window.open('/api-test', '_blank')}
-                  className="bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white"
-                >
-                  <Key className="h-4 w-4 mr-2" />
-                  Ouvrir API Test Center
-                </Button>
-              </div>
-            </div>
-          </TabsContent>
         </Tabs>
       </div>
     </div>
