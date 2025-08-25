@@ -96,7 +96,7 @@ const Index = () => {
             <div className={`flex items-center space-x-4 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
               <div className="relative">
                 <img 
-                  src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png"
+                  src="/lovable-uploads/f4df336e-a14b-44ec-82d3-7a8cc02630ea.png"
                   alt="AutoPrompt Logo" 
                   className="w-16 h-16 object-contain"
                 />
