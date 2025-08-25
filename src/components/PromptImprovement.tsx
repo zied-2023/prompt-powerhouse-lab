@@ -20,7 +20,7 @@ const API_CONFIG = {
 const PromptImprovement = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
-  const { credits, useCredit } = useUserCredits();
+  const { credits, useCredit, refetchCredits } = useUserCredits();
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [improvementObjective, setImprovementObjective] = useState('');
   const [improvedPrompt, setImprovedPrompt] = useState('');
@@ -127,6 +127,9 @@ Réponds au format suivant:
         if (!creditUsed) {
           throw new Error('Impossible de décompter le crédit');
         }
+        
+        // Forcer la mise à jour des crédits dans l'interface
+        await refetchCredits();
         
         toast({
           title: t('improvementSuccess'),

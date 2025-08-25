@@ -28,7 +28,7 @@ const Index = () => {
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
-  const { credits, isLoading: creditsLoading } = useUserCredits();
+  const { credits, isLoading: creditsLoading, refetchCredits } = useUserCredits();
 
   // Fonction pour déterminer le style du badge crédits
   const getCreditBadgeStyle = () => {
