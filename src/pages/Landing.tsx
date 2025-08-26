@@ -101,7 +101,7 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <img 
-              src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+              src="/logo.png" 
               alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
               className="h-14 w-14 object-contain"
             />
