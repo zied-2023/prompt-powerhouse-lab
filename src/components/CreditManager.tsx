@@ -40,10 +40,10 @@ const CREDIT_PLANS = [
 ];
 
 const CreditManager = () => {
-  const { credits, refetchCredits } = useUserCredits();
+  const { credits, refetchCredits, addCredits } = useUserCredits();
   const [loading, setLoading] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'monetique' | 'edinar'>('stripe');
+  const [paymentMethod, setPaymentMethod] = useState<'stripe' | 'monetique' | 'edinar' | 'essai'>('stripe');
 
   // Fonction pour gérer les achats avec différentes méthodes de paiement
   const handlePurchase = async (plan: typeof CREDIT_PLANS[0]) => {
@@ -62,7 +62,18 @@ const CreditManager = () => {
         return;
       }
 
-      if (paymentMethod === 'stripe') {
+      if (paymentMethod === 'essai') {
+        // Mode essai : ajouter les crédits directement
+        await addCredits(plan.credits);
+        
+        toast({
+          title: "Crédits ajoutés avec succès !",
+          description: `${plan.credits} crédits ont été ajoutés à votre compte en mode essai.`,
+        });
+        
+        await refetchCredits();
+        return;
+      } else if (paymentMethod === 'stripe') {
         // Méthode Stripe existante
         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
           body: {
@@ -158,7 +169,7 @@ const CreditManager = () => {
       {/* Sélecteur de méthode de paiement */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">Méthode de paiement</label>
-        <Select value={paymentMethod} onValueChange={(value: 'stripe' | 'monetique' | 'edinar') => setPaymentMethod(value)}>
+        <Select value={paymentMethod} onValueChange={(value: 'stripe' | 'monetique' | 'edinar' | 'essai') => setPaymentMethod(value)}>
           <SelectTrigger className="w-full">
             <SelectValue />
           </SelectTrigger>
@@ -181,11 +192,22 @@ const CreditManager = () => {
                 <span>e-DINAR (Démo)</span>
               </div>
             </SelectItem>
+            <SelectItem value="essai">
+              <div className="flex items-center space-x-2">
+                <Zap className="h-4 w-4" />
+                <span>Mode Essai (Gratuit)</span>
+              </div>
+            </SelectItem>
           </SelectContent>
         </Select>
-        {paymentMethod !== 'stripe' && (
+        {paymentMethod !== 'stripe' && paymentMethod !== 'essai' && (
           <div className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-2 rounded">
             🇹🇳 Mode démonstration avec valeurs théoriques
+          </div>
+        )}
+        {paymentMethod === 'essai' && (
+          <div className="text-xs text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 p-2 rounded">
+            ⚡ Mode essai : crédits ajoutés instantanément pour test
           </div>
         )}
       </div>
