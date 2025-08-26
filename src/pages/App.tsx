@@ -53,6 +53,13 @@ const Index = () => {
     };
   }, [refetchCredits]);
 
+  // Ouvre automatiquement le dialog de paiement quand les crédits atteignent 0
+  React.useEffect(() => {
+    if (!creditsLoading && credits?.remaining_credits === 0) {
+      setCreditDialogOpen(true);
+    }
+  }, [credits?.remaining_credits, creditsLoading]);
+
   // Fonction pour déterminer le style du badge crédits
   const getCreditBadgeStyle = () => {
     if (creditsLoading) return { variant: "secondary" as const, className: "animate-pulse" };
