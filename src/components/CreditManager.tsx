@@ -73,7 +73,9 @@ const CreditManager = () => {
         
         await refetchCredits();
         return;
-      } else if (paymentMethod === 'stripe') {
+      }
+      
+      if (paymentMethod === 'stripe') {
         // Méthode Stripe existante
         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
           body: {
