@@ -19,12 +19,13 @@ export const usePrompts = () => {
     setIsSaving(true);
     
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Rafraîchir la session si nécessaire
+      const { data: { session }, error: sessionError } = await supabase.auth.refreshSession();
       
-      if (!session?.user) {
+      if (sessionError || !session?.user) {
         toast({
           title: "Authentification requise",
-          description: "Veuillez vous connecter pour sauvegarder vos prompts",
+          description: "Veuillez vous reconnecter pour sauvegarder vos prompts",
           variant: "destructive"
         });
         return null;
@@ -46,11 +47,21 @@ export const usePrompts = () => {
 
       if (error) {
         console.error('Erreur lors de la sauvegarde:', error);
-        toast({
-          title: "Erreur de sauvegarde",
-          description: "Impossible de sauvegarder le prompt. Veuillez réessayer.",
-          variant: "destructive"
-        });
+        
+        // Si c'est une erreur JWT, suggérer une reconnexion
+        if (error.code === 'PGRST303') {
+          toast({
+            title: "Session expirée",
+            description: "Votre session a expiré. Veuillez vous reconnecter.",
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Erreur de sauvegarde",
+            description: "Impossible de sauvegarder le prompt. Veuillez réessayer.",
+            variant: "destructive"
+          });
+        }
         return null;
       }
 
