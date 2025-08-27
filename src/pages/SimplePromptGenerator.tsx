@@ -68,24 +68,8 @@ const SimplePromptGenerator = () => {
       return;
     }
 
-    // Check if user has credits available
-    if (!user) {
-      toast({
-        title: "Connexion requise",
-        description: "Veuillez vous connecter pour générer des prompts.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    if (!credits || credits.remaining_credits <= 0) {
-      toast({
-        title: "Crédits épuisés",
-        description: "Vous n'avez plus de crédits disponibles. Rechargez votre compte pour continuer.",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Le générateur est maintenant libre d'utilisation
+    // Pas de vérification d'authentification ou de crédits requise
 
     setIsLoading(true);
     
@@ -136,16 +120,10 @@ const SimplePromptGenerator = () => {
       const data = await response.json();
       
       if (data.choices && data.choices[0] && data.choices[0].message) {
-        // Décompter le crédit seulement après le succès de la génération
-        const creditUsed = await useCredit();
-        if (!creditUsed) {
-          throw new Error('Impossible de décompter le crédit');
-        }
-        
         setResult(data.choices[0].message.content);
         toast({
           title: "Succès",
-          description: `Prompt généré avec succès ! Crédits restants: ${credits?.remaining_credits - 1}`,
+          description: "Prompt généré avec succès !",
           variant: "default"
         });
       } else {
@@ -324,37 +302,24 @@ const SimplePromptGenerator = () => {
               </Select>
             </div>
 
-            {/* Affichage des crédits */}
-            {user && credits && !creditsLoading && (
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
-                <div className="text-sm font-medium">
-                  Crédits disponibles: {credits.remaining_credits}/{credits.total_credits}
-                </div>
-                {credits.remaining_credits <= 2 && credits.remaining_credits > 0 && (
-                  <div className="text-xs text-amber-600 mt-1">
-                    Plus que {credits.remaining_credits} crédit{credits.remaining_credits > 1 ? 's' : ''} !
-                  </div>
-                )}
-                {credits.remaining_credits === 0 && (
-                  <div className="text-xs text-destructive mt-1">
-                    Aucun crédit disponible. Rechargez votre compte.
-                  </div>
-                )}
+            {/* Section libre d'utilisation */}
+            <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="text-sm font-medium text-green-700 dark:text-green-300">
+                ✨ Générateur gratuit et libre d'utilisation
               </div>
-            )}
+              <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                Aucune connexion requise
+              </div>
+            </div>
 
             {/* Bouton générer */}
             <Button 
               onClick={generatePrompt}
-              disabled={isLoading || !objective.trim() || !user || (credits && credits.remaining_credits <= 0) || creditsLoading}
+              disabled={isLoading || !objective.trim()}
               className="w-full"
               size="lg"
             >
-              {!user ? (
-                'Connexion requise'
-              ) : credits && credits.remaining_credits <= 0 ? (
-                'Aucun crédit disponible'
-              ) : isLoading ? (
+              {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Génération en cours...
