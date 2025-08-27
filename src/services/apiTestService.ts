@@ -13,6 +13,10 @@ export class ApiTestService {
       switch (provider) {
         case 'openai':
           return await this.testOpenAI(apiKey);
+        case 'deepseek':
+          return await this.testDeepSeek(apiKey);
+        case 'glm':
+          return await this.testGLM(apiKey);
         case 'stripe':
           return await this.testStripe(apiKey);
         case 'anthropic':
@@ -80,6 +84,111 @@ export class ApiTestService {
       return {
         success: false,
         message: 'Impossible de contacter l\'API OpenAI',
+        details: error instanceof Error ? error.message : 'Erreur réseau'
+      };
+    }
+  }
+
+  /**
+   * Teste une clé API DeepSeek
+   */
+  private async testDeepSeek(apiKey: string): Promise<{
+    success: boolean;
+    message: string;
+    details?: any;
+  }> {
+    try {
+      const response = await fetch('https://api.deepseek.com/v1/models', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return {
+          success: true,
+          message: `Clé DeepSeek valide. ${data.data?.length || 0} modèles disponibles.`,
+          details: {
+            status: response.status,
+            modelsCount: data.data?.length || 0,
+            endpoint: 'https://api.deepseek.com/v1'
+          }
+        };
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          message: `Clé DeepSeek invalide: ${errorData.error?.message || 'Erreur d\'authentification'}`,
+          details: {
+            status: response.status,
+            error: errorData.error || 'Erreur inconnue'
+          }
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Impossible de contacter l\'API DeepSeek',
+        details: error instanceof Error ? error.message : 'Erreur réseau'
+      };
+    }
+  }
+
+  /**
+   * Teste une clé API GLM
+   */
+  private async testGLM(apiKey: string): Promise<{
+    success: boolean;
+    message: string;
+    details?: any;
+  }> {
+    try {
+      const response = await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'glm-4-flash',
+          messages: [
+            {
+              role: 'user',
+              content: 'Test'
+            }
+          ],
+          max_tokens: 1
+        })
+      });
+
+      if (response.ok) {
+        return {
+          success: true,
+          message: 'Clé GLM valide.',
+          details: {
+            status: response.status,
+            model: 'glm-4-flash',
+            endpoint: 'https://open.bigmodel.cn/api/paas/v4'
+          }
+        };
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          message: `Clé GLM invalide: ${errorData.error?.message || 'Erreur d\'authentification'}`,
+          details: {
+            status: response.status,
+            error: errorData.error || 'Erreur inconnue'
+          }
+        };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        message: 'Impossible de contacter l\'API GLM',
         details: error instanceof Error ? error.message : 'Erreur réseau'
       };
     }

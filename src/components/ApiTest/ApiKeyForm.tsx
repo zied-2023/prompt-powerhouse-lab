@@ -33,6 +33,22 @@ const API_PROVIDERS = [
     docUrl: 'https://platform.openai.com/api-keys'
   },
   {
+    id: 'deepseek',
+    name: 'DeepSeek',
+    placeholder: 'sk-...',
+    description: 'Testez votre clé API DeepSeek',
+    icon: '🔮',
+    docUrl: 'https://platform.deepseek.com/api_keys'
+  },
+  {
+    id: 'glm',
+    name: 'GLM (ChatGLM)',
+    placeholder: 'glm-...',
+    description: 'Testez votre clé API GLM',
+    icon: '⚡',
+    docUrl: 'https://open.bigmodel.cn/usercenter/apikeys'
+  },
+  {
     id: 'stripe',
     name: 'Stripe',
     placeholder: 'sk_test_... ou sk_live_...',
