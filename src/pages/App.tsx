@@ -27,7 +27,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
   const { t } = useTranslation();
-  const { isRTL } = useLanguage();
+  const { isRTL, language } = useLanguage();
   const { credits, isLoading: creditsLoading, refetchCredits } = useUserCredits();
 
   // Force une mise à jour des crédits toutes les 5 secondes quand l'app est visible
@@ -140,7 +140,7 @@ const Index = () => {
               </div>
             </div>
             {/* Section droite - Actions et crédits */}
-            <div className={`flex flex-col gap-3 items-start mr-auto`}>
+            <div className={`flex flex-col gap-3 ${language === 'ar' ? 'items-start mr-auto' : 'items-end ml-auto'}`}>
               {/* Badge Crédits LARGE et visible */}
               <div className={`flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
