@@ -140,7 +140,7 @@ const Index = () => {
               </div>
             </div>
             {/* Section droite - Actions et crédits */}
-            <div className={`flex flex-col gap-3 ${isRTL ? 'items-start mr-auto ml-0' : 'items-end ml-auto'}`}>
+            <div className={`flex flex-col gap-3 items-start mr-auto`}>
               {/* Badge Crédits LARGE et visible */}
               <div className={`flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30 ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
