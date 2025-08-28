@@ -123,16 +123,16 @@ const Index = () => {
       <div className="relative z-10 glass-card border-0 border-b border-white/20 dark:border-gray-700/20 sticky top-0 backdrop-blur-xl">
         <div className="container mx-auto px-6 py-6">
           <div className="flex items-center justify-between">
-            <div className={`flex items-center space-x-4 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
+            <div className={`flex items-center ${isRTL ? 'flex-row-reverse space-x-reverse' : 'space-x-4'}`}>
               <div className="relative">
                 <img 
                   src="/logo.png?v=2"
                   alt="AutoPrompt Logo" 
                   className="w-16 h-16 object-contain"
                 />
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full animate-pulse"></div>
+                <div className={`absolute -top-1 w-4 h-4 bg-emerald-400 rounded-full animate-pulse ${isRTL ? '-left-1' : '-right-1'}`}></div>
               </div>
-              <div>
+              <div className={`${isRTL ? 'text-right' : 'text-left'} ${isRTL ? 'mr-4' : 'ml-4'}`}>
                 <h1 className="text-3xl font-bold gradient-text text-shadow">
                   {t('title')}
                 </h1>
@@ -140,15 +140,15 @@ const Index = () => {
               </div>
             </div>
             {/* Section droite - Actions et crédits */}
-            <div className={`flex flex-col items-end gap-3 ml-auto ${isRTL ? 'items-start mr-auto ml-0' : ''}`}>
+            <div className={`flex flex-col gap-3 ${isRTL ? 'items-start mr-auto ml-0' : 'items-end ml-auto'}`}>
               {/* Badge Crédits LARGE et visible */}
-              <div className="flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30">
-                <div className="flex items-center gap-2">
+              <div className={`flex items-center gap-3 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-3 border border-white/20 dark:border-gray-700/30 ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400/30 to-orange-500/30 flex items-center justify-center border-2 border-yellow-400/50">
                     <Coins className="h-5 w-5 text-yellow-500" />
                   </div>
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-1">
+                  <div className={`flex flex-col ${isRTL ? 'items-end' : 'items-start'}`}>
+                    <div className={`flex items-center gap-1 ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <span className="text-lg font-bold text-gray-900 dark:text-white">
                         {creditsLoading ? (
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current"></div>
@@ -196,7 +196,7 @@ const Index = () => {
               </div>
 
               {/* Actions du header */}
-              <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
+              <div className={`flex items-center ${isRTL ? 'flex-row-reverse space-x-reverse' : 'space-x-3'}`}>
                 <ThemeSelector />
                 <LanguageSelector />
                 <LogoutButton />

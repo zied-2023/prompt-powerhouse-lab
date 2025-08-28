@@ -8,6 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { toast } from "@/hooks/use-toast";
 import { ChevronLeft, ChevronRight, Sparkles, Target, Users, Zap, CheckCircle, AlertCircle, Eye, Save, Info } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { usePrompts } from "@/hooks/usePrompts";
 import StepObjective from "./MultiStepPromptBuilder/StepObjective";
 import StepContext from "./MultiStepPromptBuilder/StepContext";
@@ -43,6 +44,7 @@ interface PromptData {
 
 const MultiStepPromptBuilder = () => {
   const { t } = useTranslation();
+  const { isRTL } = useLanguage();
   const { savePrompt, isSaving } = usePrompts();
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -338,13 +340,13 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
 
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+      <div className={`grid grid-cols-1 xl:grid-cols-3 gap-8 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Sidebar avec les étapes */}
         <div className="xl:col-span-1">
           <Card className="glass-card border-white/30 shadow-2xl sticky top-8">
             <CardHeader className="pb-4">
-              <CardTitle className="flex items-center justify-between text-xl">
-                <div className="flex items-center space-x-3">
+              <CardTitle className={`flex items-center justify-between text-xl ${isRTL ? 'flex-row-reverse' : ''}`}>
+                <div className={`flex items-center ${isRTL ? 'space-x-reverse flex-row-reverse' : 'space-x-3'}`}>
                   <div className="w-8 h-8 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
                     <Sparkles className="h-5 w-5 text-white" />
                   </div>
@@ -370,12 +372,12 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
             </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <div className="flex justify-between items-center">
+              <div className={`flex justify-between items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   {t('progress')}
                 </span>
                 <span className="text-sm font-bold text-violet-600">
-                  {currentStep}/{steps.length}
+                  {isRTL ? `${steps.length}/${currentStep}` : `${currentStep}/${steps.length}`}
                 </span>
               </div>
               <Progress value={progress} className="h-2" />
@@ -394,7 +396,7 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
                     <TooltipTrigger asChild>
                       <div
                         onClick={() => isAccessible && goToStep(step.id)}
-                        className={`flex items-start space-x-3 p-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+                        className={`flex items-start ${isRTL ? 'space-x-reverse flex-row-reverse' : 'space-x-3'} p-3 rounded-lg transition-all duration-300 transform hover:scale-105 ${
                           isActive 
                             ? 'bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-700 shadow-lg' 
                             : isCompleted 
@@ -419,8 +421,8 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
                             <IconComponent className="h-4 w-4" />
                           )}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
+                        <div className={`flex-1 min-w-0 ${isRTL ? 'text-right' : 'text-left'}`}>
+                          <div className={`flex items-center gap-2 ${isRTL ? 'flex-row-reverse justify-end' : ''}`}>
                             <h4 className={`font-semibold text-sm ${
                               isActive ? 'text-violet-700 dark:text-violet-300' : 'text-gray-700 dark:text-gray-300'
                             }`}>
@@ -473,12 +475,12 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
             {/* Aperçu en temps réel */}
             {previewPrompt && (
               <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2 mb-3">
+                <div className={`flex items-center gap-2 mb-3 ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <Eye className="h-4 w-4 text-gray-500" />
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Aperçu</span>
                 </div>
                 <div className="bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg">
-                  <pre className="text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap font-mono leading-relaxed max-h-32 overflow-y-auto">
+                  <pre className={`text-xs text-gray-600 dark:text-gray-400 whitespace-pre-wrap font-mono leading-relaxed max-h-32 overflow-y-auto ${isRTL ? 'text-right' : 'text-left'}`}>
                     {previewPrompt}
                   </pre>
                 </div>

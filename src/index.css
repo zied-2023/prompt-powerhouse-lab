@@ -134,6 +134,7 @@
     font-feature-settings: "cv03", "cv04", "cv11";
   }
 
+  /* Support RTL complet */
   [dir="rtl"] {
     direction: rtl;
   }
@@ -144,6 +145,100 @@
 
   [dir="rtl"] .flex-row-reverse {
     flex-direction: row-reverse;
+  }
+
+  /* Gestion des marges et paddings en RTL */
+  [dir="rtl"] .ml-auto {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  [dir="rtl"] .mr-auto {
+    margin-right: 0;
+    margin-left: auto;
+  }
+
+  /* Alignement du texte en RTL */
+  [dir="rtl"] .text-left {
+    text-align: right;
+  }
+
+  [dir="rtl"] .text-right {
+    text-align: left;
+  }
+
+  /* Bordures en RTL */
+  [dir="rtl"] .border-l {
+    border-left: none;
+    border-right: 1px solid;
+  }
+
+  [dir="rtl"] .border-r {
+    border-right: none;
+    border-left: 1px solid;
+  }
+
+  /* Positionnement en RTL */
+  [dir="rtl"] .left-0 {
+    left: auto;
+    right: 0;
+  }
+
+  [dir="rtl"] .right-0 {
+    right: auto;
+    left: 0;
+  }
+
+  /* Transformation pour icônes en RTL */
+  [dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+  }
+
+  /* Support pour les grilles en RTL */
+  [dir="rtl"] .grid {
+    direction: rtl;
+  }
+
+  [dir="rtl"] .grid > * {
+    direction: ltr;
+  }
+
+  /* Flexbox amélioré pour RTL */
+  [dir="rtl"] .flex {
+    direction: rtl;
+  }
+
+  [dir="rtl"] .flex > * {
+    direction: ltr;
+  }
+
+  /* Support typographique pour l'arabe */
+  [lang="ar"] {
+    font-family: 'Noto Sans Arabic', 'Cairo', 'Tajawal', system-ui, sans-serif;
+    line-height: 1.8;
+    letter-spacing: normal;
+  }
+
+  [lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3 {
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  [lang="ar"] .text-sm {
+    font-size: 0.9rem;
+  }
+
+  [lang="ar"] .text-lg {
+    font-size: 1.15rem;
+  }
+
+  /* Espacement amélioré pour l'arabe */
+  [lang="ar"] .space-y-2 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 0.75rem;
+  }
+
+  [lang="ar"] .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1.25rem;
   }
 
   input, textarea, select {
