@@ -104,25 +104,21 @@ const Landing = () => {
           {language === 'ar' ? (
             // Organisation spéciale pour le mode arabe - tout aligné à droite
             <div className="flex items-center justify-end w-full">
-              {/* Contrôles de gauche en mode arabe */}
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'} ml-auto`}>
-                <ThemeSelector />
-                <LanguageSelector />
-              </div>
-              
-              {/* Logo et titre alignés à droite en mode arabe */}
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'} mx-4`}>
-                <img 
-                  src="/logo.png" 
-                  alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
-                  className="h-14 w-14 object-contain"
-                />
-                <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
-              </div>
-              
-              {/* Actions à droite en mode arabe */}
-              <div className="flex items-center">
+              {/* Tous les éléments alignés à droite avec espacement approprié */}
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
                 <AuthButtons />
+                <LanguageSelector />
+                <ThemeSelector />
+                
+                {/* Logo et titre */}
+                <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'} border-r border-border/50 pr-4`}>
+                  <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+                  <img 
+                    src="/logo.png" 
+                    alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
+                    className="h-14 w-14 object-contain"
+                  />
+                </div>
               </div>
             </div>
           ) : (
