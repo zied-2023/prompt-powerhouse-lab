@@ -103,10 +103,10 @@ const Landing = () => {
         <div className="container mx-auto px-4 py-4">
           {language === 'ar' ? (
             // Organisation spéciale pour le mode arabe
-            <div className="flex items-center justify-between">
-              {/* Espace ou action à gauche en mode arabe */}
-              <div className="flex-1">
-                {/* Espace vide à gauche pour correspondre au layout de la page app */}
+            <div className="flex items-center">
+              {/* Actions à gauche en mode arabe */}
+              <div className="flex items-center space-x-4 flex-1">
+                <AuthButtons />
               </div>
               
               {/* Logo et titre au centre en mode arabe */}
@@ -123,7 +123,6 @@ const Landing = () => {
               <div className={`flex items-center flex-1 justify-end ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
                 <ThemeSelector />
                 <LanguageSelector />
-                <AuthButtons />
               </div>
             </div>
           ) : (
