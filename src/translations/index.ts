@@ -17,6 +17,52 @@ export interface TranslationKey {
   french: string;
   arabic: string;
   
+  // Landing page keys
+  landingBadge: string;
+  landingSubtitle: string;
+  landingCTA: string;
+  startFree: string;
+  freeAccess: string;
+  immediateAccess: string;
+  usersCount: string;
+  allYouNeed: string;
+  allYouNeedDesc: string;
+  whatUsersSay: string;
+  whatUsersSayDesc: string;
+  readyRevolution: string;
+  readyRevolutionDesc: string;
+  startNowFree: string;
+  platformPreview: string;
+  platformPreviewDesc: string;
+  simpleGeneration: string;
+  simpleGenerationDesc: string;
+  advancedMode: string;
+  advancedModeDesc: string;
+  libraryMode: string;
+  libraryModeDesc: string;
+  
+  // Simple generator keys
+  simpleGeneratorBadge: string;
+  createPrompts: string;
+  efficient: string;
+  transformIdeas: string;
+  promptConfiguration: string;
+  promptConfigurationDesc: string;
+  whatObjective: string;
+  toneStyleOptional: string;
+  selectTone: string;
+  freeGenerator: string;
+  noConnectionRequired: string;
+  generatePrompt: string;
+  generating: string;
+  optimizedPrompt: string;
+  promptGeneratedSuccess: string;
+  copyPrompt: string;
+  needMoreFeatures: string;
+  needMoreFeaturesDesc: string;
+  exploreAdvanced: string;
+  home: string;
+  
   // Category Manager keys
   textGeneration: string;
   textGenerationDesc: string;
@@ -344,6 +390,52 @@ export const translations: Record<string, TranslationKey> = {
     french: "French",
     arabic: "Arabic",
     
+    // Landing page keys
+    landingBadge: "Professional AI Prompt Generation Platform",
+    landingSubtitle: "Transform your ideas into optimized prompts with our AI-powered platform. Generate, improve and organize your prompts like never before.",
+    landingCTA: "Start Free",
+    startFree: "100% Free",
+    freeAccess: "Immediate access",
+    immediateAccess: "Immediate access",
+    usersCount: "10K+ users",
+    allYouNeed: "Everything you need",
+    allYouNeedDesc: "Powerful and intuitive tools to create exceptional prompts",
+    whatUsersSay: "What our users say",
+    whatUsersSayDesc: "Join thousands of professionals who trust AutoPrompt",
+    readyRevolution: "Ready to revolutionize your prompts?",
+    readyRevolutionDesc: "Join thousands of users already creating exceptional prompts with AutoPrompt.",
+    startNowFree: "Start Now - It's Free",
+    platformPreview: "Platform Preview",
+    platformPreviewDesc: "Discover our different generation modes",
+    simpleGeneration: "Simple Generation",
+    simpleGenerationDesc: "Intuitive interface to quickly create optimized prompts",
+    advancedMode: "Advanced Mode",
+    advancedModeDesc: "Complex multi-step workflows with conditional logic",
+    libraryMode: "Library",
+    libraryModeDesc: "Organize, save and reuse your creations",
+    
+    // Simple generator keys
+    simpleGeneratorBadge: "Simple and Fast AI Generator",
+    createPrompts: "Create Prompts",
+    efficient: "Efficient",
+    transformIdeas: "Transform your ideas into optimized prompts in a few clicks. Simple interface, professional results.",
+    promptConfiguration: "Prompt Configuration",
+    promptConfigurationDesc: "Describe your objective and customize the style to get the perfect prompt",
+    whatObjective: "What is your objective?",
+    toneStyleOptional: "Tone/Style (optional)",
+    selectTone: "Select a tone",
+    freeGenerator: "✨ Free and open generator",
+    noConnectionRequired: "No connection required",
+    generatePrompt: "Generate Prompt",
+    generating: "Generating...",
+    optimizedPrompt: "Your Optimized Prompt",
+    promptGeneratedSuccess: "Prompt generated successfully! You can copy or save it.",
+    copyPrompt: "Copy Prompt",
+    needMoreFeatures: "Need more features?",
+    needMoreFeaturesDesc: "Discover our advanced mode with multi-step workflows, conditional logic and much more.",
+    exploreAdvanced: "Explore Advanced Mode",
+    home: "Home",
+    
     // Category Manager keys
     textGeneration: "Text Generation",
     textGenerationDesc: "Create written content with AI assistance",
@@ -660,6 +752,52 @@ export const translations: Record<string, TranslationKey> = {
     english: "Anglais",
     french: "Français",
     arabic: "Arabe",
+    
+    // Landing page keys
+    landingBadge: "Plateforme de Génération de Prompts IA Professionnelle",
+    landingSubtitle: "Transformez vos idées en prompts optimisés grâce à notre plateforme alimentée par l'IA. Générez, améliorez et organisez vos prompts comme jamais auparavant.",
+    landingCTA: "Commencer Gratuitement",
+    startFree: "100% Gratuit",
+    freeAccess: "Accès immédiat",
+    immediateAccess: "Accès immédiat",
+    usersCount: "10K+ utilisateurs",
+    allYouNeed: "Tout ce dont vous avez besoin",
+    allYouNeedDesc: "Des outils puissants et intuitifs pour créer des prompts d'exception",
+    whatUsersSay: "Ce que disent nos utilisateurs",
+    whatUsersSayDesc: "Rejoignez des milliers de professionnels qui font confiance à AutoPrompt",
+    readyRevolution: "Prêt à révolutionner vos prompts ?",
+    readyRevolutionDesc: "Rejoignez des milliers d'utilisateurs qui créent déjà des prompts exceptionnels avec AutoPrompt.",
+    startNowFree: "Commencer Maintenant - C'est Gratuit",
+    platformPreview: "Aperçu de la plateforme",
+    platformPreviewDesc: "Découvrez nos différents modes de génération",
+    simpleGeneration: "Génération Simple",
+    simpleGenerationDesc: "Interface intuitive pour créer rapidement des prompts optimisés",
+    advancedMode: "Mode Avancé",
+    advancedModeDesc: "Workflows complexes multi-étapes avec logique conditionnelle",
+    libraryMode: "Bibliothèque",
+    libraryModeDesc: "Organisez, sauvegardez et réutilisez vos créations",
+    
+    // Simple generator keys
+    simpleGeneratorBadge: "Générateur IA Simple et Rapide",
+    createPrompts: "Créez des Prompts",
+    efficient: "Efficaces",
+    transformIdeas: "Transformez vos idées en prompts optimisés en quelques clics. Interface simple, résultats professionnels.",
+    promptConfiguration: "Configuration du Prompt",
+    promptConfigurationDesc: "Décrivez votre objectif et personnalisez le style pour obtenir le prompt parfait",
+    whatObjective: "Quel est votre objectif ?",
+    toneStyleOptional: "Ton/Style (optionnel)",
+    selectTone: "Sélectionnez un ton",
+    freeGenerator: "✨ Générateur gratuit et libre d'utilisation",
+    noConnectionRequired: "Aucune connexion requise",
+    generatePrompt: "Générer le Prompt",
+    generating: "Génération en cours...",
+    optimizedPrompt: "Votre Prompt Optimisé",
+    promptGeneratedSuccess: "Prompt généré avec succès ! Vous pouvez le copier ou le sauvegarder.",
+    copyPrompt: "Copier le Prompt",
+    needMoreFeatures: "Besoin de plus de fonctionnalités ?",
+    needMoreFeaturesDesc: "Découvrez notre mode avancé avec workflows multi-étapes, logique conditionnelle et bien plus.",
+    exploreAdvanced: "Explorer le Mode Avancé",
+    home: "Accueil",
     
     // Category Manager keys
     textGeneration: "Génération de Texte",

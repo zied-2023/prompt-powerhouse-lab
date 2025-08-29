@@ -125,7 +125,7 @@ const Landing = () => {
             <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-full border border-violet-200 dark:border-violet-700 mb-8 animate-fade-in">
               <Sparkles className="h-4 w-4 mr-2 text-violet-600 dark:text-violet-300" />
               <span className="text-sm font-medium text-violet-700 dark:text-violet-300">
-                {t('subtitle')}
+                {t('landingBadge')}
               </span>
             </div>
 
@@ -140,8 +140,7 @@ const Landing = () => {
 
             {/* Subtitle */}
             <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in">
-              Transformez vos idées en prompts optimisés grâce à notre plateforme alimentée par l'IA. 
-              Générez, améliorez et organisez vos prompts comme jamais auparavant.
+              {t('landingSubtitle')}
             </p>
 
             {/* CTA Buttons */}
@@ -151,7 +150,7 @@ const Landing = () => {
                 onClick={() => navigate('/generator')}
                 className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
               >
-                Commencer Gratuitement
+                {t('landingCTA')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
@@ -160,17 +159,17 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-muted-foreground animate-fade-in">
               <div className="flex items-center space-x-2">
                 <Shield className="h-4 w-4 text-green-500" />
-                <span>100% Gratuit</span>
+                <span>{t('startFree')}</span>
               </div>
               <span className="hidden sm:inline">•</span>
               <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-blue-500" />
-                <span>Accès immédiat</span>
+                <span>{t('immediateAccess')}</span>
               </div>
               <span className="hidden sm:inline">•</span>
               <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4 text-violet-500" />
-                <span>10K+ utilisateurs</span>
+                <span>{t('usersCount')}</span>
               </div>
             </div>
           </div>

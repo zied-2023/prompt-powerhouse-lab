@@ -220,7 +220,7 @@ const SimplePromptGenerator = () => {
               
               <nav className={`hidden md:flex items-center ${isRTL ? 'space-x-reverse space-x-6' : 'space-x-6'}`}>
                 <Link to="/" className="text-sm font-bold text-foreground hover:text-primary transition-colors px-3 py-2 rounded-md hover:bg-accent border border-border">
-                  Accueil
+                  {t('home')}
                 </Link>
               </nav>
               
@@ -247,35 +247,34 @@ const SimplePromptGenerator = () => {
               <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-full border border-violet-200 dark:border-violet-700 mb-4">
                 <Sparkles className="h-4 w-4 mr-2 text-violet-600 dark:text-violet-300" />
                 <span className="text-sm font-medium text-violet-700 dark:text-violet-300">
-                  Générateur IA Simple et Rapide
+                  {t('simpleGeneratorBadge')}
                 </span>
               </div>
               <h1 className="text-4xl md:text-5xl font-display font-bold gradient-text leading-tight">
-                {t('generator')}
+                {t('createPrompts')}
                 <br />
                 <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                  Efficaces
+                  {t('efficient')}
                 </span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Transformez vos idées en prompts optimisés en quelques clics. 
-                Interface simple, résultats professionnels.
+                {t('transformIdeas')}
               </p>
             </div>
 
             {/* Formulaire de génération */}
             <Card className="bg-card/60 backdrop-blur-sm border-border/50 shadow-xl animate-fade-in">
               <CardHeader className="text-center pb-4">
-                <CardTitle className="text-2xl font-display font-bold text-foreground">Configuration du Prompt</CardTitle>
+                <CardTitle className="text-2xl font-display font-bold text-foreground">{t('promptConfiguration')}</CardTitle>
                 <CardDescription className="text-base">
-                  Décrivez votre objectif et personnalisez le style pour obtenir le prompt parfait
+                  {t('promptConfigurationDesc')}
                 </CardDescription>
               </CardHeader>
           <CardContent className="space-y-4">
             {/* Zone objectif */}
             <div className="space-y-2">
               <Label htmlFor="objective" className="text-sm font-medium text-foreground">
-                Quel est votre objectif ? *
+                {t('whatObjective')} *
               </Label>
               <Textarea
                 id="objective"
@@ -290,11 +289,11 @@ const SimplePromptGenerator = () => {
             {/* Sélecteur de ton/style */}
             <div className="space-y-2">
               <Label htmlFor="tone" className="text-sm font-medium text-foreground">
-                Ton/Style (optionnel)
+                {t('toneStyleOptional')}
               </Label>
               <Select value={tone} onValueChange={setTone} disabled={isLoading}>
                 <SelectTrigger className="bg-input text-foreground border-border">
-                  <SelectValue placeholder="Sélectionnez un ton" />
+                  <SelectValue placeholder={t('selectTone')} />
                 </SelectTrigger>
                 <SelectContent>
                   {toneOptions.map((option) => (
@@ -309,10 +308,10 @@ const SimplePromptGenerator = () => {
             {/* Section libre d'utilisation */}
             <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
               <div className="text-sm font-medium text-green-700 dark:text-green-300">
-                ✨ Générateur gratuit et libre d'utilisation
+                {t('freeGenerator')}
               </div>
               <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                Aucune connexion requise
+                {t('noConnectionRequired')}
               </div>
             </div>
 
@@ -326,10 +325,10 @@ const SimplePromptGenerator = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Génération en cours...
+                  {t('generating')}
                 </>
               ) : (
-                'Générer le Prompt'
+                t('generatePrompt')
               )}
             </Button>
           </CardContent>
@@ -341,11 +340,11 @@ const SimplePromptGenerator = () => {
                 <CardHeader className="text-center pb-4">
                   <CardTitle className="flex items-center justify-center gap-2 text-2xl font-display font-bold text-foreground">
                     {result && <CheckCircle className="h-6 w-6 text-green-500" />}
-                    Votre Prompt Optimisé
+                    {t('optimizedPrompt')}
                   </CardTitle>
                   {result && (
                     <CardDescription>
-                      Prompt généré avec succès ! Vous pouvez le copier ou le sauvegarder.
+                      {t('promptGeneratedSuccess')}
                     </CardDescription>
                   )}
                 </CardHeader>
@@ -374,7 +373,7 @@ const SimplePromptGenerator = () => {
                         className="flex items-center gap-2 border-violet-200 dark:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-900/20"
                       >
                         <Copy className="h-4 w-4" />
-                        Copier le Prompt
+                        {t('copyPrompt')}
                       </Button>
                     </div>
                   </div>
@@ -386,9 +385,9 @@ const SimplePromptGenerator = () => {
           {/* Section d'aide */}
           <Card className="bg-gradient-to-r from-violet-600/10 to-blue-600/10 backdrop-blur-sm border-violet-200/50 dark:border-violet-700/50">
             <CardContent className="p-6 text-center">
-              <h3 className="text-lg font-semibold text-foreground mb-2">Besoin de plus de fonctionnalités ?</h3>
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t('needMoreFeatures')}</h3>
               <p className="text-muted-foreground mb-4">
-                Découvrez notre mode avancé avec workflows multi-étapes, logique conditionnelle et bien plus.
+                {t('needMoreFeaturesDesc')}
               </p>
               <Button 
                 variant="outline" 
@@ -401,7 +400,7 @@ const SimplePromptGenerator = () => {
                 })}
               >
                 <Lock className="h-4 w-4 mr-2" />
-                Explorer le Mode Avancé
+                {t('exploreAdvanced')}
               </Button>
             </CardContent>
           </Card>
