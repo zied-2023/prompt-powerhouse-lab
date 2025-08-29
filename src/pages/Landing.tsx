@@ -103,9 +103,9 @@ const Landing = () => {
         <div className="w-full py-4">
           {language === 'ar' ? (
             // Organisation spéciale pour le mode arabe - tout aligné à l'extrême droite
-            <div className="flex items-center justify-end w-full pr-8">
-              {/* Tous les éléments alignés à l'extrême droite avec ml-auto pour forcer l'alignement */}
-              <div className={`flex items-center ml-auto ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+            <div className="flex items-center justify-end w-full">
+              {/* Tous les éléments alignés à l'extrême droite avec padding plus important */}
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'} pr-8`}>
                 <AuthButtons />
                 <LanguageSelector />
                 <ThemeSelector />
