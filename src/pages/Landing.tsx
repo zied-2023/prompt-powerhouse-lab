@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -13,13 +13,6 @@ const Landing = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-
-  // Composant pour les icônes directionnelles adaptatives
-  const DirectionalArrow = ({ className = "h-5 w-5" }) => {
-    return isRTL ? 
-      <ArrowLeft className={className} /> : 
-      <ArrowRight className={className} />;
-  };
 
   const features = [
     {
@@ -104,23 +97,52 @@ const Landing = () => {
         keywords="prompt generator, IA, intelligence artificielle, automatisation, productivité, génération de contenu, ChatGPT, prompts optimisés, workflow, création de contenu"
         structuredData={structuredData}
       />
-      <div className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 ${isRTL ? 'rtl' : 'ltr'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <div className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className={`flex items-center ${isRTL ? 'ml-auto space-x-reverse space-x-3' : 'mr-auto space-x-3'}`}>
-            <img 
-              src="/logo.png" 
-              alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
-              className="h-14 w-14 object-contain"
-            />
-            <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
-          </div>
-          <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
-            <ThemeSelector />
-            <LanguageSelector />
-            <AuthButtons />
-          </div>
+        <div className="container mx-auto px-4 py-4">
+          {language === 'ar' ? (
+            // Organisation spéciale pour le mode arabe
+            <div className="flex items-center">
+              {/* Actions à gauche en mode arabe */}
+              <div className="flex items-center space-x-4 flex-1">
+                <AuthButtons />
+              </div>
+              
+              {/* Logo et titre au centre en mode arabe */}
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+                <img 
+                  src="/logo.png" 
+                  alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
+                  className="h-14 w-14 object-contain"
+                />
+                <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+              </div>
+              
+              {/* Contrôles à droite en mode arabe */}
+              <div className={`flex items-center flex-1 justify-end ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+                <ThemeSelector />
+                <LanguageSelector />
+              </div>
+            </div>
+          ) : (
+            // Organisation normale pour français/anglais
+            <div className="flex justify-between items-center">
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+                <img 
+                  src="/logo.png" 
+                  alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
+                  className="h-14 w-14 object-contain"
+                />
+                <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+              </div>
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+                <ThemeSelector />
+                <LanguageSelector />
+                <AuthButtons />
+              </div>
+            </div>
+          )}
         </div>
       </header>
 
@@ -130,7 +152,7 @@ const Landing = () => {
           <div className="max-w-4xl mx-auto">
             {/* Badge */}
             <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-full border border-violet-200 dark:border-violet-700 mb-8 animate-fade-in">
-              <Sparkles className={`h-4 w-4 text-violet-600 dark:text-violet-300 ${isRTL ? 'ml-2' : 'mr-2'}`} />
+              <Sparkles className="h-4 w-4 mr-2 text-violet-600 dark:text-violet-300" />
               <span className="text-sm font-medium text-violet-700 dark:text-violet-300">
                 {t('landingBadge')}
               </span>
@@ -158,23 +180,23 @@ const Landing = () => {
                 className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
               >
                 {t('landingCTA')}
-                <DirectionalArrow className={isRTL ? 'mr-2' : 'ml-2'} />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
 
             {/* Trust indicators */}
-            <div className={`flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 text-sm text-muted-foreground animate-fade-in ${isRTL ? 'sm:space-x-reverse sm:space-x-6' : 'sm:space-x-6'}`}>
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-muted-foreground animate-fade-in">
+              <div className="flex items-center space-x-2">
                 <Shield className="h-4 w-4 text-green-500" />
                 <span>{t('startFree')}</span>
               </div>
               <span className="hidden sm:inline">•</span>
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+              <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-blue-500" />
                 <span>{t('immediateAccess')}</span>
               </div>
               <span className="hidden sm:inline">•</span>
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+              <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4 text-violet-500" />
                 <span>{t('usersCount')}</span>
               </div>
@@ -217,15 +239,15 @@ const Landing = () => {
                   className="group p-6 bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 hover:border-violet-200 dark:hover:border-violet-700 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/10 hover:-translate-y-2 animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className={`p-3 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-xl w-fit mb-4 group-hover:scale-110 transition-transform duration-300 ${isRTL ? 'mr-auto' : 'ml-0'}`}>
+                  <div className="p-3 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-xl w-fit mb-4 group-hover:scale-110 transition-transform duration-300">
                     <div className="text-violet-600 dark:text-violet-300">
                       {feature.icon}
                     </div>
                   </div>
-                  <h3 className={`text-xl font-semibold mb-2 text-foreground ${isRTL ? 'text-right' : 'text-left'}`}>
+                  <h3 className="text-xl font-semibold mb-2 text-foreground">
                     {feature.title}
                   </h3>
-                  <p className={`text-muted-foreground leading-relaxed ${isRTL ? 'text-right' : 'text-left'}`}>
+                  <p className="text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
                 </article>
@@ -253,15 +275,15 @@ const Landing = () => {
                   className="p-6 bg-card/60 backdrop-blur-sm rounded-2xl border border-border/50 hover:shadow-lg transition-all duration-300 animate-fade-in"
                   style={{ animationDelay: `${index * 150}ms` }}
                 >
-                  <div className={`flex items-center mb-4 ${isRTL ? 'justify-end space-x-reverse space-x-1' : 'justify-start space-x-1'}`}>
+                  <div className="flex items-center mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
                       <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
-                  <blockquote className={`text-muted-foreground mb-4 italic ${isRTL ? 'text-right' : 'text-left'}`}>
+                  <blockquote className="text-muted-foreground mb-4 italic">
                     "{testimonial.content}"
                   </blockquote>
-                  <div className={`border-t border-border/50 pt-4 ${isRTL ? 'text-right' : 'text-left'}`}>
+                  <div className="border-t border-border/50 pt-4">
                     <div className="font-semibold text-foreground">
                       {testimonial.name}
                     </div>
@@ -291,7 +313,7 @@ const Landing = () => {
                 className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
               >
                 Commencer Maintenant - C'est Gratuit
-                <DirectionalArrow className={isRTL ? 'mr-2' : 'ml-2'} />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -309,23 +331,23 @@ const Landing = () => {
                   Découvrez nos différents modes de génération
                 </p>
               </div>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className={`space-y-3 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <div className={`p-3 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg w-fit ${isRTL ? 'mr-auto' : 'ml-0'}`}>
+              <div className="grid md:grid-cols-3 gap-6 text-left">
+                <div className="space-y-3">
+                  <div className="p-3 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg w-fit">
                     <Target className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
                   </div>
                   <h4 className="font-semibold text-foreground">Génération Simple</h4>
                   <p className="text-sm text-muted-foreground">Interface intuitive pour créer rapidement des prompts optimisés</p>
                 </div>
-                <div className={`space-y-3 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <div className={`p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg w-fit ${isRTL ? 'mr-auto' : 'ml-0'}`}>
+                <div className="space-y-3">
+                  <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg w-fit">
                     <Zap className="h-5 w-5 text-blue-600 dark:text-blue-300" />
                   </div>
                   <h4 className="font-semibold text-foreground">Mode Avancé</h4>
                   <p className="text-sm text-muted-foreground">Workflows complexes multi-étapes avec logique conditionnelle</p>
                 </div>
-                <div className={`space-y-3 ${isRTL ? 'text-right' : 'text-left'}`}>
-                  <div className={`p-3 bg-violet-100 dark:bg-violet-900/50 rounded-lg w-fit ${isRTL ? 'mr-auto' : 'ml-0'}`}>
+                <div className="space-y-3">
+                  <div className="p-3 bg-violet-100 dark:bg-violet-900/50 rounded-lg w-fit">
                     <BookOpen className="h-5 w-5 text-violet-600 dark:text-violet-300" />
                   </div>
                   <h4 className="font-semibold text-foreground">Bibliothèque</h4>
@@ -339,14 +361,14 @@ const Landing = () => {
 
       <Footer />
 
-      {/* Floating Elements - Position adaptée pour RTL */}
-      <div className={`fixed top-1/4 animate-float ${isRTL ? 'right-8' : 'left-8'}`}>
+      {/* Floating Elements */}
+      <div className="fixed top-1/4 left-8 animate-float">
         <div className="w-16 h-16 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full opacity-20 blur-xl"></div>
       </div>
-      <div className={`fixed top-1/2 animate-float ${isRTL ? 'left-12' : 'right-12'}`} style={{ animationDelay: '1s' }}>
+      <div className="fixed top-1/2 right-12 animate-float" style={{ animationDelay: '1s' }}>
         <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-emerald-400 rounded-full opacity-20 blur-xl"></div>
       </div>
-      <div className={`fixed bottom-1/4 animate-float ${isRTL ? 'right-16' : 'left-16'}`} style={{ animationDelay: '2s' }}>
+      <div className="fixed bottom-1/4 left-16 animate-float" style={{ animationDelay: '2s' }}>
         <div className="w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 blur-xl"></div>
       </div>
       </div>
