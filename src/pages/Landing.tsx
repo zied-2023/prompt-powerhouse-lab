@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -102,9 +103,9 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 py-4">
           {language === 'ar' ? (
-            // Organisation spéciale pour le mode arabe - tout aligné à droite
-            <div className="flex items-center justify-end w-full">
-              {/* Tous les éléments alignés à droite avec espacement approprié */}
+            // Organisation spéciale pour le mode arabe - tout aligné à l'extrême droite
+            <div className="flex items-center justify-end w-full pr-4">
+              {/* Tous les éléments alignés à l'extrême droite */}
               <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
                 <AuthButtons />
                 <LanguageSelector />
