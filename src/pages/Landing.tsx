@@ -101,7 +101,7 @@ const Landing = () => {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+          <div className={`flex items-center ml-auto ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
             <img 
               src="/logo.png" 
               alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
