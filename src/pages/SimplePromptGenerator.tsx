@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import ThemeSelector from '@/components/ThemeSelector';
 import LanguageSelector from '@/components/LanguageSelector';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { AuthButtons } from '@/components/auth/AuthButtons';
 import { usePrompts } from '@/hooks/usePrompts';
 import { useUserCredits } from '@/hooks/useUserCredits';
@@ -32,6 +33,7 @@ const SimplePromptGenerator = () => {
   const { toast } = useToast();
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit, isLoading: creditsLoading } = useUserCredits();
+  const { language, isRTL } = useLanguage();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -198,13 +200,13 @@ const SimplePromptGenerator = () => {
         description="Créez des prompts IA optimisés rapidement avec notre générateur simple. Interface intuitive, différents tons disponibles, sauvegarde et copie facile."
         keywords="générateur prompt, IA simple, création prompt rapide, optimisation prompt, assistant IA, générateur contenu"
       />
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20">
+      <div className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 ${isRTL ? 'rtl' : 'ltr'}`}>
         {/* Header professionnel */}
         <header className="bg-background/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50">
           <div className="container mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
-              <div className="flex items-center space-x-4">
-                <Link to="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity">
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+                <Link to="/" className={`flex items-center hover:opacity-80 transition-opacity ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
                   <img 
                     src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
                     alt="AutoPrompt Logo" 
@@ -214,13 +216,13 @@ const SimplePromptGenerator = () => {
                 </Link>
               </div>
               
-              <nav className="hidden md:flex items-center space-x-6">
+              <nav className={`hidden md:flex items-center ${isRTL ? 'space-x-reverse space-x-6' : 'space-x-6'}`}>
                 <Link to="/" className="text-sm font-bold text-foreground hover:text-primary transition-colors px-3 py-2 rounded-md hover:bg-accent border border-border">
                   Accueil
                 </Link>
               </nav>
               
-              <div className="flex items-center space-x-4">
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
                 <ThemeSelector />
                 <LanguageSelector />
                 <AuthButtons />

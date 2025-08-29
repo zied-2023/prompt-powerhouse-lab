@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useLanguage } from "@/contexts/LanguageContext";
 import ThemeSelector from "@/components/ThemeSelector";
 import LanguageSelector from "@/components/LanguageSelector";
 import { AuthButtons } from "@/components/auth/AuthButtons";
@@ -11,6 +12,7 @@ import SEOHead from "@/components/SEOHead";
 const Landing = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { language, isRTL } = useLanguage();
 
   const features = [
     {
@@ -95,11 +97,11 @@ const Landing = () => {
         keywords="prompt generator, IA, intelligence artificielle, automatisation, productivité, génération de contenu, ChatGPT, prompts optimisés, workflow, création de contenu"
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20">
+      <div className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-3">
+          <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
             <img 
               src="/logo.png" 
               alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
@@ -107,7 +109,7 @@ const Landing = () => {
             />
             <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
             <ThemeSelector />
             <LanguageSelector />
             <AuthButtons />
