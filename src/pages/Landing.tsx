@@ -110,7 +110,7 @@ const Landing = () => {
               </div>
               
               {/* Logo et titre au centre en mode arabe */}
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+              <div className={`flex items-center justify-end ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
                 <img 
                   src="/logo.png" 
                   alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
