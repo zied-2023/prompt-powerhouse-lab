@@ -125,13 +125,13 @@ const Landing = () => {
             <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-full border border-violet-200 dark:border-violet-700 mb-8 animate-fade-in">
               <Sparkles className="h-4 w-4 mr-2 text-violet-600 dark:text-violet-300" />
               <span className="text-sm font-medium text-violet-700 dark:text-violet-300">
-                Plateforme de Génération de Prompts IA Professionnelle
+                {t('subtitle')}
               </span>
             </div>
 
             {/* Title */}
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 gradient-text leading-tight animate-fade-in">
-              Créez des Prompts
+              {t('title')}
               <br />
               <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
                 Parfaits

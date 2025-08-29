@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import ThemeSelector from '@/components/ThemeSelector';
 import LanguageSelector from '@/components/LanguageSelector';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTranslation } from '@/hooks/useTranslation';
 import { AuthButtons } from '@/components/auth/AuthButtons';
 import { usePrompts } from '@/hooks/usePrompts';
 import { useUserCredits } from '@/hooks/useUserCredits';
@@ -34,6 +35,7 @@ const SimplePromptGenerator = () => {
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit, isLoading: creditsLoading } = useUserCredits();
   const { language, isRTL } = useLanguage();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -249,7 +251,7 @@ const SimplePromptGenerator = () => {
                 </span>
               </div>
               <h1 className="text-4xl md:text-5xl font-display font-bold gradient-text leading-tight">
-                Créez des Prompts
+                {t('generator')}
                 <br />
                 <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
                   Efficaces
