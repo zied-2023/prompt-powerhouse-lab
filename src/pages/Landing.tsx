@@ -100,19 +100,48 @@ const Landing = () => {
       <div className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className={`flex items-center ${language === 'ar' ? 'ml-auto' : ''} ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
-            <img 
-              src="/logo.png" 
-              alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
-              className="h-14 w-14 object-contain"
-            />
-            <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
-          </div>
-          <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
-            <ThemeSelector />
-            <LanguageSelector />
-            <AuthButtons />
+        <div className="container mx-auto px-4 py-4">
+          <div className={`flex items-center ${language === 'ar' ? 'justify-between' : 'justify-between'}`}>
+            {language === 'ar' ? (
+              <>
+                {/* Espace vide à gauche en mode arabe */}
+                <div className="flex-1"></div>
+                
+                {/* Logo et titre au centre en mode arabe */}
+                <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+                  <img 
+                    src="/logo.png" 
+                    alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
+                    className="h-14 w-14 object-contain"
+                  />
+                  <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+                </div>
+                
+                {/* Contrôles à droite en mode arabe */}
+                <div className={`flex items-center flex-1 justify-end ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+                  <ThemeSelector />
+                  <LanguageSelector />
+                  <AuthButtons />
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Organisation normale pour français/anglais */}
+                <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+                  <img 
+                    src="/logo.png" 
+                    alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
+                    className="h-14 w-14 object-contain"
+                  />
+                  <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+                </div>
+                <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+                  <ThemeSelector />
+                  <LanguageSelector />
+                  <AuthButtons />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </header>
