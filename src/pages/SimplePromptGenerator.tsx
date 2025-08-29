@@ -206,60 +206,28 @@ const SimplePromptGenerator = () => {
         {/* Header professionnel */}
         <header className="bg-background/80 backdrop-blur-xl border-b border-border/50 sticky top-0 z-50">
           <div className="container mx-auto px-4 py-4">
-            <div className={`flex items-center ${language === 'ar' ? 'justify-between' : 'justify-between'}`}>
-              {language === 'ar' ? (
-                <>
-                  {/* Navigation à gauche en mode arabe */}
-                  <nav className={`flex items-center ${isRTL ? 'space-x-reverse space-x-6' : 'space-x-6'}`}>
-                    <Link to="/" className="text-sm font-bold text-foreground hover:text-primary transition-colors px-3 py-2 rounded-md hover:bg-accent border border-border">
-                      {t('home')}
-                    </Link>
-                  </nav>
-                  
-                  {/* Logo et titre au centre en mode arabe */}
-                  <Link to="/" className={`flex items-center hover:opacity-80 transition-opacity ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
-                    <img 
-                      src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
-                      alt="AutoPrompt Logo" 
-                      className="h-10 w-10 object-contain"
-                    />
-                    <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+            <div className={`flex items-center justify-between`}>
+              {/* Logo et titre à gauche */}
+              <Link to="/" className={`flex items-center hover:opacity-80 transition-opacity ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+                <img 
+                  src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+                  alt="AutoPrompt Logo" 
+                  className="h-10 w-10 object-contain"
+                />
+                <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+              </Link>
+              
+              {/* Navigation et contrôles à droite */}
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+                <nav className={`flex items-center ${isRTL ? 'space-x-reverse space-x-6' : 'space-x-6'}`}>
+                  <Link to="/" className="text-sm font-bold text-foreground hover:text-primary transition-colors px-3 py-2 rounded-md hover:bg-accent border border-border">
+                    {t('home')}
                   </Link>
-                  
-                  {/* Contrôles à droite en mode arabe */}
-                  <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
-                    <ThemeSelector />
-                    <LanguageSelector />
-                    <AuthButtons />
-                  </div>
-                </>
-              ) : (
-                <>
-                  {/* Organisation normale pour français/anglais */}
-                  <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
-                    <Link to="/" className={`flex items-center hover:opacity-80 transition-opacity ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
-                      <img 
-                        src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
-                        alt="AutoPrompt Logo" 
-                        className="h-10 w-10 object-contain"
-                      />
-                      <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
-                    </Link>
-                  </div>
-                  
-                  <nav className={`hidden md:flex items-center ${isRTL ? 'space-x-reverse space-x-6' : 'space-x-6'}`}>
-                    <Link to="/" className="text-sm font-bold text-foreground hover:text-primary transition-colors px-3 py-2 rounded-md hover:bg-accent border border-border">
-                      {t('home')}
-                    </Link>
-                  </nav>
-                  
-                  <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
-                    <ThemeSelector />
-                    <LanguageSelector />
-                    <AuthButtons />
-                  </div>
-                </>
-              )}
+                </nav>
+                <ThemeSelector />
+                <LanguageSelector />
+                <AuthButtons />
+              </div>
             </div>
           </div>
         </header>
