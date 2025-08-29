@@ -102,15 +102,16 @@ const Landing = () => {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-4 py-4">
           {language === 'ar' ? (
-            // Organisation spéciale pour le mode arabe
-            <div className="flex items-center">
-              {/* Actions à gauche en mode arabe */}
-              <div className="flex items-center space-x-4 flex-1">
-                <AuthButtons />
+            // Organisation spéciale pour le mode arabe - tout aligné à droite
+            <div className="flex items-center justify-end w-full">
+              {/* Contrôles de gauche en mode arabe */}
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'} ml-auto`}>
+                <ThemeSelector />
+                <LanguageSelector />
               </div>
               
-              {/* Logo et titre au centre en mode arabe */}
-              <div className={`flex items-center justify-end ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+              {/* Logo et titre alignés à droite en mode arabe */}
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'} mx-4`}>
                 <img 
                   src="/logo.png" 
                   alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
@@ -119,10 +120,9 @@ const Landing = () => {
                 <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
               </div>
               
-              {/* Contrôles à droite en mode arabe */}
-              <div className={`flex items-center flex-1 justify-end ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
-                <ThemeSelector />
-                <LanguageSelector />
+              {/* Actions à droite en mode arabe */}
+              <div className="flex items-center">
+                <AuthButtons />
               </div>
             </div>
           ) : (
