@@ -54,6 +54,8 @@ export interface TranslationKey {
   viewDetails: string;
   addToFavorites: string;
   removeFromFavorites: string;
+  buy: string;
+  preview: string;
   
   // Language selector keys
   english: string;
@@ -469,6 +471,8 @@ export const translations: Record<string, TranslationKey> = {
     viewDetails: "View Details",
     addToFavorites: "Add to favorites",
     removeFromFavorites: "Remove from favorites",
+    buy: "Buy",
+    preview: "Preview",
     
     // Language selector keys
     english: "English",
@@ -874,6 +878,8 @@ export const translations: Record<string, TranslationKey> = {
     viewDetails: "Voir Détails",
     addToFavorites: "Ajouter aux favoris",
     removeFromFavorites: "Retirer des favoris",
+    buy: "Acheter",
+    preview: "Aperçu",
     
     // Language selector keys
     english: "Anglais",
@@ -1271,6 +1277,8 @@ export const translations: Record<string, TranslationKey> = {
     viewDetails: "عرض التفاصيل",
     addToFavorites: "أضف إلى المفضلة",
     removeFromFavorites: "إزالة من المفضلة",
+    buy: "شراء",
+    preview: "معاينة",
     
     // Language selector keys
     english: "الإنجليزية",

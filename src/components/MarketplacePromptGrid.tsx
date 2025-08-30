@@ -440,7 +440,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                           onClick={() => setSelectedPrompt(prompt)}
                         >
                           <Eye className="h-4 w-4 mr-1" />
-                          Aperçu
+                          {t('preview')}
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -468,7 +468,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                             <div className="bg-muted/50 p-6 rounded-lg">
                               <h4 className="font-semibold mb-3 flex items-center gap-2">
                                 <Eye className="h-4 w-4" />
-                                Aperçu du contenu
+                                {t('preview')} du contenu
                               </h4>
                               <div className="prose prose-sm dark:prose-invert max-w-none">
                                 <pre className="whitespace-pre-wrap text-sm bg-background/50 p-4 rounded border">
@@ -550,7 +550,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                             <div className="flex gap-3 pt-4 border-t">
                               <Button className="flex-1" size="lg">
                                 <ShoppingCart className="h-4 w-4 mr-2" />
-                                Acheter maintenant
+                                {t('buy')} maintenant
                               </Button>
                               <Button 
                                 variant="outline" 
@@ -571,7 +571,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                     
                     <Button size="sm" className="gap-1">
                       <ShoppingCart className="h-4 w-4" />
-                      Acheter
+                      {t('buy')}
                     </Button>
                   </div>
                 </CardContent>
