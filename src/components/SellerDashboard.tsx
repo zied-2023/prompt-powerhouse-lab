@@ -26,8 +26,10 @@ import {
 } from "lucide-react";
 import { useMarketplace, type MarketplacePrompt, type LicenseType } from "@/hooks/useMarketplace";
 import { usePrompts } from "@/hooks/usePrompts";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const SellerDashboard = () => {
+  const { t } = useTranslation();
   const [marketplacePrompts, setMarketplacePrompts] = useState<MarketplacePrompt[]>([]);
   const [userPrompts, setUserPrompts] = useState<any[]>([]);
   const [licenseTypes, setLicenseTypes] = useState<LicenseType[]>([]);
@@ -191,15 +193,15 @@ const SellerDashboard = () => {
       {/* En-tête */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold gradient-text">Tableau de Bord Vendeur</h2>
-          <p className="text-muted-foreground">Gérez vos prompts sur le marketplace</p>
+          <h2 className="text-2xl font-bold gradient-text">{t('sellerDashboard')}</h2>
+          <p className="text-muted-foreground">{t('managePrompts')}</p>
         </div>
         
         <Dialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2">
               <Plus className="h-4 w-4" />
-              Publier un Prompt
+              {t('publishPrompt')}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-md">
@@ -274,20 +276,20 @@ const SellerDashboard = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="glass-card border-white/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Gains Totaux</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalEarnings')}</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{formatPrice(stats.totalEarnings)}</div>
             <p className="text-xs text-muted-foreground">
-              Commission déduite
+              {t('commission')}
             </p>
           </CardContent>
         </Card>
 
         <Card className="glass-card border-white/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ventes Totales</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalSales')}</CardTitle>
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -300,7 +302,7 @@ const SellerDashboard = () => {
 
         <Card className="glass-card border-white/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Prompts Publiés</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('publishedPrompts')}</CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -313,7 +315,7 @@ const SellerDashboard = () => {
 
         <Card className="glass-card border-white/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Note Moyenne</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('averageRating')}</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -330,9 +332,9 @@ const SellerDashboard = () => {
       {/* Contenu principal */}
       <Tabs defaultValue="prompts" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="prompts">Mes Prompts</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="reviews">Avis</TabsTrigger>
+          <TabsTrigger value="prompts">{t('myPrompts')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('analytics')}</TabsTrigger>
+          <TabsTrigger value="reviews">{t('reviews')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="prompts">
@@ -341,14 +343,14 @@ const SellerDashboard = () => {
               <CardContent className="pt-6 text-center py-12">
                 <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-muted-foreground mb-2">
-                  Aucun prompt publié
+                  {t('noPromptsPublished')}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  Commencez par publier votre premier prompt sur le marketplace
+                  {t('startPublishing')}
                 </p>
                 <Button onClick={() => setPublishDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
-                  Publier un Prompt
+                  {t('publishPrompt')}
                 </Button>
               </CardContent>
             </Card>

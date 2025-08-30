@@ -14,6 +14,21 @@ export interface TranslationKey {
   marketplace: string;
   seller: string;
   
+  // Seller Dashboard keys
+  sellerDashboard: string;
+  managePrompts: string;
+  publishPrompt: string;
+  averageRating: string;
+  publishedPrompts: string;
+  totalSales: string;
+  totalEarnings: string;
+  commission: string;
+  noPromptsPublished: string;
+  startPublishing: string;
+  myPrompts: string;
+  analytics: string;
+  reviews: string;
+  
   // Language selector keys
   english: string;
   french: string;
@@ -388,6 +403,21 @@ export const translations: Record<string, TranslationKey> = {
     marketplace: "Marketplace",
     seller: "Sell",
     
+    // Seller Dashboard keys
+    sellerDashboard: "Seller Dashboard",
+    managePrompts: "Manage your prompts on the marketplace",
+    publishPrompt: "Publish a Prompt",
+    averageRating: "Average Rating",
+    publishedPrompts: "Published Prompts",
+    totalSales: "Total Sales",
+    totalEarnings: "Total Earnings",
+    commission: "Commission deducted",
+    noPromptsPublished: "No prompts published",
+    startPublishing: "Start by publishing your first prompt on the marketplace",
+    myPrompts: "My Prompts",
+    analytics: "Analytics",
+    reviews: "Reviews",
+    
     // Language selector keys
     english: "English",
     french: "French",
@@ -752,6 +782,21 @@ export const translations: Record<string, TranslationKey> = {
     marketplace: "Marché",
     seller: "Vendre",
     
+    // Seller Dashboard keys
+    sellerDashboard: "Tableau de Bord Vendeur",
+    managePrompts: "Gérez vos prompts sur le marketplace",
+    publishPrompt: "Publier un Prompt",
+    averageRating: "Note Moyenne",
+    publishedPrompts: "Prompts Publiés",
+    totalSales: "Ventes Totales",
+    totalEarnings: "Gains Totaux",
+    commission: "Commission déduite",
+    noPromptsPublished: "Aucun prompt publié",
+    startPublishing: "Commencez par publier votre premier prompt sur le marketplace",
+    myPrompts: "Mes Prompts",
+    analytics: "Analytics",
+    reviews: "Avis",
+    
     // Language selector keys
     english: "Anglais",
     french: "Français",
@@ -1107,6 +1152,21 @@ export const translations: Record<string, TranslationKey> = {
     noCode: "بدون كود",
     marketplace: "السوق",
     seller: "بيع",
+    
+    // Seller Dashboard keys
+    sellerDashboard: "لوحة تحكم البائع",
+    managePrompts: "إدارة النصوص التوجيهية في السوق",
+    publishPrompt: "نشر نص توجيهي",
+    averageRating: "التقييم المتوسط",
+    publishedPrompts: "النصوص المنشورة",
+    totalSales: "إجمالي المبيعات",
+    totalEarnings: "إجمالي الأرباح",
+    commission: "العمولة مخصومة",
+    noPromptsPublished: "لا توجد نصوص منشورة",
+    startPublishing: "ابدأ بنشر أول نص توجيهي في السوق",
+    myPrompts: "نصوصي",
+    analytics: "التحليلات",
+    reviews: "التقييمات",
     
     // Language selector keys
     english: "الإنجليزية",
