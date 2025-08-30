@@ -469,7 +469,10 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                           variant="outline" 
                           size="sm" 
                           className="flex-1"
-                          onClick={() => setSelectedPrompt(prompt)}
+                          onClick={() => {
+                            console.log('Setting selected prompt:', prompt);
+                            setSelectedPrompt(prompt);
+                          }}
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           {t('preview')}
@@ -478,68 +481,67 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="flex items-center justify-between">
-                            {selectedPrompt?.prompts?.title || t('promptDetails')}
+                            {prompt.prompts?.title || t('promptDetails')}
                             <div className="flex items-center gap-2">
-                              <Badge className={getLicenseBadgeColor(selectedPrompt?.license_type || '')}>
-                                {selectedPrompt?.license_type}
+                              <Badge className={getLicenseBadgeColor(prompt.license_type || '')}>
+                                {prompt.license_type}
                               </Badge>
                               <div className="text-2xl font-bold text-primary">
-                                {selectedPrompt && formatPrice(selectedPrompt.price, selectedPrompt.currency)}
+                                {formatPrice(prompt.price, prompt.currency)}
                               </div>
                             </div>
                           </DialogTitle>
                           <DialogDescription>
-                            {selectedPrompt?.prompts?.description || t('promptPreview')}
+                            {prompt.prompts?.description || t('promptPreview')}
                           </DialogDescription>
                         </DialogHeader>
-                         {selectedPrompt && (
-                           <div className="space-y-6">
-                             {/* Indicateurs de qualité */}
-                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-primary/5 rounded-lg">
-                               <div className="text-center">
-                                 <div className="text-lg font-bold text-primary">
-                                   {selectedPrompt?.marketplace_reviews?.length || 0}
-                                 </div>
-                                 <div className="text-xs text-muted-foreground">{t('reviews')}</div>
-                               </div>
-                               <div className="text-center">
-                                 <div className="text-lg font-bold text-primary">
-                                   {getAverageRating(selectedPrompt.marketplace_reviews || []) > 0 ? getAverageRating(selectedPrompt.marketplace_reviews || []).toFixed(1) : '—'}
-                                 </div>
-                                 <div className="text-xs text-muted-foreground">{t('rating')}</div>
-                               </div>
-                               <div className="text-center">
-                                 <div className="text-lg font-bold text-primary">
-                                   {selectedPrompt?.sales_count || 0}
-                                 </div>
-                                 <div className="text-xs text-muted-foreground">{t('salesCount')}</div>
-                               </div>
-                               <div className="text-center">
-                                 <div className="text-lg font-bold text-primary">
-                                   {selectedPrompt?.prompts?.content?.length || 0}
-                                 </div>
-                                 <div className="text-xs text-muted-foreground">{t('characters')}</div>
-                               </div>
-                             </div>
+                         <div className="space-y-6">
+                              {/* Indicateurs de qualité */}
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-primary/5 rounded-lg">
+                                <div className="text-center">
+                                  <div className="text-lg font-bold text-primary">
+                                    {prompt.marketplace_reviews?.length || 0}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">{t('reviews')}</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-lg font-bold text-primary">
+                                    {getAverageRating(prompt.marketplace_reviews || []) > 0 ? getAverageRating(prompt.marketplace_reviews || []).toFixed(1) : '—'}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">{t('rating')}</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-lg font-bold text-primary">
+                                    {prompt.sales_count || 0}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">{t('salesCount')}</div>
+                                </div>
+                                <div className="text-center">
+                                  <div className="text-lg font-bold text-primary">
+                                    {prompt.prompts?.content?.length || 0}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">{t('characters')}</div>
+                                </div>
+                              </div>
 
-                             {/* Aperçu du contenu (partiellement masqué) */}
-                             <div className="bg-muted/50 p-6 rounded-lg">
-                               <h4 className="font-semibold mb-3 flex items-center gap-2">
-                                 <Eye className="h-4 w-4" />
-                                 {t('promptPreview')}
-                               </h4>
+                              {/* Aperçu du contenu (partiellement masqué) */}
+                              <div className="bg-muted/50 p-6 rounded-lg">
+                                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                  <Eye className="h-4 w-4" />
+                                  {t('promptPreview')}
+                                </h4>
                                 <div className="prose prose-sm dark:prose-invert max-w-none relative">
-                                  {selectedPrompt.prompts?.content ? (
+                                  {prompt.prompts?.content ? (
                                     <pre className="whitespace-pre-wrap text-sm bg-background/50 p-4 rounded border">
-                                      {selectedPrompt.prompts.content.substring(0, 200)}
-                                      {selectedPrompt.prompts.content.length > 200 && '...'}
+                                      {prompt.prompts.content.substring(0, 200)}
+                                      {prompt.prompts.content.length > 200 && '...'}
                                     </pre>
                                   ) : (
                                     <div className="text-center py-8 text-muted-foreground">
                                       {t('noContentAvailable')}
                                     </div>
                                   )}
-                                  {selectedPrompt.prompts?.content && selectedPrompt.prompts.content.length > 200 && (
+                                  {prompt.prompts?.content && prompt.prompts.content.length > 200 && (
                                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background flex items-end justify-center pb-4">
                                       <Badge variant="secondary" className="bg-primary/20 text-primary">
                                         {t('buyToSeeComplete')}
@@ -547,39 +549,39 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                                     </div>
                                   )}
                                 </div>
-                             </div>
+                              </div>
 
-                             {/* Informations détaillées */}
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                               <div className="space-y-4">
-                                 <h4 className="font-semibold">Informations</h4>
-                                 <div className="space-y-2 text-sm">
-                                   <div className="flex justify-between">
-                                     <span className="text-muted-foreground">Vendeur:</span>
-                                     <span>{selectedPrompt.profiles?.email}</span>
-                                   </div>
-                                   <div className="flex justify-between">
-                                     <span className="text-muted-foreground">Date de création:</span>
-                                     <span>{formatDate(selectedPrompt.created_at)}</span>
-                                   </div>
-                                   <div className="flex justify-between">
-                                     <span className="text-muted-foreground">Catégorie:</span>
-                                     <span>{selectedPrompt.prompts?.category || 'Non classé'}</span>
-                                   </div>
-                                   {selectedPrompt.prompts?.tags && selectedPrompt.prompts.tags.length > 0 && (
-                                     <div>
-                                       <span className="text-muted-foreground">Tags:</span>
-                                       <div className="flex flex-wrap gap-1 mt-1">
-                                         {selectedPrompt.prompts.tags.map((tag, index) => (
-                                           <Badge key={index} variant="secondary" className="text-xs">
-                                             {tag}
-                                           </Badge>
-                                         ))}
-                                       </div>
-                                     </div>
-                                   )}
-                                 </div>
-                               </div>
+                              {/* Informations détaillées */}
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold">Informations</h4>
+                                  <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Vendeur:</span>
+                                      <span>{prompt.profiles?.email}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Date de création:</span>
+                                      <span>{formatDate(prompt.created_at)}</span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">Catégorie:</span>
+                                      <span>{prompt.prompts?.category || 'Non classé'}</span>
+                                    </div>
+                                    {prompt.prompts?.tags && prompt.prompts.tags.length > 0 && (
+                                      <div>
+                                        <span className="text-muted-foreground">Tags:</span>
+                                        <div className="flex flex-wrap gap-1 mt-1">
+                                          {prompt.prompts.tags.map((tag, index) => (
+                                            <Badge key={index} variant="secondary" className="text-xs">
+                                              {tag}
+                                            </Badge>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
 
                                <div className="space-y-4">
                                  <h4 className="font-semibold">Aperçu qualité</h4>
@@ -665,11 +667,10 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                               >
                                 <Heart className="h-4 w-4" />
                               </Button>
-                            </div>
-                          </div>
-                        )}
-                      </DialogContent>
-                    </Dialog>
+                             </div>
+                         </div>
+                       </DialogContent>
+                     </Dialog>
 
                     <Button variant="outline" size="sm" onClick={() => addToFavorites(prompt.id)}>
                       <Heart className="h-4 w-4" />
