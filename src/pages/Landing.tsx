@@ -17,31 +17,31 @@ const Landing = () => {
   const features = [
     {
       icon: <Sparkles className="h-8 w-8" />,
-      title: "Génération Intelligente",
-      description: "Créez des prompts optimisés avec l'IA"
+      title: t('simpleGeneration'),
+      description: t('simpleGenerationDesc')
     },
     {
       icon: <Target className="h-8 w-8" />,
-      title: "Multi-étapes Avancé", 
-      description: "Construisez des workflows complexes"
+      title: t('advancedMode'), 
+      description: t('advancedModeDesc')
     },
     {
       icon: <BookOpen className="h-8 w-8" />,
-      title: "Bibliothèque Complète",
-      description: "Accédez à des milliers de templates"
+      title: t('libraryMode'),
+      description: t('libraryModeDesc')
     },
     {
       icon: <Zap className="h-8 w-8" />,
-      title: "Amélioration Continue",
-      description: "Optimisez vos résultats automatiquement"
+      title: t('improvement'),
+      description: t('improvementDesc')
     }
   ];
 
   const stats = [
-    { number: "10K+", label: "Prompts générés" },
-    { number: "500+", label: "Utilisateurs actifs" },
-    { number: "98%", label: "Satisfaction client" },
-    { number: "24/7", label: "Support disponible" }
+    { number: "10K+", label: t('usersCount') },
+    { number: "500+", label: t('usersCount') },
+    { number: "98%", label: t('usersCount') },
+    { number: "24/7", label: t('usersCount') }
   ];
 
   const testimonials = [
@@ -159,7 +159,7 @@ const Landing = () => {
               {t('title')}
               <br />
               <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                Parfaits
+                {language === 'en' ? 'Perfect' : language === 'ar' ? 'مثالية' : 'Parfaits'}
               </span>
             </h1>
 
@@ -221,10 +221,10 @@ const Landing = () => {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 gradient-text">
-                Tout ce dont vous avez besoin
+                {t('allYouNeed')}
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Des outils puissants et intuitifs pour créer des prompts d'exception
+                {t('allYouNeedDesc')}
               </p>
             </div>
             
@@ -257,10 +257,10 @@ const Landing = () => {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-4 gradient-text">
-                Ce que disent nos utilisateurs
+                {t('whatUsersSay')}
               </h2>
               <p className="text-lg text-muted-foreground">
-                Rejoignez des milliers de professionnels qui font confiance à AutoPrompt
+                {t('whatUsersSayDesc')}
               </p>
             </div>
             
@@ -298,17 +298,17 @@ const Landing = () => {
           <div className="max-w-4xl mx-auto text-center">
             <div className="p-12 bg-gradient-to-r from-violet-600/10 to-blue-600/10 backdrop-blur-sm rounded-3xl border border-violet-200/50 dark:border-violet-700/50">
               <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 gradient-text">
-                Prêt à révolutionner vos prompts ?
+                {t('readyRevolution')}
               </h2>
               <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Rejoignez des milliers d'utilisateurs qui créent déjà des prompts exceptionnels avec AutoPrompt.
+                {t('readyRevolutionDesc')}
               </p>
               <Button 
                 size="lg" 
                 onClick={() => navigate('/generator')}
                 className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
               >
-                Commencer Maintenant - C'est Gratuit
+                {t('startNowFree')}
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
@@ -321,10 +321,10 @@ const Landing = () => {
             <div className="p-8 bg-card/60 backdrop-blur-sm rounded-3xl border border-border/50 shadow-2xl">
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-display font-bold mb-2 gradient-text">
-                  Aperçu de la plateforme
+                  {t('platformPreview')}
                 </h3>
                 <p className="text-muted-foreground">
-                  Découvrez nos différents modes de génération
+                  {t('platformPreviewDesc')}
                 </p>
               </div>
               <div className="grid md:grid-cols-3 gap-6 text-left">
@@ -332,22 +332,22 @@ const Landing = () => {
                   <div className="p-3 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg w-fit">
                     <Target className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
                   </div>
-                  <h4 className="font-semibold text-foreground">Génération Simple</h4>
-                  <p className="text-sm text-muted-foreground">Interface intuitive pour créer rapidement des prompts optimisés</p>
+                  <h4 className="font-semibold text-foreground">{t('simpleGeneration')}</h4>
+                  <p className="text-sm text-muted-foreground">{t('simpleGenerationDesc')}</p>
                 </div>
                 <div className="space-y-3">
                   <div className="p-3 bg-blue-100 dark:bg-blue-900/50 rounded-lg w-fit">
                     <Zap className="h-5 w-5 text-blue-600 dark:text-blue-300" />
                   </div>
-                  <h4 className="font-semibold text-foreground">Mode Avancé</h4>
-                  <p className="text-sm text-muted-foreground">Workflows complexes multi-étapes avec logique conditionnelle</p>
+                  <h4 className="font-semibold text-foreground">{t('advancedMode')}</h4>
+                  <p className="text-sm text-muted-foreground">{t('advancedModeDesc')}</p>
                 </div>
                 <div className="space-y-3">
                   <div className="p-3 bg-violet-100 dark:bg-violet-900/50 rounded-lg w-fit">
                     <BookOpen className="h-5 w-5 text-violet-600 dark:text-violet-300" />
                   </div>
-                  <h4 className="font-semibold text-foreground">Bibliothèque</h4>
-                  <p className="text-sm text-muted-foreground">Organisez, sauvegardez et réutilisez vos créations</p>
+                  <h4 className="font-semibold text-foreground">{t('libraryMode')}</h4>
+                  <p className="text-sm text-muted-foreground">{t('libraryModeDesc')}</p>
                 </div>
               </div>
             </div>
