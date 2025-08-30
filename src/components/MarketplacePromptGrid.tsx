@@ -426,6 +426,25 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                     </div>
                   </div>
 
+                  {/* Prévisualisation du contenu */}
+                  {prompt.prompts?.content && (
+                    <div className="bg-muted/50 rounded-lg p-3 border">
+                      <div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+                        <Eye className="w-3 h-3" />
+                        {t('preview')}
+                      </div>
+                      <p className="text-sm text-foreground line-clamp-3">
+                        {prompt.prompts.content.length > 200 
+                          ? `${prompt.prompts.content.substring(0, 200)}...`
+                          : prompt.prompts.content
+                        }
+                      </p>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {prompt.prompts.content.length} {t('characters')}
+                      </div>
+                    </div>
+                  )}
+
                   {/* Tags */}
                   {prompt.prompts?.tags && prompt.prompts.tags.length > 0 && (
                     <div className="flex flex-wrap gap-1">
