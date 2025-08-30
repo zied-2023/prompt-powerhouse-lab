@@ -27,6 +27,7 @@ import {
 import { useMarketplace, type MarketplacePrompt, type LicenseType } from "@/hooks/useMarketplace";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useTranslation } from "@/hooks/useTranslation";
+import NewPromptForm from "@/components/NewPromptForm";
 
 const SellerDashboard = () => {
   const { t } = useTranslation();
@@ -204,70 +205,88 @@ const SellerDashboard = () => {
               {t('publishPrompt')}
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Publier sur le Marketplace</DialogTitle>
+              <DialogTitle>Créer et Publier un Prompt</DialogTitle>
               <DialogDescription>
-                Sélectionnez un prompt et définissez ses conditions de vente
+                Créez un nouveau prompt directement ou sélectionnez un prompt existant
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="prompt-select">Prompt à publier *</Label>
-                <Select value={selectedPrompt} onValueChange={setSelectedPrompt}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choisir un prompt" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availablePrompts.map(prompt => (
-                      <SelectItem key={prompt.id} value={prompt.id}>
-                        {prompt.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="price">Prix (USD) *</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  step="0.01"
-                  placeholder="9.99"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
+            
+            <Tabs defaultValue="new" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="new">Nouveau Prompt</TabsTrigger>
+                <TabsTrigger value="existing">Prompt Existant</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="new" className="space-y-4 mt-4">
+                <NewPromptForm 
+                  onSuccess={() => {
+                    setPublishDialogOpen(false);
+                    loadData();
+                  }}
+                  licenseTypes={licenseTypes}
                 />
-              </div>
+              </TabsContent>
+              
+              <TabsContent value="existing" className="space-y-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prompt-select">Prompt à publier *</Label>
+                  <Select value={selectedPrompt} onValueChange={setSelectedPrompt}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir un prompt" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availablePrompts.map(prompt => (
+                        <SelectItem key={prompt.id} value={prompt.id}>
+                          {prompt.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="license">Type de licence *</Label>
-                <Select value={selectedLicense} onValueChange={setSelectedLicense}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Choisir une licence" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {licenseTypes.map(license => (
-                      <SelectItem key={license.id} value={license.name}>
-                        <div className="flex flex-col items-start">
-                          <span className="font-medium">{license.name}</span>
-                          <span className="text-xs text-muted-foreground">{license.description}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price">Prix (USD) *</Label>
+                  <Input
+                    id="price"
+                    type="number"
+                    step="0.01"
+                    placeholder="9.99"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                  />
+                </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button variant="outline" onClick={() => setPublishDialogOpen(false)} className="flex-1">
-                  Annuler
-                </Button>
-                <Button onClick={handlePublishPrompt} disabled={isSaving} className="flex-1">
-                  {isSaving ? "Publication..." : "Publier"}
-                </Button>
-              </div>
-            </div>
+                <div className="space-y-2">
+                  <Label htmlFor="license">Type de licence *</Label>
+                  <Select value={selectedLicense} onValueChange={setSelectedLicense}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choisir une licence" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {licenseTypes.map(license => (
+                        <SelectItem key={license.id} value={license.name}>
+                          <div className="flex flex-col items-start">
+                            <span className="font-medium">{license.name}</span>
+                            <span className="text-xs text-muted-foreground">{license.description}</span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex gap-2 pt-4">
+                  <Button variant="outline" onClick={() => setPublishDialogOpen(false)} className="flex-1">
+                    Annuler
+                  </Button>
+                  <Button onClick={handlePublishPrompt} disabled={isSaving} className="flex-1">
+                    {isSaving ? "Publication..." : "Publier"}
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
           </DialogContent>
         </Dialog>
       </div>
