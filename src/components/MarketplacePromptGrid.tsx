@@ -399,12 +399,25 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                   {/* Évaluations et ventes */}
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      {averageRating > 0 && (
+                      {averageRating > 0 ? (
                         <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                          <div className="flex items-center">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star
+                                key={star}
+                                className={`w-3 h-3 ${
+                                  star <= averageRating
+                                    ? 'text-yellow-500 fill-current'
+                                    : 'text-gray-300'
+                                }`}
+                              />
+                            ))}
+                          </div>
                           <span className="text-sm font-medium">{averageRating.toFixed(1)}</span>
                           <span className="text-sm text-muted-foreground">({reviewCount})</span>
                         </div>
+                      ) : (
+                        <span className="text-sm text-muted-foreground italic">{t('noReviewsYet')}</span>
                       )}
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Users className="w-4 h-4" />
@@ -462,89 +475,159 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                             </DialogDescription>
                           )}
                         </DialogHeader>
-                        {selectedPrompt && (
-                          <div className="space-y-6">
-                            {/* Contenu du prompt */}
-                            <div className="bg-muted/50 p-6 rounded-lg">
-                              <h4 className="font-semibold mb-3 flex items-center gap-2">
-                                <Eye className="h-4 w-4" />
-                                {t('preview')} du contenu
-                              </h4>
-                              <div className="prose prose-sm dark:prose-invert max-w-none">
-                                <pre className="whitespace-pre-wrap text-sm bg-background/50 p-4 rounded border">
-                                  {selectedPrompt.prompts?.content.substring(0, 500)}
-                                  {(selectedPrompt.prompts?.content.length || 0) > 500 && '...'}
-                                </pre>
-                              </div>
-                            </div>
+                         {selectedPrompt && (
+                           <div className="space-y-6">
+                             {/* Indicateurs de qualité */}
+                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-primary/5 rounded-lg">
+                               <div className="text-center">
+                                 <div className="text-lg font-bold text-primary">
+                                   {selectedPrompt?.marketplace_reviews?.length || 0}
+                                 </div>
+                                 <div className="text-xs text-muted-foreground">{t('reviews')}</div>
+                               </div>
+                               <div className="text-center">
+                                 <div className="text-lg font-bold text-primary">
+                                   {getAverageRating(selectedPrompt.marketplace_reviews || []) > 0 ? getAverageRating(selectedPrompt.marketplace_reviews || []).toFixed(1) : '—'}
+                                 </div>
+                                 <div className="text-xs text-muted-foreground">{t('rating')}</div>
+                               </div>
+                               <div className="text-center">
+                                 <div className="text-lg font-bold text-primary">
+                                   {selectedPrompt?.sales_count || 0}
+                                 </div>
+                                 <div className="text-xs text-muted-foreground">{t('salesCount')}</div>
+                               </div>
+                               <div className="text-center">
+                                 <div className="text-lg font-bold text-primary">
+                                   {selectedPrompt?.prompts?.content?.length || 0}
+                                 </div>
+                                 <div className="text-xs text-muted-foreground">{t('characters')}</div>
+                               </div>
+                             </div>
 
-                            {/* Informations détaillées */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              <div className="space-y-4">
-                                <h4 className="font-semibold">Informations</h4>
-                                <div className="space-y-2 text-sm">
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Vendeur:</span>
-                                    <span>{selectedPrompt.profiles?.email}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Date de création:</span>
-                                    <span>{formatDate(selectedPrompt.created_at)}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">Ventes:</span>
-                                    <span>{selectedPrompt.sales_count}</span>
-                                  </div>
-                                  {selectedPrompt.prompts?.category && (
-                                    <div className="flex justify-between">
-                                      <span className="text-muted-foreground">Catégorie:</span>
-                                      <span>{selectedPrompt.prompts.category}</span>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
+                             {/* Aperçu du contenu (partiellement masqué) */}
+                             <div className="bg-muted/50 p-6 rounded-lg">
+                               <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                 <Eye className="h-4 w-4" />
+                                 {t('promptPreview')}
+                               </h4>
+                               <div className="prose prose-sm dark:prose-invert max-w-none relative">
+                                 <pre className="whitespace-pre-wrap text-sm bg-background/50 p-4 rounded border">
+                                   {selectedPrompt.prompts?.content.substring(0, 200)}
+                                   {(selectedPrompt.prompts?.content.length || 0) > 200 && '...'}
+                                 </pre>
+                                 {(selectedPrompt.prompts?.content.length || 0) > 200 && (
+                                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background flex items-end justify-center pb-4">
+                                     <Badge variant="secondary" className="bg-primary/20 text-primary">
+                                       {t('buyToSeeComplete')}
+                                     </Badge>
+                                   </div>
+                                 )}
+                               </div>
+                             </div>
 
-                              <div className="space-y-4">
-                                <h4 className="font-semibold">Évaluations</h4>
-                                {selectedPrompt.marketplace_reviews && selectedPrompt.marketplace_reviews.length > 0 ? (
-                                  <div className="space-y-3">
-                                    <div className="flex items-center gap-2">
-                                      <Star className="w-5 h-5 text-yellow-500 fill-current" />
-                                      <span className="font-medium">
-                                        {getAverageRating(selectedPrompt.marketplace_reviews).toFixed(1)}
-                                      </span>
-                                      <span className="text-muted-foreground">
-                                        ({selectedPrompt.marketplace_reviews.length} avis)
-                                      </span>
-                                    </div>
-                                    <div className="space-y-2 max-h-40 overflow-y-auto">
-                                      {selectedPrompt.marketplace_reviews.slice(0, 3).map((review) => (
-                                        <div key={review.id} className="bg-background/50 p-3 rounded text-sm">
-                                          <div className="flex items-center gap-1 mb-1">
-                                            {[...Array(5)].map((_, i) => (
-                                              <Star 
-                                                key={i} 
-                                                className={`w-3 h-3 ${i < review.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'}`} 
-                                              />
-                                            ))}
-                                            {review.is_verified_purchase && (
-                                              <Badge variant="outline" className="text-xs ml-1">
-                                                Achat vérifié
-                                              </Badge>
-                                            )}
-                                          </div>
-                                          {review.comment && (
-                                            <p className="text-muted-foreground">{review.comment}</p>
-                                          )}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <p className="text-muted-foreground text-sm">Aucun avis pour le moment</p>
-                                )}
-                              </div>
-                            </div>
+                             {/* Informations détaillées */}
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                               <div className="space-y-4">
+                                 <h4 className="font-semibold">Informations</h4>
+                                 <div className="space-y-2 text-sm">
+                                   <div className="flex justify-between">
+                                     <span className="text-muted-foreground">Vendeur:</span>
+                                     <span>{selectedPrompt.profiles?.email}</span>
+                                   </div>
+                                   <div className="flex justify-between">
+                                     <span className="text-muted-foreground">Date de création:</span>
+                                     <span>{formatDate(selectedPrompt.created_at)}</span>
+                                   </div>
+                                   <div className="flex justify-between">
+                                     <span className="text-muted-foreground">Catégorie:</span>
+                                     <span>{selectedPrompt.prompts?.category || 'Non classé'}</span>
+                                   </div>
+                                   {selectedPrompt.prompts?.tags && selectedPrompt.prompts.tags.length > 0 && (
+                                     <div>
+                                       <span className="text-muted-foreground">Tags:</span>
+                                       <div className="flex flex-wrap gap-1 mt-1">
+                                         {selectedPrompt.prompts.tags.map((tag, index) => (
+                                           <Badge key={index} variant="secondary" className="text-xs">
+                                             {tag}
+                                           </Badge>
+                                         ))}
+                                       </div>
+                                     </div>
+                                   )}
+                                 </div>
+                               </div>
+
+                               <div className="space-y-4">
+                                 <h4 className="font-semibold">Aperçu qualité</h4>
+                                 <div className="space-y-3">
+                                   <div className="flex items-center justify-between text-sm">
+                                     <span className="text-muted-foreground">Longueur:</span>
+                                     <span className="font-medium">
+                                       {selectedPrompt.prompts?.content?.length || 0} caractères
+                                     </span>
+                                   </div>
+                                   <div className="flex items-center justify-between text-sm">
+                                     <span className="text-muted-foreground">Popularité:</span>
+                                     <div className="flex items-center gap-1">
+                                       <TrendingUp className="w-3 h-3" />
+                                       <span className="font-medium">{selectedPrompt.sales_count} ventes</span>
+                                     </div>
+                                   </div>
+                                   {selectedPrompt.is_verified && (
+                                     <div className="flex items-center gap-2 text-sm">
+                                       <Shield className="w-3 h-3 text-emerald-500" />
+                                       <span className="text-emerald-600 font-medium">Prompt vérifié</span>
+                                     </div>
+                                   )}
+                                 </div>
+                               </div>
+                             </div>
+
+                             {/* Avis clients détaillés */}
+                             {selectedPrompt.marketplace_reviews && selectedPrompt.marketplace_reviews.length > 0 && (
+                               <div>
+                                 <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                   <Star className="w-4 h-4 text-yellow-500" />
+                                   {t('customerReviews')} ({selectedPrompt.marketplace_reviews.length})
+                                 </h4>
+                                 <div className="space-y-3 max-h-60 overflow-y-auto">
+                                   {selectedPrompt.marketplace_reviews.slice(0, 5).map((review) => (
+                                     <div key={review.id} className="p-3 bg-muted/50 rounded-lg">
+                                       <div className="flex items-center justify-between mb-2">
+                                         <div className="flex items-center gap-2">
+                                           <div className="flex items-center">
+                                             {[1, 2, 3, 4, 5].map((star) => (
+                                               <Star
+                                                 key={star}
+                                                 className={`w-3 h-3 ${
+                                                   star <= review.rating
+                                                     ? 'text-yellow-500 fill-current'
+                                                     : 'text-gray-300'
+                                                 }`}
+                                               />
+                                             ))}
+                                           </div>
+                                           {review.is_verified_purchase && (
+                                             <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                               {t('verifiedPurchase')}
+                                             </Badge>
+                                           )}
+                                         </div>
+                                         <span className="text-xs text-muted-foreground">
+                                           {formatDate(review.created_at)}
+                                         </span>
+                                       </div>
+                                       {review.comment && (
+                                         <p className="text-sm text-muted-foreground">
+                                           {review.comment}
+                                         </p>
+                                       )}
+                                     </div>
+                                   ))}
+                                 </div>
+                               </div>
+                             )}
 
                             {/* Actions d'achat */}
                             <div className="flex gap-3 pt-4 border-t">

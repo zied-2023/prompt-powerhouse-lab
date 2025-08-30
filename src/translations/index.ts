@@ -56,6 +56,14 @@ export interface TranslationKey {
   removeFromFavorites: string;
   buy: string;
   preview: string;
+  noReviewsYet: string;
+  rating: string;
+  salesCount: string;
+  characters: string;
+  promptPreview: string;
+  buyToSeeComplete: string;
+  customerReviews: string;
+  verifiedPurchase: string;
   
   // Language selector keys
   english: string;
@@ -473,6 +481,14 @@ export const translations: Record<string, TranslationKey> = {
     removeFromFavorites: "Remove from favorites",
     buy: "Buy",
     preview: "Preview",
+    noReviewsYet: "No reviews yet",
+    rating: "Rating",
+    salesCount: "Sales",
+    characters: "Characters",
+    promptPreview: "Prompt preview",
+    buyToSeeComplete: "Buy to see the complete prompt",
+    customerReviews: "Customer reviews",
+    verifiedPurchase: "Verified purchase",
     
     // Language selector keys
     english: "English",
@@ -880,6 +896,14 @@ export const translations: Record<string, TranslationKey> = {
     removeFromFavorites: "Retirer des favoris",
     buy: "Acheter",
     preview: "Aperçu",
+    noReviewsYet: "Aucun avis pour le moment",
+    rating: "Note",
+    salesCount: "Ventes",
+    characters: "Caractères",
+    promptPreview: "Aperçu du prompt",
+    buyToSeeComplete: "Achetez pour voir le prompt complet",
+    customerReviews: "Avis clients",
+    verifiedPurchase: "Achat vérifié",
     
     // Language selector keys
     english: "Anglais",
@@ -1279,6 +1303,14 @@ export const translations: Record<string, TranslationKey> = {
     removeFromFavorites: "إزالة من المفضلة",
     buy: "شراء",
     preview: "معاينة",
+    noReviewsYet: "لا توجد مراجعات حتى الآن",
+    rating: "التقييم",
+    salesCount: "المبيعات",
+    characters: "الأحرف",
+    promptPreview: "معاينة النموذج",
+    buyToSeeComplete: "اشتري لرؤية النموذج كاملاً",
+    customerReviews: "آراء العملاء",
+    verifiedPurchase: "شراء موثق",
     
     // Language selector keys
     english: "الإنجليزية",
