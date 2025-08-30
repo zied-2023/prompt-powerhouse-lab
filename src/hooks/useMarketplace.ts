@@ -96,7 +96,7 @@ export const useMarketplace = () => {
         .from('marketplace_prompts')
         .select(`
           *,
-          prompts:prompt_id (
+          prompts!fk_marketplace_prompts_prompt_id (
             id,
             title,
             content,
@@ -104,9 +104,6 @@ export const useMarketplace = () => {
             category,
             tags,
             created_at
-          ),
-          profiles:seller_id (
-            email
           ),
           marketplace_reviews (
             id,
@@ -189,7 +186,7 @@ export const useMarketplace = () => {
         .from('marketplace_prompts')
         .select(`
           *,
-          prompts:prompt_id (
+          prompts!fk_marketplace_prompts_prompt_id (
             id,
             title,
             content,
