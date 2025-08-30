@@ -41,10 +41,10 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
   const [filteredPrompts, setFilteredPrompts] = useState<MarketplacePrompt[]>([]);
   const [selectedPrompt, setSelectedPrompt] = useState<MarketplacePrompt | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [sortBy, setSortBy] = useState<'created_at' | 'price' | 'sales_count'>('created_at');
-  const [licenseFilter, setLicenseFilter] = useState("");
+  const [licenseFilter, setLicenseFilter] = useState("all");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
 
   const { 
@@ -90,7 +90,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
     }
 
     // Filtrage par catégorie
-    if (selectedCategory) {
+    if (selectedCategory && selectedCategory !== "all") {
       filtered = filtered.filter(prompt => prompt.prompts?.category === selectedCategory);
     }
 
@@ -103,7 +103,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
     }
 
     // Filtrage par licence
-    if (licenseFilter) {
+    if (licenseFilter && licenseFilter !== "all") {
       filtered = filtered.filter(prompt => prompt.license_type === licenseFilter);
     }
 
@@ -229,7 +229,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                     <SelectValue placeholder="Toutes" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Toutes les catégories</SelectItem>
+                    <SelectItem value="all">Toutes les catégories</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>{category}</SelectItem>
                     ))}
@@ -278,6 +278,27 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Licence - Filtre additionnel */}
+              {licenseTypes.length > 0 && (
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    Licence
+                  </Label>
+                  <Select value={licenseFilter} onValueChange={setLicenseFilter}>
+                    <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
+                      <SelectValue placeholder="Toutes" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Toutes les licences</SelectItem>
+                      {licenseTypes.map(license => (
+                        <SelectItem key={license} value={license}>{license}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
             </div>
 
             {/* Filtres supplémentaires */}
