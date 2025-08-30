@@ -139,6 +139,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_marketplace_prompts_prompt_id"
+            columns: ["prompt_id"]
+            isOneToOne: true
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "marketplace_prompts_prompt_id_fkey"
             columns: ["prompt_id"]
             isOneToOne: true
