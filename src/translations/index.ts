@@ -64,6 +64,8 @@ export interface TranslationKey {
   buyToSeeComplete: string;
   customerReviews: string;
   verifiedPurchase: string;
+  promptDetails: string;
+  noContentAvailable: string;
   
   // Language selector keys
   english: string;
@@ -489,6 +491,8 @@ export const translations: Record<string, TranslationKey> = {
     buyToSeeComplete: "Buy to see the complete prompt",
     customerReviews: "Customer reviews",
     verifiedPurchase: "Verified purchase",
+    promptDetails: "Prompt Details",
+    noContentAvailable: "No content available",
     
     // Language selector keys
     english: "English",
@@ -904,6 +908,8 @@ export const translations: Record<string, TranslationKey> = {
     buyToSeeComplete: "Achetez pour voir le prompt complet",
     customerReviews: "Avis clients",
     verifiedPurchase: "Achat vérifié",
+    promptDetails: "Détails du Prompt",
+    noContentAvailable: "Aucun contenu disponible",
     
     // Language selector keys
     english: "Anglais",
@@ -1311,6 +1317,8 @@ export const translations: Record<string, TranslationKey> = {
     buyToSeeComplete: "اشتري لرؤية النموذج كاملاً",
     customerReviews: "آراء العملاء",
     verifiedPurchase: "شراء موثق",
+    promptDetails: "تفاصيل النموذج",
+    noContentAvailable: "لا يوجد محتوى متاح",
     
     // Language selector keys
     english: "الإنجليزية",

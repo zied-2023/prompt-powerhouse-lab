@@ -478,7 +478,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
                         <DialogHeader>
                           <DialogTitle className="flex items-center justify-between">
-                            {selectedPrompt?.prompts?.title}
+                            {selectedPrompt?.prompts?.title || t('promptDetails')}
                             <div className="flex items-center gap-2">
                               <Badge className={getLicenseBadgeColor(selectedPrompt?.license_type || '')}>
                                 {selectedPrompt?.license_type}
@@ -488,11 +488,9 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                               </div>
                             </div>
                           </DialogTitle>
-                          {selectedPrompt?.prompts?.description && (
-                            <DialogDescription>
-                              {selectedPrompt.prompts.description}
-                            </DialogDescription>
-                          )}
+                          <DialogDescription>
+                            {selectedPrompt?.prompts?.description || t('promptPreview')}
+                          </DialogDescription>
                         </DialogHeader>
                          {selectedPrompt && (
                            <div className="space-y-6">
@@ -530,19 +528,25 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                                  <Eye className="h-4 w-4" />
                                  {t('promptPreview')}
                                </h4>
-                               <div className="prose prose-sm dark:prose-invert max-w-none relative">
-                                 <pre className="whitespace-pre-wrap text-sm bg-background/50 p-4 rounded border">
-                                   {selectedPrompt.prompts?.content.substring(0, 200)}
-                                   {(selectedPrompt.prompts?.content.length || 0) > 200 && '...'}
-                                 </pre>
-                                 {(selectedPrompt.prompts?.content.length || 0) > 200 && (
-                                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background flex items-end justify-center pb-4">
-                                     <Badge variant="secondary" className="bg-primary/20 text-primary">
-                                       {t('buyToSeeComplete')}
-                                     </Badge>
-                                   </div>
-                                 )}
-                               </div>
+                                <div className="prose prose-sm dark:prose-invert max-w-none relative">
+                                  {selectedPrompt.prompts?.content ? (
+                                    <pre className="whitespace-pre-wrap text-sm bg-background/50 p-4 rounded border">
+                                      {selectedPrompt.prompts.content.substring(0, 200)}
+                                      {selectedPrompt.prompts.content.length > 200 && '...'}
+                                    </pre>
+                                  ) : (
+                                    <div className="text-center py-8 text-muted-foreground">
+                                      {t('noContentAvailable')}
+                                    </div>
+                                  )}
+                                  {selectedPrompt.prompts?.content && selectedPrompt.prompts.content.length > 200 && (
+                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background flex items-end justify-center pb-4">
+                                      <Badge variant="secondary" className="bg-primary/20 text-primary">
+                                        {t('buyToSeeComplete')}
+                                      </Badge>
+                                    </div>
+                                  )}
+                                </div>
                              </div>
 
                              {/* Informations détaillées */}
