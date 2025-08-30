@@ -14,6 +14,246 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_reports: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          description: string | null
+          id: string
+          marketplace_prompt_id: string
+          reason: string
+          reporter_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          marketplace_prompt_id: string
+          reason: string
+          reporter_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          marketplace_prompt_id?: string
+          reason?: string
+          reporter_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_reports_marketplace_prompt_id_fkey"
+            columns: ["marketplace_prompt_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_prompts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      license_types: {
+        Row: {
+          attribution_required: boolean
+          commercial_use: boolean
+          created_at: string
+          description: string | null
+          id: string
+          modification_allowed: boolean
+          name: string
+          redistribution_allowed: boolean
+        }
+        Insert: {
+          attribution_required?: boolean
+          commercial_use?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          modification_allowed?: boolean
+          name: string
+          redistribution_allowed?: boolean
+        }
+        Update: {
+          attribution_required?: boolean
+          commercial_use?: boolean
+          created_at?: string
+          description?: string | null
+          id?: string
+          modification_allowed?: boolean
+          name?: string
+          redistribution_allowed?: boolean
+        }
+        Relationships: []
+      }
+      marketplace_prompts: {
+        Row: {
+          commission_rate: number
+          created_at: string
+          currency: string
+          id: string
+          is_featured: boolean
+          is_for_sale: boolean
+          is_verified: boolean
+          license_type: string
+          price: number
+          prompt_id: string
+          sales_count: number
+          seller_id: string
+          updated_at: string
+        }
+        Insert: {
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_featured?: boolean
+          is_for_sale?: boolean
+          is_verified?: boolean
+          license_type?: string
+          price?: number
+          prompt_id: string
+          sales_count?: number
+          seller_id: string
+          updated_at?: string
+        }
+        Update: {
+          commission_rate?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          is_featured?: boolean
+          is_for_sale?: boolean
+          is_verified?: boolean
+          license_type?: string
+          price?: number
+          prompt_id?: string
+          sales_count?: number
+          seller_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_prompts_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: true
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          is_verified_purchase: boolean
+          marketplace_prompt_id: string
+          rating: number
+          reviewer_id: string
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_verified_purchase?: boolean
+          marketplace_prompt_id: string
+          rating: number
+          reviewer_id: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          is_verified_purchase?: boolean
+          marketplace_prompt_id?: string
+          rating?: number
+          reviewer_id?: string
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_reviews_marketplace_prompt_id_fkey"
+            columns: ["marketplace_prompt_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_prompts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "marketplace_reviews_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      marketplace_transactions: {
+        Row: {
+          amount: number
+          buyer_id: string
+          commission_amount: number
+          created_at: string
+          currency: string
+          id: string
+          marketplace_prompt_id: string
+          payment_method: string | null
+          payment_status: string
+          seller_id: string
+          stripe_payment_intent_id: string | null
+          transaction_date: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          buyer_id: string
+          commission_amount: number
+          created_at?: string
+          currency?: string
+          id?: string
+          marketplace_prompt_id: string
+          payment_method?: string | null
+          payment_status?: string
+          seller_id: string
+          stripe_payment_intent_id?: string | null
+          transaction_date?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          buyer_id?: string
+          commission_amount?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          marketplace_prompt_id?: string
+          payment_method?: string | null
+          payment_status?: string
+          seller_id?: string
+          stripe_payment_intent_id?: string | null
+          transaction_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_transactions_marketplace_prompt_id_fkey"
+            columns: ["marketplace_prompt_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_prompts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -154,6 +394,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          marketplace_prompt_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          marketplace_prompt_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          marketplace_prompt_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_marketplace_prompt_id_fkey"
+            columns: ["marketplace_prompt_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_prompts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_subscriptions: {
         Row: {

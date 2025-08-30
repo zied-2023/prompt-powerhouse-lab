@@ -22,6 +22,8 @@ import PromptImprovement from "@/components/PromptImprovement";
 import PromptHistory from "@/components/PromptHistory";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import CreditManager from "@/components/CreditManager";
+import MarketplacePromptGrid from "@/components/MarketplacePromptGrid";
+import SellerDashboard from "@/components/SellerDashboard";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -209,7 +211,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-8 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
+          <TabsList className="grid w-full grid-cols-10 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
@@ -237,6 +239,20 @@ const Index = () => {
             >
               <Sparkles className="h-4 w-4" />
               <span>Templates</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="marketplace" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              <span>Marketplace</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="seller" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <CreditCard className="h-4 w-4" />
+              <span>Vendre</span>
             </TabsTrigger>
             <TabsTrigger 
               value="library" 
@@ -282,6 +298,14 @@ const Index = () => {
 
           <TabsContent value="templates" className="space-y-8">
             <AdvancedTemplates />
+          </TabsContent>
+
+          <TabsContent value="marketplace" className="space-y-8">
+            <MarketplacePromptGrid />
+          </TabsContent>
+
+          <TabsContent value="seller" className="space-y-8">
+            <SellerDashboard />
           </TabsContent>
 
           <TabsContent value="library" className="space-y-8">
