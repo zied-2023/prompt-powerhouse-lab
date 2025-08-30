@@ -145,13 +145,6 @@ export type Database = {
             referencedRelation: "prompts"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "marketplace_prompts_prompt_id_fkey"
-            columns: ["prompt_id"]
-            isOneToOne: true
-            referencedRelation: "prompts"
-            referencedColumns: ["id"]
-          },
         ]
       }
       marketplace_reviews: {

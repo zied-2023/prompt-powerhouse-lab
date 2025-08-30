@@ -265,9 +265,16 @@ export const useMarketplace = () => {
 
       if (error) {
         console.error('Erreur lors de la publication:', error);
+        
+        let errorMessage = "Impossible de publier le prompt sur le marketplace";
+        
+        if (error.code === '23505') {
+          errorMessage = "Ce prompt est déjà publié sur le marketplace. Vous pouvez le modifier depuis votre dashboard vendeur.";
+        }
+        
         toast({
           title: "Erreur de publication",
-          description: "Impossible de publier le prompt sur le marketplace",
+          description: errorMessage,
           variant: "destructive"
         });
         return null;
