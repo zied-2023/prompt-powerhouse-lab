@@ -11,6 +11,8 @@ export interface TranslationKey {
   integration: string;
   advancedAI: string;
   noCode: string;
+  marketplace: string;
+  seller: string;
   
   // Language selector keys
   english: string;
@@ -383,6 +385,8 @@ export const translations: Record<string, TranslationKey> = {
     integration: "Integration",
     advancedAI: "Advanced AI",
     noCode: "No Code",
+    marketplace: "Marketplace",
+    seller: "Sell",
     
     // Language selector keys
     english: "English",
@@ -745,6 +749,8 @@ export const translations: Record<string, TranslationKey> = {
     integration: "Intégration",
     advancedAI: "IA Avancée",
     noCode: "Sans Code",
+    marketplace: "Marché",
+    seller: "Vendre",
     
     // Language selector keys
     english: "Anglais",
@@ -1099,6 +1105,8 @@ export const translations: Record<string, TranslationKey> = {
     integration: "التكامل",
     advancedAI: "ذكاء اصطناعي متقدم",
     noCode: "بدون كود",
+    marketplace: "السوق",
+    seller: "بيع",
     
     // Language selector keys
     english: "الإنجليزية",

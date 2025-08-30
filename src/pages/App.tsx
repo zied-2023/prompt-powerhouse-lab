@@ -245,14 +245,14 @@ const Index = () => {
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
             >
               <ShoppingCart className="h-4 w-4" />
-              <span>Marketplace</span>
+              <span>{t('marketplace')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="seller" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
             >
               <CreditCard className="h-4 w-4" />
-              <span>Vendre</span>
+              <span>{t('seller')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="library" 
