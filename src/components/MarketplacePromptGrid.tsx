@@ -23,6 +23,7 @@ import {
   Award
 } from "lucide-react";
 import { useMarketplace, type MarketplacePrompt } from "@/hooks/useMarketplace";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface MarketplacePromptGridProps {
   showFilters?: boolean;
@@ -34,9 +35,10 @@ interface MarketplacePromptGridProps {
 const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
   showFilters = true,
   sellerId,
-  title = "Marketplace de Prompts",
-  description = "Découvrez et achetez des prompts optimisés créés par la communauté"
+  title,
+  description
 }) => {
+  const { t } = useTranslation();
   const [prompts, setPrompts] = useState<MarketplacePrompt[]>([]);
   const [filteredPrompts, setFilteredPrompts] = useState<MarketplacePrompt[]>([]);
   const [selectedPrompt, setSelectedPrompt] = useState<MarketplacePrompt | null>(null);
@@ -182,8 +184,8 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
       {/* En-tête */}
       <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold gradient-text">{title}</h2>
-          <p className="text-muted-foreground">{description}</p>
+        <h2 className="text-2xl font-bold gradient-text">{title || t('marketplaceTitle')}</h2>
+        <p className="text-muted-foreground">{description || t('marketplaceDescription')}</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -207,11 +209,11 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
               <div className="space-y-2">
                 <Label htmlFor="search" className="flex items-center gap-2">
                   <Search className="h-4 w-4" />
-                  Recherche
+                  {t('search')}
                 </Label>
                 <Input
                   id="search"
-                  placeholder="Titre, description..."
+                  placeholder={t('searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="bg-white/50 dark:bg-gray-800/50"
@@ -222,14 +224,14 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Tag className="h-4 w-4" />
-                  Catégorie
+                  {t('category')}
                 </Label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                   <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
                     <SelectValue placeholder="Toutes" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">Toutes les catégories</SelectItem>
+                    <SelectItem value="all">{t('allCategories')}</SelectItem>
                     {categories.map(category => (
                       <SelectItem key={category} value={category}>{category}</SelectItem>
                     ))}
@@ -241,19 +243,19 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4" />
-                  Fourchette de prix
+                  {t('priceRange')}
                 </Label>
                 <div className="flex gap-2">
                   <Input
                     type="number"
-                    placeholder="Min"
+                    placeholder={t('minPrice')}
                     value={priceRange.min}
                     onChange={(e) => setPriceRange(prev => ({...prev, min: e.target.value}))}
                     className="bg-white/50 dark:bg-gray-800/50"
                   />
                   <Input
                     type="number"
-                    placeholder="Max"
+                    placeholder={t('maxPrice')}
                     value={priceRange.max}
                     onChange={(e) => setPriceRange(prev => ({...prev, max: e.target.value}))}
                     className="bg-white/50 dark:bg-gray-800/50"
@@ -265,16 +267,16 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <Filter className="h-4 w-4" />
-                  Trier par
+                  {t('sortBy')}
                 </Label>
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
                   <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="created_at">Plus récent</SelectItem>
-                    <SelectItem value="price">Prix croissant</SelectItem>
-                    <SelectItem value="sales_count">Plus vendu</SelectItem>
+                    <SelectItem value="created_at">{t('mostRecent')}</SelectItem>
+                    <SelectItem value="price">{t('cheapest')}</SelectItem>
+                    <SelectItem value="sales_count">{t('mostSold')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -284,14 +286,14 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                 <div className="space-y-2">
                   <Label className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
-                    Licence
+                    {t('license')}
                   </Label>
                   <Select value={licenseFilter} onValueChange={setLicenseFilter}>
                     <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
                       <SelectValue placeholder="Toutes" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Toutes les licences</SelectItem>
+                      <SelectItem value="all">{t('allLicenses')}</SelectItem>
                       {licenseTypes.map(license => (
                         <SelectItem key={license} value={license}>{license}</SelectItem>
                       ))}
@@ -310,7 +312,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                 className="h-8"
               >
                 <Award className="w-3 h-3 mr-1" />
-                Vedettes
+                {t('featured')}
               </Button>
             </div>
           </CardContent>
@@ -323,10 +325,10 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
           <CardContent className="pt-6 text-center py-12">
             <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-muted-foreground mb-2">
-              Aucun prompt trouvé
+              {t('noPromptsFound')}
             </h3>
             <p className="text-muted-foreground">
-              Essayez de modifier vos critères de recherche
+              {t('tryDifferentCriteria')}
             </p>
           </CardContent>
         </Card>
@@ -406,7 +408,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                       )}
                       <div className="flex items-center gap-1 text-sm text-muted-foreground">
                         <Users className="w-4 h-4" />
-                        {prompt.sales_count} ventes
+                        {prompt.sales_count} {t('marketplaceSales')}
                       </div>
                     </div>
                   </div>

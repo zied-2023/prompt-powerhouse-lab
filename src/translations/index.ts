@@ -29,6 +29,32 @@ export interface TranslationKey {
   analytics: string;
   reviews: string;
   
+  // Marketplace keys
+  marketplaceTitle: string;
+  marketplaceDescription: string;
+  search: string;
+  searchPlaceholder: string;
+  category: string;
+  allCategories: string;
+  priceRange: string;
+  minPrice: string;
+  maxPrice: string;
+  sortBy: string;
+  mostRecent: string;
+  cheapest: string;
+  mostSold: string;
+  license: string;
+  allLicenses: string;
+  featured: string;
+  stars: string;
+  noPromptsFound: string;
+  tryDifferentCriteria: string;
+  marketplaceSales: string;
+  createdOn: string;
+  viewDetails: string;
+  addToFavorites: string;
+  removeFromFavorites: string;
+  
   // Language selector keys
   english: string;
   french: string;
@@ -418,6 +444,32 @@ export const translations: Record<string, TranslationKey> = {
     analytics: "Analytics",
     reviews: "Reviews",
     
+    // Marketplace keys
+    marketplaceTitle: "Prompt Marketplace",
+    marketplaceDescription: "Discover and buy optimized prompts created by the community",
+    search: "Search",
+    searchPlaceholder: "Title, description...",
+    category: "Category",
+    allCategories: "All categories",
+    priceRange: "Price Range",
+    minPrice: "Min",
+    maxPrice: "Max",
+    sortBy: "Sort by",
+    mostRecent: "Most recent",
+    cheapest: "Cheapest",
+    mostSold: "Most sold",
+    license: "License",
+    allLicenses: "All licenses",
+    featured: "Featured",
+    stars: "stars",
+    noPromptsFound: "No prompts found",
+    tryDifferentCriteria: "Try modifying your search criteria",
+    marketplaceSales: "sales",
+    createdOn: "Created on",
+    viewDetails: "View Details",
+    addToFavorites: "Add to favorites",
+    removeFromFavorites: "Remove from favorites",
+    
     // Language selector keys
     english: "English",
     french: "French",
@@ -797,6 +849,32 @@ export const translations: Record<string, TranslationKey> = {
     analytics: "Analytics",
     reviews: "Avis",
     
+    // Marketplace keys
+    marketplaceTitle: "Marketplace de Prompts",
+    marketplaceDescription: "Découvrez et achetez des prompts optimisés créés par la communauté",
+    search: "Recherche",
+    searchPlaceholder: "Titre, description...",
+    category: "Catégorie",
+    allCategories: "Toutes les catégories",
+    priceRange: "Fourchette de prix",
+    minPrice: "Min",
+    maxPrice: "Max",
+    sortBy: "Trier par",
+    mostRecent: "Plus récent",
+    cheapest: "Moins cher",
+    mostSold: "Plus vendu",
+    license: "Licence",
+    allLicenses: "Toutes les licences",
+    featured: "Vedettes",
+    stars: "étoiles",
+    noPromptsFound: "Aucun prompt trouvé",
+    tryDifferentCriteria: "Essayez de modifier vos critères de recherche",
+    marketplaceSales: "ventes",
+    createdOn: "Créé le",
+    viewDetails: "Voir Détails",
+    addToFavorites: "Ajouter aux favoris",
+    removeFromFavorites: "Retirer des favoris",
+    
     // Language selector keys
     english: "Anglais",
     french: "Français",
@@ -1167,6 +1245,32 @@ export const translations: Record<string, TranslationKey> = {
     myPrompts: "نصوصي",
     analytics: "التحليلات",
     reviews: "التقييمات",
+    
+    // Marketplace keys
+    marketplaceTitle: "سوق النصوص التوجيهية",
+    marketplaceDescription: "اكتشف واشتري نصوص توجيهية محسنة من إبداع المجتمع",
+    search: "البحث",
+    searchPlaceholder: "العنوان، الوصف...",
+    category: "الفئة",
+    allCategories: "جميع الفئات",
+    priceRange: "نطاق السعر",
+    minPrice: "الحد الأدنى",
+    maxPrice: "الحد الأقصى",
+    sortBy: "ترتيب حسب",
+    mostRecent: "الأحدث",
+    cheapest: "الأرخص",
+    mostSold: "الأكثر مبيعاً",
+    license: "الترخيص",
+    allLicenses: "جميع التراخيص",
+    featured: "مميز",
+    stars: "نجوم",
+    noPromptsFound: "لم يتم العثور على نصوص",
+    tryDifferentCriteria: "جرب تعديل معايير البحث",
+    marketplaceSales: "مبيعات",
+    createdOn: "تم الإنشاء في",
+    viewDetails: "عرض التفاصيل",
+    addToFavorites: "أضف إلى المفضلة",
+    removeFromFavorites: "إزالة من المفضلة",
     
     // Language selector keys
     english: "الإنجليزية",
