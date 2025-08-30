@@ -80,14 +80,14 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
   };
 
   const applyFilters = () => {
-    let filtered = [...prompts];
+    let filtered = [...prompts].filter(prompt => prompt && prompt.prompts); // Filtrer les prompts null dès le début
 
     // Filtrage par recherche
     if (searchTerm) {
       filtered = filtered.filter(prompt =>
-        prompt.prompts?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        prompt.prompts?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         prompt.prompts?.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        prompt.prompts?.content.toLowerCase().includes(searchTerm.toLowerCase())
+        prompt.prompts?.content?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -165,8 +165,8 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
     }
   };
 
-  const categories = [...new Set(prompts.map(p => p.prompts?.category).filter(Boolean))];
-  const licenseTypes = [...new Set(prompts.map(p => p.license_type))];
+  const categories = [...new Set(prompts.filter(p => p && p.prompts).map(p => p.prompts?.category).filter(Boolean))];
+  const licenseTypes = [...new Set(prompts.filter(p => p && p.license_type).map(p => p.license_type))];
 
   if (isLoading) {
     return (
@@ -334,7 +334,9 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
         </Card>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredPrompts.map((prompt) => {
+          {filteredPrompts
+            .filter(prompt => prompt && prompt.prompts) // Filtrer les prompts null ou sans données
+            .map((prompt) => {
             const averageRating = getAverageRating(prompt.marketplace_reviews || []);
             const reviewCount = prompt.marketplace_reviews?.length || 0;
 
@@ -583,76 +585,76 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                                   </div>
                                 </div>
 
-                               <div className="space-y-4">
-                                 <h4 className="font-semibold">Aperçu qualité</h4>
-                                 <div className="space-y-3">
-                                   <div className="flex items-center justify-between text-sm">
-                                     <span className="text-muted-foreground">Longueur:</span>
-                                     <span className="font-medium">
-                                       {selectedPrompt.prompts?.content?.length || 0} caractères
-                                     </span>
-                                   </div>
-                                   <div className="flex items-center justify-between text-sm">
-                                     <span className="text-muted-foreground">Popularité:</span>
-                                     <div className="flex items-center gap-1">
-                                       <TrendingUp className="w-3 h-3" />
-                                       <span className="font-medium">{selectedPrompt.sales_count} ventes</span>
-                                     </div>
-                                   </div>
-                                   {selectedPrompt.is_verified && (
-                                     <div className="flex items-center gap-2 text-sm">
-                                       <Shield className="w-3 h-3 text-emerald-500" />
-                                       <span className="text-emerald-600 font-medium">Prompt vérifié</span>
-                                     </div>
-                                   )}
-                                 </div>
-                               </div>
+                                <div className="space-y-4">
+                                  <h4 className="font-semibold">Aperçu qualité</h4>
+                                  <div className="space-y-3">
+                                    <div className="flex items-center justify-between text-sm">
+                                      <span className="text-muted-foreground">Longueur:</span>
+                                      <span className="font-medium">
+                                        {prompt.prompts?.content?.length || 0} caractères
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center justify-between text-sm">
+                                      <span className="text-muted-foreground">Popularité:</span>
+                                      <div className="flex items-center gap-1">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span className="font-medium">{prompt.sales_count} ventes</span>
+                                      </div>
+                                    </div>
+                                    {prompt.is_verified && (
+                                      <div className="flex items-center gap-2 text-sm">
+                                        <Shield className="w-3 h-3 text-emerald-500" />
+                                        <span className="text-emerald-600 font-medium">Prompt vérifié</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
                              </div>
 
-                             {/* Avis clients détaillés */}
-                             {selectedPrompt.marketplace_reviews && selectedPrompt.marketplace_reviews.length > 0 && (
-                               <div>
-                                 <h4 className="font-semibold mb-3 flex items-center gap-2">
-                                   <Star className="w-4 h-4 text-yellow-500" />
-                                   {t('customerReviews')} ({selectedPrompt.marketplace_reviews.length})
-                                 </h4>
-                                 <div className="space-y-3 max-h-60 overflow-y-auto">
-                                   {selectedPrompt.marketplace_reviews.slice(0, 5).map((review) => (
-                                     <div key={review.id} className="p-3 bg-muted/50 rounded-lg">
-                                       <div className="flex items-center justify-between mb-2">
-                                         <div className="flex items-center gap-2">
-                                           <div className="flex items-center">
-                                             {[1, 2, 3, 4, 5].map((star) => (
-                                               <Star
-                                                 key={star}
-                                                 className={`w-3 h-3 ${
-                                                   star <= review.rating
-                                                     ? 'text-yellow-500 fill-current'
-                                                     : 'text-gray-300'
-                                                 }`}
-                                               />
-                                             ))}
-                                           </div>
-                                           {review.is_verified_purchase && (
-                                             <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                                               {t('verifiedPurchase')}
-                                             </Badge>
-                                           )}
-                                         </div>
-                                         <span className="text-xs text-muted-foreground">
-                                           {formatDate(review.created_at)}
-                                         </span>
-                                       </div>
-                                       {review.comment && (
-                                         <p className="text-sm text-muted-foreground">
-                                           {review.comment}
-                                         </p>
-                                       )}
-                                     </div>
-                                   ))}
-                                 </div>
-                               </div>
-                             )}
+                              {/* Avis clients détaillés */}
+                              {prompt.marketplace_reviews && prompt.marketplace_reviews.length > 0 && (
+                                <div>
+                                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                                    <Star className="w-4 h-4 text-yellow-500" />
+                                    {t('customerReviews')} ({prompt.marketplace_reviews.length})
+                                  </h4>
+                                  <div className="space-y-3 max-h-60 overflow-y-auto">
+                                    {prompt.marketplace_reviews.slice(0, 5).map((review) => (
+                                      <div key={review.id} className="p-3 bg-muted/50 rounded-lg">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <div className="flex items-center gap-2">
+                                            <div className="flex items-center">
+                                              {[1, 2, 3, 4, 5].map((star) => (
+                                                <Star
+                                                  key={star}
+                                                  className={`w-3 h-3 ${
+                                                    star <= review.rating
+                                                      ? 'text-yellow-500 fill-current'
+                                                      : 'text-gray-300'
+                                                  }`}
+                                                />
+                                              ))}
+                                            </div>
+                                            {review.is_verified_purchase && (
+                                              <Badge variant="secondary" className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                {t('verifiedPurchase')}
+                                              </Badge>
+                                            )}
+                                          </div>
+                                          <span className="text-xs text-muted-foreground">
+                                            {formatDate(review.created_at)}
+                                          </span>
+                                        </div>
+                                        {review.comment && (
+                                          <p className="text-sm text-muted-foreground">
+                                            {review.comment}
+                                          </p>
+                                        )}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
 
                             {/* Actions d'achat */}
                             <div className="flex gap-3 pt-4 border-t">
@@ -660,11 +662,11 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                                 <ShoppingCart className="h-4 w-4 mr-2" />
                                 {t('buy')} maintenant
                               </Button>
-                              <Button 
-                                variant="outline" 
-                                size="lg"
-                                onClick={() => addToFavorites(selectedPrompt.id)}
-                              >
+                               <Button 
+                                 variant="outline" 
+                                 size="lg"
+                                 onClick={() => addToFavorites(prompt.id)}
+                               >
                                 <Heart className="h-4 w-4" />
                               </Button>
                              </div>
