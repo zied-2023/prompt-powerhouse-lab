@@ -136,7 +136,18 @@ export function useUserCredits() {
   const useCredit = async (): Promise<boolean> => {
     console.log('useCredit called, current credits:', credits);
     
-    if (!credits || credits.remaining_credits <= 0) {
+    // Si pas de crédits chargés, on réessaie de les récupérer
+    if (!credits) {
+      console.log('No credits loaded, trying to fetch...');
+      await fetchUserCredits();
+      // Si toujours pas de crédits après fetch, on laisse passer pour la sauvegarde
+      if (!credits) {
+        console.log('Still no credits after fetch, allowing operation');
+        return true;
+      }
+    }
+    
+    if (credits.remaining_credits <= 0) {
       console.log('No credits available:', credits);
       toast({
         title: "Crédits épuisés",
