@@ -100,7 +100,7 @@ const Landing = () => {
       <div className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="w-full py-4">
+        <div className="container mx-auto px-6 py-4">
           {language === 'ar' ? (
             // Organisation spéciale pour le mode arabe - tout aligné à l'extrême droite
             <div className="flex items-center justify-end w-full">
