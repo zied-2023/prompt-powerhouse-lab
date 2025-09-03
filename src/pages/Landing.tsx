@@ -97,45 +97,64 @@ const Landing = () => {
         keywords="prompt generator, IA, intelligence artificielle, automatisation, productivité, génération de contenu, ChatGPT, prompts optimisés, workflow, création de contenu"
         structuredData={structuredData}
       />
-      <div 
-        className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20`}
-        dir={isRTL ? 'rtl' : 'ltr'}
-      >
+      <div className={`min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 ${isRTL ? 'rtl' : 'ltr'}`}>
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
-        <div className="w-full py-4 px-4">
-          {/* Header unifié avec layout équilibré */}
-          <div className="flex justify-between items-center">
-            <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
-              <img 
-                src="/logo.png" 
-                alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
-                className="h-14 w-14 object-contain"
-              />
-              <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+        <div className="w-full py-4">
+          {language === 'ar' ? (
+            // Organisation spéciale pour le mode arabe - tout aligné à l'extrême droite
+            <div className="flex items-center justify-end w-full">
+              {/* Tous les éléments alignés à l'extrême droite avec padding plus important */}
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'} pr-8`}>
+                <AuthButtons />
+                <LanguageSelector />
+                <ThemeSelector />
+                
+                {/* Logo et titre */}
+                <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'} border-r border-border/50 pr-4`}>
+                  <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+                  <img 
+                    src="/logo.png" 
+                    alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
+                    className="h-14 w-14 object-contain"
+                  />
+                </div>
+              </div>
             </div>
-            <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
-              <ThemeSelector />
-              <LanguageSelector />
-              <AuthButtons />
+          ) : (
+            // Organisation normale pour français/anglais
+            <div className="flex justify-between items-center px-4">
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
+                <img 
+                  src="/logo.png" 
+                  alt="AutoPrompt - Plateforme IA de génération de prompts professionnels" 
+                  className="h-14 w-14 object-contain"
+                />
+                <span className="text-xl font-display font-bold gradient-text">AutoPrompt</span>
+              </div>
+              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
+                <ThemeSelector />
+                <LanguageSelector />
+                <AuthButtons />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </header>
 
       {/* Hero Section */}
       <main className="pt-24 pb-16">
-        <section className={`container mx-auto px-4 ${isRTL ? 'text-right' : 'text-center'}`}>
+        <section className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             {/* Badge */}
-            <div className={`inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-full border border-violet-200 dark:border-violet-700 mb-8 animate-fade-in ${isRTL ? 'space-x-reverse' : ''}`}>
-              <span className={`text-sm font-medium text-violet-700 dark:text-violet-300 ${isRTL ? 'leading-8' : ''}`}>
+            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-violet-100 to-blue-100 dark:from-violet-900/50 dark:to-blue-900/50 rounded-full border border-violet-200 dark:border-violet-700 mb-8 animate-fade-in">
+              <span className="text-sm font-medium text-violet-700 dark:text-violet-300">
                 {t('landingBadge')}
               </span>
             </div>
 
             {/* Title */}
-            <h1 className={`text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 gradient-text ${isRTL ? 'leading-loose text-right' : 'leading-tight'} animate-fade-in`}>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 gradient-text leading-tight animate-fade-in">
               {t('title')}
               <br />
               <span className="bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
@@ -144,7 +163,7 @@ const Landing = () => {
             </h1>
 
             {/* Subtitle */}
-            <p className={`text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto ${isRTL ? 'leading-loose text-right' : 'leading-relaxed'} animate-fade-in`}>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed animate-fade-in">
               {t('landingSubtitle')}
             </p>
 
@@ -156,23 +175,23 @@ const Landing = () => {
                 className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
               >
                 {t('landingCTA')}
-                <ArrowRight className={`${isRTL ? 'mr-2 rotate-180' : 'ml-2'} h-5 w-5`} />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
 
             {/* Trust indicators */}
-            <div className={`flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 ${isRTL ? 'sm:space-x-reverse sm:space-x-6' : 'sm:space-x-6'} text-sm text-muted-foreground animate-fade-in`}>
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-sm text-muted-foreground animate-fade-in">
+              <div className="flex items-center space-x-2">
                 <Shield className="h-4 w-4 text-green-500" />
                 <span>{t('startFree')}</span>
               </div>
               <span className="hidden sm:inline">•</span>
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+              <div className="flex items-center space-x-2">
                 <Clock className="h-4 w-4 text-blue-500" />
                 <span>{t('immediateAccess')}</span>
               </div>
               <span className="hidden sm:inline">•</span>
-              <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-2' : 'space-x-2'}`}>
+              <div className="flex items-center space-x-2">
                 <Users className="h-4 w-4 text-violet-500" />
                 <span>{t('usersCount')}</span>
               </div>
@@ -275,12 +294,12 @@ const Landing = () => {
 
         {/* CTA Section */}
         <section className="container mx-auto px-4 mt-24">
-          <div className={`max-w-4xl mx-auto ${isRTL ? 'text-right' : 'text-center'}`}>
+          <div className="max-w-4xl mx-auto text-center">
             <div className="p-12 bg-gradient-to-r from-violet-600/10 to-blue-600/10 backdrop-blur-sm rounded-3xl border border-violet-200/50 dark:border-violet-700/50">
-              <h2 className={`text-3xl md:text-4xl font-display font-bold mb-6 gradient-text ${isRTL ? 'leading-loose' : ''}`}>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-6 gradient-text">
                 {t('readyRevolution')}
               </h2>
-              <p className={`text-lg text-muted-foreground mb-8 max-w-2xl mx-auto ${isRTL ? 'leading-loose' : ''}`}>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
                 {t('readyRevolutionDesc')}
               </p>
               <Button 
@@ -289,7 +308,7 @@ const Landing = () => {
                 className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
               >
                 {t('startNowFree')}
-                <ArrowRight className={`${isRTL ? 'mr-2 rotate-180' : 'ml-2'} h-5 w-5`} />
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
           </div>
@@ -338,13 +357,13 @@ const Landing = () => {
       <Footer />
 
       {/* Floating Elements */}
-      <div className={`fixed top-1/4 animate-float ${isRTL ? 'right-8' : 'left-8'}`}>
+      <div className="fixed top-1/4 left-8 animate-float">
         <div className="w-16 h-16 bg-gradient-to-r from-violet-400 to-purple-400 rounded-full opacity-20 blur-xl"></div>
       </div>
-      <div className={`fixed top-1/2 animate-float ${isRTL ? 'left-12' : 'right-12'}`} style={{ animationDelay: '1s' }}>
+      <div className="fixed top-1/2 right-12 animate-float" style={{ animationDelay: '1s' }}>
         <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-emerald-400 rounded-full opacity-20 blur-xl"></div>
       </div>
-      <div className={`fixed bottom-1/4 animate-float ${isRTL ? 'right-16' : 'left-16'}`} style={{ animationDelay: '2s' }}>
+      <div className="fixed bottom-1/4 left-16 animate-float" style={{ animationDelay: '2s' }}>
         <div className="w-20 h-20 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full opacity-20 blur-xl"></div>
       </div>
       </div>
