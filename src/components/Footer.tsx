@@ -48,7 +48,7 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
               <img 
-                src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+                src="/logo.png" 
                 alt="AutoPrompt Logo" 
                 className="h-10 w-10 object-contain"
               />
