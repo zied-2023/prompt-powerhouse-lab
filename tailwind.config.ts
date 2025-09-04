@@ -23,8 +23,6 @@ export default {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
 				display: ['"Playfair Display"', 'Georgia', 'serif'],
 				mono: ['JetBrains Mono', 'Monaco', 'Consolas', 'monospace'],
-				arabic: ['Cairo', 'Noto Sans Arabic', 'system-ui', 'sans-serif'],
-				'arabic-serif': ['Amiri', 'Georgia', 'serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',

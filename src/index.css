@@ -134,25 +134,17 @@
     font-feature-settings: "cv03", "cv04", "cv11";
   }
 
-  /* Support RTL complet et amélioré */
+  /* Support RTL complet */
   [dir="rtl"] {
     direction: rtl;
   }
 
-  /* Gestion automatique de l'espacement horizontal en RTL */
-  [dir="rtl"] .space-x-2 > :not([hidden]) ~ :not([hidden]) {
-    margin-right: 0.5rem;
-    margin-left: 0;
+  [dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
   }
 
-  [dir="rtl"] .space-x-4 > :not([hidden]) ~ :not([hidden]) {
-    margin-right: 1rem;
-    margin-left: 0;
-  }
-
-  [dir="rtl"] .space-x-6 > :not([hidden]) ~ :not([hidden]) {
-    margin-right: 1.5rem;
-    margin-left: 0;
+  [dir="rtl"] .flex-row-reverse {
+    flex-direction: row-reverse;
   }
 
   /* Gestion des marges et paddings en RTL */
@@ -164,26 +156,6 @@
   [dir="rtl"] .mr-auto {
     margin-right: 0;
     margin-left: auto;
-  }
-
-  [dir="rtl"] .pl-4 {
-    padding-left: 0;
-    padding-right: 1rem;
-  }
-
-  [dir="rtl"] .pr-4 {
-    padding-right: 0;
-    padding-left: 1rem;
-  }
-
-  [dir="rtl"] .pl-6 {
-    padding-left: 0;
-    padding-right: 1.5rem;
-  }
-
-  [dir="rtl"] .pr-6 {
-    padding-right: 0;
-    padding-left: 1.5rem;
   }
 
   /* Alignement du texte en RTL */
@@ -198,12 +170,12 @@
   /* Bordures en RTL */
   [dir="rtl"] .border-l {
     border-left: none;
-    border-right: 1px solid hsl(var(--border));
+    border-right: 1px solid;
   }
 
   [dir="rtl"] .border-r {
     border-right: none;
-    border-left: 1px solid hsl(var(--border));
+    border-left: 1px solid;
   }
 
   /* Positionnement en RTL */
@@ -217,118 +189,47 @@
     left: 0;
   }
 
-  [dir="rtl"] .left-4 {
-    left: auto;
-    right: 1rem;
-  }
-
-  [dir="rtl"] .right-4 {
-    right: auto;
-    left: 1rem;
-  }
-
   /* Transformation pour icônes en RTL */
   [dir="rtl"] .rtl-flip {
     transform: scaleX(-1);
   }
 
-  /* Support amélioré pour flexbox en RTL */
-  [dir="rtl"] .justify-start {
-    justify-content: flex-end;
-  }
-
-  [dir="rtl"] .justify-end {
-    justify-content: flex-start;
-  }
-
-  [dir="rtl"] .items-start {
-    align-items: flex-end;
-  }
-
-  [dir="rtl"] .items-end {
-    align-items: flex-start;
-  }
-
   /* Support pour les grilles en RTL */
-  [dir="rtl"] .grid-cols-1,
-  [dir="rtl"] .grid-cols-2,
-  [dir="rtl"] .grid-cols-3,
-  [dir="rtl"] .grid-cols-4 {
+  [dir="rtl"] .grid {
     direction: rtl;
   }
 
-  /* Support pour les dropdowns et menus */
-  [dir="rtl"] .origin-top-right {
-    transform-origin: top left;
+  [dir="rtl"] .grid > * {
+    direction: ltr;
   }
 
-  [dir="rtl"] .origin-top-left {
-    transform-origin: top right;
+  /* Flexbox amélioré pour RTL */
+  [dir="rtl"] .flex {
+    direction: rtl;
   }
 
-  /* Animation RTL friendly */
-  [dir="rtl"] .slide-in-from-right {
-    animation: slideInFromLeft 0.3s ease-out;
+  [dir="rtl"] .flex > * {
+    direction: ltr;
   }
 
-  [dir="rtl"] .slide-in-from-left {
-    animation: slideInFromRight 0.3s ease-out;
-  }
-
-  @keyframes slideInFromLeft {
-    from {
-      transform: translateX(-100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-
-  @keyframes slideInFromRight {
-    from {
-      transform: translateX(100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
-
-  /* Support typographique pour l'arabe amélioré */
+  /* Support typographique pour l'arabe */
   [lang="ar"] {
-    font-family: 'Cairo', 'Noto Sans Arabic', 'Amiri', system-ui, sans-serif;
+    font-family: 'Noto Sans Arabic', 'Cairo', 'Tajawal', system-ui, sans-serif;
     line-height: 1.8;
     letter-spacing: normal;
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
   }
 
   [lang="ar"] h1, [lang="ar"] h2, [lang="ar"] h3 {
-    font-family: 'Cairo', 'Amiri', serif;
     font-weight: 600;
-    line-height: 1.5;
-    word-spacing: 0.1em;
+    line-height: 1.4;
   }
 
   [lang="ar"] .text-sm {
-    font-size: 0.925rem;
-    line-height: 1.7;
-  }
-
-  [lang="ar"] .text-base {
-    font-size: 1rem;
-    line-height: 1.8;
+    font-size: 0.9rem;
   }
 
   [lang="ar"] .text-lg {
-    font-size: 1.125rem;
-    line-height: 1.75;
-  }
-
-  [lang="ar"] .text-xl {
-    font-size: 1.25rem;
-    line-height: 1.6;
+    font-size: 1.15rem;
   }
 
   /* Espacement amélioré pour l'arabe */
@@ -338,26 +239,6 @@
 
   [lang="ar"] .space-y-4 > :not([hidden]) ~ :not([hidden]) {
     margin-top: 1.25rem;
-  }
-
-  [lang="ar"] .space-y-6 > :not([hidden]) ~ :not([hidden]) {
-    margin-top: 1.75rem;
-  }
-
-  /* Améliorations pour les boutons en arabe */
-  [lang="ar"] .btn, [lang="ar"] button {
-    font-weight: 500;
-    letter-spacing: 0.025em;
-  }
-
-  /* Support des listes en arabe */
-  [lang="ar"] ul, [lang="ar"] ol {
-    text-align: right;
-  }
-
-  [lang="ar"] li {
-    padding-right: 1.5rem;
-    padding-left: 0;
   }
 
   input, textarea, select {
