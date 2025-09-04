@@ -4,16 +4,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Globe } from 'lucide-react';
+import { useRTLClasses } from '@/utils/rtl';
 
 const LanguageSelector = () => {
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
+  const { spaceClass, rtlClass } = useRTLClasses();
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className={`flex items-center ${spaceClass('space-x-2')}`}>
       <Globe className="h-4 w-4 text-muted-foreground" />
       <Select value={language} onValueChange={(value: 'fr' | 'ar' | 'en') => setLanguage(value)}>
-        <SelectTrigger className="w-32">
+        <SelectTrigger className={rtlClass("w-32")}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent className="bg-popover border-border shadow-lg">
