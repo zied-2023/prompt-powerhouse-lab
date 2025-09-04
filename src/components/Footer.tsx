@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Github, Twitter, Linkedin, Mail, Heart } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import ContactForm from "@/components/ContactForm";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -60,14 +61,25 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social) => (
-                <a
-                  key={social.name}
-                  href={social.href}
-                  className="p-2 text-muted-foreground hover:text-primary transition-colors duration-200 hover:bg-accent rounded-lg"
-                  aria-label={social.name}
-                >
-                  <social.icon className="h-5 w-5" />
-                </a>
+                social.name === "Email" ? (
+                  <ContactForm key={social.name}>
+                    <button
+                      className="p-2 text-muted-foreground hover:text-primary transition-colors duration-200 hover:bg-accent rounded-lg"
+                      aria-label={social.name}
+                    >
+                      <social.icon className="h-5 w-5" />
+                    </button>
+                  </ContactForm>
+                ) : (
+                  <a
+                    key={social.name}
+                    href={social.href}
+                    className="p-2 text-muted-foreground hover:text-primary transition-colors duration-200 hover:bg-accent rounded-lg"
+                    aria-label={social.name}
+                  >
+                    <social.icon className="h-5 w-5" />
+                  </a>
+                )
               ))}
             </div>
           </div>
