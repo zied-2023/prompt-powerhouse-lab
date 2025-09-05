@@ -226,13 +226,6 @@ export type Database = {
             referencedRelation: "marketplace_transactions"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "marketplace_reviews_transaction_id_fkey"
-            columns: ["transaction_id"]
-            isOneToOne: false
-            referencedRelation: "user_transaction_summary"
-            referencedColumns: ["id"]
-          },
         ]
       }
       marketplace_transactions: {
@@ -510,71 +503,7 @@ export type Database = {
       }
     }
     Views: {
-      user_subscription_summary: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          payment_status: string | null
-          status_display: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string | null
-          payment_status?: string | null
-          status_display?: never
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string | null
-          payment_status?: string | null
-          status_display?: never
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      user_transaction_summary: {
-        Row: {
-          buyer_id: string | null
-          currency: string | null
-          id: string | null
-          marketplace_prompt_id: string | null
-          payment_status: string | null
-          seller_id: string | null
-          status_display: string | null
-          transaction_date: string | null
-        }
-        Insert: {
-          buyer_id?: string | null
-          currency?: string | null
-          id?: string | null
-          marketplace_prompt_id?: string | null
-          payment_status?: string | null
-          seller_id?: string | null
-          status_display?: never
-          transaction_date?: string | null
-        }
-        Update: {
-          buyer_id?: string | null
-          currency?: string | null
-          id?: string | null
-          marketplace_prompt_id?: string | null
-          payment_status?: string | null
-          seller_id?: string | null
-          status_display?: never
-          transaction_date?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "marketplace_transactions_marketplace_prompt_id_fkey"
-            columns: ["marketplace_prompt_id"]
-            isOneToOne: false
-            referencedRelation: "marketplace_prompts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       is_profile_owner: {
