@@ -210,7 +210,7 @@ const SimplePromptGenerator = () => {
               {/* Logo et titre à gauche */}
               <Link to="/" className={`flex items-center hover:opacity-80 transition-opacity ${isRTL ? 'space-x-reverse space-x-3' : 'space-x-3'}`}>
                 <img 
-                  src="/lovable-uploads/4bfcbfae-c46b-471e-8938-d07bd52b4db2.png" 
+                  src="/logo.png" 
                   alt="AutoPrompt Logo" 
                   className="h-10 w-10 object-contain"
                 />
