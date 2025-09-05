@@ -40,10 +40,9 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
       if (data.user) {
         toast({
           title: "Connexion réussie",
-          description: "Bienvenue sur PromptCraft !",
+          description: "Bienvenue sur AutoPrompt !",
         });
         onSuccess();
-        navigate("/app");
       }
     } catch (error) {
       toast({

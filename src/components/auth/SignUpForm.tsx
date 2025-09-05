@@ -46,6 +46,9 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/app`
+        }
       });
 
       if (error) {
@@ -63,7 +66,6 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
           description: "Vérifiez votre email pour confirmer votre compte",
         });
         onSuccess();
-        navigate("/app");
       }
     } catch (error) {
       toast({
