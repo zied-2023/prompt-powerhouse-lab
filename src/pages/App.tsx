@@ -1,4 +1,5 @@
 
+import SecuritySettings from "@/components/SecuritySettings";
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard } from "lucide-react";
+import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard, Shield } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -211,7 +212,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-10 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
+          <TabsList className="grid w-full grid-cols-11 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
@@ -276,6 +277,13 @@ const Index = () => {
               <span>{t('history')}</span>
             </TabsTrigger>
             <TabsTrigger 
+              value="security" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <Shield className="h-4 w-4" />
+              <span>Sécurité</span>
+            </TabsTrigger>
+            <TabsTrigger 
               value="integration" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
             >
@@ -318,6 +326,10 @@ const Index = () => {
 
           <TabsContent value="history" className="space-y-8">
             <PromptHistory />
+          </TabsContent>
+
+          <TabsContent value="security" className="space-y-8">
+            <SecuritySettings />
           </TabsContent>
 
           <TabsContent value="integration" className="space-y-8">

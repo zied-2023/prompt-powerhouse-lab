@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import ThemeSelector from "@/components/ThemeSelector";
@@ -13,6 +14,9 @@ const Landing = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
+  
+  // Redirect if already authenticated
+  useAuthRedirect();
 
   const features = [
     {

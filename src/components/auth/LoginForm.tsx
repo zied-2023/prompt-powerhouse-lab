@@ -66,6 +66,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
       </div>
       
@@ -78,6 +79,7 @@ export const LoginForm = ({ onSuccess }: LoginFormProps) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
       </div>
 

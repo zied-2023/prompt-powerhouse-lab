@@ -25,11 +25,34 @@ const ContactForm = ({ children }: ContactFormProps) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Input validation and sanitization
+    const maxLengths = {
+      name: 100,
+      email: 320, // RFC standard for email length
+      subject: 200,
+      message: 2000
+    };
+    
+    const maxLength = maxLengths[name as keyof typeof maxLengths];
+    const sanitizedValue = value.slice(0, maxLength);
+    
+    setFormData(prev => ({ ...prev, [name]: sanitizedValue }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Additional validation before submission
+    if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
+      toast({
+        title: "Erreur de validation",
+        description: "Tous les champs sont obligatoires",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setIsLoading(true);
 
     try {
@@ -83,6 +106,8 @@ const ContactForm = ({ children }: ContactFormProps) => {
                 onChange={handleInputChange}
                 required
                 placeholder="Votre nom"
+                maxLength={100}
+                autoComplete="name"
               />
             </div>
             <div className="space-y-2">
@@ -95,6 +120,8 @@ const ContactForm = ({ children }: ContactFormProps) => {
                 onChange={handleInputChange}
                 required
                 placeholder="votre@email.com"
+                maxLength={320}
+                autoComplete="email"
               />
             </div>
           </div>
@@ -108,6 +135,7 @@ const ContactForm = ({ children }: ContactFormProps) => {
               onChange={handleInputChange}
               required
               placeholder="Sujet de votre message"
+              maxLength={200}
             />
           </div>
           
@@ -121,6 +149,7 @@ const ContactForm = ({ children }: ContactFormProps) => {
               required
               placeholder="Votre message..."
               rows={4}
+              maxLength={2000}
             />
           </div>
           

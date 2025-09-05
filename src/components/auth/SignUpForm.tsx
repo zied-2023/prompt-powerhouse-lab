@@ -31,10 +31,21 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       toast({
         title: "Erreur",
-        description: "Le mot de passe doit contenir au moins 6 caractères",
+        description: "Le mot de passe doit contenir au moins 8 caractères",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Enhanced password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/;
+    if (!passwordRegex.test(password)) {
+      toast({
+        title: "Mot de passe trop faible",
+        description: "Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre",
         variant: "destructive",
       });
       return;
@@ -89,6 +100,7 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
       </div>
       
@@ -101,7 +113,8 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          minLength={6}
+          minLength={8}
+          autoComplete="new-password"
         />
       </div>
 
@@ -114,7 +127,8 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          minLength={6}
+          minLength={8}
+          autoComplete="new-password"
         />
       </div>
 
