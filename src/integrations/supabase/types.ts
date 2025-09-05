@@ -506,6 +506,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_safe_profile_data: {
+        Args: { profile_user_id: string }
+        Returns: {
+          created_at: string
+          email_domain: string
+          id: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
       is_profile_owner: {
         Args: { profile_user_id: string }
         Returns: boolean
