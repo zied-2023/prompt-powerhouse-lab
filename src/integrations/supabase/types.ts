@@ -288,6 +288,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string | null
+          email_encrypted: boolean | null
           id: string
           updated_at: string
           user_id: string
@@ -295,6 +296,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email?: string | null
+          email_encrypted?: boolean | null
           id?: string
           updated_at?: string
           user_id: string
@@ -302,6 +304,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string | null
+          email_encrypted?: boolean | null
           id?: string
           updated_at?: string
           user_id?: string
@@ -515,6 +518,10 @@ export type Database = {
           updated_at: string
           user_id: string
         }[]
+      }
+      get_user_email_safely: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       is_profile_owner: {
         Args: { profile_user_id: string }
