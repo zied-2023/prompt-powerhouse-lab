@@ -158,12 +158,6 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <span>© {currentYear} AutoPrompt. Tous droits réservés.</span>
-              <span className="hidden md:inline">•</span>
-              <span className="flex items-center space-x-1">
-                <span>Créé avec</span>
-                <Heart className="h-4 w-4 text-red-500 fill-current" />
-                <span>en France</span>
-              </span>
             </div>
             <div className="flex items-center space-x-6 text-sm text-muted-foreground">
               <span className="flex items-center space-x-2">
