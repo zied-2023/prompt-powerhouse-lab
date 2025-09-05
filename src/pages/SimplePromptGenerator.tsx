@@ -31,11 +31,39 @@ const SimplePromptGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const [dailyUsage, setDailyUsage] = useState(0);
   const { toast } = useToast();
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit, isLoading: creditsLoading } = useUserCredits();
   const { language, isRTL } = useLanguage();
   const { t } = useTranslation();
+
+  const DAILY_LIMIT = 5;
+
+  // Fonction pour gérer la limite quotidienne
+  const checkDailyLimit = () => {
+    const today = new Date().toDateString();
+    const storedData = localStorage.getItem('autoprompt_daily_usage');
+    
+    if (storedData) {
+      const { date, count } = JSON.parse(storedData);
+      if (date === today) {
+        return count;
+      }
+    }
+    
+    // Nouveau jour, réinitialiser le compteur
+    localStorage.setItem('autoprompt_daily_usage', JSON.stringify({ date: today, count: 0 }));
+    return 0;
+  };
+
+  const incrementDailyUsage = () => {
+    const today = new Date().toDateString();
+    const currentCount = checkDailyLimit();
+    const newCount = currentCount + 1;
+    localStorage.setItem('autoprompt_daily_usage', JSON.stringify({ date: today, count: newCount }));
+    setDailyUsage(newCount);
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -47,6 +75,9 @@ const SimplePromptGenerator = () => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
+
+    // Vérifier l'usage quotidien au chargement
+    setDailyUsage(checkDailyLimit());
 
     return () => subscription.unsubscribe();
   }, []);
@@ -72,8 +103,18 @@ const SimplePromptGenerator = () => {
       return;
     }
 
-    // Le générateur est maintenant libre d'utilisation
-    // Pas de vérification d'authentification ou de crédits requise
+    // Vérifier la limite quotidienne pour les utilisateurs non connectés
+    if (!user) {
+      const currentUsage = checkDailyLimit();
+      if (currentUsage >= DAILY_LIMIT) {
+        toast({
+          title: "Limite quotidienne atteinte",
+          description: `Vous avez atteint la limite de ${DAILY_LIMIT} prompts par jour. Connectez-vous pour un accès illimité.`,
+          variant: "destructive"
+        });
+        return;
+      }
+    }
 
     setIsLoading(true);
     
@@ -125,6 +166,12 @@ const SimplePromptGenerator = () => {
       
       if (data.choices && data.choices[0] && data.choices[0].message) {
         setResult(data.choices[0].message.content);
+        
+        // Incrémenter le compteur uniquement pour les utilisateurs non connectés
+        if (!user) {
+          incrementDailyUsage();
+        }
+        
         toast({
           title: "Succès",
           description: "Prompt généré avec succès !",
@@ -304,20 +351,31 @@ const SimplePromptGenerator = () => {
               </Select>
             </div>
 
-            {/* Section libre d'utilisation */}
-            <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-              <div className="text-sm font-medium text-green-700 dark:text-green-300">
-                {t('freeGenerator')}
+            {/* Section limite d'utilisation */}
+            {!user ? (
+              <div className="text-center p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                <div className="text-sm font-medium text-amber-700 dark:text-amber-300">
+                  Mode gratuit - {dailyUsage}/{DAILY_LIMIT} prompts utilisés aujourd'hui
+                </div>
+                <div className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                  Connectez-vous pour un accès illimité
+                </div>
               </div>
-              <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-                {t('noConnectionRequired')}
+            ) : (
+              <div className="text-center p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                <div className="text-sm font-medium text-green-700 dark:text-green-300">
+                  Mode connecté - Génération illimitée
+                </div>
+                <div className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  Profitez de toutes les fonctionnalités
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Bouton générer */}
             <Button 
               onClick={generatePrompt}
-              disabled={isLoading || !objective.trim()}
+              disabled={isLoading || !objective.trim() || (!user && dailyUsage >= DAILY_LIMIT)}
               className="w-full"
               size="lg"
             >
@@ -326,6 +384,8 @@ const SimplePromptGenerator = () => {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t('generating')}
                 </>
+              ) : !user && dailyUsage >= DAILY_LIMIT ? (
+                "Limite quotidienne atteinte"
               ) : (
                 t('generatePrompt')
               )}
