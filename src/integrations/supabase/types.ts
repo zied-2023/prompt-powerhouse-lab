@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          access_type: string
+          created_at: string
+          id: string
+          record_id: string | null
+          table_name: string
+          timestamp: string
+          user_id: string | null
+        }
+        Insert: {
+          access_type: string
+          created_at?: string
+          id?: string
+          record_id?: string | null
+          table_name: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Update: {
+          access_type?: string
+          created_at?: string
+          id?: string
+          record_id?: string | null
+          table_name?: string
+          timestamp?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       content_reports: {
         Row: {
           admin_notes: string | null
@@ -478,6 +508,14 @@ export type Database = {
     Functions: {
       is_profile_owner: {
         Args: { profile_user_id: string }
+        Returns: boolean
+      }
+      is_subscription_owner: {
+        Args: { subscription_user_id: string }
+        Returns: boolean
+      }
+      is_transaction_participant: {
+        Args: { transaction_buyer_id: string; transaction_seller_id: string }
         Returns: boolean
       }
     }
