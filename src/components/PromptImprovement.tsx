@@ -9,6 +9,7 @@ import { RefreshCw, Copy, TrendingUp, CheckCircle, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
+import PromptEvaluationWidget from "@/components/PromptEvaluationWidget";
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -321,6 +322,15 @@ Réponds au format suivant:
                 <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
                   🤖 <strong>{t('generatedByAI')} :</strong> {t('aiGeneratedDesc')}
                 </p>
+              </div>
+              
+              {/* Widget d'évaluation pour le prompt amélioré */}
+              <div className="mt-6">
+                <PromptEvaluationWidget 
+                  promptContent={improvedPrompt}
+                  category="improvement"
+                  compact={true}
+                />
               </div>
             </div>
           ) : (

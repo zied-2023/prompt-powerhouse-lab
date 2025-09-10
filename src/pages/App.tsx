@@ -25,6 +25,9 @@ import { useUserCredits } from "@/hooks/useUserCredits";
 import CreditManager from "@/components/CreditManager";
 import MarketplacePromptGrid from "@/components/MarketplacePromptGrid";
 import SellerDashboard from "@/components/SellerDashboard";
+import PromptEvaluator from "@/components/PromptEvaluator";
+import PromptOptimizer from "@/components/PromptOptimizer";
+import PromptQualityDashboard from "@/components/PromptQualityDashboard";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -212,7 +215,7 @@ const Index = () => {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-6 py-10">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-11 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
+          <TabsList className="grid w-full grid-cols-14 mb-10 glass-card border-white/30 dark:border-gray-700/30 p-1.5 shadow-xl">
             <TabsTrigger 
               value="generator" 
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
@@ -290,6 +293,27 @@ const Index = () => {
               <Code className="h-4 w-4" />
               <span>{t('integration')}</span>
             </TabsTrigger>
+            <TabsTrigger 
+              value="evaluator" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span>Évaluateur</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="optimizer" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <Zap className="h-4 w-4" />
+              <span>Optimiseur</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="quality" 
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium"
+            >
+              <TrendingUp className="h-4 w-4" />
+              <span>Qualité</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="generator" className="space-y-8">
@@ -334,6 +358,18 @@ const Index = () => {
 
           <TabsContent value="integration" className="space-y-8">
             <IntegrationPanel />
+          </TabsContent>
+
+          <TabsContent value="evaluator" className="space-y-8">
+            <PromptEvaluator />
+          </TabsContent>
+
+          <TabsContent value="optimizer" className="space-y-8">
+            <PromptOptimizer />
+          </TabsContent>
+
+          <TabsContent value="quality" className="space-y-8">
+            <PromptQualityDashboard />
           </TabsContent>
 
         </Tabs>
