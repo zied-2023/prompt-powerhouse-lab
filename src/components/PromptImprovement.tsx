@@ -9,7 +9,7 @@ import { RefreshCw, Copy, TrendingUp, CheckCircle, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
-import PromptEvaluationWidget from "@/components/PromptEvaluationWidget";
+import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 
 // Configuration API - Mistral
 const API_CONFIG = {

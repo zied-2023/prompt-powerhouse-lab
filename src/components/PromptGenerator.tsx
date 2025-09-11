@@ -10,7 +10,7 @@ import { Zap, Copy, Sparkles, Wand2, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
-import PromptEvaluationWidget from "@/components/PromptEvaluationWidget";
+import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 
 // Configuration API - Mistral (correction de l'espace en trop dans l'URL)
 const API_CONFIG = {

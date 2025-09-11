@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard, Shield } from "lucide-react";
+import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard, Shield, BarChart3 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -25,9 +25,7 @@ import { useUserCredits } from "@/hooks/useUserCredits";
 import CreditManager from "@/components/CreditManager";
 import MarketplacePromptGrid from "@/components/MarketplacePromptGrid";
 import SellerDashboard from "@/components/SellerDashboard";
-import PromptEvaluator from "@/components/PromptEvaluator";
-import PromptOptimizer from "@/components/PromptOptimizer";
-import PromptQualityDashboard from "@/components/PromptQualityDashboard";
+// Composants d'évaluation temporairement désactivés
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -361,15 +359,24 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="evaluator" className="space-y-8">
-            <PromptEvaluator />
+            <div className="text-center py-8 text-muted-foreground">
+              <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Fonctionnalité d'évaluation temporairement indisponible</p>
+            </div>
           </TabsContent>
 
           <TabsContent value="optimizer" className="space-y-8">
-            <PromptOptimizer />
+            <div className="text-center py-8 text-muted-foreground">
+              <Zap className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Fonctionnalité d'optimisation temporairement indisponible</p>
+            </div>
           </TabsContent>
 
           <TabsContent value="quality" className="space-y-8">
-            <PromptQualityDashboard />
+            <div className="text-center py-8 text-muted-foreground">
+              <TrendingUp className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>Tableau de bord qualité temporairement indisponible</p>
+            </div>
           </TabsContent>
 
         </Tabs>
