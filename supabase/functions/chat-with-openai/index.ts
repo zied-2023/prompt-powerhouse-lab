@@ -247,7 +247,7 @@ serve(async (req) => {
   try {
     // Parse the request body
     const body = await req.json()
-    const { messages, model = 'gpt-4o-mini', max_tokens = 1000, temperature = 0.7, provider = 'openai' } = body
+    const { messages, model = 'gpt-4o-mini', max_tokens = 2000, temperature = 0.7, provider = 'openai' } = body
     
     console.log('Request data:', { provider, model, messages: messages.length, max_tokens, temperature })
 
