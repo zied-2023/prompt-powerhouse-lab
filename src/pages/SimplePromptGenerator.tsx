@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, Copy, CheckCircle, Save, ArrowLeft, Sparkles, Lock } from 'lucide-react';
+import { Loader as Loader2, Copy, CircleCheck as CheckCircle, Save, ArrowLeft, Sparkles, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import ThemeSelector from '@/components/ThemeSelector';
