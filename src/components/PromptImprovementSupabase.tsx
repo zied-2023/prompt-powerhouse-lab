@@ -4,7 +4,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, Copy, TrendingUp, CheckCircle, Save, Info } from "lucide-react";
+import { RefreshCw, Copy, TrendingUp, CircleCheck as CheckCircle, Save, Info } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { supabase } from "@/integrations/supabase/client";
