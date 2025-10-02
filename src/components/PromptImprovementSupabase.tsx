@@ -4,10 +4,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, Copy, TrendingUp, CheckCircle, Save } from "lucide-react";
+import { RefreshCw, Copy, TrendingUp, CheckCircle, Save, Info } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { supabase } from "@/integrations/supabase/client";
+import { analyzePromptComplexity } from "@/lib/promptAnalyzer";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const PromptImprovementSupabase = () => {
   const { t } = useTranslation();
@@ -17,6 +20,9 @@ const PromptImprovementSupabase = () => {
   const [improvementObjective, setImprovementObjective] = useState('');
   const [improvedPrompt, setImprovedPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<string>('');
+  const [aiSuggestion, setAiSuggestion] = useState<string>('');
 
   const improvePrompt = async () => {
     if (!originalPrompt.trim()) {
@@ -27,6 +33,15 @@ const PromptImprovementSupabase = () => {
       });
       return;
     }
+
+    const complexity = analyzePromptComplexity(
+      originalPrompt,
+      improvementObjective
+    );
+
+    setSelectedProvider(complexity.suggestedProvider);
+    setSelectedModel(complexity.suggestedModel);
+    setAiSuggestion(complexity.reasoning);
 
     setIsLoading(true);
     
@@ -55,7 +70,6 @@ Conserve l'intention originale tout en optimisant la formulation et la structure
         userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
       }
 
-      // Call the Supabase edge function
       const { data, error } = await supabase.functions.invoke('chat-with-openai', {
         body: {
           messages: [
@@ -68,10 +82,10 @@ Conserve l'intention originale tout en optimisant la formulation et la structure
               content: userPrompt
             }
           ],
-          model: 'gpt-4o-mini',
+          model: complexity.suggestedModel,
           max_tokens: 2000,
           temperature: 0.7,
-          provider: 'openai'
+          provider: complexity.suggestedProvider
         }
       });
 
@@ -83,7 +97,7 @@ Conserve l'intention originale tout en optimisant la formulation et la structure
         setImprovedPrompt(data.choices[0].message.content);
         toast({
           title: "Prompt amélioré !",
-          description: "Votre prompt a été optimisé avec succès.",
+          description: `Optimisé avec ${complexity.suggestedProvider.toUpperCase()} (${complexity.suggestedModel})`,
         });
       } else {
         throw new Error('Réponse invalide de l\'API');
@@ -135,11 +149,19 @@ Conserve l'intention originale tout en optimisant la formulation et la structure
         <CardHeader className="text-center pb-4">
           <CardTitle className="text-2xl font-bold gradient-text flex items-center justify-center gap-2">
             <TrendingUp className="h-6 w-6" />
-            Amélioration de Prompts - OpenAI
+            Amélioration de Prompts - Multi-API
           </CardTitle>
           <CardDescription className="text-lg">
-            Optimisez vos prompts existants avec l'API OpenAI stockée dans Supabase
+            Sélection intelligente du meilleur modèle IA pour optimiser vos prompts
           </CardDescription>
+          {aiSuggestion && (
+            <Alert className="mt-4">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>IA sélectionnée:</strong> {aiSuggestion}
+              </AlertDescription>
+            </Alert>
+          )}
         </CardHeader>
         
         <CardContent className="space-y-6">
@@ -193,10 +215,15 @@ Conserve l'intention originale tout en optimisant la formulation et la structure
         <Card className="glass-card border-white/30 dark:border-gray-700/30 shadow-xl">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span className="gradient-text flex items-center gap-2">
+              <div className="flex items-center gap-2">
                 <CheckCircle className="h-5 w-5 text-emerald-500" />
-                Prompt Amélioré
-              </span>
+                <span className="gradient-text">Prompt Amélioré</span>
+                {selectedProvider && (
+                  <Badge variant="outline" className="ml-2">
+                    {selectedProvider.toUpperCase()}: {selectedModel}
+                  </Badge>
+                )}
+              </div>
               <div className="flex gap-2">
                 <Button
                   onClick={copyToClipboard}

@@ -1,8 +1,9 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Client-Info, Apikey',
 }
 
 // Interface pour les métriques des clés API
@@ -32,24 +33,31 @@ function getApiKeyConfigs(provider: string): ApiKeyConfig[] {
     const primaryKey = Deno.env.get('OPENAI_API_KEY_PRIMARY');
     const secondaryKey = Deno.env.get('OPENAI_API_KEY_SECONDARY');
     const fallbackKey = Deno.env.get('OPENAI_API_KEY');
-    
+
     const configs: ApiKeyConfig[] = [];
     if (primaryKey) configs.push({ key: primaryKey, priority: 1, name: 'primary' });
     if (secondaryKey) configs.push({ key: secondaryKey, priority: 2, name: 'secondary' });
     if (fallbackKey) configs.push({ key: fallbackKey, priority: 3, name: 'fallback' });
-    
+
+    return configs;
+  } else if (provider === 'openrouter') {
+    const openrouterKey = Deno.env.get('OPENROUTER_API_KEY') || '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';
+
+    const configs: ApiKeyConfig[] = [];
+    if (openrouterKey) configs.push({ key: openrouterKey, priority: 1, name: 'openrouter' });
+
     return configs;
   } else {
     // DeepSeek API keys
     const deepseekV3 = Deno.env.get('DEEPSEEK_V3_API_KEY');
     const deepseekMain = Deno.env.get('DEEPSEEK_API_KEY');
     const deepseekFallback = Deno.env.get('deepseek');
-    
+
     const configs: ApiKeyConfig[] = [];
     if (deepseekV3) configs.push({ key: deepseekV3, priority: 1, name: 'v3' });
     if (deepseekMain) configs.push({ key: deepseekMain, priority: 2, name: 'main' });
     if (deepseekFallback) configs.push({ key: deepseekFallback, priority: 3, name: 'fallback' });
-    
+
     return configs;
   }
 }
@@ -238,10 +246,12 @@ async function makeApiRequestWithFallback(
   throw new Error(`Toutes les clés API ${provider} ont échoué. Dernière erreur: ${lastError?.error?.message || 'Erreur inconnue'}`);
 }
 
-serve(async (req) => {
-  // Handle CORS preflight requests
+Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, {
+      status: 200,
+      headers: corsHeaders,
+    });
   }
 
   try {
@@ -284,7 +294,7 @@ serve(async (req) => {
 
     if (provider === 'openai') {
       apiUrl = 'https://api.openai.com/v1/chat/completions';
-      
+
       // Handle newer models that use max_completion_tokens instead of max_tokens
       const isNewerModel = model.includes('gpt-5') || model.includes('gpt-4.1') || model.includes('o3') || model.includes('o4');
       requestBody = {
@@ -292,6 +302,14 @@ serve(async (req) => {
         messages,
         ...(isNewerModel ? { max_completion_tokens: max_tokens } : { max_tokens }),
         ...(isNewerModel ? {} : { temperature }), // Newer models don't support temperature
+      };
+    } else if (provider === 'openrouter') {
+      apiUrl = 'https://openrouter.ai/api/v1/chat/completions';
+      requestBody = {
+        model,
+        messages,
+        max_tokens,
+        temperature,
       };
     } else {
       apiUrl = 'https://api.deepseek.com/v1/chat/completions';

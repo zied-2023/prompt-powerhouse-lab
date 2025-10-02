@@ -5,11 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Zap, Copy, Sparkles, Wand2, Save } from "lucide-react";
+import { Zap, Copy, Sparkles, Wand2, Save, Info } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { supabase } from "@/integrations/supabase/client";
+import { analyzePromptComplexity } from "@/lib/promptAnalyzer";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const PromptGeneratorSupabase = () => {
   const { t } = useTranslation();
@@ -29,6 +32,9 @@ const PromptGeneratorSupabase = () => {
   
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedProvider, setSelectedProvider] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<string>('');
+  const [aiSuggestion, setAiSuggestion] = useState<string>('');
 
   // Configuration des domaines et spécialisations
   const domains = [
@@ -112,6 +118,16 @@ const PromptGeneratorSupabase = () => {
       return;
     }
 
+    const complexity = analyzePromptComplexity(
+      formData.description,
+      formData.objective,
+      formData.domain
+    );
+
+    setSelectedProvider(complexity.suggestedProvider);
+    setSelectedModel(complexity.suggestedModel);
+    setAiSuggestion(complexity.reasoning);
+
     setIsLoading(true);
     
     try {
@@ -141,7 +157,6 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
       if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
 
-      // Call the Supabase edge function
       const { data, error } = await supabase.functions.invoke('chat-with-openai', {
         body: {
           messages: [
@@ -154,10 +169,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               content: userPrompt
             }
           ],
-          model: 'gpt-4o-mini',
+          model: complexity.suggestedModel,
           max_tokens: 2000,
           temperature: 0.7,
-          provider: 'openai'
+          provider: complexity.suggestedProvider
         }
       });
 
@@ -175,7 +190,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         setGeneratedPrompt(data.choices[0].message.content);
         toast({
           title: "Prompt généré !",
-          description: `Votre prompt expert a été créé avec succès ! Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
+          description: `Généré avec ${complexity.suggestedProvider.toUpperCase()} (${complexity.suggestedModel}). Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
         });
       } else {
         throw new Error('Réponse invalide de l\'API');
@@ -233,11 +248,19 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         <CardHeader className="text-center pb-4">
           <CardTitle className="text-2xl font-bold gradient-text flex items-center justify-center gap-2">
             <Sparkles className="h-6 w-6" />
-            Générateur de Prompts Expert - OpenAI
+            Générateur de Prompts Expert - Multi-API
           </CardTitle>
           <CardDescription className="text-lg">
-            Créez des prompts optimisés avec l'API OpenAI stockée dans Supabase
+            Sélection intelligente du meilleur modèle IA (OpenAI, DeepSeek, OpenRouter)
           </CardDescription>
+          {aiSuggestion && (
+            <Alert className="mt-4">
+              <Info className="h-4 w-4" />
+              <AlertDescription>
+                <strong>IA sélectionnée:</strong> {aiSuggestion}
+              </AlertDescription>
+            </Alert>
+          )}
         </CardHeader>
         
         <CardContent className="space-y-6">
@@ -372,10 +395,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           </div>
 
           {/* Bouton de génération */}
-          <Button 
+          <Button
             onClick={generatePrompt}
             disabled={isLoading || !formData.domain || !formData.description}
-            className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white font-medium py-3 h-auto"
+            className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-medium py-3 h-auto"
           >
             {isLoading ? (
               <>
@@ -385,7 +408,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             ) : (
               <>
                 <Zap className="h-5 w-5 mr-2" />
-                Générer le Prompt Expert
+                Générer le Prompt Expert (Auto)
               </>
             )}
           </Button>
@@ -397,7 +420,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         <Card className="glass-card border-white/30 dark:border-gray-700/30 shadow-xl">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span className="gradient-text">Prompt Généré</span>
+              <div className="flex items-center gap-2">
+                <span className="gradient-text">Prompt Généré</span>
+                {selectedProvider && (
+                  <Badge variant="outline" className="ml-2">
+                    {selectedProvider.toUpperCase()}: {selectedModel}
+                  </Badge>
+                )}
+              </div>
               <div className="flex gap-2">
                 <Button
                   onClick={copyToClipboard}
