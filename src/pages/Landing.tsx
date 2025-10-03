@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield, Copy, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -9,14 +11,90 @@ import LanguageSelector from "@/components/LanguageSelector";
 import { AuthButtons } from "@/components/auth/AuthButtons";
 import Footer from "@/components/Footer";
 import SEOHead from "@/components/SEOHead";
+import { toast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const Landing = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { language, isRTL } = useLanguage();
-  
-  // Redirect if already authenticated
+  const [showGenerator, setShowGenerator] = useState(false);
+  const [promptInput, setPromptInput] = useState('');
+  const [generatedPrompt, setGeneratedPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+
   useAuthRedirect();
+
+  const generatePrompt = async () => {
+    if (!promptInput.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez décrire ce que vous voulez accomplir",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer 9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: 'mistral-large-latest',
+          messages: [
+            {
+              role: 'system',
+              content: 'Tu es un expert en création de prompts pour l\'IA. Crée des prompts clairs, précis et optimisés. Réponds directement avec le prompt, sans explications supplémentaires.'
+            },
+            {
+              role: 'user',
+              content: `Crée un prompt professionnel optimisé pour: ${promptInput}`
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1000
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de la génération');
+      }
+
+      const data = await response.json();
+
+      if (data.choices && data.choices[0]?.message?.content) {
+        setGeneratedPrompt(data.choices[0].message.content);
+        toast({
+          title: "Succès",
+          description: "Votre prompt a été généré avec succès!",
+        });
+      } else {
+        throw new Error('Réponse invalide');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de générer le prompt. Réessayez.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedPrompt);
+    toast({
+      title: "Copié!",
+      description: "Le prompt a été copié dans le presse-papiers",
+    });
+  };
 
   const features = [
     {
@@ -153,9 +231,9 @@ const Landing = () => {
 
             {/* CTA Buttons */}
             <div className="flex justify-center items-center mb-8 animate-fade-in">
-              <Button 
-                size="lg" 
-                onClick={() => navigate('/generator')}
+              <Button
+                size="lg"
+                onClick={() => setShowGenerator(true)}
                 className="text-lg px-8 py-6 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white border-0 shadow-2xl hover:shadow-violet-500/25 transition-all duration-300 hover:scale-105"
               >
                 {t('landingCTA')}
@@ -182,6 +260,94 @@ const Landing = () => {
             </div>
           </div>
         </section>
+
+        {/* Quick Generator Section */}
+        {showGenerator && (
+          <section className="container mx-auto px-4 mt-16 animate-fade-in">
+            <div className="max-w-4xl mx-auto">
+              <Card className="glass-card border-white/30 dark:border-gray-700/30 shadow-2xl">
+                <CardHeader className="text-center">
+                  <CardTitle className="text-2xl font-bold gradient-text flex items-center justify-center gap-2">
+                    <Sparkles className="h-6 w-6" />
+                    Générateur Rapide de Prompts
+                  </CardTitle>
+                  <p className="text-muted-foreground mt-2">
+                    Décrivez ce que vous voulez accomplir et obtenez un prompt optimisé instantanément
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-4">
+                    <Textarea
+                      placeholder="Exemple: Créer un email de prospection commerciale pour une startup tech..."
+                      value={promptInput}
+                      onChange={(e) => setPromptInput(e.target.value)}
+                      className="min-h-[120px] text-base"
+                      disabled={isGenerating}
+                    />
+
+                    <Button
+                      onClick={generatePrompt}
+                      disabled={isGenerating || !promptInput.trim()}
+                      className="w-full bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white py-6 text-lg font-medium"
+                    >
+                      {isGenerating ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          Génération en cours...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="mr-2 h-5 w-5" />
+                          Générer le Prompt
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {generatedPrompt && (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-white/20 dark:border-gray-700/20">
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="font-semibold text-lg">Votre Prompt Optimisé</h3>
+                          <Button
+                            onClick={copyToClipboard}
+                            variant="outline"
+                            size="sm"
+                          >
+                            <Copy className="h-4 w-4 mr-2" />
+                            Copier
+                          </Button>
+                        </div>
+                        <pre className="whitespace-pre-wrap text-sm leading-relaxed font-mono text-foreground">
+                          {generatedPrompt}
+                        </pre>
+                      </div>
+
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => {
+                            setPromptInput('');
+                            setGeneratedPrompt('');
+                          }}
+                          variant="outline"
+                          className="flex-1"
+                        >
+                          Nouveau Prompt
+                        </Button>
+                        <Button
+                          onClick={() => navigate('/auth')}
+                          className="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+                        >
+                          S'inscrire pour Plus
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+        )}
 
         {/* Stats Section */}
         <section className="container mx-auto px-4 mt-20">
