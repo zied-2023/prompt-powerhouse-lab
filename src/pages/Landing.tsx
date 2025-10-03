@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield, Copy, Loader2 } from "lucide-react";
+import { ArrowRight, Sparkles, Zap, Target, BookOpen, Star, Users, Clock, Shield, Copy, Loader as Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { useTranslation } from "@/hooks/useTranslation";
