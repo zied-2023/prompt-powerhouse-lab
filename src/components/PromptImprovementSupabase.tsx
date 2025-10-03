@@ -9,12 +9,15 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzePromptComplexity } from "@/lib/promptAnalyzer";
+import { PromptCompressor } from "@/lib/promptCompressor";
+import { useUserCredits } from "@/hooks/useUserCredits";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const PromptImprovementSupabase = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
+  const { credits } = useUserCredits();
   
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [improvementObjective, setImprovementObjective] = useState('');
@@ -46,7 +49,11 @@ const PromptImprovementSupabase = () => {
     setIsLoading(true);
     
     try {
-      const systemPrompt = `Tu es un expert en optimisation de prompts pour l'intelligence artificielle. 
+      // Déterminer si mode premium ou gratuit
+      const isPremium = credits ? credits.remaining_credits > 20 : false;
+      
+      const systemPrompt = isPremium
+        ? `Tu es un expert en optimisation de prompts pour l'intelligence artificielle. 
 
 Ta mission est d'analyser et d'améliorer les prompts pour les rendre plus efficaces, précis et performants.
 
@@ -63,7 +70,17 @@ Format de réponse :
 2. **AMÉLIORATIONS APPORTÉES** : [liste des modifications et justifications]
 3. **CONSEILS D'UTILISATION** : [recommandations pour maximiser l'efficacité]
 
-Conserve l'intention originale tout en optimisant la formulation et la structure.`;
+Conserve l'intention originale tout en optimisant la formulation et la structure.`
+        : `Tu es un expert en optimisation de prompts. Améliore ce prompt de manière concise.
+
+Réponds au format suivant:
+**PROMPT AMÉLIORÉ:**
+[Le prompt optimisé]
+
+**AMÉLIORATIONS APPORTÉES:**
+• [Amélioration 1]
+• [Amélioration 2]
+• [Amélioration 3]`;
 
       let userPrompt = `Améliore ce prompt: "${originalPrompt}"`;
       if (improvementObjective.trim()) {
@@ -94,10 +111,21 @@ Conserve l'intention originale tout en optimisant la formulation et la structure
       }
 
       if (data.choices && data.choices[0]?.message?.content) {
-        setImprovedPrompt(data.choices[0].message.content);
+        let improvedContent = data.choices[0].message.content;
+        
+        // Appliquer la compression si mode gratuit
+        if (!isPremium) {
+          const result = PromptCompressor.compressFree(improvedContent);
+          improvedContent = result.compressed;
+          console.log(`Compression: ${result.compressionRate}% (${result.originalLength} → ${result.compressedLength} caractères)`);
+        }
+        
+        setImprovedPrompt(improvedContent);
         toast({
           title: "Prompt amélioré !",
-          description: `Optimisé avec ${complexity.suggestedProvider.toUpperCase()} (${complexity.suggestedModel})`,
+          description: isPremium 
+            ? `Mode Premium - Analyse détaillée avec ${complexity.suggestedProvider.toUpperCase()}`
+            : `Mode Gratuit - Version optimisée avec ${complexity.suggestedProvider.toUpperCase()}`,
         });
       } else {
         throw new Error('Réponse invalide de l\'API');

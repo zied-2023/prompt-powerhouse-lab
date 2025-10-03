@@ -11,6 +11,7 @@ import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzePromptComplexity } from "@/lib/promptAnalyzer";
+import { PromptCompressor } from "@/lib/promptCompressor";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
@@ -131,7 +132,11 @@ const PromptGeneratorSupabase = () => {
     setIsLoading(true);
     
     try {
-      const systemPrompt = `Tu es un expert en création de prompts pour l'intelligence artificielle. Crée un prompt détaillé et structuré.
+      // Déterminer si mode premium ou gratuit
+      const isPremium = credits ? credits.remaining_credits > 20 : false;
+      
+      const systemPrompt = isPremium 
+        ? `Tu es un expert en création de prompts pour l'intelligence artificielle. Crée un prompt détaillé et structuré.
 
 Format requis:
 **RÔLE**: [rôle expert spécialisé]
@@ -140,7 +145,16 @@ Format requis:
 **MÉTHODOLOGIE**: [approche structurée]
 **CONTRAINTES**: [contraintes techniques et contextuelles]
 **LIVRABLES**: [résultats attendus avec format spécifique]
-**STYLE**: [ton et style de communication]`;
+**STYLE**: [ton et style de communication]`
+        : `Tu es un expert en création de prompts. Crée un prompt concis et efficace.
+
+Format compact:
+• MISSION: [mission claire]
+• OBJECTIFS: [objectifs essentiels]
+• FORMAT: [format de sortie]
+• TON: [style requis]
+
+Sois direct et précis.`;
 
       const domainLabel = domains.find(d => d.value === formData.domain)?.label;
       const subcategoryLabel = formData.specialization ? 
@@ -187,10 +201,21 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           throw new Error('Impossible de décompter le crédit');
         }
         
-        setGeneratedPrompt(data.choices[0].message.content);
+        let generatedContent = data.choices[0].message.content;
+        
+        // Appliquer la compression si mode gratuit
+        if (!isPremium) {
+          const result = PromptCompressor.compressFree(generatedContent);
+          generatedContent = result.compressed;
+          console.log(`Compression: ${result.compressionRate}% (${result.originalLength} → ${result.compressedLength} caractères)`);
+        }
+        
+        setGeneratedPrompt(generatedContent);
         toast({
           title: "Prompt généré !",
-          description: `Généré avec ${complexity.suggestedProvider.toUpperCase()} (${complexity.suggestedModel}). Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
+          description: isPremium 
+            ? `Mode Premium - Prompt détaillé généré avec ${complexity.suggestedProvider.toUpperCase()}`
+            : `Mode Gratuit - Prompt optimisé généré avec ${complexity.suggestedProvider.toUpperCase()}`,
         });
       } else {
         throw new Error('Réponse invalide de l\'API');

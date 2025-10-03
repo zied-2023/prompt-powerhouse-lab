@@ -213,7 +213,7 @@ export interface TranslationKey {
   noDeliverablesYet: string;
   
   // Contraintes et formats
-  selectTone: string;
+  selectToneConstraint: string;
   selectLength: string;
   selectTechnicalLevel: string;
   selectFormat: string;
@@ -233,7 +233,7 @@ export interface TranslationKey {
   narrative: string;
   stepByStep: string;
   qaFormat: string;
-  presentation: string;
+  presentationFormat: string;
   analytical: string;
   descriptive: string;
   comparative: string;
@@ -242,7 +242,7 @@ export interface TranslationKey {
   consultative: string;
   beginner: string;
   intermediate: string;
-  advanced: string;
+  advancedLevel: string;
   expert: string;
   authoritative: string;
   
@@ -379,7 +379,6 @@ export interface TranslationKey {
   promptConfigurationDesc: string;
   whatObjective: string;
   toneStyleOptional: string;
-  selectTone: string;
   optimizedPrompt: string;
   promptGeneratedSuccess: string;
   needMoreFeatures: string;
@@ -729,7 +728,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     noDeliverablesYet: "Aucun livrable défini",
     
     // Contraintes et formats
-    selectTone: "Sélectionnez le ton",
+    selectToneConstraint: "Sélectionnez le ton",
     selectLength: "Sélectionnez la longueur",
     selectTechnicalLevel: "Sélectionnez le niveau technique",
     selectFormat: "Sélectionnez le format",
@@ -749,7 +748,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     narrative: "Narratif",
     stepByStep: "Étape par étape",
     qaFormat: "Questions-Réponses",
-    presentation: "Présentation",
+    presentationFormat: "Présentation",
     analytical: "Analytique",
     descriptive: "Descriptif",
     comparative: "Comparatif",
@@ -758,7 +757,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     consultative: "Consultatif",
     beginner: "Débutant",
     intermediate: "Intermédiaire",
-    advanced: "Avancé",
+    advancedLevel: "Avancé",
     expert: "Expert",
     authoritative: "Autoritaire",
     
@@ -768,7 +767,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     modular: "Modulaire",
     matrix: "Matriciel",
     flowchart: "Organigramme",
-    comparative: "Comparatif",
     
     // Industries
     technology: "Technologie",
@@ -896,7 +894,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     promptConfigurationDesc: "Définissez vos paramètres pour générer le prompt parfait",
     whatObjective: "Quel est votre objectif ?",
     toneStyleOptional: "Ton et style (optionnel)",
-    selectTone: "Sélectionnez un ton",
     optimizedPrompt: "Prompt Optimisé",
     promptGeneratedSuccess: "Votre prompt a été généré avec succès !",
     needMoreFeatures: "Besoin de fonctionnalités avancées ?",
@@ -1245,7 +1242,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     noDeliverablesYet: "لم يتم تحديد مخرجات",
     
     // Contraintes et formats
-    selectTone: "اختر النبرة",
+    selectToneConstraint: "اختر النبرة",
     selectLength: "اختر الطول",
     selectTechnicalLevel: "اختر المستوى التقني",
     selectFormat: "اختر التنسيق",
@@ -1265,7 +1262,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     narrative: "سردي",
     stepByStep: "خطوة بخطوة",
     qaFormat: "أسئلة وأجوبة",
-    presentation: "عرض تقديمي",
+    presentationFormat: "عرض تقديمي",
     analytical: "تحليلي",
     descriptive: "وصفي",
     comparative: "مقارن",
@@ -1274,7 +1271,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     consultative: "استشاري",
     beginner: "مبتدئ",
     intermediate: "متوسط",
-    advanced: "متقدم",
+    advancedLevel: "متقدم",
     expert: "خبير",
     authoritative: "موثوق",
     
@@ -1284,7 +1281,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     modular: "نمطي",
     matrix: "مصفوفي",
     flowchart: "مخطط انسيابي",
-    comparative: "مقارن",
     
     // Industries
     technology: "التكنولوجيا",
@@ -1412,7 +1408,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     promptConfigurationDesc: "حدد معاييرك لإنشاء المطلب المثالي",
     whatObjective: "ما هو هدفك؟",
     toneStyleOptional: "النبرة والأسلوب (اختياري)",
-    selectTone: "اختر نبرة",
     optimizedPrompt: "المطلب المحسّن",
     promptGeneratedSuccess: "تم إنشاء مطلبك بنجاح!",
     needMoreFeatures: "تحتاج ميزات أكثر تقدماً؟",
@@ -1761,7 +1756,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     noDeliverablesYet: "No deliverables defined",
     
     // Contraintes et formats
-    selectTone: "Select tone",
+    selectToneConstraint: "Select tone",
     selectLength: "Select length",
     selectTechnicalLevel: "Select technical level",
     selectFormat: "Select format",
@@ -1781,7 +1776,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     narrative: "Narrative",
     stepByStep: "Step by Step",
     qaFormat: "Q&A Format",
-    presentation: "Presentation",
+    presentationFormat: "Presentation",
     analytical: "Analytical",
     descriptive: "Descriptive",
     comparative: "Comparative",
@@ -1790,7 +1785,7 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     consultative: "Consultative",
     beginner: "Beginner",
     intermediate: "Intermediate",
-    advanced: "Advanced",
+    advancedLevel: "Advanced",
     expert: "Expert",
     authoritative: "Authoritative",
     
@@ -1800,7 +1795,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     modular: "Modular",
     matrix: "Matrix",
     flowchart: "Flowchart",
-    comparative: "Comparative",
     
     // Industries
     technology: "Technology",
@@ -1928,7 +1922,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     promptConfigurationDesc: "Define your parameters to generate the perfect prompt",
     whatObjective: "What is your objective?",
     toneStyleOptional: "Tone and style (optional)",
-    selectTone: "Select a tone",
     optimizedPrompt: "Optimized Prompt",
     promptGeneratedSuccess: "Your prompt has been generated successfully!",
     needMoreFeatures: "Need more advanced features?",
