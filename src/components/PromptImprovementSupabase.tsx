@@ -49,38 +49,28 @@ const PromptImprovementSupabase = () => {
     setIsLoading(true);
     
     try {
-      // Déterminer si mode premium ou gratuit
-      const isPremium = credits ? credits.remaining_credits > 20 : false;
+      // Déterminer le mode selon les crédits
+      const creditsRemaining = credits?.remaining_credits || 0;
+      const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
       
-      const systemPrompt = isPremium
-        ? `Tu es un expert en optimisation de prompts pour l'intelligence artificielle. 
+      const systemPrompt = mode === 'free'
+        ? `Expert en prompts. Améliore de façon ultra-concise (max 150 tokens).
 
-Ta mission est d'analyser et d'améliorer les prompts pour les rendre plus efficaces, précis et performants.
+Format:
+**AMÉLIORÉ**: [prompt court]
+**CHANGEMENTS**: [2-3 points]`
+        : mode === 'basic'
+        ? `Expert en prompts. Améliore efficacement (max 300 tokens).
 
-Critères d'amélioration :
-- Clarté et précision des instructions
-- Structure et organisation
-- Contexte et exemples appropriés
-- Contraintes et paramètres optimaux
-- Réduction de l'ambiguïté
-- Amélioration de la reproductibilité des résultats
+Format:
+**PROMPT AMÉLIORÉ**: [version optimisée]
+**AMÉLIORATIONS**: [liste courte]`
+        : `Expert en prompts. Améliore avec structure optimale (max 600 tokens).
 
-Format de réponse :
-1. **VERSION AMÉLIORÉE** : [prompt optimisé]
-2. **AMÉLIORATIONS APPORTÉES** : [liste des modifications et justifications]
-3. **CONSEILS D'UTILISATION** : [recommandations pour maximiser l'efficacité]
-
-Conserve l'intention originale tout en optimisant la formulation et la structure.`
-        : `Tu es un expert en optimisation de prompts. Améliore ce prompt de manière concise.
-
-Réponds au format suivant:
-**PROMPT AMÉLIORÉ:**
-[Le prompt optimisé]
-
-**AMÉLIORATIONS APPORTÉES:**
-• [Amélioration 1]
-• [Amélioration 2]
-• [Amélioration 3]`;
+Format:
+**VERSION AMÉLIORÉE**: [prompt structuré]
+**AMÉLIORATIONS**: [modifications clés]
+**CONSEILS**: [2-3 recommandations]`;
 
       let userPrompt = `Améliore ce prompt: "${originalPrompt}"`;
       if (improvementObjective.trim()) {
@@ -113,19 +103,23 @@ Réponds au format suivant:
       if (data.choices && data.choices[0]?.message?.content) {
         let improvedContent = data.choices[0].message.content;
         
-        // Appliquer la compression si mode gratuit
-        if (!isPremium) {
+        // Appliquer la compression selon le mode
+        if (mode === 'free') {
           const result = PromptCompressor.compressFree(improvedContent);
           improvedContent = result.compressed;
-          console.log(`Compression: ${result.compressionRate}% (${result.originalLength} → ${result.compressedLength} caractères)`);
+          console.log(`Mode Gratuit: ${result.estimatedTokens} tokens`);
+        } else if (mode === 'basic') {
+          const result = PromptCompressor.compressBasic(improvedContent);
+          improvedContent = result.compressed;
+          console.log(`Mode Basique: ${result.estimatedTokens} tokens`);
+        } else {
+          improvedContent = PromptCompressor.formatPremium(improvedContent);
         }
         
         setImprovedPrompt(improvedContent);
         toast({
           title: "Prompt amélioré !",
-          description: isPremium 
-            ? `Mode Premium - Analyse détaillée avec ${complexity.suggestedProvider.toUpperCase()}`
-            : `Mode Gratuit - Version optimisée avec ${complexity.suggestedProvider.toUpperCase()}`,
+          description: `Mode ${mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium'} avec ${complexity.suggestedProvider.toUpperCase()}`,
         });
       } else {
         throw new Error('Réponse invalide de l\'API');

@@ -132,29 +132,38 @@ const PromptGeneratorSupabase = () => {
     setIsLoading(true);
     
     try {
-      // Déterminer si mode premium ou gratuit
-      const isPremium = credits ? credits.remaining_credits > 20 : false;
+      // Déterminer le mode selon les crédits
+      const creditsRemaining = credits?.remaining_credits || 0;
+      const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
       
-      const systemPrompt = isPremium 
-        ? `Tu es un expert en création de prompts pour l'intelligence artificielle. Crée un prompt détaillé et structuré.
+      const systemPrompt = mode === 'free'
+        ? `Expert en prompts IA. Génère des prompts ultra-concis (max 150 tokens).
 
-Format requis:
-**RÔLE**: [rôle expert spécialisé]
-**MISSION**: [mission précise et claire]
-**OBJECTIFS**: [objectifs détaillés et mesurables]
-**MÉTHODOLOGIE**: [approche structurée]
-**CONTRAINTES**: [contraintes techniques et contextuelles]
-**LIVRABLES**: [résultats attendus avec format spécifique]
-**STYLE**: [ton et style de communication]`
-        : `Tu es un expert en création de prompts. Crée un prompt concis et efficace.
+Format:
+**OBJECTIF**: [1 phrase]
+**ÉLÉMENTS**: [Liste courte]
 
-Format compact:
-• MISSION: [mission claire]
-• OBJECTIFS: [objectifs essentiels]
-• FORMAT: [format de sortie]
-• TON: [style requis]
+Sois direct, zéro redondance.`
+        : mode === 'basic'
+        ? `Expert en prompts IA. Génère des prompts efficaces (max 300 tokens).
 
-Sois direct et précis.`;
+Format:
+**OBJECTIF**: [Clair et précis]
+**INSTRUCTIONS**: 
+• [Points clés uniquement]
+**FORMAT**: [Type de sortie]
+
+Direct et structuré.`
+        : `Expert en prompts IA. Génère des prompts optimaux (max 600 tokens).
+
+Format:
+**RÔLE**: [Expert spécialisé]
+**OBJECTIF**: [Clair et mesurable]
+**INSTRUCTIONS**: [Étapes précises]
+**ÉLÉMENTS REQUIS**: [2-3 points clés]
+**FORMAT**: [Structure de sortie]
+
+Précis, structuré, actionnable.`;
 
       const domainLabel = domains.find(d => d.value === formData.domain)?.label;
       const subcategoryLabel = formData.specialization ? 
@@ -203,19 +212,24 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         
         let generatedContent = data.choices[0].message.content;
         
-        // Appliquer la compression si mode gratuit
-        if (!isPremium) {
+        // Appliquer la compression selon le mode
+        if (mode === 'free') {
           const result = PromptCompressor.compressFree(generatedContent);
           generatedContent = result.compressed;
-          console.log(`Compression: ${result.compressionRate}% (${result.originalLength} → ${result.compressedLength} caractères)`);
+          console.log(`Mode Gratuit: ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
+        } else if (mode === 'basic') {
+          const result = PromptCompressor.compressBasic(generatedContent);
+          generatedContent = result.compressed;
+          console.log(`Mode Basique: ${result.estimatedTokens} tokens`);
+        } else {
+          generatedContent = PromptCompressor.formatPremium(generatedContent);
+          console.log(`Mode Premium: prompt optimisé`);
         }
         
         setGeneratedPrompt(generatedContent);
         toast({
           title: "Prompt généré !",
-          description: isPremium 
-            ? `Mode Premium - Prompt détaillé généré avec ${complexity.suggestedProvider.toUpperCase()}`
-            : `Mode Gratuit - Prompt optimisé généré avec ${complexity.suggestedProvider.toUpperCase()}`,
+          description: `Mode ${mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium'} - Généré avec ${complexity.suggestedProvider.toUpperCase()}`,
         });
       } else {
         throw new Error('Réponse invalide de l\'API');
