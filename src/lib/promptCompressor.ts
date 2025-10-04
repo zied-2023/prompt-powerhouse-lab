@@ -72,36 +72,47 @@ export class PromptCompressor {
    * Élimine les erreurs courantes listées
    */
   private static eliminateCommonErrors(text: string, mode: PromptMode): string {
-    // ❌ Supprimer les exemples longs (>50 mots)
-    text = text.replace(/exemple\s*:[\s\S]{200,}/gi, '');
-    text = text.replace(/par exemple[\s\S]{100,}/gi, '');
-    
-    // ❌ Supprimer les explications du "pourquoi"
-    text = text.replace(/\b(car|parce que|afin de|dans le but de|de manière à)[\s\S]{50,}?\./gi, '.');
-    text = text.replace(/\*\*pourquoi\*\*[\s\S]*?\n\n/gi, '');
-    
-    // ❌ Limiter les références artistiques à 2-3 max
-    const styleMatch = text.match(/style[s]?\s*:([^\.]+)/i);
-    if (styleMatch && styleMatch[1]) {
-      const styles = styleMatch[1].split(/[,;]/).slice(0, mode === 'free' ? 2 : 3);
-      text = text.replace(styleMatch[0], `styles: ${styles.join(',')}`);
+    // ❌ Supprimer les exemples longs (>50 mots) - agressif
+    text = text.replace(/exemple\s*:[\s\S]{50,}/gi, '');
+    text = text.replace(/par exemple[\s\S]{50,}/gi, '');
+    text = text.replace(/\*\*exemple\*\*[\s\S]*?(?=\*\*|$)/gi, '');
+    text = text.replace(/\*\*format exemple\*\*[\s\S]*?(?=\*\*|$)/gi, '');
+
+    // ❌ Supprimer les explications du "pourquoi" et justifications
+    text = text.replace(/\b(car|parce que|afin de|dans le but de|de manière à|en effet|c'est-à-dire)[\s\S]{30,}?\./gi, '.');
+    text = text.replace(/\*\*pourquoi\*\*[\s\S]*?(?=\*\*|$)/gi, '');
+    text = text.replace(/\(ceci permet[^)]+\)/gi, '');
+    text = text.replace(/\(afin de[^)]+\)/gi, '');
+
+    // ❌ Limiter les références artistiques/styles à 2-3 max
+    const maxStyles = mode === 'free' ? 2 : 3;
+    const stylePatterns = [
+      /style[s]?\s*:([^\.\n]+)/gi,
+      /référence[s]?\s*:([^\.\n]+)/gi,
+      /inspiré de\s*:([^\.\n]+)/gi
+    ];
+
+    for (const pattern of stylePatterns) {
+      text = text.replace(pattern, (match, content) => {
+        const items = content.split(/[,;]/).slice(0, maxStyles);
+        return match.split(':')[0] + ': ' + items.join(',').trim();
+      });
     }
-    
-    // ❌ Supprimer sections méthodologie redondantes
-    text = text.replace(/\*\*méthodologie\*\*[\s\S]*?(?=\*\*|$)/gi, '');
-    text = text.replace(/\*\*approche\*\*[\s\S]*?(?=\*\*|$)/gi, '');
-    
-    // ❌ Garder UN SEUL format (supprimer doublons)
-    if (text.match(/\*\*format\*\*/gi)?.length > 1) {
-      const formatIndex = text.indexOf('**FORMAT');
-      if (formatIndex > -1) {
-        const secondFormat = text.indexOf('**FORMAT', formatIndex + 1);
-        if (secondFormat > -1) {
-          text = text.slice(0, secondFormat);
-        }
-      }
+
+    // ❌ Supprimer sections méthodologie/approche séparées
+    text = text.replace(/\*\*méthodologie\*\*[\s\S]*?(?=\*\*[A-ZÉ]|$)/gi, '');
+    text = text.replace(/\*\*approche\*\*[\s\S]*?(?=\*\*[A-ZÉ]|$)/gi, '');
+    text = text.replace(/\*\*méthode\*\*[\s\S]*?(?=\*\*[A-ZÉ]|$)/gi, '');
+
+    // ❌ Garder UN SEUL format (supprimer doublons format/livrable)
+    const formatMatches = text.match(/\*\*(format|livrable)[\s\S]*?(?=\*\*[A-ZÉ]|$)/gi);
+    if (formatMatches && formatMatches.length > 1) {
+      // Garder seulement le premier
+      const firstMatch = formatMatches[0];
+      text = text.replace(/\*\*(format|livrable)[\s\S]*?(?=\*\*[A-ZÉ]|$)/gi, '');
+      text += '\n' + firstMatch;
     }
-    
+
     return text;
   }
 
@@ -151,7 +162,7 @@ export class PromptCompressor {
   static formatPremium(prompt: string): string {
     // Structure premium concise mais complète
     const clean = this.eliminateCommonErrors(prompt, 'premium');
-    
+
     // Si déjà structuré, optimiser
     if (clean.includes('**')) {
       const optimized = this.compressToLimit(clean, TOKEN_LIMITS.premium, 'premium');
@@ -159,16 +170,17 @@ export class PromptCompressor {
     }
 
     // Structure premium efficace (max 600 tokens)
+    // Note: PAS d'exemple complet, instructions intégrées
     const structured = `**RÔLE**: Expert spécialisé
 
 **MISSION**: ${clean}
 
 **ÉLÉMENTS REQUIS**:
-- Précision maximale
-- Structure claire
-- 2-3 exemples courts
+- Précision et structure
+- Instructions directes
+- Max 2-3 références
 
-**LIVRABLE**: Résultat actionnable`;
+**LIVRABLE**: Format structuré actionnable`;
 
     const result = this.compressToLimit(structured, TOKEN_LIMITS.premium, 'premium');
     return result.compressed;

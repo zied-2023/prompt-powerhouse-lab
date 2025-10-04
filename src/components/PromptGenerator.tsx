@@ -177,16 +177,22 @@ const PromptGenerator = () => {
       const subcategoryLabel = formData.subcategory ? 
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
-      const systemPrompt = `Tu es un expert en création de prompts pour l'intelligence artificielle. Crée un prompt détaillé et structuré.
+      const systemPrompt = `Expert en prompts IA. Crée un prompt optimisé.
 
-Format requis:
-**RÔLE**: [rôle expert spécialisé]
-**MISSION**: [mission précise et claire]
-**OBJECTIFS**: [objectifs détaillés et mesurables]
-**MÉTHODOLOGIE**: [approche structurée]
-**CONTRAINTES**: [contraintes techniques et contextuelles]
-**LIVRABLES**: [résultats attendus avec format spécifique]
-**STYLE**: [ton et style de communication]`;
+Structure requise:
+**RÔLE**: [Expert spécialisé]
+**MISSION**: [Claire et précise]
+**OBJECTIFS**: [Mesurables - max 3]
+**INSTRUCTIONS**: [Étapes directes incluant approche]
+**CONTRAINTES**: [2-3 contraintes clés]
+**LIVRABLE**: [Format structuré]
+
+Règles strictes:
+- Max 2-3 styles/références
+- Zéro exemple >50 mots
+- Zéro explication "pourquoi"
+- Intégrer méthodologie dans instructions
+- Instructions directes sans justification`;
 
       let userPrompt = `Crée un prompt expert pour:
 - Domaine: ${categoryLabel}

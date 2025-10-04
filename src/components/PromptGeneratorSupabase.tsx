@@ -14,6 +14,7 @@ import { analyzePromptComplexity } from "@/lib/promptAnalyzer";
 import { PromptCompressor } from "@/lib/promptCompressor";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { PromptModeInfo } from "@/components/PromptModeInfo";
 
 const PromptGeneratorSupabase = () => {
   const { t } = useTranslation();
@@ -137,33 +138,32 @@ const PromptGeneratorSupabase = () => {
       const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
       
       const systemPrompt = mode === 'free'
-        ? `Expert en prompts IA. Génère des prompts ultra-concis (max 150 tokens).
+        ? `Expert prompts IA. Max 150 tokens.
 
-Format:
-**OBJECTIF**: [1 phrase]
-**ÉLÉMENTS**: [Liste courte]
+Structure:
+**OBJECTIF**: [1 phrase directe]
+**ÉLÉMENTS**: [2-3 points]
 
-Sois direct, zéro redondance.`
+Zéro exemple. Zéro explication. Instructions directes.`
         : mode === 'basic'
-        ? `Expert en prompts IA. Génère des prompts efficaces (max 300 tokens).
+        ? `Expert prompts IA. Max 300 tokens.
 
-Format:
-**OBJECTIF**: [Clair et précis]
-**INSTRUCTIONS**: 
-• [Points clés uniquement]
-**FORMAT**: [Type de sortie]
+Structure:
+**OBJECTIF**: [Précis]
+**INSTRUCTIONS**: [Points clés directs]
+**FORMAT**: [Type sortie]
 
-Direct et structuré.`
-        : `Expert en prompts IA. Génère des prompts optimaux (max 600 tokens).
+Max 2 styles. Zéro exemple complet. Intégrer méthodologie dans instructions.`
+        : `Expert prompts IA. Max 600 tokens.
 
-Format:
+Structure:
 **RÔLE**: [Expert spécialisé]
-**OBJECTIF**: [Clair et mesurable]
-**INSTRUCTIONS**: [Étapes précises]
-**ÉLÉMENTS REQUIS**: [2-3 points clés]
-**FORMAT**: [Structure de sortie]
+**OBJECTIF**: [Mesurable]
+**INSTRUCTIONS**: [Étapes avec méthodologie intégrée]
+**ÉLÉMENTS REQUIS**: [2-3 éléments clés]
+**LIVRABLE**: [Format structuré]
 
-Précis, structuré, actionnable.`;
+Max 3 styles. Zéro exemple long. Zéro section méthodologie séparée. Instructions directes sans justification.`;
 
       const domainLabel = domains.find(d => d.value === formData.domain)?.label;
       const subcategoryLabel = formData.specialization ? 
@@ -281,6 +281,9 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
     });
   };
 
+  const creditsRemaining = credits?.remaining_credits || 0;
+  const currentMode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
+
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       <Card className="glass-card border-white/30 dark:border-gray-700/30 shadow-xl">
@@ -303,6 +306,9 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         </CardHeader>
         
         <CardContent className="space-y-6">
+          {/* Afficher les règles du mode actuel */}
+          <PromptModeInfo mode={currentMode} />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Domaine */}
             <div className="space-y-2">
