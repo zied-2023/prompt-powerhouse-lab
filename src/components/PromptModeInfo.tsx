@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CircleCheck as CheckCircle2, Circle as XCircle } from "lucide-react";
 
 interface PromptModeInfoProps {
   mode: 'free' | 'basic' | 'premium';

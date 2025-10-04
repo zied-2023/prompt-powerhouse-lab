@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Zap, Copy, Sparkles, Wand2, Save } from "lucide-react";
+import { Zap, Copy, Sparkles, Wand as Wand2, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
