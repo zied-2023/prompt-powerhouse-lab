@@ -41,25 +41,27 @@ const PromptImprovement = () => {
     setIsImproving(true);
     
     try {
-      const systemPrompt = `Tu es un expert en optimisation de prompts pour l'intelligence artificielle. Ta mission est d'améliorer les prompts existants en les rendant plus efficaces, clairs et structurés.
+      const systemPrompt = `Expert optimisation prompts. Améliore le prompt en le rendant COURT et EFFICACE.
 
-Analyse le prompt fourni et améliore-le en suivant ces principes:
-1. Clarté et précision des instructions
-2. Structure logique et organisation
-3. Spécificité des demandes
-4. Contexte approprié
-5. Format de sortie défini
-6. Contraintes et paramètres clairs
+Principes:
+1. Instructions claires et directes
+2. Structure concise
+3. Zéro redondance
+4. Format défini
+5. Max 500 tokens
 
-Réponds au format suivant:
+Format OBLIGATOIRE:
 **PROMPT AMÉLIORÉ:**
-[Le prompt optimisé]
+[Version optimisée COURTE]
 
 **AMÉLIORATIONS APPORTÉES:**
-• [Amélioration 1]
-• [Amélioration 2]
-• [Amélioration 3]
-...`;
+• [3-5 améliorations MAX]
+
+Règles STRICTES:
+- STOP après les améliorations
+- Éliminer verbosité
+- Phrases courtes
+- Zéro exemple long`;
 
       let userPrompt = `Améliore ce prompt: "${originalPrompt}"`;
       if (improvementObjective.trim()) {
@@ -85,7 +87,8 @@ Réponds au format suivant:
             }
           ],
           temperature: 0.7,
-          max_tokens: 2500
+          max_tokens: 1000,
+          stop: ["**EXEMPLE", "**MÉTHODOLOGIE", "\n\n\n\n"]
         })
       });
 
