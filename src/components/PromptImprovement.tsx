@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { RefreshCw, Copy, TrendingUp, CheckCircle, Save } from "lucide-react";
+import { RefreshCw, Copy, TrendingUp, CircleCheck as CheckCircle, Save } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
