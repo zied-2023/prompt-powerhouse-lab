@@ -41,27 +41,27 @@ const PromptImprovement = () => {
     setIsImproving(true);
     
     try {
-      const systemPrompt = `Expert optimisation prompts. Améliore le prompt en le rendant COURT et EFFICACE.
+      const systemPrompt = `Expert optimisation prompts. Améliore le prompt en le rendant efficace, structuré et COMPLET.
 
 Principes:
-1. Instructions claires et directes
-2. Structure concise
-3. Zéro redondance
-4. Format défini
-5. Max 500 tokens
+1. Instructions claires et précises
+2. Structure optimale
+3. Éliminer redondances
+4. Prompt finalisé et utilisable
 
 Format OBLIGATOIRE:
 **PROMPT AMÉLIORÉ:**
-[Version optimisée COURTE]
+[Version optimisée complète et prête à l'emploi]
 
 **AMÉLIORATIONS APPORTÉES:**
-• [3-5 améliorations MAX]
+• [Liste 3-6 améliorations concrètes]
 
-Règles STRICTES:
-- STOP après les améliorations
-- Éliminer verbosité
-- Phrases courtes
-- Zéro exemple long`;
+Règles:
+- Le prompt doit être COMPLET et utilisable
+- Phrases finies et claires
+- Aller à l'essentiel
+- TERMINER après les améliorations
+- Max 800 tokens total`;
 
       let userPrompt = `Améliore ce prompt: "${originalPrompt}"`;
       if (improvementObjective.trim()) {
@@ -87,8 +87,7 @@ Règles STRICTES:
             }
           ],
           temperature: 0.7,
-          max_tokens: 1000,
-          stop: ["**EXEMPLE", "**MÉTHODOLOGIE", "\n\n\n\n"]
+          max_tokens: 1500
         })
       });
 

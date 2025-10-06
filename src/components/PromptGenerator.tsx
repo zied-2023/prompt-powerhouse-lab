@@ -177,22 +177,23 @@ const PromptGenerator = () => {
       const subcategoryLabel = formData.subcategory ? 
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
-      const systemPrompt = `Expert en prompts IA. Crée un prompt optimisé ULTRA-COURT.
+      const systemPrompt = `Expert en prompts IA. Crée un prompt optimisé, concis et COMPLET.
 
-Structure OBLIGATOIRE (MAX 500 tokens):
-**RÔLE**: [1 phrase]
-**MISSION**: [2-3 lignes MAX]
-**OBJECTIFS**: [3 points max]
-**INSTRUCTIONS**: [5-7 étapes MAX]
-**CONTRAINTES**: [2-3 contraintes]
-**LIVRABLE**: [1-2 lignes]
+Structure OBLIGATOIRE:
+**RÔLE**: [1 phrase précise]
+**MISSION**: [2-3 lignes claires]
+**OBJECTIFS**: [3-4 points mesurables]
+**INSTRUCTIONS**: [5-8 étapes directes et actionnables]
+**CONTRAINTES**: [2-4 contraintes clés]
+**LIVRABLE**: [Format de sortie détaillé]
 
-Règles STRICTES:
-- STOP immédiatement après LIVRABLE
-- Zéro exemple, zéro justification
-- Phrases courtes et directes
-- Max 1-2 références
-- Aucune section supplémentaire`;
+Règles:
+- Chaque section doit être COMPLÈTE
+- Phrases courtes mais finies
+- Aller à l'essentiel
+- TERMINER proprement après LIVRABLE
+- Max 600 tokens total
+- Zéro verbosité mais prompt utilisable`;
 
       let userPrompt = `Crée un prompt expert pour:
 - Domaine: ${categoryLabel}
@@ -224,8 +225,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             }
           ],
           temperature: 0.7,
-          max_tokens: 800,
-          stop: ["**EXEMPLE", "**MÉTHODOLOGIE", "**APPROCHE", "\n\n\n"]
+          max_tokens: 1200
         })
       });
 
