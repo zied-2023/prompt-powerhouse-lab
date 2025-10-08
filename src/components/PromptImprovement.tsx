@@ -41,27 +41,38 @@ const PromptImprovement = () => {
     setIsImproving(true);
     
     try {
-      const systemPrompt = `Expert optimisation prompts. Améliore le prompt en le rendant efficace, structuré et COMPLET.
+      const systemPrompt = `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
 
-Principes:
-1. Instructions claires et précises
-2. Structure optimale
-3. Éliminer redondances
-4. Prompt finalisé et utilisable
+Structure OBLIGATOIRE du prompt amélioré:
 
-Format OBLIGATOIRE:
-**PROMPT AMÉLIORÉ:**
-[Version optimisée complète et prête à l'emploi]
+🎯 **CONTEXTE & OBJECTIF**
+[Expliquer en 2 phrases ce que doit produire l'IA et pourquoi]
+
+🧑‍💻 **RÔLE DE L'IA**
+[Définir le rôle ou la personnalité que l'IA doit adopter]
+
+🗂 **STRUCTURE DU LIVRABLE**
+[Indiquer le format exact attendu : JSON, tableau, plan narratif, sections, etc.]
+
+📏 **CONTRAINTES**
+- Longueur: [préciser]
+- Ton: [préciser]
+- Style: [préciser]
+- Règles spécifiques: [préciser]
+
+📝 **EXEMPLE DE SORTIE**
+[Fournir un mini-exemple (30 sec ou 2-3 lignes) qui illustre le format attendu]
+
+---
 
 **AMÉLIORATIONS APPORTÉES:**
 • [Liste 3-6 améliorations concrètes]
 
-Règles:
-- Le prompt doit être COMPLET et utilisable
-- Phrases finies et claires
-- Aller à l'essentiel
-- TERMINER après les améliorations
-- Max 800 tokens total`;
+RÈGLES:
+- Le prompt doit être autonome et prêt à l'emploi
+- Ne jamais mélanger explications et prompt final
+- Adapter le ton selon le type de contenu
+- Maximum 1000 tokens`;
 
       let userPrompt = `Améliore ce prompt: "${originalPrompt}"`;
       if (improvementObjective.trim()) {
@@ -107,16 +118,16 @@ Règles:
       if (data.choices && data.choices[0] && data.choices[0].message) {
         const content = data.choices[0].message.content;
         
-        // Extraire le prompt amélioré et les améliorations
-        const improvedPromptMatch = content.match(/\*\*PROMPT AMÉLIORÉ:\*\*(.*?)\*\*AMÉLIORATIONS APPORTÉES:\*\*/s);
+        const improvedPromptMatch = content.match(/🎯(.*?)---/s);
         const improvementsMatch = content.match(/\*\*AMÉLIORATIONS APPORTÉES:\*\*(.*)/s);
-        
+
         if (improvedPromptMatch) {
-          setImprovedPrompt(improvedPromptMatch[1].trim());
+          const extractedPrompt = '🎯' + improvedPromptMatch[1].trim();
+          setImprovedPrompt(extractedPrompt);
         } else {
           setImprovedPrompt(content);
         }
-        
+
         if (improvementsMatch) {
           const improvementsList = improvementsMatch[1]
             .split('•')

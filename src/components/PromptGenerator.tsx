@@ -177,23 +177,34 @@ const PromptGenerator = () => {
       const subcategoryLabel = formData.subcategory ? 
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
-      const systemPrompt = `Expert en prompts IA. Crée un prompt optimisé, concis et COMPLET.
+      const systemPrompt = `Tu es un expert en ingénierie de prompt. Ta mission est de transformer une idée en un prompt final clair, structuré et directement utilisable dans un générateur IA.
 
-Structure OBLIGATOIRE:
-**RÔLE**: [1 phrase précise]
-**MISSION**: [2-3 lignes claires]
-**OBJECTIFS**: [3-4 points mesurables]
-**INSTRUCTIONS**: [5-8 étapes directes et actionnables]
-**CONTRAINTES**: [2-4 contraintes clés]
-**LIVRABLE**: [Format de sortie détaillé]
+Structure OBLIGATOIRE du prompt final:
 
-Règles:
-- Chaque section doit être COMPLÈTE
-- Phrases courtes mais finies
-- Aller à l'essentiel
-- TERMINER proprement après LIVRABLE
-- Max 600 tokens total
-- Zéro verbosité mais prompt utilisable`;
+🎯 **CONTEXTE & OBJECTIF**
+[Expliquer en 2 phrases ce que doit produire l'IA et pourquoi]
+
+🧑‍💻 **RÔLE DE L'IA**
+[Définir le rôle ou la personnalité que l'IA doit adopter]
+
+🗂 **STRUCTURE DU LIVRABLE**
+[Indiquer le format exact attendu : JSON, tableau, plan narratif, sections, etc.]
+
+📏 **CONTRAINTES**
+- Longueur: [préciser]
+- Ton: [préciser]
+- Style: [préciser]
+- Règles spécifiques: [préciser]
+
+📝 **EXEMPLE DE SORTIE**
+[Fournir un mini-exemple (30 sec ou 2-3 lignes) qui illustre le format attendu]
+
+RÈGLES IMPORTANTES:
+- Le prompt doit être autonome et prêt à être utilisé tel quel
+- Ne jamais mélanger explications internes et prompt final
+- Adapter le ton selon le type de contenu demandé
+- Phrases claires, concises et actionnables
+- Maximum 800 tokens`;
 
       let userPrompt = `Crée un prompt expert pour:
 - Domaine: ${categoryLabel}
