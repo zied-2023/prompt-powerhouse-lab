@@ -23,6 +23,7 @@ import PromptImprovement from "@/components/PromptImprovement";
 import PromptHistory from "@/components/PromptHistory";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import CreditManager from "@/components/CreditManager";
+import { CreditPurchaseWidget } from "@/components/CreditPurchaseWidget";
 import MarketplacePromptGrid from "@/components/MarketplacePromptGrid";
 import SellerDashboard from "@/components/SellerDashboard";
 // Composants d'évaluation temporairement désactivés
@@ -193,7 +194,7 @@ const Index = () => {
                       </DialogTitle>
                     </DialogHeader>
                     <div className="mt-4">
-                      <CreditManager />
+                      <CreditPurchaseWidget />
                     </div>
                   </DialogContent>
                 </Dialog>
