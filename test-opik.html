@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Opik Integration</title>
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.55.0';
+
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://imnyrscmccfgxvthxxxn.supabase.co';
+        const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imltbnlyc2NtY2NmZ3h2dGh4eHhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQwMDI2MTEsImV4cCI6MjAzOTU3ODYxMX0.H-mLDOVQjLsKMgSHqoBq4AQoxBXoNGDGGxpsjLGCX7g';
+
+        const supabase = createClient(supabaseUrl, supabaseKey);
+
+        window.testOpik = async function() {
+            console.log('🧪 Testing Opik Integration...');
+
+            // Test 1: Check if user is authenticated
+            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            if (sessionError || !session) {
+                console.error('❌ Not authenticated:', sessionError);
+                document.getElementById('result').innerHTML = '<p style="color: red;">❌ Not authenticated. Please login first.</p>';
+                return;
+            }
+
+            console.log('✅ User authenticated:', session.user.id);
+
+            // Test 2: Try to fetch existing traces
+            const { data: traces, error: fetchError } = await supabase
+                .from('opik_prompt_traces')
+                .select('*')
+                .limit(5);
+
+            if (fetchError) {
+                console.error('❌ Error fetching traces:', fetchError);
+                document.getElementById('result').innerHTML = `<p style="color: red;">❌ Error: ${fetchError.message}</p>`;
+                return;
+            }
+
+            console.log('✅ Traces fetched:', traces);
+
+            // Test 3: Try to insert a test trace
+            const testTrace = {
+                user_id: session.user.id,
+                trace_id: `test_trace_${Date.now()}`,
+                prompt_input: 'Test prompt input',
+                prompt_output: 'Test prompt output',
+                model: 'gpt-3.5-turbo',
+                latency_ms: 1000,
+                tokens_used: 100,
+                cost: 0.001,
+                tags: { test: true }
+            };
+
+            console.log('📤 Inserting test trace...');
+            const { data: inserted, error: insertError } = await supabase
+                .from('opik_prompt_traces')
+                .insert(testTrace)
+                .select()
+                .maybeSingle();
+
+            if (insertError) {
+                console.error('❌ Error inserting trace:', insertError);
+                document.getElementById('result').innerHTML = `<p style="color: red;">❌ Insert Error: ${insertError.message}</p><pre>${JSON.stringify(insertError, null, 2)}</pre>`;
+                return;
+            }
+
+            console.log('✅ Test trace inserted:', inserted);
+            document.getElementById('result').innerHTML = `
+                <p style="color: green;">✅ Success! Opik is working.</p>
+                <p>Existing traces: ${traces.length}</p>
+                <p>Test trace inserted with ID: ${inserted.id}</p>
+                <pre>${JSON.stringify(inserted, null, 2)}</pre>
+            `;
+        };
+
+        // Auto-run test on page load
+        window.addEventListener('load', () => {
+            document.getElementById('testBtn').addEventListener('click', window.testOpik);
+        });
+    </script>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
+    <h1>🧪 Test Opik Integration</h1>
+    <button id="testBtn" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Run Test</button>
+    <div id="result" style="margin-top: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 5px; min-height: 100px;">
+        Click "Run Test" to start...
+    </div>
+</body>
+</html>

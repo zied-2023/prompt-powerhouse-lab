@@ -284,6 +284,86 @@ export type Database = {
           },
         ]
       }
+      opik_evaluation_metrics: {
+        Row: {
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          metric_name: string
+          metric_value: number
+          trace_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_name: string
+          metric_value: number
+          trace_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          metric_name?: string
+          metric_value?: number
+          trace_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_trace_id"
+            columns: ["trace_id"]
+            isOneToOne: false
+            referencedRelation: "opik_prompt_traces"
+            referencedColumns: ["trace_id"]
+          },
+        ]
+      }
+      opik_prompt_traces: {
+        Row: {
+          cost: number | null
+          created_at: string | null
+          feedback_score: number | null
+          id: string
+          latency_ms: number | null
+          model: string | null
+          prompt_input: string
+          prompt_output: string | null
+          tags: Json | null
+          tokens_used: number | null
+          trace_id: string
+          user_id: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          latency_ms?: number | null
+          model?: string | null
+          prompt_input: string
+          prompt_output?: string | null
+          tags?: Json | null
+          tokens_used?: number | null
+          trace_id: string
+          user_id: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string | null
+          feedback_score?: number | null
+          id?: string
+          latency_ms?: number | null
+          model?: string | null
+          prompt_input?: string
+          prompt_output?: string | null
+          tags?: Json | null
+          tokens_used?: number | null
+          trace_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
