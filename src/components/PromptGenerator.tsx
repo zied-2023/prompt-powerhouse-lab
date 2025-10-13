@@ -323,10 +323,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
       // Track with Opik
       if (user) {
+        console.log('📊 Tentative d\'enregistrement de trace Opik pour user:', user.id);
         const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
         const userPromptText = `Crée un prompt expert pour ${categoryLabel}: ${formData.description}`;
 
-        await opikService.createTrace({
+        const traceResult = await opikService.createTrace({
           userId: user.id,
           traceId: traceId,
           promptInput: userPromptText,
@@ -342,6 +343,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             tone: formData.tone
           }
         });
+
+        if (traceResult) {
+          console.log('✅ Trace Opik enregistrée avec succès:', traceResult);
+        } else {
+          console.error('❌ Échec d\'enregistrement de la trace Opik');
+        }
+      } else {
+        console.warn('⚠️ Utilisateur non authentifié - trace Opik non enregistrée');
       }
       
       const modeLabel = mode === 'free' ? 'Gratuit (150 tokens)' : mode === 'basic' ? 'Basique (300 tokens)' : 'Premium (600 tokens)';

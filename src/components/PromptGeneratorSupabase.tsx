@@ -238,7 +238,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
         // Track with Opik
         if (user) {
-          await opikService.createTrace({
+          console.log('📊 Tentative d\'enregistrement de trace Opik pour user:', user.id);
+          const traceResult = await opikService.createTrace({
             userId: user.id,
             traceId: traceId,
             promptInput: userPrompt,
@@ -254,6 +255,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               category: 'prompt_generation'
             }
           });
+
+          if (traceResult) {
+            console.log('✅ Trace Opik enregistrée avec succès:', traceResult);
+          } else {
+            console.error('❌ Échec d\'enregistrement de la trace Opik');
+          }
+        } else {
+          console.warn('⚠️ Utilisateur non authentifié - trace Opik non enregistrée');
         }
 
         toast({

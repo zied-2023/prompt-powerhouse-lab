@@ -37,6 +37,14 @@ class OpikService {
     try {
       const startTime = Date.now();
 
+      console.log('🔍 Opik: Préparation des données de trace:', {
+        userId: trace.userId,
+        traceId: trace.traceId,
+        model: trace.model,
+        hasInput: !!trace.promptInput,
+        hasOutput: !!trace.promptOutput
+      });
+
       const traceData = {
         user_id: trace.userId,
         trace_id: trace.traceId,
@@ -50,6 +58,8 @@ class OpikService {
         tags: trace.tags || {}
       };
 
+      console.log('📤 Opik: Envoi des données à Supabase...');
+
       const { data, error } = await supabase
         .from('opik_prompt_traces')
         .insert(traceData)
@@ -57,9 +67,17 @@ class OpikService {
         .maybeSingle();
 
       if (error) {
-        console.error('Error creating Opik trace:', error);
+        console.error('❌ Opik: Erreur lors de la création de la trace:', error);
+        console.error('❌ Détails de l\'erreur:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         return null;
       }
+
+      console.log('✅ Opik: Trace créée dans Supabase avec ID:', data?.id);
 
       if (this.apiKey) {
         await this.sendToOpikAPI('traces', {
