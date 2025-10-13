@@ -72,11 +72,13 @@ export class PromptCompressor {
    * Élimine les erreurs courantes listées
    */
   private static eliminateCommonErrors(text: string, mode: PromptMode): string {
-    // ❌ Supprimer les exemples longs (>50 mots) - agressif
-    text = text.replace(/exemple\s*:[\s\S]{50,}/gi, '');
-    text = text.replace(/par exemple[\s\S]{50,}/gi, '');
+    // ❌ Supprimer TOUS les exemples en mode gratuit, longs (>30 mots) en mode basic
+    const exampleThreshold = mode === 'free' ? 10 : 30;
+    text = text.replace(new RegExp(`exemple\\s*:[\\s\\S]{${exampleThreshold},}`, 'gi'), '');
+    text = text.replace(new RegExp(`par exemple[\\s\\S]{${exampleThreshold},}`, 'gi'), '');
     text = text.replace(/\*\*exemple\*\*[\s\S]*?(?=\*\*|$)/gi, '');
     text = text.replace(/\*\*format exemple\*\*[\s\S]*?(?=\*\*|$)/gi, '');
+    text = text.replace(/\*\*exemple de sortie\*\*[\s\S]*?(?=\*\*|$)/gi, '');
 
     // ❌ Supprimer les explications du "pourquoi" et justifications
     text = text.replace(/\b(car|parce que|afin de|dans le but de|de manière à|en effet|c'est-à-dire)[\s\S]{30,}?\./gi, '.');
@@ -84,12 +86,13 @@ export class PromptCompressor {
     text = text.replace(/\(ceci permet[^)]+\)/gi, '');
     text = text.replace(/\(afin de[^)]+\)/gi, '');
 
-    // ❌ Limiter les références artistiques/styles à 2-3 max
-    const maxStyles = mode === 'free' ? 2 : 3;
+    // ❌ Limiter drastiquement les références artistiques/styles
+    const maxStyles = mode === 'free' ? 1 : mode === 'basic' ? 2 : 3;
     const stylePatterns = [
       /style[s]?\s*:([^\.\n]+)/gi,
       /référence[s]?\s*:([^\.\n]+)/gi,
-      /inspiré de\s*:([^\.\n]+)/gi
+      /inspiré de\s*:([^\.\n]+)/gi,
+      /ton[s]?\s*:([^\.\n]+)/gi
     ];
 
     for (const pattern of stylePatterns) {
@@ -97,6 +100,12 @@ export class PromptCompressor {
         const items = content.split(/[,;]/).slice(0, maxStyles);
         return match.split(':')[0] + ': ' + items.join(',').trim();
       });
+    }
+
+    // ❌ En mode gratuit: supprimer emojis et icônes
+    if (mode === 'free') {
+      text = text.replace(/[\u{1F300}-\u{1F9FF}]|[\u{2600}-\u{26FF}]|[\u{2700}-\u{27BF}]/gu, '');
+      text = text.replace(/🎯|📝|🧑‍💻|🗂|📏|✅|❌|⚠️|💡/g, '');
     }
 
     // ❌ Supprimer sections méthodologie/approche séparées
@@ -120,25 +129,35 @@ export class PromptCompressor {
    * Compression agressive pour respecter limite tokens
    */
   private static aggressiveCompress(text: string, maxTokens: number): string {
-    const targetLength = maxTokens * 4; // Approximation
-    
+    const targetLength = maxTokens * 3.5; // Approximation plus stricte
+
     if (text.length <= targetLength) return text;
-    
+
     // Garder uniquement l'essentiel
     const lines = text.split('\n').filter(l => l.trim());
     const essential: string[] = [];
     let currentLength = 0;
-    
+
+    // Priorité 1: Titre de section (OBJECTIF, INSTRUCTIONS, etc.)
+    // Priorité 2: Points d'action directs
     for (const line of lines) {
-      // Priorité : lignes avec instructions directes
-      if (line.match(/^[\-\•\*]|^[A-Z][^:]{0,30}:|^\d+\./)) {
-        if (currentLength + line.length < targetLength) {
-          essential.push(line.replace(/\s+/g, ' ').trim());
-          currentLength += line.length;
+      const isSectionHeader = line.match(/^\*\*[A-ZÉ]+\*\*/);
+      const isActionItem = line.match(/^[\-\•\*]\s*/);
+      const isNumberedStep = line.match(/^\d+\./);
+
+      if (isSectionHeader || isActionItem || isNumberedStep) {
+        const compressed = line
+          .replace(/\s+/g, ' ')
+          .replace(/\b(qui|que|dont|où|ainsi que|de manière à|afin de)\b/gi, '')
+          .trim();
+
+        if (currentLength + compressed.length < targetLength) {
+          essential.push(compressed);
+          currentLength += compressed.length;
         }
       }
     }
-    
+
     return essential.join('\n').slice(0, targetLength);
   }
 

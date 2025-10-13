@@ -13,6 +13,7 @@ import { useUserCredits } from "@/hooks/useUserCredits";
 import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
+import { PromptCompressor } from "@/lib/promptCompressor";
 
 // Configuration API - Mistral (correction de l'espace en trop dans l'URL)
 const API_CONFIG = {
@@ -180,34 +181,42 @@ const PromptGenerator = () => {
       const subcategoryLabel = formData.subcategory ? 
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
-      const systemPrompt = `Tu es un expert en ingénierie de prompt. Ta mission est de transformer une idée en un prompt final clair, structuré et directement utilisable dans un générateur IA.
+      const creditsRemaining = credits?.remaining_credits || 0;
+      const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
 
-Structure OBLIGATOIRE du prompt final:
+      const systemPrompt = mode === 'free'
+        ? `Expert prompts IA. Max 150 tokens strict.
 
-🎯 **CONTEXTE & OBJECTIF**
-[Expliquer en 2 phrases ce que doit produire l'IA et pourquoi]
+Structure OBLIGATOIRE:
+**OBJECTIF**: [1 phrase directe]
+**INSTRUCTIONS**:
+- [Action 1]
+- [Action 2]
+- [Action 3 max]
 
-🧑‍💻 **RÔLE DE L'IA**
-[Définir le rôle ou la personnalité que l'IA doit adopter]
+ZÉRO exemple. ZÉRO explication. Instructions ultra-directes.`
+        : mode === 'basic'
+        ? `Expert prompts IA. Max 300 tokens strict.
 
-🗂 **STRUCTURE DU LIVRABLE**
-[Indiquer le format exact attendu : JSON, tableau, plan narratif, sections, etc.]
+Structure OBLIGATOIRE:
+**RÔLE**: [Expert type]
+**OBJECTIF**: [Précis, mesurable]
+**INSTRUCTIONS**:
+- [Points clés directs uniquement]
+**FORMAT**: [Type sortie]
 
-📏 **CONTRAINTES**
-- Longueur: [préciser]
-- Ton: [préciser]
-- Style: [préciser]
-- Règles spécifiques: [préciser]
+Max 2 styles. ZÉRO exemple complet. Méthodologie intégrée aux instructions.`
+        : `Expert prompts IA. Max 600 tokens strict.
 
-📝 **EXEMPLE DE SORTIE**
-[Fournir un mini-exemple (30 sec ou 2-3 lignes) qui illustre le format attendu]
+Structure OBLIGATOIRE:
+**RÔLE**: [Expert spécialisé]
+**OBJECTIF**: [Précis et mesurable]
+**INSTRUCTIONS**:
+- [Étapes avec méthodologie intégrée]
+**ÉLÉMENTS REQUIS**: [2-3 éléments clés]
+**LIVRABLE**: [Format structuré]
 
-RÈGLES IMPORTANTES:
-- Le prompt doit être autonome et prêt à être utilisé tel quel
-- Ne jamais mélanger explications internes et prompt final
-- Adapter le ton selon le type de contenu demandé
-- Phrases claires, concises et actionnables
-- Maximum 800 tokens`;
+Max 3 styles. ZÉRO exemple long. ZÉRO section méthodologie séparée. Instructions ultra-directes sans justification.`;
 
       let userPrompt = `Crée un prompt expert pour:
 - Domaine: ${categoryLabel}
@@ -219,6 +228,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       if (formData.format) userPrompt += `\n- Format souhaité: ${outputFormats.find(f => f.value === formData.format)?.label}`;
       if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
       if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
+
+      const maxTokensByMode = mode === 'free' ? 400 : mode === 'basic' ? 800 : 1200;
 
       const response = await fetch(API_CONFIG.endpoint, {
         method: 'POST',
@@ -239,7 +250,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             }
           ],
           temperature: 0.7,
-          max_tokens: 1200
+          max_tokens: maxTokensByMode
         })
       });
 
@@ -257,7 +268,23 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       console.log('Réponse API Mistral reçue:', data);
 
       if (data.choices && data.choices[0] && data.choices[0].message) {
-        return data.choices[0].message.content;
+        let generatedContent = data.choices[0].message.content;
+
+        // Appliquer la compression selon le mode
+        if (mode === 'free') {
+          const result = PromptCompressor.compressFree(generatedContent);
+          generatedContent = result.compressed;
+          console.log(`Mode Gratuit: ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
+        } else if (mode === 'basic') {
+          const result = PromptCompressor.compressBasic(generatedContent);
+          generatedContent = result.compressed;
+          console.log(`Mode Basique: ${result.estimatedTokens} tokens`);
+        } else {
+          generatedContent = PromptCompressor.formatPremium(generatedContent);
+          console.log(`Mode Premium: prompt optimisé`);
+        }
+
+        return generatedContent;
       } else {
         throw new Error('Format de réponse API inattendu');
       }
@@ -317,9 +344,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         });
       }
       
+      const modeLabel = mode === 'free' ? 'Gratuit (150 tokens)' : mode === 'basic' ? 'Basique (300 tokens)' : 'Premium (600 tokens)';
+
       toast({
         title: t('promptCreatedSuccess'),
-        description: `${t('promptCreatedDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
+        description: `Mode ${modeLabel} - Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
       });
     } catch (error) {
       console.error('Erreur:', error);
