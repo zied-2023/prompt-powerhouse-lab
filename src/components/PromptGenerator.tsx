@@ -401,14 +401,26 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
   };
 
   const handleFeedback = async (score: number) => {
+    console.log('🌟 handleFeedback appelé avec score:', score);
+    console.log('🔍 currentTraceId:', currentTraceId);
+    console.log('👤 user:', user?.id);
+
     if (!currentTraceId || !user) {
       console.warn('⚠️ Cannot save feedback: no trace ID or user');
+      console.warn('   currentTraceId:', currentTraceId);
+      console.warn('   user:', user);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'enregistrer l'évaluation (pas de trace ID ou utilisateur non connecté)",
+        variant: "destructive"
+      });
       return;
     }
 
     setUserFeedback(score);
 
     try {
+      console.log('📤 Envoi du feedback à Supabase...');
       const { error } = await opikService.updateTraceFeedback(currentTraceId, score);
 
       if (error) {
@@ -419,7 +431,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           variant: "destructive"
         });
       } else {
-        console.log('✅ Feedback saved:', score);
+        console.log('✅ Feedback saved successfully for trace:', currentTraceId, 'with score:', score);
         toast({
           title: "Merci !",
           description: `Votre évaluation (${score}/5) a été enregistrée`,
@@ -427,6 +439,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       }
     } catch (error) {
       console.error('❌ Exception saving feedback:', error);
+      toast({
+        title: "Erreur",
+        description: "Une exception s'est produite",
+        variant: "destructive"
+      });
     }
   };
 
