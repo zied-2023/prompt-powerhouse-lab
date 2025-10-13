@@ -15,11 +15,14 @@ import { PromptCompressor } from "@/lib/promptCompressor";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PromptModeInfo } from "@/components/PromptModeInfo";
+import { opikService } from "@/services/opikService";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PromptGeneratorSupabase = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit } = useUserCredits();
+  const { user } = useAuth();
   
   const [formData, setFormData] = useState({
     domain: '',
@@ -131,7 +134,9 @@ const PromptGeneratorSupabase = () => {
     setAiSuggestion(complexity.reasoning);
 
     setIsLoading(true);
-    
+    const startTime = Date.now();
+    const traceId = opikService.generateTraceId();
+
     try {
       // Déterminer le mode selon les crédits
       const creditsRemaining = credits?.remaining_credits || 0;
@@ -204,12 +209,15 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       }
 
       if (data.choices && data.choices[0]?.message?.content) {
+        const endTime = Date.now();
+        const latencyMs = endTime - startTime;
+
         // Décompter le crédit après le succès de la génération
         const creditUsed = await useCredit();
         if (!creditUsed) {
           throw new Error('Impossible de décompter le crédit');
         }
-        
+
         let generatedContent = data.choices[0].message.content;
         
         // Appliquer la compression selon le mode
@@ -227,6 +235,27 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         }
         
         setGeneratedPrompt(generatedContent);
+
+        // Track with Opik
+        if (user) {
+          await opikService.createTrace({
+            userId: user.id,
+            traceId: traceId,
+            promptInput: userPrompt,
+            promptOutput: generatedContent,
+            model: complexity.suggestedModel,
+            latencyMs: latencyMs,
+            tokensUsed: data.usage?.total_tokens || 0,
+            cost: 0,
+            tags: {
+              provider: complexity.suggestedProvider,
+              mode: mode,
+              domain: formData.domain,
+              category: 'prompt_generation'
+            }
+          });
+        }
+
         toast({
           title: "Prompt généré !",
           description: `Mode ${mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium'} - Généré avec ${complexity.suggestedProvider.toUpperCase()}`,

@@ -11,6 +11,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
+import { opikService } from "@/services/opikService";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Configuration API - Mistral (correction de l'espace en trop dans l'URL)
 const API_CONFIG = {
@@ -23,6 +25,7 @@ const PromptGenerator = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit } = useUserCredits();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     category: '',
     subcategory: '',
@@ -275,17 +278,44 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
     }
 
     setIsGenerating(true);
-    
+    const startTime = Date.now();
+    const traceId = opikService.generateTraceId();
+
     try {
       const aiGeneratedPrompt = await generatePromptWithAI(formData);
-      
+      const endTime = Date.now();
+      const latencyMs = endTime - startTime;
+
       // Décompter le crédit après le succès de la génération
       const creditUsed = await useCredit();
       if (!creditUsed) {
         throw new Error('Impossible de décompter le crédit');
       }
-      
+
       setGeneratedPrompt(aiGeneratedPrompt);
+
+      // Track with Opik
+      if (user) {
+        const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
+        const userPromptText = `Crée un prompt expert pour ${categoryLabel}: ${formData.description}`;
+
+        await opikService.createTrace({
+          userId: user.id,
+          traceId: traceId,
+          promptInput: userPromptText,
+          promptOutput: aiGeneratedPrompt,
+          model: API_CONFIG.model,
+          latencyMs: latencyMs,
+          tokensUsed: 0,
+          cost: 0,
+          tags: {
+            provider: 'mistral',
+            category: formData.category,
+            subcategory: formData.subcategory,
+            tone: formData.tone
+          }
+        });
+      }
       
       toast({
         title: t('promptCreatedSuccess'),

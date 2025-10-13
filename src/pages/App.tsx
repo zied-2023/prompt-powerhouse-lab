@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard, Shield, BarChart3 } from "lucide-react";
+import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard, Shield, BarChart3, Activity } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -26,7 +26,7 @@ import CreditManager from "@/components/CreditManager";
 import { CreditPurchaseWidget } from "@/components/CreditPurchaseWidget";
 import MarketplacePromptGrid from "@/components/MarketplacePromptGrid";
 import SellerDashboard from "@/components/SellerDashboard";
-// Composants d'évaluation temporairement désactivés
+import { OpikAnalyticsDashboard } from "@/components/OpikAnalyticsDashboard";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -285,12 +285,19 @@ const Index = () => {
               <Shield className="h-4 w-4" />
               <span>Sécurité</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="integration" 
+            <TabsTrigger
+              value="integration"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <Code className="h-4 w-4" />
               <span>{t('integration')}</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="analytics"
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
+            >
+              <Activity className="h-4 w-4" />
+              <span>Analytics</span>
             </TabsTrigger>
           </TabsList>
 
@@ -336,6 +343,10 @@ const Index = () => {
 
           <TabsContent value="integration" className="space-y-8">
             <IntegrationPanel />
+          </TabsContent>
+
+          <TabsContent value="analytics" className="space-y-8">
+            <OpikAnalyticsDashboard />
           </TabsContent>
 
         </Tabs>
