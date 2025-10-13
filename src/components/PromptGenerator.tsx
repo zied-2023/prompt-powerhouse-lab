@@ -40,6 +40,8 @@ const PromptGenerator = () => {
   
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentTraceId, setCurrentTraceId] = useState<string | null>(null);
+  const [userFeedback, setUserFeedback] = useState<number | null>(null);
 
   // Nouvelles catégories restructurées
   const categories = [
@@ -284,7 +286,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           console.log(`Mode Premium: prompt optimisé`);
         }
 
-        return generatedContent;
+        return {
+          content: generatedContent,
+          usage: data.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
+        };
       } else {
         throw new Error('Format de réponse API inattendu');
       }
@@ -308,8 +313,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
     const startTime = Date.now();
     const traceId = opikService.generateTraceId();
 
+    const creditsRemaining = credits?.remaining_credits || 0;
+    const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
+
     try {
-      const aiGeneratedPrompt = await generatePromptWithAI(formData);
+      const result = await generatePromptWithAI(formData);
       const endTime = Date.now();
       const latencyMs = endTime - startTime;
 
@@ -319,7 +327,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         throw new Error('Impossible de décompter le crédit');
       }
 
-      setGeneratedPrompt(aiGeneratedPrompt);
+      setGeneratedPrompt(result.content);
+      setCurrentTraceId(traceId);
+      setUserFeedback(null);
+
+      // Calculate cost (Mistral pricing: ~$0.001 per 1k tokens)
+      const estimatedCost = (result.usage.total_tokens / 1000) * 0.001;
 
       // Track with Opik
       if (user) {
@@ -331,11 +344,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           userId: user.id,
           traceId: traceId,
           promptInput: userPromptText,
-          promptOutput: aiGeneratedPrompt,
+          promptOutput: result.content,
           model: API_CONFIG.model,
           latencyMs: latencyMs,
-          tokensUsed: 0,
-          cost: 0,
+          tokensUsed: result.usage.total_tokens,
+          cost: estimatedCost,
           tags: {
             provider: 'mistral',
             category: formData.category,
@@ -385,6 +398,36 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       title: t('copiedSuccess'),
       description: t('promptCopiedClipboard'),
     });
+  };
+
+  const handleFeedback = async (score: number) => {
+    if (!currentTraceId || !user) {
+      console.warn('⚠️ Cannot save feedback: no trace ID or user');
+      return;
+    }
+
+    setUserFeedback(score);
+
+    try {
+      const { error } = await opikService.updateTraceFeedback(currentTraceId, score);
+
+      if (error) {
+        console.error('❌ Error saving feedback:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible d'enregistrer votre évaluation",
+          variant: "destructive"
+        });
+      } else {
+        console.log('✅ Feedback saved:', score);
+        toast({
+          title: "Merci !",
+          description: `Votre évaluation (${score}/5) a été enregistrée`,
+        });
+      }
+    } catch (error) {
+      console.error('❌ Exception saving feedback:', error);
+    }
   };
 
   const handleSavePrompt = async () => {
@@ -637,10 +680,39 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
                   🤖 <strong>{t('generatedByAI')} :</strong> {t('aiGeneratedDesc')}
                 </p>
               </div>
-              
+
+              {/* Feedback avec étoiles */}
+              {currentTraceId && (
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                    ⭐ Comment évaluez-vous ce prompt ?
+                  </p>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => handleFeedback(star)}
+                        className={`text-2xl transition-all hover:scale-110 ${
+                          userFeedback && star <= userFeedback
+                            ? 'text-yellow-500'
+                            : 'text-gray-300 dark:text-gray-600 hover:text-yellow-400'
+                        }`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                    {userFeedback && (
+                      <span className="ml-2 text-sm text-blue-700 dark:text-blue-300 self-center">
+                        {userFeedback}/5
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Widget d'évaluation intégré */}
               <div className="mt-6">
-                <PromptEvaluationWidget 
+                <PromptEvaluationWidget
                   promptContent={generatedPrompt}
                   category={formData.category}
                   compact={true}

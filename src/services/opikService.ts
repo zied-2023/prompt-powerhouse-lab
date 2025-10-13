@@ -136,7 +136,7 @@ class OpikService {
     }
   }
 
-  async updateTraceFeedback(traceId: string, feedbackScore: number): Promise<boolean> {
+  async updateTraceFeedback(traceId: string, feedbackScore: number): Promise<{ error?: any }> {
     try {
       const { error } = await supabase
         .from('opik_prompt_traces')
@@ -145,13 +145,13 @@ class OpikService {
 
       if (error) {
         console.error('Error updating feedback:', error);
-        return false;
+        return { error };
       }
 
-      return true;
+      return {};
     } catch (error) {
       console.error('Error in updateTraceFeedback:', error);
-      return false;
+      return { error };
     }
   }
 
