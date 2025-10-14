@@ -27,6 +27,7 @@ import { CreditPurchaseWidget } from "@/components/CreditPurchaseWidget";
 import MarketplacePromptGrid from "@/components/MarketplacePromptGrid";
 import SellerDashboard from "@/components/SellerDashboard";
 import { OpikAnalyticsDashboard } from "@/components/OpikAnalyticsDashboard";
+import IntelligentApiKeyManager from "@/components/IntelligentApiKeyManager";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -299,6 +300,13 @@ const Index = () => {
               <Activity className="h-4 w-4" />
               <span>Analytics</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="api-keys"
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
+            >
+              <Key className="h-4 w-4" />
+              <span>Clés API</span>
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="generator" className="space-y-8">
@@ -347,6 +355,10 @@ const Index = () => {
 
           <TabsContent value="analytics" className="space-y-8">
             <OpikAnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="api-keys" className="space-y-8">
+            <IntelligentApiKeyManager />
           </TabsContent>
 
         </Tabs>
