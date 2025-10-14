@@ -10,6 +10,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
+import { opikService } from "@/services/opikService";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -22,11 +24,14 @@ const PromptImprovement = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit, refetchCredits } = useUserCredits();
+  const { user } = useAuth();
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [improvementObjective, setImprovementObjective] = useState('');
   const [improvedPrompt, setImprovedPrompt] = useState('');
   const [improvements, setImprovements] = useState<string[]>([]);
   const [isImproving, setIsImproving] = useState(false);
+  const [currentTraceId, setCurrentTraceId] = useState<string | null>(null);
+  const [userFeedback, setUserFeedback] = useState<number | null>(null);
 
   const improvePromptWithAI = async () => {
     if (!originalPrompt.trim()) {
@@ -39,7 +44,9 @@ const PromptImprovement = () => {
     }
 
     setIsImproving(true);
-    
+    const startTime = Date.now();
+    const traceId = opikService.generateTraceId();
+
     try {
       const systemPrompt = `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
 
@@ -141,10 +148,50 @@ RÈGLES:
         if (!creditUsed) {
           throw new Error('Impossible de décompter le crédit');
         }
-        
+
         // Forcer la mise à jour des crédits dans l'interface
         await refetchCredits();
-        
+
+        setCurrentTraceId(traceId);
+        setUserFeedback(null);
+
+        const endTime = Date.now();
+        const latencyMs = endTime - startTime;
+
+        // Calculate cost
+        const tokensUsed = data.usage?.total_tokens || 0;
+        const estimatedCost = (tokensUsed / 1000) * 0.001;
+
+        // Track with Opik
+        if (user) {
+          console.log('📊 Enregistrement trace Opik (Improvement) pour user:', user.id);
+          const userPromptText = improvementObjective
+            ? `Améliore ce prompt: "${originalPrompt}" - Objectif: ${improvementObjective}`
+            : `Améliore ce prompt: "${originalPrompt}"`;
+
+          const traceResult = await opikService.createTrace({
+            userId: user.id,
+            traceId: traceId,
+            promptInput: userPromptText,
+            promptOutput: content,
+            model: API_CONFIG.model,
+            latencyMs: latencyMs,
+            tokensUsed: tokensUsed,
+            cost: estimatedCost,
+            tags: {
+              provider: 'mistral',
+              type: 'improvement',
+              has_objective: !!improvementObjective
+            }
+          });
+
+          if (traceResult) {
+            console.log('✅ Trace Opik (Improvement) enregistrée:', traceResult);
+          } else {
+            console.error('❌ Échec trace Opik (Improvement)');
+          }
+        }
+
         toast({
           title: t('improvementSuccess'),
           description: `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
@@ -176,6 +223,51 @@ RÈGLES:
       title: t('copiedSuccess'),
       description: t('promptCopiedClipboard'),
     });
+  };
+
+  const handleFeedback = async (score: number) => {
+    console.log('🌟 handleFeedback (Improvement) appelé avec score:', score);
+    console.log('🔍 currentTraceId:', currentTraceId);
+    console.log('👤 user:', user?.id);
+
+    if (!currentTraceId || !user) {
+      console.warn('⚠️ Cannot save feedback: no trace ID or user');
+      toast({
+        title: "Erreur",
+        description: "Impossible d'enregistrer l'évaluation",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setUserFeedback(score);
+
+    try {
+      console.log('📤 Envoi du feedback à Supabase...');
+      const { error } = await opikService.updateTraceFeedback(currentTraceId, score);
+
+      if (error) {
+        console.error('❌ Error saving feedback:', error);
+        toast({
+          title: "Erreur",
+          description: "Impossible d'enregistrer votre évaluation",
+          variant: "destructive"
+        });
+      } else {
+        console.log('✅ Feedback saved successfully for trace:', currentTraceId, 'with score:', score);
+        toast({
+          title: "Merci !",
+          description: `Votre évaluation (${score}/5) a été enregistrée`,
+        });
+      }
+    } catch (error) {
+      console.error('❌ Exception saving feedback:', error);
+      toast({
+        title: "Erreur",
+        description: "Une exception s'est produite",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleSavePrompt = async () => {
@@ -336,10 +428,39 @@ RÈGLES:
                   🤖 <strong>{t('generatedByAI')} :</strong> {t('aiGeneratedDesc')}
                 </p>
               </div>
-              
+
+              {/* Feedback avec étoiles */}
+              {currentTraceId && (
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+                    ⭐ Comment évaluez-vous ce prompt amélioré ?
+                  </p>
+                  <div className="flex gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => handleFeedback(star)}
+                        className={`text-2xl transition-all hover:scale-110 ${
+                          userFeedback && star <= userFeedback
+                            ? 'text-yellow-500'
+                            : 'text-gray-300 dark:text-gray-600 hover:text-yellow-400'
+                        }`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                    {userFeedback && (
+                      <span className="ml-2 text-sm text-blue-700 dark:text-blue-300 self-center">
+                        {userFeedback}/5
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Widget d'évaluation pour le prompt amélioré */}
               <div className="mt-6">
-                <PromptEvaluationWidget 
+                <PromptEvaluationWidget
                   promptContent={improvedPrompt}
                   category="improvement"
                   compact={true}
