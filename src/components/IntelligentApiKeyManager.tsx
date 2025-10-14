@@ -28,6 +28,7 @@ import {
 import { intelligentApiKeyManager, ApiKey, SelectionRule, RequestContext } from '@/services/intelligentApiKeyManager';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
+import { supabase } from '@/integrations/supabase/client';
 
 const PROVIDERS = [
   { id: 'openai', name: 'OpenAI', icon: '🤖' },
@@ -72,7 +73,7 @@ const IntelligentApiKeyManager: React.FC = () => {
   }, []);
 
   const loadData = async () => {
-    const { data: { user } } = await intelligentApiKeyManager['supabase'].auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const keys = await intelligentApiKeyManager.getActiveApiKeys(user.id);
