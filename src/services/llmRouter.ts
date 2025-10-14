@@ -34,19 +34,14 @@ const MISTRAL_CONFIG = {
   model: 'mistral-large-latest'
 };
 
+// Configuration: activer OpenRouter pour les utilisateurs premium
+const USE_OPENROUTER_FOR_PREMIUM = false; // Mettre à true quand OpenRouter est configuré
+
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
-    if (!isAuthenticated) {
-      return {
-        provider: 'mistral',
-        model: MISTRAL_CONFIG.model,
-        apiKey: MISTRAL_CONFIG.key,
-        endpoint: MISTRAL_CONFIG.endpoint,
-        useEdgeFunction: false
-      };
-    }
-
-    if (userHasCredits) {
+    // Si OpenRouter est activé ET l'utilisateur a des crédits
+    if (USE_OPENROUTER_FOR_PREMIUM && isAuthenticated && userHasCredits) {
+      console.log('🎯 Utilisation d\'OpenRouter (mode premium)');
       return {
         provider: 'openrouter',
         model: 'anthropic/claude-3.5-sonnet',
@@ -54,6 +49,8 @@ class LLMRouter {
       };
     }
 
+    // Par défaut: Mistral pour tous
+    console.log('🎯 Utilisation de Mistral', { isAuthenticated, userHasCredits });
     return {
       provider: 'mistral',
       model: MISTRAL_CONFIG.model,
@@ -65,7 +62,12 @@ class LLMRouter {
 
   async callLLM(config: LLMConfig, request: LLMRequest): Promise<LLMResponse> {
     if (config.useEdgeFunction) {
-      return this.callViaEdgeFunction(config, request);
+      try {
+        return await this.callViaEdgeFunction(config, request);
+      } catch (error) {
+        console.warn('⚠️ Edge function failed, falling back to Mistral:', error.message);
+        return await this.callMistral(request);
+      }
     } else {
       return this.callDirectly(config, request);
     }
@@ -79,7 +81,7 @@ class LLMRouter {
     throw new Error(`Provider ${config.provider} not supported for direct calls`);
   }
 
-  private async callMistral(request: LLMRequest): Promise<LLMResponse> {
+  async callMistral(request: LLMRequest): Promise<LLMResponse> {
     const response = await fetch(MISTRAL_CONFIG.endpoint, {
       method: 'POST',
       headers: {
@@ -122,7 +124,12 @@ class LLMRouter {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
     const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Configuration Supabase manquante');
+    }
+
     const functionUrl = `${supabaseUrl}/functions/v1/chat-with-openai`;
+    console.log('🔗 Appel edge function:', { functionUrl, provider: config.provider, model: config.model });
 
     const response = await fetch(functionUrl, {
       method: 'POST',
@@ -141,12 +148,16 @@ class LLMRouter {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('❌ Edge function error:', { status: response.status, error: errorData });
       throw new Error(`Erreur Edge Function: ${response.status} - ${errorData.error || response.statusText}`);
     }
+
+    console.log('✅ Edge function success');
 
     const data = await response.json();
 
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('❌ Format de réponse inattendu:', data);
       throw new Error('Format de réponse Edge Function inattendu');
     }
 
