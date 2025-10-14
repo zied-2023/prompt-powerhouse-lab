@@ -32,6 +32,7 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   });
   const [recentTraces, setRecentTraces] = useState<TraceData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -39,13 +40,13 @@ export const OpikAnalyticsDashboard: React.FC = () => {
 
       const interval = setInterval(() => {
         if (!document.hidden) {
-          loadAnalytics();
+          loadAnalytics(true);
         }
-      }, 5000);
+      }, 30000);
 
       const handleVisibilityChange = () => {
         if (!document.hidden) {
-          loadAnalytics();
+          loadAnalytics(true);
         }
       };
 
@@ -58,10 +59,14 @@ export const OpikAnalyticsDashboard: React.FC = () => {
     }
   }, [user]);
 
-  const loadAnalytics = async () => {
+  const loadAnalytics = async (isBackgroundRefresh = false) => {
     if (!user) return;
 
-    setLoading(true);
+    if (isBackgroundRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setLoading(true);
+    }
     try {
       console.log('🔄 Rechargement des analytics Opik pour user:', user.id);
 
@@ -79,6 +84,7 @@ export const OpikAnalyticsDashboard: React.FC = () => {
       console.error('Error loading analytics:', error);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   };
 
@@ -190,10 +196,10 @@ export const OpikAnalyticsDashboard: React.FC = () => {
             <Button
               variant="outline"
               size="sm"
-              onClick={loadAnalytics}
-              disabled={loading}
+              onClick={() => loadAnalytics(true)}
+              disabled={isRefreshing}
             >
-              {loading ? (
+              {isRefreshing ? (
                 <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
               ) : (
                 <Activity className="h-4 w-4" />
