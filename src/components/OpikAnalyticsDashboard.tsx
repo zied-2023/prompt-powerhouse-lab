@@ -5,6 +5,7 @@ import { opikService } from '@/services/opikService';
 import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
 
 interface TraceData {
   id: string;
@@ -35,6 +36,25 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   useEffect(() => {
     if (user) {
       loadAnalytics();
+
+      const interval = setInterval(() => {
+        if (!document.hidden) {
+          loadAnalytics();
+        }
+      }, 5000);
+
+      const handleVisibilityChange = () => {
+        if (!document.hidden) {
+          loadAnalytics();
+        }
+      };
+
+      document.addEventListener('visibilitychange', handleVisibilityChange);
+
+      return () => {
+        clearInterval(interval);
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+      };
     }
   }, [user]);
 
@@ -43,10 +63,15 @@ export const OpikAnalyticsDashboard: React.FC = () => {
 
     setLoading(true);
     try {
+      console.log('🔄 Rechargement des analytics Opik pour user:', user.id);
+
       const [aggregatedStats, traces] = await Promise.all([
         opikService.getAggregatedMetrics(user.id),
         opikService.getTracesByUser(user.id, 10)
       ]);
+
+      console.log('📊 Stats reçues:', aggregatedStats);
+      console.log('📝 Traces reçues:', traces.length);
 
       setStats(aggregatedStats);
       setRecentTraces(traces);
@@ -152,13 +177,29 @@ export const OpikAnalyticsDashboard: React.FC = () => {
 
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="h-5 w-5" />
-            Traces Recentes
-          </CardTitle>
-          <CardDescription>
-            Historique de vos 10 dernieres generations de prompts
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <TrendingUp className="h-5 w-5" />
+                Traces Recentes
+              </CardTitle>
+              <CardDescription>
+                Historique de vos 10 dernieres generations de prompts
+              </CardDescription>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadAnalytics}
+              disabled={loading}
+            >
+              {loading ? (
+                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
+              ) : (
+                <Activity className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[400px] pr-4">

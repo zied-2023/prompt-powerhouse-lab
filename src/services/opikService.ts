@@ -42,8 +42,11 @@ class OpikService {
         traceId: trace.traceId,
         model: trace.model,
         hasInput: !!trace.promptInput,
-        hasOutput: !!trace.promptOutput
+        hasOutput: !!trace.promptOutput,
+        feedbackScore: trace.feedbackScore
       });
+
+      const autoScore = this.calculateAutoScore(trace);
 
       const traceData = {
         user_id: trace.userId,
@@ -54,11 +57,11 @@ class OpikService {
         latency_ms: trace.latencyMs || 0,
         tokens_used: trace.tokensUsed || 0,
         cost: trace.cost || 0,
-        feedback_score: trace.feedbackScore,
+        feedback_score: trace.feedbackScore !== undefined ? trace.feedbackScore : autoScore,
         tags: trace.tags || {}
       };
 
-      console.log('📤 Opik: Envoi des données à Supabase...');
+      console.log('📤 Opik: Envoi des données à Supabase avec score:', traceData.feedback_score);
 
       const { data, error } = await supabase
         .from('opik_prompt_traces')
@@ -278,6 +281,30 @@ class OpikService {
 
   generateTraceId(): string {
     return `trace_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private calculateAutoScore(trace: OpikTrace): number {
+    let score = 3.5;
+
+    if (trace.latencyMs && trace.latencyMs < 2000) {
+      score += 0.5;
+    }
+
+    if (trace.promptOutput && trace.promptOutput.length > 100) {
+      score += 0.5;
+    }
+
+    if (trace.promptOutput && trace.promptOutput.includes('**')) {
+      score += 0.3;
+    }
+
+    if (trace.tokensUsed && trace.tokensUsed > 0) {
+      if (trace.tokensUsed < 500) {
+        score += 0.2;
+      }
+    }
+
+    return Math.min(5, Math.max(1, score));
   }
 }
 
