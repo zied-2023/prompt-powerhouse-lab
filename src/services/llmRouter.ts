@@ -41,7 +41,8 @@ const OPENROUTER_CONFIG = {
 };
 
 // Configuration: activer OpenRouter pour les utilisateurs premium
-const USE_OPENROUTER_FOR_PREMIUM = true;
+// DÉSACTIVÉ: La clé OpenRouter fournie n'est pas valide (401 - User not found)
+const USE_OPENROUTER_FOR_PREMIUM = false;
 
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
