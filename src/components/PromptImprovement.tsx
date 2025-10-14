@@ -12,13 +12,7 @@ import { useUserCredits } from "@/hooks/useUserCredits";
 import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
-
-// Configuration API - Mistral
-const API_CONFIG = {
-  endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
-  model: 'mistral-large-latest'
-};
+import { llmRouter } from "@/services/llmRouter";
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
@@ -46,6 +40,16 @@ const PromptImprovement = () => {
     setIsImproving(true);
     const startTime = Date.now();
     const traceId = opikService.generateTraceId();
+
+    const isAuthenticated = !!user;
+    const creditsRemaining = credits?.remaining_credits || 0;
+    const userHasCredits = creditsRemaining > 0;
+
+    console.log('🚀 Amélioration de prompt:', {
+      isAuthenticated,
+      userHasCredits,
+      creditsRemaining
+    });
 
     try {
       const systemPrompt = `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
@@ -86,44 +90,24 @@ RÈGLES:
         userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
       }
 
-      const response = await fetch(API_CONFIG.endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${API_CONFIG.key}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: API_CONFIG.model,
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt
-            },
-            {
-              role: 'user',
-              content: userPrompt
-            }
-          ],
+      const llmResponse = await llmRouter.generatePrompt(
+        systemPrompt,
+        userPrompt,
+        {
+          isAuthenticated,
+          userHasCredits,
           temperature: 0.7,
-          max_tokens: 1500
-        })
+          maxTokens: 1500
+        }
+      );
+
+      console.log('✅ Réponse LLM reçue:', {
+        provider: llmResponse.provider,
+        model: llmResponse.model,
+        tokens: llmResponse.usage.total_tokens
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        
-        if (response.status === 402) {
-          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte Mistral ou utiliser une autre clé API.');
-        }
-        
-        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log('Réponse API Mistral reçue:', data);
-
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        const content = data.choices[0].message.content;
+      const content = llmResponse.content;
         
         const improvedPromptMatch = content.match(/🎯(.*?)---/s);
         const improvementsMatch = content.match(/\*\*AMÉLIORATIONS APPORTÉES:\*\*(.*)/s);
@@ -159,7 +143,7 @@ RÈGLES:
         const latencyMs = endTime - startTime;
 
         // Calculate cost
-        const tokensUsed = data.usage?.total_tokens || 0;
+        const tokensUsed = llmResponse.usage.total_tokens;
         const estimatedCost = (tokensUsed / 1000) * 0.001;
 
         // Track with Opik
@@ -174,12 +158,12 @@ RÈGLES:
             traceId: traceId,
             promptInput: userPromptText,
             promptOutput: content,
-            model: API_CONFIG.model,
+            model: llmResponse.model,
             latencyMs: latencyMs,
             tokensUsed: tokensUsed,
             cost: estimatedCost,
             tags: {
-              provider: 'mistral',
+              provider: llmResponse.provider,
               type: 'improvement',
               has_objective: !!improvementObjective
             }
@@ -196,9 +180,6 @@ RÈGLES:
           title: t('improvementSuccess'),
           description: `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
         });
-      } else {
-        throw new Error('Format de réponse API inattendu');
-      }
     } catch (error) {
       console.error('Erreur lors de l\'amélioration du prompt:', error);
       

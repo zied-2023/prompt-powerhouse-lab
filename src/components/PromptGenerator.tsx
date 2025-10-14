@@ -14,13 +14,7 @@ import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { PromptCompressor } from "@/lib/promptCompressor";
-
-// Configuration API - Mistral (correction de l'espace en trop dans l'URL)
-const API_CONFIG = {
-  endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
-  model: 'mistral-large-latest'
-};
+import { llmRouter } from "@/services/llmRouter";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -177,14 +171,21 @@ const PromptGenerator = () => {
 
   const generatePromptWithAI = async (formData: any) => {
     try {
-      console.log('Génération de prompt via API Mistral...');
-      
-      const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
-      const subcategoryLabel = formData.subcategory ? 
-        getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
-
+      const isAuthenticated = !!user;
       const creditsRemaining = credits?.remaining_credits || 0;
+      const userHasCredits = creditsRemaining > 0;
       const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
+
+      console.log('🚀 Génération de prompt:', {
+        isAuthenticated,
+        userHasCredits,
+        creditsRemaining,
+        mode
+      });
+
+      const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
+      const subcategoryLabel = formData.subcategory ?
+        getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
       const systemPrompt = mode === 'free'
         ? `Expert prompts IA. Max 150 tokens strict.
@@ -233,66 +234,45 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
       const maxTokensByMode = mode === 'free' ? 400 : mode === 'basic' ? 800 : 1200;
 
-      const response = await fetch(API_CONFIG.endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${API_CONFIG.key}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: API_CONFIG.model,
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt
-            },
-            {
-              role: 'user',
-              content: userPrompt
-            }
-          ],
+      const llmResponse = await llmRouter.generatePrompt(
+        systemPrompt,
+        userPrompt,
+        {
+          isAuthenticated,
+          userHasCredits,
           temperature: 0.7,
-          max_tokens: maxTokensByMode
-        })
+          maxTokens: maxTokensByMode
+        }
+      );
+
+      console.log('✅ Réponse LLM reçue:', {
+        provider: llmResponse.provider,
+        model: llmResponse.model,
+        tokens: llmResponse.usage.total_tokens
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        
-        if (response.status === 402) {
-          throw new Error('La clé API n\'a plus de crédits disponibles. Veuillez recharger votre compte Mistral ou utiliser une autre clé API.');
-        }
-        
-        throw new Error(`Erreur API: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
-      }
+      let generatedContent = llmResponse.content;
 
-      const data = await response.json();
-      console.log('Réponse API Mistral reçue:', data);
-
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        let generatedContent = data.choices[0].message.content;
-
-        // Appliquer la compression selon le mode
-        if (mode === 'free') {
-          const result = PromptCompressor.compressFree(generatedContent);
-          generatedContent = result.compressed;
-          console.log(`Mode Gratuit: ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
-        } else if (mode === 'basic') {
-          const result = PromptCompressor.compressBasic(generatedContent);
-          generatedContent = result.compressed;
-          console.log(`Mode Basique: ${result.estimatedTokens} tokens`);
-        } else {
-          generatedContent = PromptCompressor.formatPremium(generatedContent);
-          console.log(`Mode Premium: prompt optimisé`);
-        }
-
-        return {
-          content: generatedContent,
-          usage: data.usage || { total_tokens: 0, prompt_tokens: 0, completion_tokens: 0 }
-        };
+      // Appliquer la compression selon le mode
+      if (mode === 'free') {
+        const result = PromptCompressor.compressFree(generatedContent);
+        generatedContent = result.compressed;
+        console.log(`Mode Gratuit: ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
+      } else if (mode === 'basic') {
+        const result = PromptCompressor.compressBasic(generatedContent);
+        generatedContent = result.compressed;
+        console.log(`Mode Basique: ${result.estimatedTokens} tokens`);
       } else {
-        throw new Error('Format de réponse API inattendu');
+        generatedContent = PromptCompressor.formatPremium(generatedContent);
+        console.log(`Mode Premium: prompt optimisé`);
       }
+
+      return {
+        content: generatedContent,
+        usage: llmResponse.usage,
+        provider: llmResponse.provider,
+        model: llmResponse.model
+      };
     } catch (error) {
       console.error('Erreur lors de la génération du prompt:', error);
       throw error;
@@ -345,12 +325,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           traceId: traceId,
           promptInput: userPromptText,
           promptOutput: result.content,
-          model: API_CONFIG.model,
+          model: result.model,
           latencyMs: latencyMs,
           tokensUsed: result.usage.total_tokens,
           cost: estimatedCost,
           tags: {
-            provider: 'mistral',
+            provider: result.provider,
             category: formData.category,
             subcategory: formData.subcategory,
             tone: formData.tone
