@@ -34,8 +34,14 @@ const MISTRAL_CONFIG = {
   model: 'mistral-large-latest'
 };
 
+const OPENROUTER_CONFIG = {
+  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+  key: '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',
+  model: 'anthropic/claude-3.5-sonnet'
+};
+
 // Configuration: activer OpenRouter pour les utilisateurs premium
-const USE_OPENROUTER_FOR_PREMIUM = false; // Mettre à true quand OpenRouter est configuré
+const USE_OPENROUTER_FOR_PREMIUM = true;
 
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
@@ -44,8 +50,10 @@ class LLMRouter {
       console.log('🎯 Utilisation d\'OpenRouter (mode premium)');
       return {
         provider: 'openrouter',
-        model: 'anthropic/claude-3.5-sonnet',
-        useEdgeFunction: true
+        model: OPENROUTER_CONFIG.model,
+        apiKey: OPENROUTER_CONFIG.key,
+        endpoint: OPENROUTER_CONFIG.endpoint,
+        useEdgeFunction: false
       };
     }
 
@@ -78,10 +86,60 @@ class LLMRouter {
       return this.callMistral(request);
     }
 
+    if (config.provider === 'openrouter') {
+      return this.callOpenRouter(request);
+    }
+
     throw new Error(`Provider ${config.provider} not supported for direct calls`);
   }
 
+  async callOpenRouter(request: LLMRequest): Promise<LLMResponse> {
+    console.log('🔗 Appel OpenRouter API...');
+    const response = await fetch(OPENROUTER_CONFIG.endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${OPENROUTER_CONFIG.key}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': window.location.origin,
+        'X-Title': 'Prompt Generator Pro'
+      },
+      body: JSON.stringify({
+        model: OPENROUTER_CONFIG.model,
+        messages: request.messages,
+        temperature: request.temperature || 0.7,
+        max_tokens: request.maxTokens || 2000
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('❌ OpenRouter error:', { status: response.status, error: errorData });
+
+      if (response.status === 402) {
+        throw new Error('La clé API OpenRouter n\'a plus de crédits disponibles.');
+      }
+
+      throw new Error(`Erreur API OpenRouter: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('✅ Réponse OpenRouter reçue');
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('❌ Format de réponse OpenRouter inattendu:', data);
+      throw new Error('Format de réponse API OpenRouter inattendu');
+    }
+
+    return {
+      content: data.choices[0].message.content,
+      usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+      model: OPENROUTER_CONFIG.model,
+      provider: 'openrouter'
+    };
+  }
+
   async callMistral(request: LLMRequest): Promise<LLMResponse> {
+    console.log('🔗 Appel Mistral API...');
     const response = await fetch(MISTRAL_CONFIG.endpoint, {
       method: 'POST',
       headers: {
