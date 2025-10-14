@@ -17,6 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PromptModeInfo } from "@/components/PromptModeInfo";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
+import { llmRouter } from "@/services/llmRouter";
 
 const PromptGeneratorSupabase = () => {
   const { t } = useTranslation();
@@ -185,30 +186,29 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
       if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
 
-      const { data, error } = await supabase.functions.invoke('chat-with-openai', {
-        body: {
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt
-            },
-            {
-              role: 'user',
-              content: userPrompt
-            }
-          ],
-          model: complexity.suggestedModel,
-          max_tokens: 2000,
-          temperature: 0.7,
-          provider: complexity.suggestedProvider
-        }
+      // Utiliser le routeur intelligent LLM
+      const isAuthenticated = !!user;
+      const userHasCredits = (credits?.remaining_credits || 0) > 0;
+
+      const llmConfig = await llmRouter.selectLLM(isAuthenticated, userHasCredits);
+      console.log('🎯 Configuration LLM sélectionnée:', llmConfig);
+
+      const response = await llmRouter.callLLM(llmConfig, {
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: userPrompt
+          }
+        ],
+        temperature: 0.7,
+        maxTokens: 2000
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (data.choices && data.choices[0]?.message?.content) {
+      if (response.content) {
         const endTime = Date.now();
         const latencyMs = endTime - startTime;
 
@@ -218,7 +218,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           throw new Error('Impossible de décompter le crédit');
         }
 
-        let generatedContent = data.choices[0].message.content;
+        let generatedContent = response.content;
         
         // Appliquer la compression selon le mode
         if (mode === 'free') {
@@ -244,12 +244,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             traceId: traceId,
             promptInput: userPrompt,
             promptOutput: generatedContent,
-            model: complexity.suggestedModel,
+            model: llmConfig.model,
             latencyMs: latencyMs,
-            tokensUsed: data.usage?.total_tokens || 0,
+            tokensUsed: response.usage?.total_tokens || 0,
             cost: 0,
             tags: {
-              provider: complexity.suggestedProvider,
+              provider: llmConfig.provider,
               mode: mode,
               domain: formData.domain,
               category: 'prompt_generation'

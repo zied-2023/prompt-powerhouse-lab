@@ -13,11 +13,14 @@ import { PromptCompressor } from "@/lib/promptCompressor";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { llmRouter } from "@/services/llmRouter";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PromptImprovementSupabase = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
-  const { credits } = useUserCredits();
+  const { credits, useCredit } = useUserCredits();
+  const { user } = useAuth();
   
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [improvementObjective, setImprovementObjective] = useState('');
@@ -77,31 +80,35 @@ Format:
         userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
       }
 
-      const { data, error } = await supabase.functions.invoke('chat-with-openai', {
-        body: {
-          messages: [
-            {
-              role: 'system',
-              content: systemPrompt
-            },
-            {
-              role: 'user',
-              content: userPrompt
-            }
-          ],
-          model: complexity.suggestedModel,
-          max_tokens: 2000,
-          temperature: 0.7,
-          provider: complexity.suggestedProvider
-        }
+      // Utiliser le routeur intelligent LLM
+      const isAuthenticated = !!user;
+      const userHasCredits = (credits?.remaining_credits || 0) > 0;
+
+      const llmConfig = await llmRouter.selectLLM(isAuthenticated, userHasCredits);
+      console.log('🎯 Configuration LLM sélectionnée:', llmConfig);
+
+      const response = await llmRouter.callLLM(llmConfig, {
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          },
+          {
+            role: 'user',
+            content: userPrompt
+          }
+        ],
+        temperature: 0.7,
+        maxTokens: 2000
       });
 
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (data.choices && data.choices[0]?.message?.content) {
-        let improvedContent = data.choices[0].message.content;
+      if (response.content) {
+        // Décompter le crédit après le succès
+        const creditUsed = await useCredit();
+        if (!creditUsed) {
+          throw new Error('Impossible de décompter le crédit');
+        }
+        let improvedContent = response.content;
         
         // Appliquer la compression selon le mode
         if (mode === 'free') {
