@@ -96,87 +96,123 @@ class LLMRouter {
 
   async callOpenRouter(request: LLMRequest): Promise<LLMResponse> {
     console.log('🔗 Appel OpenRouter API...');
-    const response = await fetch(OPENROUTER_CONFIG.endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_CONFIG.key}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': window.location.origin,
-        'X-Title': 'Prompt Generator Pro'
-      },
-      body: JSON.stringify({
-        model: OPENROUTER_CONFIG.model,
-        messages: request.messages,
-        temperature: request.temperature || 0.7,
-        max_tokens: request.maxTokens || 8000
-      })
-    });
+    const startTime = Date.now();
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('❌ OpenRouter error:', { status: response.status, error: errorData });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-      if (response.status === 402) {
-        throw new Error('La clé API OpenRouter n\'a plus de crédits disponibles.');
+    try {
+      const response = await fetch(OPENROUTER_CONFIG.endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_CONFIG.key}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': 'Prompt Generator Pro'
+        },
+        body: JSON.stringify({
+          model: OPENROUTER_CONFIG.model,
+          messages: request.messages,
+          temperature: request.temperature || 0.7,
+          max_tokens: request.maxTokens || 8000
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ OpenRouter error:', { status: response.status, error: errorData });
+
+        if (response.status === 402) {
+          throw new Error('La clé API OpenRouter n\'a plus de crédits disponibles.');
+        }
+
+        throw new Error(`Erreur API OpenRouter: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
       }
 
-      throw new Error(`Erreur API OpenRouter: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+      const data = await response.json();
+      const latency = Date.now() - startTime;
+      console.log(`✅ OpenRouter API réponse reçue en ${latency}ms`);
+
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        console.error('❌ Format de réponse OpenRouter inattendu:', data);
+        throw new Error('Format de réponse API OpenRouter inattendu');
+      }
+
+      return {
+        content: data.choices[0].message.content,
+        usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+        model: OPENROUTER_CONFIG.model,
+        provider: 'openrouter'
+      };
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Timeout: La requête OpenRouter a pris trop de temps (>45s)');
+      }
+      throw error;
     }
-
-    const data = await response.json();
-    console.log('✅ Réponse OpenRouter reçue');
-
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      console.error('❌ Format de réponse OpenRouter inattendu:', data);
-      throw new Error('Format de réponse API OpenRouter inattendu');
-    }
-
-    return {
-      content: data.choices[0].message.content,
-      usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-      model: OPENROUTER_CONFIG.model,
-      provider: 'openrouter'
-    };
   }
 
   async callMistral(request: LLMRequest): Promise<LLMResponse> {
     console.log('🔗 Appel Mistral API...');
-    const response = await fetch(MISTRAL_CONFIG.endpoint, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${MISTRAL_CONFIG.key}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: MISTRAL_CONFIG.model,
-        messages: request.messages,
-        temperature: request.temperature || 0.7,
-        max_tokens: request.maxTokens || 8000
-      })
-    });
+    const startTime = Date.now();
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-      if (response.status === 402) {
-        throw new Error('La clé API Mistral n\'a plus de crédits disponibles.');
+    try {
+      const response = await fetch(MISTRAL_CONFIG.endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${MISTRAL_CONFIG.key}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: MISTRAL_CONFIG.model,
+          messages: request.messages,
+          temperature: request.temperature || 0.7,
+          max_tokens: request.maxTokens || 8000,
+          stream: false
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        if (response.status === 402) {
+          throw new Error('La clé API Mistral n\'a plus de crédits disponibles.');
+        }
+
+        throw new Error(`Erreur API Mistral: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
       }
 
-      throw new Error(`Erreur API Mistral: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+      const data = await response.json();
+      const latency = Date.now() - startTime;
+      console.log(`✅ Mistral API réponse reçue en ${latency}ms`);
+
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Format de réponse API Mistral inattendu');
+      }
+
+      return {
+        content: data.choices[0].message.content,
+        usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+        model: MISTRAL_CONFIG.model,
+        provider: 'mistral'
+      };
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Timeout: La requête Mistral a pris trop de temps (>45s)');
+      }
+      throw error;
     }
-
-    const data = await response.json();
-
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      throw new Error('Format de réponse API Mistral inattendu');
-    }
-
-    return {
-      content: data.choices[0].message.content,
-      usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-      model: MISTRAL_CONFIG.model,
-      provider: 'mistral'
-    };
   }
 
   private async callViaEdgeFunction(config: LLMConfig, request: LLMRequest): Promise<LLMResponse> {

@@ -50,6 +50,7 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   const [testOutput, setTestOutput] = useState<string>('');
   const [isTesting, setIsTesting] = useState(false);
   const [testStartTime, setTestStartTime] = useState<number>(0);
+  const [testProgress, setTestProgress] = useState(0);
 
   useEffect(() => {
     if (user) {
@@ -75,6 +76,24 @@ export const OpikAnalyticsDashboard: React.FC = () => {
       };
     }
   }, [user]);
+
+  useEffect(() => {
+    let progressInterval: NodeJS.Timeout;
+    if (isTesting) {
+      setTestProgress(0);
+      const startTime = Date.now();
+      progressInterval = setInterval(() => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(95, (elapsed / 45000) * 100);
+        setTestProgress(progress);
+      }, 100);
+    } else {
+      setTestProgress(0);
+    }
+    return () => {
+      if (progressInterval) clearInterval(progressInterval);
+    };
+  }, [isTesting]);
 
   const loadAnalytics = async (isBackgroundRefresh = false) => {
     if (!user) return;
@@ -205,7 +224,14 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
   };
 
   const runTest = async () => {
-    if (!user) return;
+    if (!user) {
+      toast({
+        title: "Non authentifié",
+        description: "Vous devez être connecté pour tester des prompts.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     const creditsRemaining = credits?.remaining_credits || 0;
     if (creditsRemaining <= 0) {
@@ -217,57 +243,100 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
       return;
     }
 
+    if (!testPrompt || testPrompt.trim().length === 0) {
+      toast({
+        title: "Prompt vide",
+        description: "Le prompt à tester ne peut pas être vide.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsTesting(true);
     setTestOutput('');
-    setTestStartTime(Date.now());
+    const startTime = Date.now();
+    setTestStartTime(startTime);
 
     try {
+      console.log('🧪 Démarrage du test de prompt...', {
+        promptLength: testPrompt.length,
+        userHasCredits: creditsRemaining > 0
+      });
+
       const userHasCredits = creditsRemaining > 0;
 
-      const llmResponse = await llmRouter.generatePrompt(
-        'Exécute cette instruction et fournis un résultat concret:',
-        testPrompt,
-        {
-          isAuthenticated: true,
-          userHasCredits,
-          temperature: 0.7,
-          maxTokens: 8000
-        }
-      );
+      const llmResponse = await Promise.race([
+        llmRouter.generatePrompt(
+          'Exécute cette instruction et fournis un résultat concret:',
+          testPrompt,
+          {
+            isAuthenticated: true,
+            userHasCredits,
+            temperature: 0.7,
+            maxTokens: 8000
+          }
+        ),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('Timeout: Le test a pris trop de temps (>60s)')), 60000)
+        )
+      ]) as any;
 
-      const latency = Date.now() - testStartTime;
+      const latency = Date.now() - startTime;
+      console.log('✅ Test réussi', {
+        latency,
+        provider: llmResponse.provider,
+        tokens: llmResponse.usage?.total_tokens
+      });
+
       setTestOutput(llmResponse.content);
 
-      await opikService.logTrace(
-        user.id,
-        testPrompt,
-        llmResponse.content,
-        {
-          model: llmResponse.model || 'deepseek-chat',
-          latency_ms: latency,
-          tokens_used: llmResponse.usage?.total_tokens || 0,
-          cost: 0,
-          tags: {
-            source: 'opik_test',
-            provider: llmResponse.provider
+      try {
+        await opikService.logTrace(
+          user.id,
+          testPrompt,
+          llmResponse.content,
+          {
+            model: llmResponse.model || 'deepseek-chat',
+            latency_ms: latency,
+            tokens_used: llmResponse.usage?.total_tokens || 0,
+            cost: 0,
+            tags: {
+              source: 'opik_test',
+              provider: llmResponse.provider
+            }
           }
-        }
-      );
+        );
+      } catch (logError) {
+        console.warn('⚠️ Erreur lors du logging Opik (non bloquant):', logError);
+      }
 
       await useCredit(1, 'prompt_test');
 
       toast({
         title: "Test réussi!",
-        description: `Latence: ${latency}ms - Les résultats ont été enregistrés dans Opik.`
+        description: `Latence: ${latency}ms - Résultat généré avec succès.`
       });
 
       loadAnalytics(true);
 
-    } catch (error) {
-      console.error('Erreur lors du test:', error);
+    } catch (error: any) {
+      console.error('❌ Erreur lors du test:', error);
+
+      let errorMessage = "Une erreur inattendue s'est produite.";
+
+      if (error.message?.includes('Timeout')) {
+        errorMessage = "Le test a pris trop de temps. Réessayez avec un prompt plus court.";
+      } else if (error.message?.includes('clé API') || error.message?.includes('crédits')) {
+        errorMessage = error.message;
+      } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+        errorMessage = "Erreur de connexion. Vérifiez votre connexion internet.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast({
-        title: "Erreur",
-        description: "Impossible de tester le prompt. Veuillez réessayer.",
+        title: "Erreur lors du test",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -544,9 +613,23 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
 
             {isTesting && (
               <div className="flex items-center justify-center py-8">
-                <div className="text-center space-y-3">
+                <div className="text-center space-y-4 w-full max-w-md">
                   <div className="animate-spin h-12 w-12 border-4 border-green-600 border-t-transparent rounded-full mx-auto"></div>
-                  <p className="text-sm text-muted-foreground">Génération en cours...</p>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground">Génération en cours...</p>
+                    <div className="w-full bg-muted rounded-full h-2">
+                      <div
+                        className="bg-gradient-to-r from-green-600 to-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${testProgress}%` }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {testProgress < 30 ? 'Initialisation...' :
+                       testProgress < 60 ? 'Traitement...' :
+                       testProgress < 90 ? 'Finalisation...' :
+                       'Presque terminé...'}
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
