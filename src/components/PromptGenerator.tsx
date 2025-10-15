@@ -288,22 +288,24 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
       let generatedContent = llmResponse.content;
 
-      // Appliquer la compression selon le mode
+      // Mapper la longueur du formulaire vers le type PromptLength
+      const promptLength = PromptCompressor.mapLengthFromForm(formData.length);
+
+      // Appliquer la compression selon le mode avec gestion de longueur
       if (mode === 'free') {
-        const result = PromptCompressor.compressFree(generatedContent);
+        const result = PromptCompressor.compressFree(generatedContent, promptLength);
         generatedContent = result.compressed;
-        console.log(`Mode Gratuit: ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
+        console.log(`Mode Gratuit (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
+        console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else if (mode === 'basic') {
-        const result = PromptCompressor.compressBasic(generatedContent);
+        const result = PromptCompressor.compressBasic(generatedContent, promptLength);
         generatedContent = result.compressed;
-        console.log(`Mode Basique: ${result.estimatedTokens} tokens`);
+        console.log(`Mode Basique (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
+        console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else {
-        generatedContent = PromptCompressor.formatPremium(generatedContent);
-        if (lengthConstraints) {
-          console.log(`Mode Premium: prompt optimisé pour longueur ${lengthConstraints.words} (${lengthConstraints.tokens} tokens max)`);
-        } else {
-          console.log(`Mode Premium: prompt optimisé`);
-        }
+        generatedContent = PromptCompressor.formatPremium(generatedContent, promptLength);
+        const tokens = PromptCompressor['estimateTokens'](generatedContent);
+        console.log(`Mode Premium (${promptLength}): prompt optimisé - ${tokens} tokens`);
       }
 
       return {

@@ -1,6 +1,6 @@
 /**
  * Système de compression intelligent de prompts
- * 3 modes : Gratuit (150 tokens), Basique (300 tokens), Premium (600 tokens)
+ * Modes : Gratuit / Premium avec gestion de longueur (court, moyen, long, très long)
  */
 
 export interface CompressionResult {
@@ -13,11 +13,27 @@ export interface CompressionResult {
 }
 
 export type PromptMode = 'free' | 'basic' | 'premium';
+export type PromptLength = 'short' | 'medium' | 'long' | 'very_long';
 
 const TOKEN_LIMITS = {
-  free: 150,
-  basic: 300,
-  premium: 600
+  free: {
+    short: 500,
+    medium: 1000,
+    long: 1500,
+    very_long: 2000
+  },
+  basic: {
+    short: 800,
+    medium: 1500,
+    long: 2500,
+    very_long: 3500
+  },
+  premium: {
+    short: 1200,
+    medium: 2500,
+    long: 4000,
+    very_long: 6000
+  }
 };
 
 export class PromptCompressor {
@@ -31,23 +47,32 @@ export class PromptCompressor {
   /**
    * Compresse pour respecter une limite de tokens stricte
    */
-  private static compressToLimit(prompt: string, maxTokens: number, mode: PromptMode): CompressionResult {
+  private static compressToLimit(
+    prompt: string,
+    maxTokens: number,
+    mode: PromptMode,
+    length: PromptLength = 'medium'
+  ): CompressionResult {
     const original = prompt;
     const originalLength = prompt.length;
     const techniques: string[] = [];
 
-    // Nettoyer et simplifier progressivement
     prompt = this.removeRedundancy(prompt);
-    techniques.push("Nettoyage");
+    techniques.push("Suppression redondances");
+
+    prompt = this.eliminateRepetitions(prompt);
+    techniques.push("Élimination répétitions");
+
+    prompt = this.removeUselessExamples(prompt, mode, length);
+    techniques.push("Suppression exemples inutiles");
 
     prompt = this.eliminateCommonErrors(prompt, mode);
-    techniques.push("Élimination erreurs");
+    techniques.push("Nettoyage erreurs");
 
     prompt = this.convertToCompactFormat(prompt);
     prompt = this.simplifyExplanations(prompt);
     prompt = this.useKeywords(prompt);
-    
-    // Réduire agressivement si nécessaire
+
     let tokens = this.estimateTokens(prompt);
     if (tokens > maxTokens) {
       prompt = this.aggressiveCompress(prompt, maxTokens);
@@ -66,6 +91,61 @@ export class PromptCompressor {
       estimatedTokens: tokens,
       techniques
     };
+  }
+
+  /**
+   * Élimine les répétitions de phrases et concepts
+   */
+  private static eliminateRepetitions(text: string): string {
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim());
+    const seen = new Set<string>();
+    const unique: string[] = [];
+
+    for (const sentence of sentences) {
+      const normalized = sentence.toLowerCase().trim().replace(/\s+/g, ' ');
+      const fingerprint = normalized.slice(0, 50);
+
+      if (!seen.has(fingerprint)) {
+        seen.add(fingerprint);
+        unique.push(sentence.trim());
+      }
+    }
+
+    return unique.join('. ') + '.';
+  }
+
+  /**
+   * Supprime les exemples inutiles selon le mode et la longueur
+   */
+  private static removeUselessExamples(text: string, mode: PromptMode, length: PromptLength): string {
+    const maxExamples = mode === 'free'
+      ? (length === 'short' ? 0 : length === 'medium' ? 1 : 2)
+      : mode === 'basic'
+      ? (length === 'short' ? 1 : length === 'medium' ? 2 : 3)
+      : (length === 'short' ? 2 : length === 'medium' ? 3 : 5);
+
+    const examplePatterns = [
+      /exemple\s*\d*\s*:[\s\S]*?(?=\n\n|exemple|$)/gi,
+      /par exemple\s*:[\s\S]*?(?=\n\n|$)/gi,
+      /\*\*exemple\*\*[\s\S]*?(?=\*\*|$)/gi,
+      /```[\s\S]*?```/g
+    ];
+
+    let exampleCount = 0;
+    for (const pattern of examplePatterns) {
+      text = text.replace(pattern, (match) => {
+        exampleCount++;
+        return exampleCount <= maxExamples ? match : '';
+      });
+    }
+
+    const minExampleLength = mode === 'free' ? 200 : mode === 'basic' ? 150 : 100;
+    text = text.replace(new RegExp(`exemple[\\s\\S]{${minExampleLength},}`, 'gi'), (match) => {
+      if (mode === 'free' && length === 'short') return '';
+      return match.length > minExampleLength * 2 ? '' : match;
+    });
+
+    return text;
   }
 
   /**
@@ -162,34 +242,43 @@ export class PromptCompressor {
   }
 
   /**
-   * Mode GRATUIT : 150 tokens max
+   * Compression avec gestion de la longueur
    */
-  static compressFree(prompt: string): CompressionResult {
-    return this.compressToLimit(prompt, TOKEN_LIMITS.free, 'free');
+  static compressWithLength(
+    prompt: string,
+    mode: PromptMode,
+    length: PromptLength
+  ): CompressionResult {
+    const maxTokens = TOKEN_LIMITS[mode][length];
+    return this.compressToLimit(prompt, maxTokens, mode, length);
   }
 
   /**
-   * Mode BASIQUE : 300 tokens max
+   * Mode GRATUIT avec longueur
    */
-  static compressBasic(prompt: string): CompressionResult {
-    return this.compressToLimit(prompt, TOKEN_LIMITS.basic, 'basic');
+  static compressFree(prompt: string, length: PromptLength = 'medium'): CompressionResult {
+    return this.compressWithLength(prompt, 'free', length);
   }
 
   /**
-   * Mode PREMIUM : 600 tokens max - Structure optimale
+   * Mode BASIQUE avec longueur
    */
-  static formatPremium(prompt: string): string {
-    // Structure premium concise mais complète
+  static compressBasic(prompt: string, length: PromptLength = 'medium'): CompressionResult {
+    return this.compressWithLength(prompt, 'basic', length);
+  }
+
+  /**
+   * Mode PREMIUM avec longueur - Structure optimale
+   */
+  static formatPremium(prompt: string, length: PromptLength = 'medium'): string {
+    const maxTokens = TOKEN_LIMITS.premium[length];
     const clean = this.eliminateCommonErrors(prompt, 'premium');
 
-    // Si déjà structuré, optimiser
     if (clean.includes('**')) {
-      const optimized = this.compressToLimit(clean, TOKEN_LIMITS.premium, 'premium');
+      const optimized = this.compressToLimit(clean, maxTokens, 'premium', length);
       return optimized.compressed;
     }
 
-    // Structure premium efficace (max 600 tokens)
-    // Note: PAS d'exemple complet, instructions intégrées
     const structured = `**RÔLE**: Expert spécialisé
 
 **MISSION**: ${clean}
@@ -197,11 +286,11 @@ export class PromptCompressor {
 **ÉLÉMENTS REQUIS**:
 - Précision et structure
 - Instructions directes
-- Max 2-3 références
+${length === 'very_long' ? '- Exemples pertinents' : '- Max 2-3 références'}
 
 **LIVRABLE**: Format structuré actionnable`;
 
-    const result = this.compressToLimit(structured, TOKEN_LIMITS.premium, 'premium');
+    const result = this.compressToLimit(structured, maxTokens, 'premium', length);
     return result.compressed;
   }
 
@@ -302,40 +391,71 @@ export class PromptCompressor {
   }
 
   /**
-   * Génère un prompt selon le mode et les crédits
+   * Convertit les valeurs de longueur du formulaire en PromptLength
+   */
+  static mapLengthFromForm(lengthValue?: string): PromptLength {
+    switch(lengthValue) {
+      case 'short': return 'short';
+      case 'medium': return 'medium';
+      case 'long': return 'long';
+      case 'very-detailed':
+      case 'very_long': return 'very_long';
+      default: return 'medium';
+    }
+  }
+
+  /**
+   * Génère un prompt selon le mode, les crédits et la longueur
    */
   static generatePromptByMode(
-    basePrompt: string, 
-    creditsRemaining: number
-  ): { prompt: string; info: string; mode: PromptMode } {
+    basePrompt: string,
+    creditsRemaining: number,
+    length: PromptLength = 'medium'
+  ): { prompt: string; info: string; mode: PromptMode; maxTokens: number } {
     let mode: PromptMode;
     let result: CompressionResult;
-    
+
     if (creditsRemaining <= 10) {
       mode = 'free';
-      result = this.compressFree(basePrompt);
+      result = this.compressFree(basePrompt, length);
       return {
         prompt: result.compressed,
-        info: `Mode Gratuit: ${result.estimatedTokens}/${TOKEN_LIMITS.free} tokens`,
-        mode
+        info: `Mode Gratuit (${this.getLengthLabel(length)}): ${result.estimatedTokens}/${TOKEN_LIMITS.free[length]} tokens`,
+        mode,
+        maxTokens: TOKEN_LIMITS.free[length]
       };
     } else if (creditsRemaining <= 50) {
       mode = 'basic';
-      result = this.compressBasic(basePrompt);
+      result = this.compressBasic(basePrompt, length);
       return {
         prompt: result.compressed,
-        info: `Mode Basique: ${result.estimatedTokens}/${TOKEN_LIMITS.basic} tokens`,
-        mode
+        info: `Mode Basique (${this.getLengthLabel(length)}): ${result.estimatedTokens}/${TOKEN_LIMITS.basic[length]} tokens`,
+        mode,
+        maxTokens: TOKEN_LIMITS.basic[length]
       };
     } else {
       mode = 'premium';
-      const enhanced = this.formatPremium(basePrompt);
+      const enhanced = this.formatPremium(basePrompt, length);
       const tokens = this.estimateTokens(enhanced);
       return {
         prompt: enhanced,
-        info: `Mode Premium: ${tokens}/${TOKEN_LIMITS.premium} tokens`,
-        mode
+        info: `Mode Premium (${this.getLengthLabel(length)}): ${tokens}/${TOKEN_LIMITS.premium[length]} tokens`,
+        mode,
+        maxTokens: TOKEN_LIMITS.premium[length]
       };
+    }
+  }
+
+  /**
+   * Obtient le label de longueur en français
+   */
+  private static getLengthLabel(length: PromptLength): string {
+    switch(length) {
+      case 'short': return 'Court';
+      case 'medium': return 'Moyen';
+      case 'long': return 'Long';
+      case 'very_long': return 'Très long';
+      default: return 'Moyen';
     }
   }
 }
