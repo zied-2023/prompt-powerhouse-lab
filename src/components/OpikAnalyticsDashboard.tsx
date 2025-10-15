@@ -47,7 +47,6 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   const [testingTraceId, setTestingTraceId] = useState<string | null>(null);
   const [showTestDialog, setShowTestDialog] = useState(false);
   const [testPrompt, setTestPrompt] = useState<string>('');
-  const [testInput, setTestInput] = useState<string>('');
   const [testOutput, setTestOutput] = useState<string>('');
   const [isTesting, setIsTesting] = useState(false);
   const [testStartTime, setTestStartTime] = useState<number>(0);
@@ -201,20 +200,12 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
   const openTestDialog = (trace: TraceData) => {
     setTestingTraceId(trace.id);
     setTestPrompt(trace.prompt_output);
-    setTestInput('');
     setTestOutput('');
     setShowTestDialog(true);
   };
 
   const runTest = async () => {
-    if (!user || !testInput.trim()) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez entrer un texte de test.",
-        variant: "destructive"
-      });
-      return;
-    }
+    if (!user) return;
 
     const creditsRemaining = credits?.remaining_credits || 0;
     if (creditsRemaining <= 0) {
@@ -234,13 +225,13 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
       const userHasCredits = creditsRemaining > 0;
 
       const llmResponse = await llmRouter.generatePrompt(
+        'Exécute cette instruction et fournis un résultat concret:',
         testPrompt,
-        testInput,
         {
           isAuthenticated: true,
           userHasCredits,
           temperature: 0.7,
-          maxTokens: 1000
+          maxTokens: 2000
         }
       );
 
@@ -249,7 +240,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
 
       await opikService.logTrace(
         user.id,
-        testInput,
+        testPrompt,
         llmResponse.content,
         {
           model: llmResponse.model || 'deepseek-chat',
@@ -534,7 +525,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
               Tester votre prompt
             </DialogTitle>
             <DialogDescription>
-              Testez votre prompt avec des données personnalisées et voyez les résultats en temps réel
+              Exécutez votre prompt et voyez le résultat généré en temps réel
             </DialogDescription>
           </DialogHeader>
 
@@ -547,28 +538,23 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                 id="test-prompt"
                 value={testPrompt}
                 readOnly
-                className="min-h-[120px] font-mono text-sm resize-none bg-muted/50"
+                className="min-h-[150px] font-mono text-sm resize-none bg-muted/50"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="test-input" className="text-sm font-medium">
-                Entrée de test
-              </Label>
-              <Textarea
-                id="test-input"
-                value={testInput}
-                onChange={(e) => setTestInput(e.target.value)}
-                placeholder="Entrez votre texte de test ici..."
-                className="min-h-[120px] resize-none"
-                disabled={isTesting}
-              />
-            </div>
+            {isTesting && (
+              <div className="flex items-center justify-center py-8">
+                <div className="text-center space-y-3">
+                  <div className="animate-spin h-12 w-12 border-4 border-green-600 border-t-transparent rounded-full mx-auto"></div>
+                  <p className="text-sm text-muted-foreground">Génération en cours...</p>
+                </div>
+              </div>
+            )}
 
-            {testOutput && (
+            {testOutput && !isTesting && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium">Résultat</Label>
+                  <Label className="text-sm font-medium">Résultat du test</Label>
                   <Button
                     size="sm"
                     variant="ghost"
@@ -582,7 +568,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                   <Textarea
                     value={testOutput}
                     readOnly
-                    className="min-h-[200px] font-mono text-sm resize-none bg-gradient-to-br from-green-50/50 to-blue-50/50 dark:from-green-950/20 dark:to-blue-950/20"
+                    className="min-h-[250px] font-mono text-sm resize-none bg-gradient-to-br from-green-50/50 to-blue-50/50 dark:from-green-950/20 dark:to-blue-950/20 border-green-200 dark:border-green-800"
                   />
                 </div>
               </div>
@@ -596,23 +582,35 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
               >
                 Fermer
               </Button>
-              <Button
-                onClick={runTest}
-                disabled={isTesting || !testInput.trim()}
-                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-              >
-                {isTesting ? (
-                  <>
-                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                    Test en cours...
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4 mr-2" />
-                    Lancer le test
-                  </>
-                )}
-              </Button>
+              {!testOutput && (
+                <Button
+                  onClick={runTest}
+                  disabled={isTesting}
+                  className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                >
+                  {isTesting ? (
+                    <>
+                      <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                      Test en cours...
+                    </>
+                  ) : (
+                    <>
+                      <Play className="h-4 w-4 mr-2" />
+                      Lancer le test
+                    </>
+                  )}
+                </Button>
+              )}
+              {testOutput && !isTesting && (
+                <Button
+                  onClick={runTest}
+                  variant="outline"
+                  className="border-green-600 text-green-600 hover:bg-green-50 dark:hover:bg-green-950"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Tester à nouveau
+                </Button>
+              )}
             </div>
           </div>
         </DialogContent>
