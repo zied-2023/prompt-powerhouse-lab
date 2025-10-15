@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { opikService } from '@/services/opikService';
-import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp, Sparkles } from 'lucide-react';
+import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp, Sparkles, Play, Copy } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,8 @@ import { llmRouter } from '@/services/llmRouter';
 import { useUserCredits } from '@/hooks/useUserCredits';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface TraceData {
   id: string;
@@ -42,6 +44,13 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   const [improvingTraceId, setImprovingTraceId] = useState<string | null>(null);
   const [improvedPrompt, setImprovedPrompt] = useState<string>('');
   const [showImprovedDialog, setShowImprovedDialog] = useState(false);
+  const [testingTraceId, setTestingTraceId] = useState<string | null>(null);
+  const [showTestDialog, setShowTestDialog] = useState(false);
+  const [testPrompt, setTestPrompt] = useState<string>('');
+  const [testInput, setTestInput] = useState<string>('');
+  const [testOutput, setTestOutput] = useState<string>('');
+  const [isTesting, setIsTesting] = useState(false);
+  const [testStartTime, setTestStartTime] = useState<number>(0);
 
   useEffect(() => {
     if (user) {
@@ -187,6 +196,92 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
       title: "Copié!",
       description: "Le prompt a été copié dans le presse-papiers."
     });
+  };
+
+  const openTestDialog = (trace: TraceData) => {
+    setTestingTraceId(trace.id);
+    setTestPrompt(trace.prompt_output);
+    setTestInput('');
+    setTestOutput('');
+    setShowTestDialog(true);
+  };
+
+  const runTest = async () => {
+    if (!user || !testInput.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez entrer un texte de test.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const creditsRemaining = credits?.remaining_credits || 0;
+    if (creditsRemaining <= 0) {
+      toast({
+        title: "Crédits insuffisants",
+        description: "Vous n'avez plus de crédits pour tester des prompts.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsTesting(true);
+    setTestOutput('');
+    setTestStartTime(Date.now());
+
+    try {
+      const userHasCredits = creditsRemaining > 0;
+
+      const llmResponse = await llmRouter.generatePrompt(
+        testPrompt,
+        testInput,
+        {
+          isAuthenticated: true,
+          userHasCredits,
+          temperature: 0.7,
+          maxTokens: 1000
+        }
+      );
+
+      const latency = Date.now() - testStartTime;
+      setTestOutput(llmResponse.content);
+
+      await opikService.logTrace(
+        user.id,
+        testInput,
+        llmResponse.content,
+        {
+          model: llmResponse.model || 'deepseek-chat',
+          latency_ms: latency,
+          tokens_used: llmResponse.usage?.total_tokens || 0,
+          cost: 0,
+          tags: {
+            source: 'opik_test',
+            provider: llmResponse.provider
+          }
+        }
+      );
+
+      await useCredit(1, 'prompt_test');
+
+      toast({
+        title: "Test réussi!",
+        description: `Latence: ${latency}ms - Les résultats ont été enregistrés dans Opik.`
+      });
+
+      loadAnalytics(true);
+
+    } catch (error) {
+      console.error('Erreur lors du test:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de tester le prompt. Veuillez réessayer.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsTesting(false);
+    }
   };
 
   if (loading) {
@@ -351,24 +446,37 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                           </div>
                         </div>
 
-                        <Button
-                          onClick={() => improvePrompt(trace)}
-                          disabled={improvingTraceId === trace.id || !credits || credits.remaining_credits <= 0}
-                          size="sm"
-                          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                        >
-                          {improvingTraceId === trace.id ? (
-                            <>
-                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                              Amélioration en cours...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="h-4 w-4 mr-2" />
-                              Améliorer ce prompt
-                            </>
-                          )}
-                        </Button>
+                        <div className="grid grid-cols-2 gap-2">
+                          <Button
+                            onClick={() => openTestDialog(trace)}
+                            disabled={!credits || credits.remaining_credits <= 0}
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                          >
+                            <Play className="h-4 w-4 mr-2" />
+                            Tester
+                          </Button>
+
+                          <Button
+                            onClick={() => improvePrompt(trace)}
+                            disabled={improvingTraceId === trace.id || !credits || credits.remaining_credits <= 0}
+                            size="sm"
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                          >
+                            {improvingTraceId === trace.id ? (
+                              <>
+                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                                Amélioration...
+                              </>
+                            ) : (
+                              <>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                Améliorer
+                              </>
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
@@ -412,6 +520,98 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
                 Copier le prompt
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showTestDialog} onOpenChange={setShowTestDialog}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Play className="h-5 w-5 text-green-600" />
+              Tester votre prompt
+            </DialogTitle>
+            <DialogDescription>
+              Testez votre prompt avec des données personnalisées et voyez les résultats en temps réel
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="test-prompt" className="text-sm font-medium">
+                Prompt à tester
+              </Label>
+              <Textarea
+                id="test-prompt"
+                value={testPrompt}
+                readOnly
+                className="min-h-[120px] font-mono text-sm resize-none bg-muted/50"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="test-input" className="text-sm font-medium">
+                Entrée de test
+              </Label>
+              <Textarea
+                id="test-input"
+                value={testInput}
+                onChange={(e) => setTestInput(e.target.value)}
+                placeholder="Entrez votre texte de test ici..."
+                className="min-h-[120px] resize-none"
+                disabled={isTesting}
+              />
+            </div>
+
+            {testOutput && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium">Résultat</Label>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => copyToClipboard(testOutput)}
+                  >
+                    <Copy className="h-4 w-4 mr-1" />
+                    Copier
+                  </Button>
+                </div>
+                <div className="relative">
+                  <Textarea
+                    value={testOutput}
+                    readOnly
+                    className="min-h-[200px] font-mono text-sm resize-none bg-gradient-to-br from-green-50/50 to-blue-50/50 dark:from-green-950/20 dark:to-blue-950/20"
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2 justify-end pt-4 border-t">
+              <Button
+                variant="outline"
+                onClick={() => setShowTestDialog(false)}
+                disabled={isTesting}
+              >
+                Fermer
+              </Button>
+              <Button
+                onClick={runTest}
+                disabled={isTesting || !testInput.trim()}
+                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              >
+                {isTesting ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                    Test en cours...
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    Lancer le test
+                  </>
+                )}
               </Button>
             </div>
           </div>
