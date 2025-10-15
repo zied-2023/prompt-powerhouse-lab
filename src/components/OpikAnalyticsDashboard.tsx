@@ -2,10 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { opikService } from '@/services/opikService';
-import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp } from 'lucide-react';
+import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
+import { toast } from '@/hooks/use-toast';
+import { llmRouter } from '@/services/llmRouter';
+import { useUserCredits } from '@/hooks/useUserCredits';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 interface TraceData {
   id: string;
@@ -23,6 +28,7 @@ interface TraceData {
 
 export const OpikAnalyticsDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { credits, useCredit } = useUserCredits();
   const [stats, setStats] = useState({
     avgLatency: 0,
     totalTokens: 0,
@@ -33,6 +39,9 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   const [recentTraces, setRecentTraces] = useState<TraceData[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [improvingTraceId, setImprovingTraceId] = useState<string | null>(null);
+  const [improvedPrompt, setImprovedPrompt] = useState<string>('');
+  const [showImprovedDialog, setShowImprovedDialog] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -100,6 +109,83 @@ export const OpikAnalyticsDashboard: React.FC = () => {
       month: 'short',
       hour: '2-digit',
       minute: '2-digit'
+    });
+  };
+
+  const improvePrompt = async (trace: TraceData) => {
+    if (!user) return;
+
+    const creditsRemaining = credits?.remaining_credits || 0;
+    if (creditsRemaining <= 0) {
+      toast({
+        title: "Crédits insuffisants",
+        description: "Vous n'avez plus de crédits pour améliorer des prompts.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setImprovingTraceId(trace.id);
+
+    try {
+      const userHasCredits = creditsRemaining > 0;
+
+      const systemPrompt = `Tu es un expert en optimisation de prompts IA. Ton rôle est d'améliorer les prompts en utilisant les données d'analyse suivantes:
+
+- Score actuel: ${trace.feedback_score || 'N/A'}
+- Latence: ${trace.latency_ms}ms
+- Tokens utilisés: ${trace.tokens_used}
+- Modèle: ${trace.model}
+
+Analyse le prompt et améliore-le en:
+1. Rendant les instructions plus claires et précises
+2. Ajoutant du contexte si nécessaire
+3. Optimisant pour réduire les tokens si la latence est élevée
+4. Améliorant la structure pour un meilleur score
+5. Gardant l'objectif original intact
+
+Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
+
+      const userPrompt = `Prompt à améliorer:\n\n${trace.prompt_output}`;
+
+      const llmResponse = await llmRouter.generatePrompt(
+        systemPrompt,
+        userPrompt,
+        {
+          isAuthenticated: true,
+          userHasCredits,
+          temperature: 0.7,
+          maxTokens: 1000
+        }
+      );
+
+      setImprovedPrompt(llmResponse.content);
+      setShowImprovedDialog(true);
+
+      await useCredit(1, 'prompt_improvement');
+
+      toast({
+        title: "Prompt amélioré!",
+        description: "Le prompt a été optimisé avec succès."
+      });
+
+    } catch (error) {
+      console.error('Erreur lors de l\'amélioration du prompt:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'améliorer le prompt. Veuillez réessayer.",
+        variant: "destructive"
+      });
+    } finally {
+      setImprovingTraceId(null);
+    }
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast({
+      title: "Copié!",
+      description: "Le prompt a été copié dans le presse-papiers."
     });
   };
 
@@ -243,25 +329,46 @@ export const OpikAnalyticsDashboard: React.FC = () => {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-4 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Latence:</span>
-                          <div className="font-medium">{formatLatency(trace.latency_ms)}</div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Tokens:</span>
-                          <div className="font-medium">{trace.tokens_used}</div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Date:</span>
-                          <div className="font-medium">{formatDate(trace.created_at)}</div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Score:</span>
-                          <div className="font-medium">
-                            {trace.feedback_score ? trace.feedback_score.toFixed(2) : 'N/A'}
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-4 gap-4 text-sm">
+                          <div>
+                            <span className="text-muted-foreground">Latence:</span>
+                            <div className="font-medium">{formatLatency(trace.latency_ms)}</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Tokens:</span>
+                            <div className="font-medium">{trace.tokens_used}</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Date:</span>
+                            <div className="font-medium">{formatDate(trace.created_at)}</div>
+                          </div>
+                          <div>
+                            <span className="text-muted-foreground">Score:</span>
+                            <div className="font-medium">
+                              {trace.feedback_score ? trace.feedback_score.toFixed(2) : 'N/A'}
+                            </div>
                           </div>
                         </div>
+
+                        <Button
+                          onClick={() => improvePrompt(trace)}
+                          disabled={improvingTraceId === trace.id || !credits || credits.remaining_credits <= 0}
+                          size="sm"
+                          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                        >
+                          {improvingTraceId === trace.id ? (
+                            <>
+                              <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                              Amélioration en cours...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="h-4 w-4 mr-2" />
+                              Améliorer ce prompt
+                            </>
+                          )}
+                        </Button>
                       </div>
                     </CardContent>
                   </Card>
@@ -271,6 +378,45 @@ export const OpikAnalyticsDashboard: React.FC = () => {
           </ScrollArea>
         </CardContent>
       </Card>
+
+      <Dialog open={showImprovedDialog} onOpenChange={setShowImprovedDialog}>
+        <DialogContent className="max-w-3xl max-h-[80vh]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-purple-600" />
+              Prompt Amélioré
+            </DialogTitle>
+            <DialogDescription>
+              Voici le prompt optimisé en utilisant les données d'analyse Opik
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div className="relative">
+              <Textarea
+                value={improvedPrompt}
+                readOnly
+                className="min-h-[300px] font-mono text-sm resize-none"
+              />
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowImprovedDialog(false)}
+              >
+                Fermer
+              </Button>
+              <Button
+                onClick={() => copyToClipboard(improvedPrompt)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              >
+                Copier le prompt
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
