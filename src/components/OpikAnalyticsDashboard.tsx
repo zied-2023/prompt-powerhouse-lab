@@ -163,7 +163,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
           isAuthenticated: true,
           userHasCredits,
           temperature: 0.7,
-          maxTokens: 1000
+          maxTokens: 8000
         }
       );
 
@@ -231,7 +231,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
           isAuthenticated: true,
           userHasCredits,
           temperature: 0.7,
-          maxTokens: 2000
+          maxTokens: 8000
         }
       );
 

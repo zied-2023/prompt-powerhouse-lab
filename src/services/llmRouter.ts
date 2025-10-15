@@ -108,7 +108,7 @@ class LLMRouter {
         model: OPENROUTER_CONFIG.model,
         messages: request.messages,
         temperature: request.temperature || 0.7,
-        max_tokens: request.maxTokens || 2000
+        max_tokens: request.maxTokens || 8000
       })
     });
 
@@ -151,7 +151,7 @@ class LLMRouter {
         model: MISTRAL_CONFIG.model,
         messages: request.messages,
         temperature: request.temperature || 0.7,
-        max_tokens: request.maxTokens || 1500
+        max_tokens: request.maxTokens || 8000
       })
     });
 
@@ -199,7 +199,7 @@ class LLMRouter {
       body: JSON.stringify({
         messages: request.messages,
         model: config.model,
-        max_tokens: request.maxTokens || 2000,
+        max_tokens: request.maxTokens || 8000,
         temperature: request.temperature || 0.7,
         provider: config.provider
       })

@@ -205,7 +205,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           }
         ],
         temperature: 0.7,
-        maxTokens: 2000
+        maxTokens: 8000
       });
 
       if (response.content) {

@@ -97,7 +97,7 @@ RÈGLES:
           isAuthenticated,
           userHasCredits,
           temperature: 0.7,
-          maxTokens: 1500
+          maxTokens: 8000
         }
       );
 

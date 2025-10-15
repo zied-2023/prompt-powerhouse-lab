@@ -262,12 +262,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
       // Déterminer les tokens max selon le mode et la longueur demandée
       const maxTokensByMode = mode === 'free'
-        ? 400
+        ? 4000
         : mode === 'basic'
-        ? 800
+        ? 6000
         : lengthConstraints
         ? lengthConstraints.tokens
-        : 1200;
+        : 8000;
 
       const llmResponse = await llmRouter.generatePrompt(
         systemPrompt,
