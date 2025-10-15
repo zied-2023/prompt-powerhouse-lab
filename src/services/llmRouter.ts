@@ -34,32 +34,37 @@ const MISTRAL_CONFIG = {
   model: 'mistral-large-latest'
 };
 
+const DEEPSEEK_CONFIG = {
+  endpoint: 'https://api.deepseek.com/v1/chat/completions',
+  key: 'sk-c77ac1dcfee24d23b1d9a5ebb16ca066',
+  model: 'deepseek-chat'
+};
+
 const OPENROUTER_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
   key: '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',
   model: 'anthropic/claude-3.5-sonnet'
 };
 
-// Configuration: activer OpenRouter pour les utilisateurs premium
-// DÉSACTIVÉ: La clé OpenRouter fournie n'est pas valide (401 - User not found)
-const USE_OPENROUTER_FOR_PREMIUM = false;
+// Configuration: utiliser DeepSeek pour les utilisateurs premium
+const USE_DEEPSEEK_FOR_PREMIUM = true;
 
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
-    // Si OpenRouter est activé ET l'utilisateur a des crédits
-    if (USE_OPENROUTER_FOR_PREMIUM && isAuthenticated && userHasCredits) {
-      console.log('🎯 Utilisation d\'OpenRouter (mode premium)');
+    // Mode Premium: DeepSeek pour les utilisateurs authentifiés avec crédits
+    if (USE_DEEPSEEK_FOR_PREMIUM && isAuthenticated && userHasCredits) {
+      console.log('🎯 Utilisation de DeepSeek (mode premium)');
       return {
-        provider: 'openrouter',
-        model: OPENROUTER_CONFIG.model,
-        apiKey: OPENROUTER_CONFIG.key,
-        endpoint: OPENROUTER_CONFIG.endpoint,
+        provider: 'deepseek',
+        model: DEEPSEEK_CONFIG.model,
+        apiKey: DEEPSEEK_CONFIG.key,
+        endpoint: DEEPSEEK_CONFIG.endpoint,
         useEdgeFunction: false
       };
     }
 
-    // Par défaut: Mistral pour tous
-    console.log('🎯 Utilisation de Mistral', { isAuthenticated, userHasCredits });
+    // Mode Gratuit/Basic: Mistral
+    console.log('🎯 Utilisation de Mistral (mode gratuit/basic)', { isAuthenticated, userHasCredits });
     return {
       provider: 'mistral',
       model: MISTRAL_CONFIG.model,
@@ -74,7 +79,12 @@ class LLMRouter {
       try {
         return await this.callViaEdgeFunction(config, request);
       } catch (error) {
-        console.warn('⚠️ Edge function failed, falling back to Mistral:', error.message);
+        const fallbackProvider = config.provider === 'deepseek' ? 'DeepSeek' : 'Mistral';
+        console.warn(`⚠️ Edge function failed, falling back to ${fallbackProvider}:`, error.message);
+
+        if (config.provider === 'deepseek') {
+          return await this.callDeepSeek(request);
+        }
         return await this.callMistral(request);
       }
     } else {
@@ -85,6 +95,10 @@ class LLMRouter {
   private async callDirectly(config: LLMConfig, request: LLMRequest): Promise<LLMResponse> {
     if (config.provider === 'mistral') {
       return this.callMistral(request);
+    }
+
+    if (config.provider === 'deepseek') {
+      return this.callDeepSeek(request);
     }
 
     if (config.provider === 'openrouter') {
@@ -210,6 +224,65 @@ class LLMRouter {
       clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
         throw new Error('Timeout: La requête Mistral a pris trop de temps (>45s)');
+      }
+      throw error;
+    }
+  }
+
+  async callDeepSeek(request: LLMRequest): Promise<LLMResponse> {
+    console.log('🔗 Appel DeepSeek API...');
+    const startTime = Date.now();
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+    try {
+      const response = await fetch(DEEPSEEK_CONFIG.endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${DEEPSEEK_CONFIG.key}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          model: DEEPSEEK_CONFIG.model,
+          messages: request.messages,
+          temperature: request.temperature || 0.7,
+          max_tokens: request.maxTokens || 8000,
+          stream: false
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        if (response.status === 402 || response.status === 429) {
+          throw new Error('La clé API DeepSeek n\'a plus de crédits disponibles ou la limite est atteinte.');
+        }
+
+        throw new Error(`Erreur API DeepSeek: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      const latency = Date.now() - startTime;
+      console.log(`✅ DeepSeek API réponse reçue en ${latency}ms`);
+
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Format de réponse API DeepSeek inattendu');
+      }
+
+      return {
+        content: data.choices[0].message.content,
+        usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+        model: DEEPSEEK_CONFIG.model,
+        provider: 'deepseek'
+      };
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Timeout: La requête DeepSeek a pris trop de temps (>45s)');
       }
       throw error;
     }
