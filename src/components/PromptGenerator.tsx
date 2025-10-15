@@ -180,12 +180,21 @@ const PromptGenerator = () => {
         isAuthenticated,
         userHasCredits,
         creditsRemaining,
-        mode
+        mode,
+        requestedLength: formData.length
       });
 
       const categoryLabel = categories.find(cat => cat.value === formData.category)?.label || formData.category;
       const subcategoryLabel = formData.subcategory ?
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
+
+      // Déterminer les contraintes de longueur basées sur le mode premium
+      const lengthConstraints = mode === 'premium' && formData.length ? {
+        'short': { words: '30-80 mots', tokens: 200, description: 'Direct, efficace, peu contextuel' },
+        'medium': { words: '80-200 mots', tokens: 400, description: 'Meilleur équilibre entre clarté et performance' },
+        'long': { words: '200-500 mots', tokens: 1000, description: 'Idéal pour briefs créatifs, scripts, marketing' },
+        'very-detailed': { words: '500-1000 mots', tokens: 2000, description: 'Réservé aux workflows complexes et multi-rôles' }
+      }[formData.length] : null;
 
       const systemPrompt = mode === 'free'
         ? `Expert prompts IA. Max 150 tokens strict.
@@ -209,6 +218,21 @@ Structure OBLIGATOIRE:
 **FORMAT**: [Type sortie]
 
 Max 2 styles. ZÉRO exemple complet. Méthodologie intégrée aux instructions.`
+        : lengthConstraints
+        ? `Expert prompts IA professionnel. Longueur cible: ${lengthConstraints.words} (${lengthConstraints.description}).
+
+Structure OBLIGATOIRE:
+**RÔLE**: [Expert spécialisé détaillé]
+**CONTEXTE**: [Situation et enjeux si pertinent pour longueur demandée]
+**OBJECTIF**: [Précis, mesurable, avec critères de succès]
+**INSTRUCTIONS**:
+- [Étapes détaillées avec méthodologie]
+- [Points clés avec exemples concrets si longueur ≥ 200 mots]
+- [Considérations spécifiques si longueur ≥ 500 mots]
+**ÉLÉMENTS REQUIS**: [Éléments clés adaptés à la longueur]
+**LIVRABLE**: [Format structuré détaillé]
+
+IMPORTANT: Respecter strictement la longueur de ${lengthConstraints.words}. ${lengthConstraints.words.includes('500-1000') ? 'Inclure des workflows multi-étapes, exemples variés et considérations avancées.' : lengthConstraints.words.includes('200-500') ? 'Inclure des exemples concrets et des considérations créatives.' : 'Rester concis et direct.'}`
         : `Expert prompts IA. Max 600 tokens strict.
 
 Structure OBLIGATOIRE:
@@ -230,9 +254,20 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       if (formData.targetAudience) userPrompt += `\n- Public cible: ${formData.targetAudience}`;
       if (formData.format) userPrompt += `\n- Format souhaité: ${outputFormats.find(f => f.value === formData.format)?.label}`;
       if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
-      if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
+      if (formData.length && lengthConstraints) {
+        userPrompt += `\n- Longueur demandée: ${lengthConstraints.words} (RESPECTER STRICTEMENT cette contrainte)`;
+      } else if (formData.length) {
+        userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
+      }
 
-      const maxTokensByMode = mode === 'free' ? 400 : mode === 'basic' ? 800 : 1200;
+      // Déterminer les tokens max selon le mode et la longueur demandée
+      const maxTokensByMode = mode === 'free'
+        ? 400
+        : mode === 'basic'
+        ? 800
+        : lengthConstraints
+        ? lengthConstraints.tokens
+        : 1200;
 
       const llmResponse = await llmRouter.generatePrompt(
         systemPrompt,
@@ -264,7 +299,11 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.log(`Mode Basique: ${result.estimatedTokens} tokens`);
       } else {
         generatedContent = PromptCompressor.formatPremium(generatedContent);
-        console.log(`Mode Premium: prompt optimisé`);
+        if (lengthConstraints) {
+          console.log(`Mode Premium: prompt optimisé pour longueur ${lengthConstraints.words} (${lengthConstraints.tokens} tokens max)`);
+        } else {
+          console.log(`Mode Premium: prompt optimisé`);
+        }
       }
 
       return {
@@ -612,6 +651,15 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
                 ))}
               </SelectContent>
             </Select>
+            {credits && credits.remaining_credits > 50 && formData.length && (
+              <div className="text-xs text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30 p-2 rounded-lg">
+                <span className="font-semibold">Mode Premium: </span>
+                {formData.length === 'short' && '30-80 mots - Direct et efficace'}
+                {formData.length === 'medium' && '80-200 mots - Équilibre optimal'}
+                {formData.length === 'long' && '200-500 mots - Idéal pour briefs créatifs'}
+                {formData.length === 'very-detailed' && '500-1000 mots - Workflows complexes'}
+              </div>
+            )}
           </div>
 
           <Button 
