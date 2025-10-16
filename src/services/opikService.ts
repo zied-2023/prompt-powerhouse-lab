@@ -105,6 +105,32 @@ class OpikService {
     }
   }
 
+  async logTrace(
+    userId: string,
+    promptInput: string,
+    promptOutput: string,
+    options?: {
+      model?: string;
+      latency_ms?: number;
+      tokens_used?: number;
+      cost?: number;
+      tags?: Record<string, any>;
+    }
+  ): Promise<string | null> {
+    const traceId = this.generateTraceId();
+    return this.createTrace({
+      userId,
+      traceId,
+      promptInput,
+      promptOutput,
+      model: options?.model,
+      latencyMs: options?.latency_ms,
+      tokensUsed: options?.tokens_used,
+      cost: options?.cost,
+      tags: options?.tags
+    });
+  }
+
   async logMetric(metric: OpikMetric): Promise<boolean> {
     try {
       const metricData = {

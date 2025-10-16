@@ -7,10 +7,12 @@ import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
-import { 
-  Sparkles, 
-  FileText, 
-  Settings, 
+import { useAuth } from "@/contexts/AuthContext";
+import { opikService } from "@/services/opikService";
+import {
+  Sparkles,
+  FileText,
+  Settings,
   GitBranch,
   Zap,
   Copy,
@@ -82,6 +84,7 @@ interface PromptData {
 
 const AdvancedPromptBuilder = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { savePrompt, isSaving } = usePrompts();
   const [activeTab, setActiveTab] = useState("builder");
   const [isGenerating, setIsGenerating] = useState(false);
@@ -145,11 +148,11 @@ const AdvancedPromptBuilder = () => {
 
   const generateAdvancedPrompt = async () => {
     setIsGenerating(true);
-    
+    const startTime = Date.now();
+
     try {
-      // Simuler un appel API pour générer le prompt avec toute la logique avancée
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       let prompt = `# Prompt Avancé
 
 ## Objectif Principal
@@ -180,7 +183,6 @@ ${promptData.outputFormat.sections.map(section => `- ${section}`).join('\n')}
 ### Livrables
 ${promptData.outputFormat.deliverables.map(deliverable => `- ${deliverable}`).join('\n')}`;
 
-      // Ajouter les variables si définies
       if (variables.length > 0) {
         prompt += `\n\n## Variables Définies\n`;
         variables.forEach(variable => {
@@ -189,7 +191,6 @@ ${promptData.outputFormat.deliverables.map(deliverable => `- ${deliverable}`).jo
         });
       }
 
-      // Ajouter la logique conditionnelle si définie
       if (conditions.length > 0) {
         prompt += `\n\n## Logique Conditionnelle\n`;
         conditions.forEach(condition => {
@@ -202,7 +203,35 @@ Veuillez générer une réponse qui respecte strictement tous les critères ci-d
 
       setGeneratedPrompt(prompt);
       setActiveTab("preview");
-      
+
+      if (user) {
+        const latency = Date.now() - startTime;
+        const promptInputSummary = `Objectif: ${promptData.objective.mainGoal}`;
+
+        try {
+          await opikService.logTrace(
+            user.id,
+            promptInputSummary,
+            prompt,
+            {
+              model: 'advanced-builder',
+              latency_ms: latency,
+              tokens_used: Math.ceil(prompt.length / 4),
+              cost: 0,
+              tags: {
+                source: 'advanced_prompt_builder',
+                category: 'Avancé',
+                variables_count: variables.length,
+                conditions_count: conditions.length
+              }
+            }
+          );
+          console.log('✅ Trace Opik enregistrée pour le prompt avancé');
+        } catch (opikError) {
+          console.warn('⚠️ Erreur lors de l\'enregistrement de la trace Opik (non bloquant):', opikError);
+        }
+      }
+
       toast({
         title: "Prompt généré avec succès",
         description: "Votre prompt avancé est prêt à être utilisé.",
