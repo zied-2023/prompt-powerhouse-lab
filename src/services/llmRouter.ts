@@ -36,7 +36,7 @@ const MISTRAL_CONFIG = {
 
 const DEEPSEEK_CONFIG = {
   endpoint: 'https://api.deepseek.com/v1/chat/completions',
-  key: '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',
+  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
   model: 'deepseek-chat'
 };
 
