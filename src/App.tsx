@@ -15,6 +15,7 @@ import Auth from "./pages/Auth";
 import SimplePromptGenerator from "./pages/SimplePromptGenerator";
 import ApiTest from "./pages/ApiTest";
 import PaymentSimulatorPage from "./pages/PaymentSimulator";
+import SemanticCompressorPage from "./pages/SemanticCompressor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/generator" element={<SimplePromptGenerator />} />
                 <Route path="/api-test" element={<ApiTest />} />
                 <Route path="/payment-simulator" element={<PaymentSimulatorPage />} />
+                <Route path="/compressor" element={<SemanticCompressorPage />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
