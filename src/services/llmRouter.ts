@@ -30,13 +30,13 @@ interface LLMResponse {
 
 const MISTRAL_CONFIG = {
   endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
+  key: import.meta.env.VITE_MISTRAL_API_KEY || '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
   model: 'mistral-large-latest'
 };
 
 const DEEPSEEK_CONFIG = {
   endpoint: 'https://api.deepseek.com/v1/chat/completions',
-  key: '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
+  key: import.meta.env.VITE_DEEPSEEK_API_KEY || 'sk-1fc5eaeac6f64c3296b7ca5b5ad8f859',
   model: 'deepseek-chat'
 };
 
