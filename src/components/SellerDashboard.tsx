@@ -234,7 +234,7 @@ const SellerDashboard = () => {
                   <Label htmlFor="prompt-select">Prompt à publier *</Label>
                   <Select value={selectedPrompt} onValueChange={setSelectedPrompt}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Choisir un prompt" />
+                      <SelectValue placeholder={t('selectPrompt')} />
                     </SelectTrigger>
                     <SelectContent>
                       {availablePrompts.map(prompt => (
@@ -262,7 +262,7 @@ const SellerDashboard = () => {
                   <Label htmlFor="license">Type de licence *</Label>
                   <Select value={selectedLicense} onValueChange={setSelectedLicense}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Choisir une licence" />
+                      <SelectValue placeholder={t('selectLicense')} />
                     </SelectTrigger>
                     <SelectContent>
                       {licenseTypes.map(license => (
@@ -279,7 +279,7 @@ const SellerDashboard = () => {
 
                 <div className="flex gap-2 pt-4">
                   <Button variant="outline" onClick={() => setPublishDialogOpen(false)} className="flex-1">
-                    Annuler
+                    {t('cancel')}
                   </Button>
                   <Button onClick={handlePublishPrompt} disabled={isSaving} className="flex-1">
                     {isSaving ? "Publication..." : "Publier"}
@@ -509,10 +509,10 @@ const SellerDashboard = () => {
 
                               <div className="flex gap-2 pt-4">
                                 <Button variant="outline" onClick={() => setEditingPrompt(null)} className="flex-1">
-                                  Annuler
+                                  {t('cancel')}
                                 </Button>
                                 <Button onClick={handleUpdatePrompt} disabled={isSaving} className="flex-1">
-                                  {isSaving ? "Sauvegarde..." : "Sauvegarder"}
+                                  {isSaving ? t('saving') : t('save')}
                                 </Button>
                               </div>
                             </div>
