@@ -516,6 +516,8 @@ export interface TranslationKey {
   selectPrompt: string;
   selectLicense: string;
   saving: string;
+  quickPromptGenerator: string;
+  describeWhatYouWant: string;
 }
 
 const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
@@ -1556,7 +1558,9 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     choose: "اختيار",
     selectPrompt: "اختر مطلباً",
     selectLicense: "اختر رخصة",
-    saving: "جارٍ الحفظ..."
+    saving: "جارٍ الحفظ...",
+    quickPromptGenerator: "مولد سريع للمطالبات",
+    describeWhatYouWant: "صِف ما تريد تحقيقه واحصل على مطلب محسّن فوراً"
   },
   
   en: {
@@ -2076,7 +2080,9 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     choose: "Choose",
     selectPrompt: "Choose a prompt",
     selectLicense: "Choose a license",
-    saving: "Saving..."
+    saving: "Saving...",
+    quickPromptGenerator: "Quick Prompt Generator",
+    describeWhatYouWant: "Describe what you want to accomplish and get an optimized prompt instantly"
   }
 };
 

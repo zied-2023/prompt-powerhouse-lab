@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Home, ArrowLeft, Search } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 const NotFound = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-50 via-blue-50 to-emerald-50 dark:from-violet-950/20 dark:via-blue-950/20 dark:to-emerald-950/20 flex items-center justify-center p-4">
       <main className="text-center max-w-lg mx-auto">
@@ -52,7 +54,7 @@ const NotFound = () => {
           >
             <Link to="/generator">
               <Search className="mr-2 h-4 w-4" />
-              Générateur de prompts
+              {t('generator')}
             </Link>
           </Button>
         </div>

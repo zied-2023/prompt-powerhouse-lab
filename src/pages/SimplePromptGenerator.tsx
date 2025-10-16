@@ -245,9 +245,9 @@ const SimplePromptGenerator = () => {
 
   return (
     <>
-      <SEOHead 
-        title="Générateur de Prompts IA Simple - AutoPrompt"
-        description="Créez des prompts IA optimisés rapidement avec notre générateur simple. Interface intuitive, différents tons disponibles, sauvegarde et copie facile."
+      <SEOHead
+        title={`${t('promptGeneratorTitle')} - AutoPrompt`}
+        description={t('promptGeneratorDesc')}
         keywords="générateur prompt, IA simple, création prompt rapide, optimisation prompt, assistant IA, générateur contenu"
       />
       <div className={`min-h-screen bg-[#1a1a2e] ${isRTL ? 'rtl' : 'ltr'}`}>
@@ -269,16 +269,16 @@ const SimplePromptGenerator = () => {
               <div className={`flex items-center ${isRTL ? 'space-x-reverse space-x-4' : 'space-x-4'}`}>
                 <nav className={`flex items-center ${isRTL ? 'space-x-reverse space-x-6' : 'space-x-6'}`}>
                   <Link to="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-gray-800">
-                    Générateur
+                    {t('generator')}
                   </Link>
                   <Link to="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-gray-800">
                     Templates
                   </Link>
                   <Link to="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-gray-800">
-                    Bibliothèque
+                    {t('library')}
                   </Link>
                   <Link to="/" className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-3 py-2 rounded-md hover:bg-gray-800">
-                    Marketplace
+                    {t('marketplace')}
                   </Link>
                 </nav>
                 <div className="flex items-center gap-2 text-sm text-gray-300">
@@ -308,10 +308,10 @@ const SimplePromptGenerator = () => {
             {/* Hero Section */}
             <div className="text-center space-y-4 mb-8 animate-fade-in">
               <h1 className="text-4xl md:text-5xl font-display font-bold text-white leading-tight">
-                Générateur de Prompts IA
+                {t('promptGeneratorTitle')}
               </h1>
               <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                Créez des prompts optimisés pour vos besoins
+                {t('promptGeneratorDesc')}
               </p>
             </div>
 

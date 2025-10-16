@@ -269,10 +269,10 @@ const Landing = () => {
                 <CardHeader className="text-center">
                   <CardTitle className="text-2xl font-bold gradient-text flex items-center justify-center gap-2">
                     <Sparkles className="h-6 w-6" />
-                    Générateur Rapide de Prompts
+                    {t('quickPromptGenerator')}
                   </CardTitle>
                   <p className="text-muted-foreground mt-2">
-                    Décrivez ce que vous voulez accomplir et obtenez un prompt optimisé instantanément
+                    {t('describeWhatYouWant')}
                   </p>
                 </CardHeader>
                 <CardContent className="space-y-6">
