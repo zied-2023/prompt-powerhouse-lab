@@ -10,6 +10,8 @@ import { ChevronLeft, ChevronRight, Sparkles, Target, Users, Zap, CheckCircle, A
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { usePrompts } from "@/hooks/usePrompts";
+import { useAuth } from "@/contexts/AuthContext";
+import { opikService } from "@/services/opikService";
 import StepObjective from "./MultiStepPromptBuilder/StepObjective";
 import StepContext from "./MultiStepPromptBuilder/StepContext";
 import StepConstraints from "./MultiStepPromptBuilder/StepConstraints";
@@ -46,6 +48,7 @@ const MultiStepPromptBuilder = () => {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
   const { savePrompt, isSaving } = usePrompts();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedPrompt, setGeneratedPrompt] = useState('');
@@ -250,7 +253,8 @@ const MultiStepPromptBuilder = () => {
 
   const generateAdvancedPrompt = async () => {
     setIsGenerating(true);
-    
+    const startTime = Date.now();
+
     try {
       // Simulation de génération de prompt avancé
       const advancedPrompt = `
@@ -290,8 +294,39 @@ ${promptData.outputFormat.deliverables.map(deliverable => `• ${deliverable}`).
 **LONGUEUR APPROXIMATIVE** : ${promptData.requirements.length}
       `;
 
-      setGeneratedPrompt(advancedPrompt.trim());
-      
+      const finalPrompt = advancedPrompt.trim();
+      const latency = Date.now() - startTime;
+      setGeneratedPrompt(finalPrompt);
+
+      // Enregistrer la trace dans Opik Analytics si l'utilisateur est connecté
+      if (user) {
+        const traceId = opikService.generateTraceId();
+
+        // Créer une description de l'input basée sur les données du prompt
+        const promptInput = `Multi-Step Builder: ${promptData.objective.mainGoal} - Audience: ${promptData.context.targetAudience} - Industrie: ${promptData.context.industry}`;
+
+        await opikService.createTrace({
+          userId: user.id,
+          traceId: traceId,
+          promptInput: promptInput,
+          promptOutput: finalPrompt,
+          model: 'multi-step-builder',
+          latencyMs: latency,
+          tokensUsed: Math.ceil(finalPrompt.length / 4),
+          cost: 0,
+          tags: {
+            source: 'multi-step-builder',
+            industry: promptData.context.industry,
+            targetAudience: promptData.context.targetAudience,
+            tone: promptData.requirements.tone,
+            hasConstraints: promptData.context.constraints.length > 0,
+            hasSections: promptData.outputFormat.sections.length > 0
+          }
+        });
+
+        console.log('✅ Trace créée dans Analytics pour le prompt multi-step');
+      }
+
       toast({
         title: t('advancedPromptGenerated'),
         description: t('advancedPromptGeneratedDesc'),

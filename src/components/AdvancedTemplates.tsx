@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTranslation } from "@/hooks/useTranslation";
 import { toast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { opikService } from "@/services/opikService";
 import { 
   Code, 
   FileText, 
@@ -61,6 +63,7 @@ interface AdvancedTemplate {
 
 const AdvancedTemplates: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [selectedTemplate, setSelectedTemplate] = useState<AdvancedTemplate | null>(null);
   const [variableValues, setVariableValues] = useState<Record<string, string>>({});
   const [generatedPrompt, setGeneratedPrompt] = useState('');
@@ -335,13 +338,47 @@ Livrables:
     return processed;
   };
 
-  const generatePrompt = () => {
+  const generatePrompt = async () => {
     if (!selectedTemplate) return;
-    
+
+    const startTime = Date.now();
     const prompt = processTemplate(selectedTemplate.template, variableValues);
+    const latency = Date.now() - startTime;
     setGeneratedPrompt(prompt);
     setActiveTab('preview');
-    
+
+    // Enregistrer la trace dans Opik Analytics si l'utilisateur est connecté
+    if (user) {
+      const traceId = opikService.generateTraceId();
+
+      // Créer une description de l'input avec les variables
+      const variablesDesc = Object.entries(variableValues)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join(', ');
+      const promptInput = `Template: ${selectedTemplate.name} | Variables: ${variablesDesc}`;
+
+      await opikService.createTrace({
+        userId: user.id,
+        traceId: traceId,
+        promptInput: promptInput,
+        promptOutput: prompt,
+        model: 'advanced-template',
+        latencyMs: latency,
+        tokensUsed: Math.ceil(prompt.length / 4),
+        cost: 0,
+        tags: {
+          source: 'advanced-template',
+          templateId: selectedTemplate.id,
+          templateName: selectedTemplate.name,
+          category: selectedTemplate.category,
+          difficulty: selectedTemplate.difficulty,
+          variableCount: Object.keys(variableValues).length
+        }
+      });
+
+      console.log('✅ Trace créée dans Analytics pour le template avancé');
+    }
+
     toast({
       title: "Prompt généré !",
       description: "Votre prompt a été créé avec succès."

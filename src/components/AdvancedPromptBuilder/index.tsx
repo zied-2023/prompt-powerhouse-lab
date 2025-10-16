@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/contexts/AuthContext";
+import { opikService } from "@/services/opikService";
 
 import { 
   Brain, 
@@ -32,6 +34,7 @@ import { validateStep, calculateOverallProgress, getStepSuggestions } from './ut
 
 const AdvancedPromptBuilder = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const stepConfigs = getStepConfigs(t);
   
   // États principaux
@@ -117,14 +120,44 @@ const AdvancedPromptBuilder = () => {
 
   const generatePrompt = async () => {
     setIsGenerating(true);
+    const startTime = Date.now();
+
     try {
       // Simulation de génération avec l'API
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       const prompt = buildFinalPrompt(promptData);
+      const latency = Date.now() - startTime;
       setGeneratedPrompt(prompt);
       setShowPreview(true);
-      
+
+      // Enregistrer la trace dans Opik si l'utilisateur est connecté
+      if (user) {
+        const traceId = opikService.generateTraceId();
+
+        // Créer une description de l'input basée sur les données du prompt
+        const promptInput = `Générer un prompt avec: Objectif: ${promptData.objective}, Contexte: ${promptData.context}, Audience: ${promptData.audience}, Ton: ${promptData.tone}`;
+
+        await opikService.createTrace({
+          userId: user.id,
+          traceId: traceId,
+          promptInput: promptInput,
+          promptOutput: prompt,
+          model: promptData.aiModel || 'advanced-builder',
+          latencyMs: latency,
+          tokensUsed: Math.ceil(prompt.length / 4),
+          cost: 0,
+          tags: {
+            source: 'advanced-builder',
+            hasConstraints: promptData.constraints.length > 0,
+            hasKeywords: promptData.keywords.length > 0,
+            outputFormat: promptData.outputFormat
+          }
+        });
+
+        console.log('✅ Trace créée dans Analytics pour le prompt avancé');
+      }
+
       toast({
         title: "Prompt généré avec succès",
         description: "Votre prompt optimisé est prêt à être utilisé."
