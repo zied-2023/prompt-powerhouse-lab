@@ -486,12 +486,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             {isLoading ? (
               <>
                 <Wand2 className="h-5 w-5 mr-2 animate-spin" />
-                Génération en cours...
+                {t('generatingWithAI')}
               </>
             ) : (
               <>
                 <Zap className="h-5 w-5 mr-2" />
-                Générer le Prompt Expert (Auto)
+                {t('generateWithAI')}
               </>
             )}
           </Button>

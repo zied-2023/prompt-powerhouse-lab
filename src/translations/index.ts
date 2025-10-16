@@ -510,6 +510,12 @@ export interface TranslationKey {
   analytics: string;
   noPromptsPublished: string;
   startPublishing: string;
+
+  // Additional common UI text
+  choose: string;
+  selectPrompt: string;
+  selectLicense: string;
+  saving: string;
 }
 
 const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
@@ -1024,7 +1030,13 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     myPrompts: "Mes Prompts",
     analytics: "Analytics",
     noPromptsPublished: "Aucun prompt publié",
-    startPublishing: "Commencez à publier vos prompts pour générer des revenus"
+    startPublishing: "Commencez à publier vos prompts pour générer des revenus",
+
+    // Additional common UI text
+    choose: "Choisir",
+    selectPrompt: "Choisir un prompt",
+    selectLicense: "Choisir une licence",
+    saving: "Sauvegarde..."
   },
   
   ar: {
@@ -1538,7 +1550,13 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     myPrompts: "مطالباتي",
     analytics: "التحليلات",
     noPromptsPublished: "لا توجد مطالبات منشورة",
-    startPublishing: "ابدأ بنشر مطالباتك لتحقيق الأرباح"
+    startPublishing: "ابدأ بنشر مطالباتك لتحقيق الأرباح",
+
+    // Additional common UI text
+    choose: "اختيار",
+    selectPrompt: "اختر مطلباً",
+    selectLicense: "اختر رخصة",
+    saving: "جارٍ الحفظ..."
   },
   
   en: {
@@ -2052,7 +2070,13 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     myPrompts: "My Prompts",
     analytics: "Analytics",
     noPromptsPublished: "No prompts published",
-    startPublishing: "Start publishing your prompts to generate revenue"
+    startPublishing: "Start publishing your prompts to generate revenue",
+
+    // Additional common UI text
+    choose: "Choose",
+    selectPrompt: "Choose a prompt",
+    selectLicense: "Choose a license",
+    saving: "Saving..."
   }
 };
 

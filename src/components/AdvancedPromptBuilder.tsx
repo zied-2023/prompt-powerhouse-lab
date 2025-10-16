@@ -365,7 +365,7 @@ Veuillez générer une réponse qui respecte strictement tous les critères ci-d
           </TabsTrigger>
           <TabsTrigger value="preview" className="flex items-center space-x-2">
             <Eye className="h-4 w-4" />
-            <span>Aperçu</span>
+            <span>{t('preview')}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -502,7 +502,7 @@ Veuillez générer une réponse qui respecte strictement tous les critères ci-d
               ) : (
                 <>
                   <Zap className="h-4 w-4 mr-2" />
-                  Générer le Prompt Avancé
+                  {t('generateAdvancedPrompt')}
                 </>
               )}
             </Button>

@@ -500,12 +500,12 @@ Livrables:
               
               <Dialog open={isDialogOpen && selectedTemplate?.id === template.id} onOpenChange={setIsDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button 
+                  <Button
                     onClick={() => openTemplateDialog(template)}
                     className="w-full bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shadow-lg"
                   >
                     <Play className="h-4 w-4 mr-2" />
-                    Configurer & Générer
+                    {t('generatePrompt')}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
@@ -523,11 +523,11 @@ Livrables:
                     <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="configure" className="flex items-center space-x-2">
                         <Settings className="h-4 w-4" />
-                        <span>Configuration</span>
+                        <span>{t('promptConfiguration')}</span>
                       </TabsTrigger>
                       <TabsTrigger value="preview" className="flex items-center space-x-2">
                         <Eye className="h-4 w-4" />
-                        <span>Aperçu</span>
+                        <span>{t('preview')}</span>
                       </TabsTrigger>
                     </TabsList>
                     
@@ -593,11 +593,11 @@ Livrables:
                         
                         <div className="flex justify-end space-x-2 pt-4 border-t">
                           <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                            Annuler
+                            {t('cancel')}
                           </Button>
                           <Button onClick={generatePrompt} className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700">
                             <Zap className="h-4 w-4 mr-2" />
-                            Générer le Prompt
+                            {t('generatePrompt')}
                           </Button>
                         </div>
                       </div>
