@@ -95,19 +95,19 @@ const Index = () => {
     const remaining = credits?.remaining_credits || 0;
     if (remaining === 0) {
       return {
-        text: "Acheter Crédits",
+        text: t('buyCredits'),
         className: "bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white border-0",
         icon: CreditCard
       };
     } else if (remaining < 10) {
       return {
-        text: "Recharger",
+        text: t('recharge'),
         className: "bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white border-0",
         icon: Coins
       };
     }
     return {
-      text: "Acheter Crédits",
+      text: t('buyCredits'),
       className: "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0",
       icon: ShoppingCart
     };
@@ -162,14 +162,14 @@ const Index = () => {
                           credits?.remaining_credits || 0
                         )}
                       </span>
-                      <span className="text-sm text-muted-foreground">crédit{(credits?.remaining_credits || 0) > 1 ? 's' : ''}</span>
+                      <span className="text-sm text-muted-foreground">{(credits?.remaining_credits || 0) > 1 ? t('credits') : t('credit')}</span>
                     </div>
                     <Badge 
                       variant={badgeStyle.variant}
                       className={`${badgeStyle.className} text-xs px-2 py-0.5 w-fit`}
                     >
-                      {credits?.remaining_credits === 0 ? "Épuisé" :
-                       credits?.remaining_credits && credits.remaining_credits < 10 ? "Faible" : "Bon"}
+                      {credits?.remaining_credits === 0 ? t('depleted') :
+                       credits?.remaining_credits && credits.remaining_credits < 10 ? t('low') : t('good')}
                     </Badge>
                   </div>
                 </div>
@@ -191,7 +191,7 @@ const Index = () => {
                     <DialogHeader>
                       <DialogTitle className="flex items-center gap-2">
                         <Coins className="h-5 w-5" />
-                        Gestion des Crédits
+                        {t('creditManagement')}
                       </DialogTitle>
                     </DialogHeader>
                     <div className="mt-4">
@@ -237,12 +237,12 @@ const Index = () => {
               <Sparkles className="h-4 w-4" />
               <span>{t('advanced')}</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="templates" 
+            <TabsTrigger
+              value="templates"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <Sparkles className="h-4 w-4" />
-              <span>Templates</span>
+              <span>{t('templates')}</span>
             </TabsTrigger>
             <TabsTrigger 
               value="marketplace" 
@@ -284,7 +284,7 @@ const Index = () => {
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <Shield className="h-4 w-4" />
-              <span>Sécurité</span>
+              <span>{t('security')}</span>
             </TabsTrigger>
             <TabsTrigger
               value="integration"
@@ -298,14 +298,14 @@ const Index = () => {
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <Activity className="h-4 w-4" />
-              <span>Analytics</span>
+              <span>{t('analytics')}</span>
             </TabsTrigger>
             <TabsTrigger
               value="api-keys"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <Key className="h-4 w-4" />
-              <span>Clés API</span>
+              <span>{t('apiKeys')}</span>
             </TabsTrigger>
           </TabsList>
 

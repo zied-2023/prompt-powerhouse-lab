@@ -518,6 +518,21 @@ export interface TranslationKey {
   saving: string;
   quickPromptGenerator: string;
   describeWhatYouWant: string;
+
+  // Credit management
+  buyCredits: string;
+  recharge: string;
+  credits: string;
+  credit: string;
+  depleted: string;
+  low: string;
+  good: string;
+  creditManagement: string;
+
+  // Tabs and sections
+  templates: string;
+  security: string;
+  apiKeys: string;
 }
 
 const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
@@ -1038,7 +1053,24 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     choose: "Choisir",
     selectPrompt: "Choisir un prompt",
     selectLicense: "Choisir une licence",
-    saving: "Sauvegarde..."
+    saving: "Sauvegarde...",
+    quickPromptGenerator: "Générateur Rapide de Prompts",
+    describeWhatYouWant: "Décrivez ce que vous voulez accomplir et obtenez un prompt optimisé instantanément",
+
+    // Credit management
+    buyCredits: "Acheter Crédits",
+    recharge: "Recharger",
+    credits: "crédits",
+    credit: "crédit",
+    depleted: "Épuisé",
+    low: "Faible",
+    good: "Bon",
+    creditManagement: "Gestion des Crédits",
+
+    // Tabs and sections
+    templates: "Templates",
+    security: "Sécurité",
+    apiKeys: "Clés API"
   },
   
   ar: {
@@ -1560,7 +1592,22 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     selectLicense: "اختر رخصة",
     saving: "جارٍ الحفظ...",
     quickPromptGenerator: "مولد سريع للمطالبات",
-    describeWhatYouWant: "صِف ما تريد تحقيقه واحصل على مطلب محسّن فوراً"
+    describeWhatYouWant: "صِف ما تريد تحقيقه واحصل على مطلب محسّن فوراً",
+
+    // Credit management
+    buyCredits: "شراء أرصدة",
+    recharge: "إعادة شحن",
+    credits: "أرصدة",
+    credit: "رصيد",
+    depleted: "نفد",
+    low: "منخفض",
+    good: "جيد",
+    creditManagement: "إدارة الأرصدة",
+
+    // Tabs and sections
+    templates: "القوالب",
+    security: "الأمان",
+    apiKeys: "مفاتيح API"
   },
   
   en: {
@@ -2082,7 +2129,22 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     selectLicense: "Choose a license",
     saving: "Saving...",
     quickPromptGenerator: "Quick Prompt Generator",
-    describeWhatYouWant: "Describe what you want to accomplish and get an optimized prompt instantly"
+    describeWhatYouWant: "Describe what you want to accomplish and get an optimized prompt instantly",
+
+    // Credit management
+    buyCredits: "Buy Credits",
+    recharge: "Recharge",
+    credits: "credits",
+    credit: "credit",
+    depleted: "Depleted",
+    low: "Low",
+    good: "Good",
+    creditManagement: "Credit Management",
+
+    // Tabs and sections
+    templates: "Templates",
+    security: "Security",
+    apiKeys: "API Keys"
   }
 };
 
