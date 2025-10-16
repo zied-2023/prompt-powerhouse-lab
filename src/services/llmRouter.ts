@@ -47,7 +47,8 @@ const OPENROUTER_CONFIG = {
 };
 
 // Configuration: utiliser DeepSeek pour les utilisateurs premium
-const USE_DEEPSEEK_FOR_PREMIUM = true;
+// DÉSACTIVÉ: la clé DeepSeek ne fonctionne pas actuellement
+const USE_DEEPSEEK_FOR_PREMIUM = false;
 
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
