@@ -223,21 +223,37 @@ export class UltraCompressor {
         totalWords += lineWords;
       } else {
         const remainingWords = this.MAX_WORDS - totalWords;
-        if (remainingWords > 0) {
+        if (remainingWords > 5) {
           const words = line.split(/\s+/);
           const truncated = words.slice(0, remainingWords).join(' ');
-          result.push(truncated);
+
+          // S'assurer que la ligne se termine proprement
+          if (!truncated.match(/[.!?:]$/)) {
+            result.push(truncated + '.');
+          } else {
+            result.push(truncated);
+          }
         }
         break;
       }
     }
 
-    let final = result.join('\n');
+    let final = result.join('\n').trim();
+
+    // Assurer que le prompt se termine correctement
+    if (final && !final.match(/[.!?]$/)) {
+      final += '.';
+    }
 
     const finalWords = this.countWords(final);
     if (finalWords > this.MAX_WORDS) {
       const allWords = final.split(/\s+/);
       final = allWords.slice(0, this.MAX_WORDS).join(' ');
+
+      // S'assurer que le texte tronqué se termine proprement
+      if (!final.match(/[.!?]$/)) {
+        final += '.';
+      }
     }
 
     return final;

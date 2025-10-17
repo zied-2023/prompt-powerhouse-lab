@@ -236,11 +236,43 @@ export class PromptCompressor {
         if (currentLength + compressed.length < targetLength) {
           essential.push(compressed);
           currentLength += compressed.length;
+        } else {
+          // Si on dépasse, ajouter autant que possible de cette ligne
+          const remaining = targetLength - currentLength;
+          if (remaining > 20) { // Au moins 20 caractères pour avoir du sens
+            const words = compressed.split(/\s+/);
+            const truncated: string[] = [];
+            let truncatedLength = 0;
+
+            for (const word of words) {
+              if (truncatedLength + word.length + 1 < remaining) {
+                truncated.push(word);
+                truncatedLength += word.length + 1;
+              } else {
+                break;
+              }
+            }
+
+            let finalLine = truncated.join(' ');
+            // S'assurer que la ligne se termine correctement
+            if (finalLine && !finalLine.match(/[.!?:]$/)) {
+              finalLine += '.';
+            }
+            essential.push(finalLine);
+          }
+          break;
         }
       }
     }
 
-    return essential.join('\n').slice(0, targetLength);
+    let result = essential.join('\n').trim();
+
+    // S'assurer que le prompt se termine correctement
+    if (result && !result.match(/[.!?]$/)) {
+      result += '.';
+    }
+
+    return result;
   }
 
   /**
