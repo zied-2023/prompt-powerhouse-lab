@@ -3,6 +3,8 @@
  * Modes : Gratuit / Premium avec gestion de longueur (court, moyen, long, très long)
  */
 
+import { UltraCompressor } from './ultraCompressor';
+
 export interface CompressionResult {
   compressed: string;
   originalLength: number;
@@ -17,10 +19,10 @@ export type PromptLength = 'short' | 'medium' | 'long' | 'very_long';
 
 const TOKEN_LIMITS = {
   free: {
-    short: 500,
-    medium: 1000,
-    long: 1500,
-    very_long: 2000
+    short: 100,
+    medium: 150,
+    long: 200,
+    very_long: 250
   },
   basic: {
     short: 800,
@@ -254,10 +256,19 @@ export class PromptCompressor {
   }
 
   /**
-   * Mode GRATUIT avec longueur
+   * Mode GRATUIT avec longueur - Utilise UltraCompressor
    */
   static compressFree(prompt: string, length: PromptLength = 'medium'): CompressionResult {
-    return this.compressWithLength(prompt, 'free', length);
+    const ultraResult = UltraCompressor.compress(prompt);
+
+    return {
+      compressed: ultraResult.compressed,
+      originalLength: prompt.length,
+      compressedLength: ultraResult.compressed.length,
+      compressionRate: ultraResult.reductionRate,
+      estimatedTokens: Math.ceil(ultraResult.compressedWords / 0.75),
+      techniques: ultraResult.techniques
+    };
   }
 
   /**
