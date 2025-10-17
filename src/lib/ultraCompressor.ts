@@ -82,10 +82,10 @@ export class UltraCompressor {
 
     const sections = {
       role: '',
-      task: '',
-      format: '',
-      constraints: [] as string[],
-      example: ''
+      objective: '',
+      context: '',
+      deliverable: '',
+      constraints: [] as string[]
     };
 
     for (const line of lines) {
@@ -93,46 +93,52 @@ export class UltraCompressor {
 
       if (lower.includes('rôle') || lower.includes('role') || lower.includes('expert')) {
         sections.role = this.extractContent(line, 5);
-      } else if (lower.includes('tâche') || lower.includes('task') || lower.includes('objectif') || lower.includes('mission')) {
-        sections.task = this.extractContent(line, 15);
-      } else if (lower.includes('format') || lower.includes('structure') || lower.includes('livrable')) {
-        sections.format = this.extractContent(line, 10);
-      } else if (lower.includes('contrainte') || lower.includes('règle') || lower.includes('limite')) {
+      } else if (lower.includes('objectif') || lower.includes('mission') || lower.includes('tâche')) {
+        sections.objective = this.extractContent(line, 15);
+      } else if (lower.includes('contexte') || lower.includes('context') || lower.includes('secteur')) {
+        sections.context = this.extractContent(line, 12);
+      } else if (lower.includes('livrable') || lower.includes('format') || lower.includes('sortie')) {
+        sections.deliverable = this.extractContent(line, 10);
+      } else if (lower.includes('contrainte') || lower.includes('règle') || lower.includes('ton') || lower.includes('style')) {
         sections.constraints.push(this.extractContent(line, 8));
-      } else if (lower.includes('exemple') || lower.includes('ex:') || lower.includes('example')) {
-        sections.example = this.extractContent(line, 15);
       }
     }
 
-    if (!sections.role && !sections.task) {
-      const firstLine = lines[0] || '';
-      sections.task = firstLine.slice(0, 50);
+    if (!sections.role) {
+      sections.role = 'expert spécialisé';
+    }
+
+    if (!sections.objective && lines.length > 0) {
+      sections.objective = this.extractContent(lines[0], 15);
     }
 
     const result: string[] = [];
 
-    if (sections.role) {
-      result.push(`RÔLE: ${sections.role}`);
+    result.push(`[Rôle IA]: Tu es un(e) ${sections.role}.`);
+
+    if (sections.objective) {
+      result.push(`[Objectif]: Ta mission est de ${sections.objective}.`);
     }
 
-    if (sections.task) {
-      result.push(`TÂCHE: ${sections.task}`);
+    if (sections.context) {
+      result.push(`[Contexte]: ${sections.context}.`);
     }
 
-    if (sections.format) {
-      result.push(`FORMAT: ${sections.format}`);
+    if (sections.deliverable) {
+      result.push(`[Livrable attendu]: Fournis ${sections.deliverable}.`);
     }
 
-    if (sections.constraints.length > 0) {
-      const topConstraints = sections.constraints.slice(0, 3);
-      result.push(`CONTRAINTES:\n${topConstraints.map(c => `⚠️ ${c}`).join('\n')}`);
+    const constraintText = sections.constraints.slice(0, 2).join(', ');
+    const toneMatch = text.match(/ton[:\s]+([^\.,\n]+)/i);
+    const tone = toneMatch ? toneMatch[1].trim() : 'professionnel';
+
+    if (constraintText) {
+      result.push(`[Contraintes]: ≤150 mots, ton ${tone}, ${constraintText}.`);
+    } else {
+      result.push(`[Contraintes]: ≤150 mots, ton ${tone}.`);
     }
 
-    if (sections.example && this.countWords(sections.example) <= this.MAX_EXAMPLE_WORDS) {
-      result.push(`EX: ${sections.example}`);
-    }
-
-    return result.join('\n\n');
+    return result.join('\n');
   }
 
   private static extractContent(line: string, maxWords: number): string {
@@ -198,31 +204,7 @@ export class UltraCompressor {
   }
 
   private static applyR4BulletPoints(text: string): string {
-    const lines = text.split('\n');
-    const converted: string[] = [];
-
-    for (let line of lines) {
-      line = line.trim();
-      if (!line) continue;
-
-      if (line.match(/^[\d]+\.\s+/)) {
-        line = line.replace(/^[\d]+\.\s+/, '- ');
-      }
-
-      if (!line.match(/^(RÔLE:|TÂCHE:|FORMAT:|CONTRAINTES:|EX:|TON:|-|⚠️|✓|❌)/)) {
-        if (this.countWords(line) > 10) {
-          const chunks = this.splitIntoChunks(line, 10);
-          converted.push(...chunks.map(c => `- ${c}`));
-          continue;
-        } else {
-          line = `- ${line}`;
-        }
-      }
-
-      converted.push(line);
-    }
-
-    return converted.join('\n');
+    return text;
   }
 
   private static splitIntoChunks(text: string, maxWords: number): string[] {
@@ -326,45 +308,26 @@ export class UltraCompressor {
   private static calculateScore(text: string): number {
     let score = 0;
     const words = this.countWords(text);
-    const lines = this.countLines(text);
 
-    if (words < this.MAX_WORDS) {
-      score += 30;
+    if (words <= this.MAX_WORDS) {
+      score += 40;
     } else {
-      score += Math.max(0, 30 - (words - this.MAX_WORDS) * 2);
+      score += Math.max(0, 40 - (words - this.MAX_WORDS) * 2);
     }
 
-    const paragraphs = text.split(/\n\n+/).filter(p => !p.match(/^(-|⚠️|✓|❌|RÔLE:|TÂCHE:)/));
-    if (paragraphs.length === 0) {
-      score += 20;
+    const hasTemplate = text.includes('[Rôle IA]') && text.includes('[Objectif]') && text.includes('[Contraintes]');
+    if (hasTemplate) {
+      score += 30;
     }
 
-    const hasSymbols = text.includes('⚠️') || text.includes('✓') || text.includes('❌');
-    if (hasSymbols) {
+    const hasDeliverable = text.includes('[Livrable attendu]');
+    if (hasDeliverable) {
       score += 15;
     }
 
-    const hasExample = text.includes('EX:');
-    if (hasExample) {
-      const exMatch = text.match(/EX:([^\n]*)/);
-      if (exMatch) {
-        const exWords = this.countWords(exMatch[1]);
-        if (exWords <= this.MAX_EXAMPLE_WORDS) {
-          score += 15;
-        }
-      }
-    }
-
-    const hasTemplate = text.includes('RÔLE:') && text.includes('TÂCHE:');
-    if (hasTemplate) {
-      score += 20;
-    }
-
-    const repetitions = this.countRepetitions(text);
-    if (repetitions === 0) {
-      score += 10;
-    } else {
-      score += Math.max(0, 10 - repetitions * 2);
+    const hasConstraint = text.includes('≤150 mots');
+    if (hasConstraint) {
+      score += 15;
     }
 
     return Math.min(100, score);
@@ -420,26 +383,14 @@ export class UltraCompressor {
       errors.push(`Trop long: ${words} mots (max ${this.MAX_WORDS})`);
     }
 
-    const lines = this.countLines(text);
-    if (lines > this.MAX_LINES) {
-      errors.push(`Trop de lignes: ${lines} (max ${this.MAX_LINES})`);
+    const hasTemplate = text.includes('[Rôle IA]') && text.includes('[Objectif]');
+    if (!hasTemplate) {
+      errors.push('Template standardisé manquant');
     }
 
-    const hasParagraphs = text.split(/\n\n+/).some(p =>
-      !p.match(/^(-|⚠️|✓|❌|RÔLE:|TÂCHE:|FORMAT:|CONTRAINTES:|TON:|EX:)/)
-    );
-    if (hasParagraphs) {
-      errors.push('Paragraphes détectés (bullet points obligatoires)');
-    }
-
-    const exMatches = text.match(/EX:[^\n]*/g);
-    if (exMatches) {
-      for (const ex of exMatches) {
-        const exWords = this.countWords(ex);
-        if (exWords > this.MAX_EXAMPLE_WORDS) {
-          warnings.push(`Exemple trop long: ${exWords} mots (max ${this.MAX_EXAMPLE_WORDS})`);
-        }
-      }
+    const hasConstraints = text.includes('[Contraintes]');
+    if (!hasConstraints) {
+      warnings.push('Section contraintes manquante');
     }
 
     const score = this.calculateScore(text);

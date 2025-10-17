@@ -197,16 +197,20 @@ const PromptGenerator = () => {
       }[formData.length] : null;
 
       const systemPrompt = mode === 'free'
-        ? `Expert prompts IA. Max 150 tokens strict.
+        ? `Tu es expert en prompts IA ultra-compacts. Max 150 mots STRICT.
 
-Structure OBLIGATOIRE:
-**OBJECTIF**: [1 phrase directe]
-**INSTRUCTIONS**:
-- [Action 1]
-- [Action 2]
-- [Action 3 max]
+Template OBLIGATOIRE (RESPECTER À LA LETTRE):
+[Rôle IA]: Tu es un(e) [rôle].
+[Objectif]: Ta mission est de [verbe d'action précis + résultat attendu].
+[Contexte]: [secteur ou cas d'usage en une phrase].
+[Livrable attendu]: Fournis [type de sortie : texte, liste, plan, code].
+[Contraintes]: ≤150 mots, ton [style], [1-2 règles de forme].
 
-ZÉRO exemple. ZÉRO explication. Instructions ultra-directes.`
+RÈGLES STRICTES:
+- Utiliser EXACTEMENT ce format avec les crochets []
+- Chaque ligne = 1 phrase courte
+- ZÉRO détail superflu
+- ZÉRO exemple long`
         : mode === 'basic'
         ? `Expert prompts IA. Max 300 tokens strict.
 
