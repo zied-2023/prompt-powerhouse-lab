@@ -298,6 +298,31 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
       // Appliquer la compression selon le mode avec gestion de longueur
       if (mode === 'free') {
+        // Mode GRATUIT: Utiliser Opik pour optimiser AVANT la compression
+        console.log('🚀 Mode Gratuit: Optimisation Opik activée');
+
+        try {
+          const userId = user?.id;
+
+          if (userId) {
+            const opikResult = await opikOptimizer.optimizePrompt(
+              generatedContent,
+              userId,
+              formData.category
+            );
+
+            console.log('✅ Opik Optimization réussie');
+            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
+            console.log(`🎯 Améliorations: ${opikResult.improvements.join(', ')}`);
+
+            // Utiliser le prompt optimisé par Opik
+            generatedContent = opikResult.optimizedPrompt;
+          }
+        } catch (error) {
+          console.error('⚠️ Erreur Opik, utilisation du prompt original:', error);
+        }
+
+        // Ensuite appliquer la compression pour respecter les limites
         const result = PromptCompressor.compressFree(generatedContent, promptLength);
         generatedContent = result.compressed;
         console.log(`Mode Gratuit (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);

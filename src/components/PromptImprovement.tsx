@@ -143,21 +143,27 @@ RÈGLES:
         let finalPrompt = extractedPrompt;
         let optimizationInfo = null;
 
-        // Optimisation automatique par Opik pour le mode premium
-        if (mode === 'premium' && user) {
-          console.log('🎯 Mode Premium détecté - Application de l\'optimisation Opik automatique (Improvement)');
-          const optimization = await opikOptimizer.optimizePrompt(
-            extractedPrompt,
-            user.id,
-            'improvement'
-          );
-          finalPrompt = optimization.optimizedPrompt;
-          optimizationInfo = optimization;
-          console.log('✨ Optimisation Opik appliquée (Improvement):', optimization.improvements);
+        // Optimisation automatique par Opik pour TOUS les modes
+        if (user) {
+          const modeLabel = mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium';
+          console.log(`🎯 Mode ${modeLabel} - Application de l\'optimisation Opik automatique (Improvement)`);
 
-          // Ajouter les améliorations Opik à la liste
-          if (optimization.improvements.length > 0) {
-            setImprovements(prev => [...prev, ...optimization.improvements.map(imp => `[Opik] ${imp}`)]);
+          try {
+            const optimization = await opikOptimizer.optimizePrompt(
+              extractedPrompt,
+              user.id,
+              'improvement'
+            );
+            finalPrompt = optimization.optimizedPrompt;
+            optimizationInfo = optimization;
+            console.log('✨ Optimisation Opik appliquée (Improvement):', optimization.improvements);
+
+            // Ajouter les améliorations Opik à la liste
+            if (optimization.improvements.length > 0) {
+              setImprovements(prev => [...prev, ...optimization.improvements.map(imp => `[Opik] ${imp}`)]);
+            }
+          } catch (error) {
+            console.error('⚠️ Erreur Opik (Improvement), utilisation du prompt original:', error);
           }
         }
 
@@ -193,7 +199,7 @@ RÈGLES:
               provider: llmResponse.provider,
               type: 'improvement',
               has_objective: !!improvementObjective,
-              optimized: mode === 'premium',
+              optimized: !!optimizationInfo,
               optimizationScore: optimizationInfo?.score
             }
           });
@@ -206,7 +212,7 @@ RÈGLES:
         }
 
         let successMessage = `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`;
-        if (mode === 'premium' && optimizationInfo) {
+        if (optimizationInfo) {
           successMessage += `\n✨ Optimisé par Opik (Score: ${optimizationInfo.score.toFixed(1)}/10)`;
         }
 
