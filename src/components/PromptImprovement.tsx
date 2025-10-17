@@ -13,6 +13,7 @@ import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
+import { opikOptimizer } from "@/services/opikOptimizer";
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
@@ -108,15 +109,15 @@ RÈGLES:
       });
 
       const content = llmResponse.content;
-        
+
         const improvedPromptMatch = content.match(/🎯(.*?)---/s);
         const improvementsMatch = content.match(/\*\*AMÉLIORATIONS APPORTÉES:\*\*(.*)/s);
 
+        let extractedPrompt = '';
         if (improvedPromptMatch) {
-          const extractedPrompt = '🎯' + improvedPromptMatch[1].trim();
-          setImprovedPrompt(extractedPrompt);
+          extractedPrompt = '🎯' + improvedPromptMatch[1].trim();
         } else {
-          setImprovedPrompt(content);
+          extractedPrompt = content;
         }
 
         if (improvementsMatch) {
@@ -126,7 +127,7 @@ RÈGLES:
             .map(item => item.trim());
           setImprovements(improvementsList);
         }
-        
+
         // Décompter le crédit après le succès de la génération
         const creditUsed = await useCredit();
         if (!creditUsed) {
@@ -135,6 +136,32 @@ RÈGLES:
 
         // Forcer la mise à jour des crédits dans l'interface
         await refetchCredits();
+
+        // Déterminer le mode selon les crédits
+        const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
+
+        let finalPrompt = extractedPrompt;
+        let optimizationInfo = null;
+
+        // Optimisation automatique par Opik pour le mode premium
+        if (mode === 'premium' && user) {
+          console.log('🎯 Mode Premium détecté - Application de l\'optimisation Opik automatique (Improvement)');
+          const optimization = await opikOptimizer.optimizePrompt(
+            extractedPrompt,
+            user.id,
+            'improvement'
+          );
+          finalPrompt = optimization.optimizedPrompt;
+          optimizationInfo = optimization;
+          console.log('✨ Optimisation Opik appliquée (Improvement):', optimization.improvements);
+
+          // Ajouter les améliorations Opik à la liste
+          if (optimization.improvements.length > 0) {
+            setImprovements(prev => [...prev, ...optimization.improvements.map(imp => `[Opik] ${imp}`)]);
+          }
+        }
+
+        setImprovedPrompt(finalPrompt);
 
         setCurrentTraceId(traceId);
         setUserFeedback(null);
@@ -157,7 +184,7 @@ RÈGLES:
             userId: user.id,
             traceId: traceId,
             promptInput: userPromptText,
-            promptOutput: content,
+            promptOutput: finalPrompt,
             model: llmResponse.model,
             latencyMs: latencyMs,
             tokensUsed: tokensUsed,
@@ -165,7 +192,9 @@ RÈGLES:
             tags: {
               provider: llmResponse.provider,
               type: 'improvement',
-              has_objective: !!improvementObjective
+              has_objective: !!improvementObjective,
+              optimized: mode === 'premium',
+              optimizationScore: optimizationInfo?.score
             }
           });
 
@@ -176,9 +205,14 @@ RÈGLES:
           }
         }
 
+        let successMessage = `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`;
+        if (mode === 'premium' && optimizationInfo) {
+          successMessage += `\n✨ Optimisé par Opik (Score: ${optimizationInfo.score.toFixed(1)}/10)`;
+        }
+
         toast({
           title: t('improvementSuccess'),
-          description: `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
+          description: successMessage,
         });
     } catch (error) {
       console.error('Erreur lors de l\'amélioration du prompt:', error);

@@ -15,6 +15,7 @@ import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { PromptCompressor } from "@/lib/promptCompressor";
 import { llmRouter } from "@/services/llmRouter";
+import { opikOptimizer } from "@/services/opikOptimizer";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -352,7 +353,23 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         throw new Error('Impossible de décompter le crédit');
       }
 
-      setGeneratedPrompt(result.content);
+      let finalPrompt = result.content;
+      let optimizationInfo = null;
+
+      // Optimisation automatique par Opik pour le mode premium
+      if (mode === 'premium' && user) {
+        console.log('🎯 Mode Premium détecté - Application de l\'optimisation Opik automatique');
+        const optimization = await opikOptimizer.optimizePrompt(
+          result.content,
+          user.id,
+          formData.category
+        );
+        finalPrompt = optimization.optimizedPrompt;
+        optimizationInfo = optimization;
+        console.log('✨ Optimisation Opik appliquée:', optimization.improvements);
+      }
+
+      setGeneratedPrompt(finalPrompt);
       setCurrentTraceId(traceId);
       setUserFeedback(null);
 
@@ -369,7 +386,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           userId: user.id,
           traceId: traceId,
           promptInput: userPromptText,
-          promptOutput: result.content,
+          promptOutput: finalPrompt,
           model: result.model,
           latencyMs: latencyMs,
           tokensUsed: result.usage.total_tokens,
@@ -378,7 +395,9 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             provider: result.provider,
             category: formData.category,
             subcategory: formData.subcategory,
-            tone: formData.tone
+            tone: formData.tone,
+            optimized: mode === 'premium',
+            optimizationScore: optimizationInfo?.score
           }
         });
 
@@ -393,9 +412,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       
       const modeLabel = mode === 'free' ? 'Gratuit (150 tokens)' : mode === 'basic' ? 'Basique (300 tokens)' : 'Premium (600 tokens)';
 
+      let successMessage = `Mode ${modeLabel} - Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`;
+      if (mode === 'premium' && optimizationInfo) {
+        successMessage += `\n✨ Optimisé par Opik (Score: ${optimizationInfo.score.toFixed(1)}/10)`;
+      }
+
       toast({
         title: t('promptCreatedSuccess'),
-        description: `Mode ${modeLabel} - Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`,
+        description: successMessage,
       });
     } catch (error) {
       console.error('Erreur:', error);
