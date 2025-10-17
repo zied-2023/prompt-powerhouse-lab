@@ -328,11 +328,57 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.log(`Mode Gratuit (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else if (mode === 'basic') {
+        // Mode BASIQUE: Utiliser Opik pour optimiser AVANT la compression
+        console.log('🚀 Mode Basique: Optimisation Opik activée');
+
+        try {
+          const userId = user?.id;
+
+          if (userId) {
+            const opikResult = await opikOptimizer.optimizePrompt(
+              generatedContent,
+              userId,
+              formData.category
+            );
+
+            console.log('✅ Opik Optimization réussie (Basique)');
+            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
+            console.log(`🎯 Améliorations: ${opikResult.improvements.join(', ')}`);
+
+            generatedContent = opikResult.optimizedPrompt;
+          }
+        } catch (error) {
+          console.error('⚠️ Erreur Opik (Basique), utilisation du prompt original:', error);
+        }
+
         const result = PromptCompressor.compressBasic(generatedContent, promptLength);
         generatedContent = result.compressed;
         console.log(`Mode Basique (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else {
+        // Mode PREMIUM: Utiliser Opik pour optimiser et compléter les prompts
+        console.log('🚀 Mode Premium: Optimisation Opik activée');
+
+        try {
+          const userId = user?.id;
+
+          if (userId) {
+            const opikResult = await opikOptimizer.optimizePrompt(
+              generatedContent,
+              userId,
+              formData.category
+            );
+
+            console.log('✅ Opik Optimization réussie (Premium)');
+            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
+            console.log(`🎯 Améliorations: ${opikResult.improvements.join(', ')}`);
+
+            generatedContent = opikResult.optimizedPrompt;
+          }
+        } catch (error) {
+          console.error('⚠️ Erreur Opik (Premium), utilisation du prompt original:', error);
+        }
+
         generatedContent = PromptCompressor.formatPremium(generatedContent, promptLength);
         const tokens = PromptCompressor['estimateTokens'](generatedContent);
         console.log(`Mode Premium (${promptLength}): prompt optimisé - ${tokens} tokens`);

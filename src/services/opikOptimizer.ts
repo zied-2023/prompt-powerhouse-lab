@@ -146,6 +146,9 @@ class OpikOptimizer {
   private async applyOptimizations(prompt: string, analysis: any): Promise<string> {
     let optimized = prompt;
 
+    // Compléter les prompts tronqués ou incomplets
+    optimized = this.completeIncompletePrompt(optimized);
+
     // Si le prompt manque de structure, l'améliorer
     if (analysis.structure < 5) {
       optimized = this.improveStructure(optimized);
@@ -170,7 +173,64 @@ class OpikOptimizer {
       optimized = this.addFormatSection(optimized);
     }
 
+    if (!analysis.hasConstraints) {
+      optimized = this.addConstraintsSection(optimized);
+    }
+
     return optimized;
+  }
+
+  /**
+   * Complète les prompts incomplets ou tronqués
+   */
+  private completeIncompletePrompt(prompt: string): string {
+    // Détecter si le prompt se termine de manière incomplète
+    const lastLine = prompt.trim().split('\n').pop() || '';
+    const lastChar = prompt.trim().slice(-1);
+
+    // Si le prompt ne se termine pas par une ponctuation appropriée
+    if (lastChar && !lastChar.match(/[.!?:]/)) {
+      // Si c'est une liste à puces incomplète
+      if (lastLine.startsWith('-') || lastLine.startsWith('•')) {
+        prompt += '\n- Respect des contraintes et format demandé';
+      }
+      // Si c'est une section en cours
+      else if (lastLine.includes('**')) {
+        prompt += ': Instructions claires et précises';
+      }
+      // Sinon, terminer proprement la phrase
+      else {
+        prompt += '.';
+      }
+    }
+
+    // Vérifier si des sections essentielles sont incomplètes
+    const sections = ['RÔLE', 'OBJECTIF', 'INSTRUCTIONS', 'FORMAT', 'CONTRAINTES'];
+    for (const section of sections) {
+      const sectionRegex = new RegExp(`\\*\\*${section}\\*\\*:?\\s*$`, 'im');
+      if (sectionRegex.test(prompt)) {
+        // Section présente mais vide, ajouter du contenu par défaut
+        switch (section) {
+          case 'RÔLE':
+            prompt += ' Expert assistant IA spécialisé';
+            break;
+          case 'OBJECTIF':
+            prompt += ' Fournir une réponse précise et structurée';
+            break;
+          case 'INSTRUCTIONS':
+            prompt += '\n- Analyser la demande attentivement\n- Structurer la réponse de manière claire\n- Respecter le format demandé';
+            break;
+          case 'FORMAT':
+            prompt += ' Réponse structurée et professionnelle';
+            break;
+          case 'CONTRAINTES':
+            prompt += '\n- Ton professionnel et précis\n- Réponse complète et détaillée';
+            break;
+        }
+      }
+    }
+
+    return prompt.trim();
   }
 
   /**
@@ -227,10 +287,23 @@ class OpikOptimizer {
   }
 
   /**
+   * Ajoute une section contraintes si manquante
+   */
+  private addConstraintsSection(prompt: string): string {
+    return `${prompt}\n\n**CONTRAINTES**:\n- Ton professionnel et précis\n- Réponse complète et structurée`;
+  }
+
+  /**
    * Calcule les améliorations apportées
    */
   private calculateImprovements(original: string, optimized: string, analysis: any): string[] {
     const improvements: string[] = [];
+
+    // Détecter si le prompt original était incomplet
+    const lastChar = original.trim().slice(-1);
+    if (!lastChar.match(/[.!?:]/)) {
+      improvements.push('Complétion du prompt tronqué');
+    }
 
     if (!analysis.hasRole && optimized.includes('**RÔLE**')) {
       improvements.push('Ajout d\'une définition de rôle claire');
@@ -238,6 +311,10 @@ class OpikOptimizer {
 
     if (!analysis.hasFormat && optimized.includes('**FORMAT**')) {
       improvements.push('Spécification du format de sortie');
+    }
+
+    if (!analysis.hasConstraints && optimized.includes('**CONTRAINTES**')) {
+      improvements.push('Ajout des contraintes et règles');
     }
 
     if (analysis.structure < 5) {
