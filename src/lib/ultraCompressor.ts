@@ -33,39 +33,25 @@ export class UltraCompressor {
 
     let compressed = prompt;
 
-    compressed = this.applyR1Structure(compressed);
-    techniques.push("R1: Structure optimale");
+    compressed = this.applyR3Elimination(compressed);
+    techniques.push("R3: Élimination");
 
     compressed = this.applyR2Syntax(compressed);
-    techniques.push("R2: Compression syntaxique");
+    techniques.push("R2: Syntaxe");
 
-    compressed = this.applyR3Elimination(compressed);
-    techniques.push("R3: Élimination impitoyable");
+    compressed = this.applyR1Structure(compressed);
+    techniques.push("R1: Structure");
 
-    compressed = this.applyR4BulletPoints(compressed);
-    techniques.push("R4: Format bullet points");
+    let currentWords = this.countWords(compressed);
 
-    compressed = this.applyR5Examples(compressed);
-    techniques.push("R5: Exemples ultra-courts");
-
-    const compressedWords = this.countWords(compressed);
-
-    if (compressedWords > this.MAX_WORDS) {
-      compressed = this.applyR6Counting(compressed);
-      techniques.push("R6: Réduction forcée");
+    if (currentWords > this.MAX_WORDS) {
+      compressed = this.enforceWordLimit(compressed);
+      techniques.push("R6: Limite 150 mots");
     }
-
-    compressed = this.applyR7Prioritization(compressed);
-    techniques.push("R7: Priorisation stricte");
 
     const finalWords = this.countWords(compressed);
     const reductionRate = ((originalWords - finalWords) / originalWords) * 100;
     const validationScore = this.calculateScore(compressed);
-
-    if (validationScore < this.REQUIRED_SCORE) {
-      compressed = this.regenerate(compressed);
-      techniques.push("Régénération auto");
-    }
 
     return {
       compressed: compressed.trim(),
@@ -92,32 +78,32 @@ export class UltraCompressor {
       const lower = line.toLowerCase();
 
       if (lower.includes('rôle') || lower.includes('role') || lower.includes('expert')) {
-        sections.role = this.extractContent(line, 5);
+        sections.role = this.extractContent(line, 3);
       } else if (lower.includes('objectif') || lower.includes('mission') || lower.includes('tâche')) {
-        sections.objective = this.extractContent(line, 15);
+        sections.objective = this.extractContent(line, 10);
       } else if (lower.includes('contexte') || lower.includes('context') || lower.includes('secteur')) {
-        sections.context = this.extractContent(line, 12);
+        sections.context = this.extractContent(line, 8);
       } else if (lower.includes('livrable') || lower.includes('format') || lower.includes('sortie')) {
-        sections.deliverable = this.extractContent(line, 10);
+        sections.deliverable = this.extractContent(line, 6);
       } else if (lower.includes('contrainte') || lower.includes('règle') || lower.includes('ton') || lower.includes('style')) {
-        sections.constraints.push(this.extractContent(line, 8));
+        sections.constraints.push(this.extractContent(line, 5));
       }
     }
 
     if (!sections.role) {
-      sections.role = 'expert spécialisé';
+      sections.role = 'expert';
     }
 
     if (!sections.objective && lines.length > 0) {
-      sections.objective = this.extractContent(lines[0], 15);
+      sections.objective = this.extractContent(lines[0], 10);
     }
 
     const result: string[] = [];
 
-    result.push(`[Rôle IA]: Tu es un(e) ${sections.role}.`);
+    result.push(`[Rôle IA]: Tu es ${sections.role}.`);
 
     if (sections.objective) {
-      result.push(`[Objectif]: Ta mission est de ${sections.objective}.`);
+      result.push(`[Objectif]: ${sections.objective}.`);
     }
 
     if (sections.context) {
@@ -125,12 +111,12 @@ export class UltraCompressor {
     }
 
     if (sections.deliverable) {
-      result.push(`[Livrable attendu]: Fournis ${sections.deliverable}.`);
+      result.push(`[Livrable]: ${sections.deliverable}.`);
     }
 
-    const constraintText = sections.constraints.slice(0, 2).join(', ');
+    const constraintText = sections.constraints.slice(0, 1).join(', ');
     const toneMatch = text.match(/ton[:\s]+([^\.,\n]+)/i);
-    const tone = toneMatch ? toneMatch[1].trim() : 'professionnel';
+    const tone = toneMatch ? toneMatch[1].trim().split(/\s+/)[0] : 'pro';
 
     if (constraintText) {
       result.push(`[Contraintes]: ≤150 mots, ton ${tone}, ${constraintText}.`);
@@ -219,91 +205,44 @@ export class UltraCompressor {
   }
 
   private static applyR5Examples(text: string): string {
-    const examplePattern = /(ex|exemple|example)\s*:([^→\n]*)(→([^\n]*))?/gi;
-
-    text = text.replace(examplePattern, (match, prefix, input, arrow, output) => {
-      const inputWords = (input || '').trim().split(/\s+/);
-      const outputWords = (output || '').trim().split(/\s+/);
-
-      const shortInput = inputWords.slice(0, 5).join(' ');
-      const shortOutput = outputWords.slice(0, 8).join(' ');
-
-      if (output) {
-        return `EX: ${shortInput} → ${shortOutput}`;
-      } else {
-        return `EX: ${shortInput}`;
-      }
-    });
-
+    text = text.replace(/exemple[s]?[:\s][^\n]{30,}/gi, '');
+    text = text.replace(/\*\*exemple\*\*[^\n]*/gi, '');
     return text;
   }
 
-  private static applyR6Counting(text: string): string {
-    let words = this.countWords(text);
-    let lines = this.countLines(text);
-
-    if (words <= this.MAX_WORDS && lines <= this.MAX_LINES) {
-      return text;
-    }
-
-    const sections = text.split(/\n\n+/);
-    if (sections.length > 5) {
-      const essential = sections.slice(0, 5);
-      text = essential.join('\n\n');
-    }
-
-    words = this.countWords(text);
-    if (words > this.MAX_WORDS) {
-      const allLines = text.split('\n');
-      const kept = allLines.slice(0, this.MAX_LINES);
-      text = kept.join('\n');
-    }
-
-    words = this.countWords(text);
-    if (words > this.MAX_WORDS) {
-      const truncated = text.split(/\s+/).slice(0, this.MAX_WORDS).join(' ');
-      text = truncated;
-    }
-
-    return text;
-  }
-
-  private static applyR7Prioritization(text: string): string {
-    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
-    const prioritized: { line: string; priority: number }[] = [];
+  private static enforceWordLimit(text: string): string {
+    const lines = text.split('\n');
+    const result: string[] = [];
+    let totalWords = 0;
 
     for (const line of lines) {
-      let priority = 0;
+      const lineWords = this.countWords(line);
 
-      if (line.match(/^(RÔLE|TÂCHE|FORMAT|CONTRAINTES|TON|EX):/)) {
-        priority = 10;
+      if (totalWords + lineWords <= this.MAX_WORDS) {
+        result.push(line);
+        totalWords += lineWords;
+      } else {
+        const remainingWords = this.MAX_WORDS - totalWords;
+        if (remainingWords > 0) {
+          const words = line.split(/\s+/);
+          const truncated = words.slice(0, remainingWords).join(' ');
+          result.push(truncated);
+        }
+        break;
       }
-
-      if (line.includes('⚠️') || line.includes('obligatoire') || line.toLowerCase().includes('max')) {
-        priority += 5;
-      }
-
-      if (line.includes('✓') || line.includes('recommandé') || line.includes('ton:') || line.includes('style:')) {
-        priority += 3;
-      }
-
-      if (line.includes('EX:') || line.includes('→')) {
-        priority += 2;
-      }
-
-      if (line.match(/^-\s+/)) {
-        priority += 1;
-      }
-
-      prioritized.push({ line, priority });
     }
 
-    prioritized.sort((a, b) => b.priority - a.priority);
+    let final = result.join('\n');
 
-    const kept = prioritized.slice(0, this.MAX_LINES);
+    const finalWords = this.countWords(final);
+    if (finalWords > this.MAX_WORDS) {
+      const allWords = final.split(/\s+/);
+      final = allWords.slice(0, this.MAX_WORDS).join(' ');
+    }
 
-    return kept.map(item => item.line).join('\n');
+    return final;
   }
+
 
   private static calculateScore(text: string): number {
     let score = 0;
@@ -352,15 +291,6 @@ export class UltraCompressor {
     return repetitions;
   }
 
-  private static regenerate(text: string): string {
-    let regenerated = text;
-
-    regenerated = this.applyR3Elimination(regenerated);
-    regenerated = this.applyR6Counting(regenerated);
-    regenerated = this.applyR7Prioritization(regenerated);
-
-    return regenerated;
-  }
 
   static formatForDisplay(result: UltraCompressionResult): string {
     return `${result.compressed}
