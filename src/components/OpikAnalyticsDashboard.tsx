@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { opikService } from '@/services/opikService';
+import { supabase } from '@/integrations/supabase/client';
 import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp, Sparkles, Play, Copy, Save } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -231,40 +232,42 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
 
     setIsSavingPrompt(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/improved_prompts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
+      // Générer un titre automatique basé sur le prompt
+      const title = originalPrompt.slice(0, 50) + (originalPrompt.length > 50 ? '...' : '');
+
+      const { data, error } = await supabase
+        .from('improved_prompts')
+        .insert({
           user_id: user.id,
           original_prompt: originalPrompt,
           improved_prompt: improvedPrompt,
-          improvement_type: 'opik_analytics',
-          metadata: {
+          title: title,
+          category: 'opik_analytics',
+          improvements: {
             source: 'opik_dashboard',
             saved_at: new Date().toISOString()
           }
         })
-      });
+        .select()
+        .single();
 
-      if (response.ok) {
-        toast({
-          title: "Succès!",
-          description: "Le prompt amélioré a été enregistré avec succès."
-        });
-        setShowImprovedDialog(false);
-      } else {
-        throw new Error('Erreur lors de la sauvegarde');
+      if (error) {
+        console.error('Erreur Supabase:', error);
+        throw error;
       }
-    } catch (error) {
+
+      console.log('✅ Prompt sauvegardé avec succès:', data);
+
+      toast({
+        title: "Succès!",
+        description: "Le prompt amélioré a été enregistré avec succès."
+      });
+      setShowImprovedDialog(false);
+    } catch (error: any) {
       console.error('Erreur lors de la sauvegarde:', error);
       toast({
         title: "Erreur",
-        description: "Impossible d'enregistrer le prompt. Veuillez réessayer.",
+        description: error.message || "Impossible d'enregistrer le prompt. Veuillez réessayer.",
         variant: "destructive"
       });
     } finally {
