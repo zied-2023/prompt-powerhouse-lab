@@ -9,6 +9,7 @@ import { RefreshCw, Copy, TrendingUp, CircleCheck as CheckCircle, Save } from "l
 import { useTranslation } from "@/hooks/useTranslation";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useUserCredits } from "@/hooks/useUserCredits";
+import { useImprovedPrompts } from "@/hooks/useImprovedPrompts";
 import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +20,7 @@ const PromptImprovement = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit, refetchCredits } = useUserCredits();
+  const { saveImprovedPrompt, isSaving: isSavingImprovedPrompt } = useImprovedPrompts();
   const { user } = useAuth();
   const [originalPrompt, setOriginalPrompt] = useState('');
   const [improvementObjective, setImprovementObjective] = useState('');
@@ -27,6 +29,7 @@ const PromptImprovement = () => {
   const [isImproving, setIsImproving] = useState(false);
   const [currentTraceId, setCurrentTraceId] = useState<string | null>(null);
   const [userFeedback, setUserFeedback] = useState<number | null>(null);
+  const [qualityScore, setQualityScore] = useState<number | null>(null);
 
   const improvePromptWithAI = async () => {
     if (!originalPrompt.trim()) {
@@ -158,6 +161,9 @@ RÈGLES:
             optimizationInfo = optimization;
             console.log('✨ Optimisation Opik appliquée (Improvement):', optimization.improvements);
 
+            // Stocker le score de qualité
+            setQualityScore(optimization.score);
+
             // Ajouter les améliorations Opik à la liste
             if (optimization.improvements.length > 0) {
               setImprovements(prev => [...prev, ...optimization.improvements.map(imp => `[Opik] ${imp}`)]);
@@ -244,6 +250,44 @@ RÈGLES:
       title: t('copiedSuccess'),
       description: t('promptCopiedClipboard'),
     });
+  };
+
+  const handleSaveImprovedPrompt = async () => {
+    if (!improvedPrompt.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Aucun prompt amélioré à sauvegarder",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Demander un titre pour le prompt
+    const title = window.prompt("Titre du prompt amélioré:", "Prompt amélioré");
+    if (!title) return;
+
+    try {
+      await saveImprovedPrompt({
+        originalPrompt: originalPrompt,
+        improvedPrompt: improvedPrompt,
+        qualityScore: qualityScore || 0,
+        improvements: improvements,
+        title: title,
+        opikTraceId: currentTraceId || undefined
+      });
+
+      toast({
+        title: "Succès",
+        description: "Prompt amélioré sauvegardé avec succès",
+      });
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de sauvegarder le prompt amélioré",
+        variant: "destructive"
+      });
+    }
   };
 
   const handleFeedback = async (score: number) => {
@@ -389,28 +433,35 @@ RÈGLES:
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center justify-between text-2xl">
             <span className="gradient-text">{t('improvedPrompt')}</span>
-            {improvedPrompt && (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
-                  <Copy className="h-4 w-4 mr-2" />
-                  {t('copy')}
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleSavePrompt}
-                  disabled={isSaving}
-                  className="hover-lift glass-card border-white/30"
-                >
-                  {isSaving ? (
-                    <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
-                  ) : (
-                    <Save className="h-4 w-4 mr-2" />
-                  )}
-                  Sauvegarder
-                </Button>
-              </div>
-            )}
+            <div className="flex items-center gap-3">
+              {qualityScore !== null && (
+                <div className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-xs font-bold shadow-lg">
+                  Score: {qualityScore.toFixed(1)}/10
+                </div>
+              )}
+              {improvedPrompt && (
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
+                    <Copy className="h-4 w-4 mr-2" />
+                    {t('copy')}
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={handleSaveImprovedPrompt}
+                    disabled={isSavingImprovedPrompt}
+                    className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white shadow-lg"
+                  >
+                    {isSavingImprovedPrompt ? (
+                      <div className="animate-spin h-4 w-4 mr-2 border-2 border-current border-t-transparent rounded-full"></div>
+                    ) : (
+                      <Save className="h-4 w-4 mr-2" />
+                    )}
+                    Sauvegarder
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
             {t('improvedPromptDesc')}
