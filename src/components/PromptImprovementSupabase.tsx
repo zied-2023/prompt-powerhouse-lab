@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { RefreshCw, Copy, TrendingUp, CircleCheck as CheckCircle, Save, Info } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { usePrompts } from "@/hooks/usePrompts";
+import { useImprovedPrompts } from "@/hooks/useImprovedPrompts";
 import { supabase } from "@/integrations/supabase/client";
 import { analyzePromptComplexity } from "@/lib/promptAnalyzer";
 import { PromptCompressor } from "@/lib/promptCompressor";
@@ -18,7 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const PromptImprovementSupabase = () => {
   const { t } = useTranslation();
-  const { savePrompt, isSaving } = usePrompts();
+  const { saveImprovedPrompt, isSaving } = useImprovedPrompts();
   const { credits, useCredit } = useUserCredits();
   const { user } = useAuth();
   
@@ -153,7 +153,7 @@ Format:
   };
 
   const handleSavePrompt = async () => {
-    if (!improvedPrompt) {
+    if (!improvedPrompt || !originalPrompt) {
       toast({
         title: "Erreur",
         description: "Aucun prompt amélioré à sauvegarder.",
@@ -162,14 +162,29 @@ Format:
       return;
     }
 
-    await savePrompt({
-      title: "Prompt Amélioré",
-      content: improvedPrompt,
-      description: "Prompt optimisé via l'outil d'amélioration",
-      category: "improvement",
-      tags: ["improved", "optimized"],
-      is_public: false
-    });
+    try {
+      await saveImprovedPrompt({
+        originalPrompt: originalPrompt,
+        improvedPrompt: improvedPrompt,
+        qualityScore: 8,
+        improvements: ["Optimisé via l'outil d'amélioration"],
+        category: improvementObjective || "improvement",
+        title: `Prompt Amélioré - ${new Date().toLocaleDateString()}`,
+        tokensSaved: originalPrompt.length - improvedPrompt.length,
+      });
+
+      toast({
+        title: "Succès !",
+        description: "Le prompt amélioré a été sauvegardé.",
+      });
+    } catch (error) {
+      console.error('Erreur sauvegarde:', error);
+      toast({
+        title: "Erreur",
+        description: error instanceof Error ? error.message : "Impossible de sauvegarder le prompt.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
