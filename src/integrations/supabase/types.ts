@@ -451,6 +451,51 @@ export type Database = {
         }
         Relationships: []
       }
+      improved_prompts: {
+        Row: {
+          id: string
+          user_id: string
+          original_prompt: string
+          improved_prompt: string
+          quality_score: number | null
+          improvements: Json | null
+          category: string | null
+          title: string
+          tokens_saved: number | null
+          opik_trace_id: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          original_prompt: string
+          improved_prompt: string
+          quality_score?: number | null
+          improvements?: Json | null
+          category?: string | null
+          title: string
+          tokens_saved?: number | null
+          opik_trace_id?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          original_prompt?: string
+          improved_prompt?: string
+          quality_score?: number | null
+          improvements?: Json | null
+          category?: string | null
+          title?: string
+          tokens_saved?: number | null
+          opik_trace_id?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       subscription_plans: {
         Row: {
           created_at: string
