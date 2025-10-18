@@ -1064,7 +1064,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     credit: "crédit",
     depleted: "Épuisé",
     low: "Faible",
-    good: "Bon",
     creditManagement: "Gestion des Crédits",
 
     // Tabs and sections
@@ -1601,7 +1600,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     credit: "رصيد",
     depleted: "نفد",
     low: "منخفض",
-    good: "جيد",
     creditManagement: "إدارة الأرصدة",
 
     // Tabs and sections
@@ -2138,7 +2136,6 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     credit: "credit",
     depleted: "Depleted",
     low: "Low",
-    good: "Good",
     creditManagement: "Credit Management",
 
     // Tabs and sections
