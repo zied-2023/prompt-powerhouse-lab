@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { opikService } from '@/services/opikService';
-import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp, Sparkles, Play, Copy } from 'lucide-react';
+import { Activity, BarChart3, Clock, DollarSign, Star, TrendingUp, Sparkles, Play, Copy, Save } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
@@ -51,6 +51,8 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   const [isTesting, setIsTesting] = useState(false);
   const [testStartTime, setTestStartTime] = useState<number>(0);
   const [testProgress, setTestProgress] = useState(0);
+  const [isSavingPrompt, setIsSavingPrompt] = useState(false);
+  const [originalPrompt, setOriginalPrompt] = useState<string>('');
 
   useEffect(() => {
     if (user) {
@@ -186,6 +188,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
         }
       );
 
+      setOriginalPrompt(trace.prompt_output);
       setImprovedPrompt(llmResponse.content);
       setShowImprovedDialog(true);
 
@@ -214,6 +217,59 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
       title: "Copié!",
       description: "Le prompt a été copié dans le presse-papiers."
     });
+  };
+
+  const saveImprovedPrompt = async () => {
+    if (!user || !improvedPrompt) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de sauvegarder le prompt.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsSavingPrompt(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/rest/v1/improved_prompts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': import.meta.env.VITE_SUPABASE_ANON_KEY,
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          user_id: user.id,
+          original_prompt: originalPrompt,
+          improved_prompt: improvedPrompt,
+          improvement_type: 'opik_analytics',
+          metadata: {
+            source: 'opik_dashboard',
+            saved_at: new Date().toISOString()
+          }
+        })
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Succès!",
+          description: "Le prompt amélioré a été enregistré avec succès."
+        });
+        setShowImprovedDialog(false);
+      } else {
+        throw new Error('Erreur lors de la sauvegarde');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la sauvegarde:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'enregistrer le prompt. Veuillez réessayer.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSavingPrompt(false);
+    }
   };
 
   const openTestDialog = (trace: TraceData) => {
@@ -577,9 +633,28 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
               </Button>
               <Button
                 onClick={() => copyToClipboard(improvedPrompt)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                variant="outline"
+                className="gap-2"
               >
+                <Copy className="h-4 w-4" />
                 Copier le prompt
+              </Button>
+              <Button
+                onClick={saveImprovedPrompt}
+                disabled={isSavingPrompt}
+                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 gap-2"
+              >
+                {isSavingPrompt ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
+                    Enregistrement...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Enregistrer
+                  </>
+                )}
               </Button>
             </div>
           </div>
