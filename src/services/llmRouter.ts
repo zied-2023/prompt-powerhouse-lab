@@ -42,7 +42,7 @@ const DEEPSEEK_CONFIG = {
 
 const OPENROUTER_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: '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',
+  key: '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',
   model: 'anthropic/claude-3.5-sonnet'
 };
 
@@ -52,14 +52,14 @@ const USE_DEEPSEEK_FOR_PREMIUM = false;
 
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
-    // Mode Premium: DeepSeek pour les utilisateurs authentifiés avec crédits
-    if (USE_DEEPSEEK_FOR_PREMIUM && isAuthenticated && userHasCredits) {
-      console.log('🎯 Utilisation de DeepSeek (mode premium)');
+    // Mode Premium: OpenRouter pour les tests de prompts
+    if (isAuthenticated && userHasCredits) {
+      console.log('🎯 Utilisation de OpenRouter (mode premium avec nouvelle clé API)');
       return {
-        provider: 'deepseek',
-        model: DEEPSEEK_CONFIG.model,
-        apiKey: DEEPSEEK_CONFIG.key,
-        endpoint: DEEPSEEK_CONFIG.endpoint,
+        provider: 'openrouter',
+        model: OPENROUTER_CONFIG.model,
+        apiKey: OPENROUTER_CONFIG.key,
+        endpoint: OPENROUTER_CONFIG.endpoint,
         useEdgeFunction: false
       };
     }
