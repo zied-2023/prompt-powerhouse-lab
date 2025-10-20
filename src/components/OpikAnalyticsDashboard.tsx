@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface TraceData {
   id: string;
@@ -32,6 +33,7 @@ interface TraceData {
 export const OpikAnalyticsDashboard: React.FC = () => {
   const { user } = useAuth();
   const { credits, useCredit } = useUserCredits();
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     avgLatency: 0,
     totalTokens: 0,
@@ -574,7 +576,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                             className="w-full"
                           >
                             <Play className="h-4 w-4 mr-2" />
-                            Tester
+                            {t.test}
                           </Button>
 
                           <Button
@@ -586,12 +588,12 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                             {improvingTraceId === trace.id ? (
                               <>
                                 <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                                Amélioration...
+                                {t.improving}
                               </>
                             ) : (
                               <>
                                 <Sparkles className="h-4 w-4 mr-2" />
-                                Améliorer
+                                {t.improve}
                               </>
                             )}
                           </Button>

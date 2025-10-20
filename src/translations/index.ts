@@ -66,6 +66,9 @@ export interface TranslationKey {
   copyPrompt: string;
   generatePrompt: string;
   generating: string;
+  test: string;
+  improve: string;
+  improving: string;
   
   // Catégories
   contentCreation: string;
@@ -604,6 +607,9 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     copyPrompt: "Copier le prompt",
     generatePrompt: "Générer le prompt",
     generating: "Génération...",
+    test: "Tester",
+    improve: "Améliorer",
+    improving: "Amélioration...",
     
     // Catégories
     contentCreation: "Création de Contenu",
@@ -1140,6 +1146,9 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     copyPrompt: "نسخ المطلب",
     generatePrompt: "إنشاء المطلب",
     generating: "جاري الإنشاء...",
+    test: "اختبار",
+    improve: "تحسين",
+    improving: "جاري التحسين...",
     
     // Catégories
     contentCreation: "إنشاء المحتوى",
@@ -1676,6 +1685,9 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     copyPrompt: "Copy Prompt",
     generatePrompt: "Generate Prompt",
     generating: "Generating...",
+    test: "Test",
+    improve: "Improve",
+    improving: "Improving...",
     
     // Catégories
     contentCreation: "Content Creation",
