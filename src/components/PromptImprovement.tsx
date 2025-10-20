@@ -226,14 +226,30 @@ RÈGLES:
           title: t('improvementSuccess'),
           description: successMessage,
         });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erreur lors de l\'amélioration du prompt:', error);
-      
+      console.error('Détails de l\'erreur:', {
+        message: error?.message,
+        name: error?.name,
+        stack: error?.stack
+      });
+
       let errorMessage = "Impossible d'améliorer le prompt.";
-      if (error.message.includes('crédits')) {
-        errorMessage = "La clé API n'a plus de crédits. Rechargez votre compte Mistral.";
+
+      if (error?.message) {
+        if (error.message.includes('crédits') || error.message.includes('402')) {
+          errorMessage = "La clé API n'a plus de crédits. Veuillez contacter l'administrateur.";
+        } else if (error.message.includes('Timeout') || error.message.includes('timeout')) {
+          errorMessage = "Le délai d'attente a été dépassé. Réessayez avec un prompt plus court.";
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = "Erreur de connexion réseau. Vérifiez votre connexion internet.";
+        } else if (error.message.includes('401') || error.message.includes('403')) {
+          errorMessage = "Erreur d'authentification API. Clé API invalide ou expirée.";
+        } else {
+          errorMessage = `Erreur: ${error.message}`;
+        }
       }
-      
+
       toast({
         title: t('generationError'),
         description: errorMessage,
