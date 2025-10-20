@@ -583,17 +583,17 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                             onClick={() => improvePrompt(trace)}
                             disabled={improvingTraceId === trace.id || !credits || credits.remaining_credits <= 0}
                             size="sm"
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 !text-white"
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 !text-white flex items-center justify-center"
                           >
                             {improvingTraceId === trace.id ? (
                               <>
-                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2 flex-shrink-0"></div>
-                                <span className="font-semibold flex-1 text-left">{t.improving}</span>
+                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                                <span className="font-semibold">Amélioration...</span>
                               </>
                             ) : (
                               <>
-                                <Sparkles className="h-4 w-4 mr-2 flex-shrink-0" />
-                                <span className="font-semibold flex-1 text-left">{t.improve}</span>
+                                <Sparkles className="h-4 w-4 mr-2" />
+                                <span className="font-semibold">Améliorer</span>
                               </>
                             )}
                           </Button>
