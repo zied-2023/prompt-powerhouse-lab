@@ -573,10 +573,10 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                             disabled={!credits || credits.remaining_credits <= 0}
                             size="sm"
                             variant="outline"
-                            className="w-full dark:!text-white dark:border-white/20 dark:hover:bg-white/10 !text-black border-black/20 hover:bg-black/10"
+                            className="w-full dark:!text-white dark:border-white/20 dark:hover:bg-white/10 !text-black border-black/20 hover:bg-black/10 flex items-center justify-center"
                           >
-                            <Play className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span className="font-semibold flex-1 text-left">Tester</span>
+                            <Play className="h-4 w-4 mr-2" />
+                            <span className="font-semibold">Tester</span>
                           </Button>
 
                           <Button
