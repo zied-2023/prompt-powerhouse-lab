@@ -573,7 +573,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                             disabled={!credits || credits.remaining_credits <= 0}
                             size="sm"
                             variant="outline"
-                            className="w-full text-white border-white/20 hover:bg-white/10"
+                            className="w-full dark:text-white dark:border-white/20 dark:hover:bg-white/10 text-black border-black/20 hover:bg-black/10"
                           >
                             <Play className="h-4 w-4 mr-2" />
                             <span className="font-semibold">{t.test}</span>
@@ -583,7 +583,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                             onClick={() => improvePrompt(trace)}
                             disabled={improvingTraceId === trace.id || !credits || credits.remaining_credits <= 0}
                             size="sm"
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white dark:text-white"
                           >
                             {improvingTraceId === trace.id ? (
                               <>
