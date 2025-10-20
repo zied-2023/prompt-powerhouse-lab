@@ -548,20 +548,20 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                       <div className="space-y-3">
                         <div className="grid grid-cols-4 gap-4 text-sm">
                           <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground font-medium">Latence</div>
-                            <div className="font-semibold">{formatLatency(trace.latency_ms)}</div>
+                            <div className="text-sm font-semibold text-white/70">Latence</div>
+                            <div className="font-bold text-base text-white">{formatLatency(trace.latency_ms)}</div>
                           </div>
                           <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground font-medium">Tokens</div>
-                            <div className="font-semibold">{trace.tokens_used}</div>
+                            <div className="text-sm font-semibold text-white/70">Tokens</div>
+                            <div className="font-bold text-base text-white">{trace.tokens_used}</div>
                           </div>
                           <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground font-medium">Date</div>
-                            <div className="font-semibold">{formatDate(trace.created_at)}</div>
+                            <div className="text-sm font-semibold text-white/70">Date</div>
+                            <div className="font-bold text-base text-white">{formatDate(trace.created_at)}</div>
                           </div>
                           <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground font-medium">Score</div>
-                            <div className="font-semibold">
+                            <div className="text-sm font-semibold text-white/70">Score</div>
+                            <div className="font-bold text-base text-white">
                               {trace.feedback_score ? trace.feedback_score.toFixed(2) : 'N/A'}
                             </div>
                           </div>
