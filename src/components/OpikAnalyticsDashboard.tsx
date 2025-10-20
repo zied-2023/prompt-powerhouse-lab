@@ -573,27 +573,27 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                             disabled={!credits || credits.remaining_credits <= 0}
                             size="sm"
                             variant="outline"
-                            className="w-full"
+                            className="w-full text-white border-white/20 hover:bg-white/10"
                           >
                             <Play className="h-4 w-4 mr-2" />
-                            {t.test}
+                            <span className="font-semibold">{t.test}</span>
                           </Button>
 
                           <Button
                             onClick={() => improvePrompt(trace)}
                             disabled={improvingTraceId === trace.id || !credits || credits.remaining_credits <= 0}
                             size="sm"
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                           >
                             {improvingTraceId === trace.id ? (
                               <>
                                 <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                                {t.improving}
+                                <span className="font-semibold">{t.improving}</span>
                               </>
                             ) : (
                               <>
                                 <Sparkles className="h-4 w-4 mr-2" />
-                                {t.improve}
+                                <span className="font-semibold">{t.improve}</span>
                               </>
                             )}
                           </Button>
