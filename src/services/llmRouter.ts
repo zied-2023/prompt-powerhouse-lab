@@ -30,19 +30,19 @@ interface LLMResponse {
 
 const MISTRAL_CONFIG = {
   endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  key: import.meta.env.VITE_MISTRAL_API_KEY || '9rLgitb0iaYKdmdRzrkQhuAOBLldeJrj',
+  key: import.meta.env.VITE_MISTRAL_API_KEY,
   model: 'mistral-large-latest'
 };
 
 const DEEPSEEK_CONFIG = {
   endpoint: 'https://api.deepseek.com/v1/chat/completions',
-  key: import.meta.env.VITE_DEEPSEEK_API_KEY || 'sk-1fc5eaeac6f64c3296b7ca5b5ad8f859',
+  key: import.meta.env.VITE_DEEPSEEK_API_KEY,
   model: 'deepseek-chat'
 };
 
 const OPENROUTER_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: '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',
+  key: import.meta.env.VITE_OPENROUTER_API_KEY,
   model: 'anthropic/claude-3.5-sonnet'
 };
 
@@ -52,20 +52,8 @@ const USE_DEEPSEEK_FOR_PREMIUM = false;
 
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
-    // Mode Premium: OpenRouter pour les tests de prompts
-    if (isAuthenticated && userHasCredits) {
-      console.log('🎯 Utilisation de OpenRouter (mode premium avec nouvelle clé API)');
-      return {
-        provider: 'openrouter',
-        model: OPENROUTER_CONFIG.model,
-        apiKey: OPENROUTER_CONFIG.key,
-        endpoint: OPENROUTER_CONFIG.endpoint,
-        useEdgeFunction: false
-      };
-    }
-
-    // Mode Gratuit/Basic: Mistral
-    console.log('🎯 Utilisation de Mistral (mode gratuit/basic)', { isAuthenticated, userHasCredits });
+    // Utiliser Mistral pour tous les utilisateurs
+    console.log('🎯 Utilisation de Mistral API avec votre clé', { isAuthenticated, userHasCredits });
     return {
       provider: 'mistral',
       model: MISTRAL_CONFIG.model,
@@ -173,6 +161,11 @@ class LLMRouter {
 
   async callMistral(request: LLMRequest): Promise<LLMResponse> {
     console.log('🔗 Appel Mistral API...');
+
+    if (!MISTRAL_CONFIG.key) {
+      throw new Error('Clé API Mistral manquante. Veuillez configurer VITE_MISTRAL_API_KEY dans votre fichier .env');
+    }
+
     const startTime = Date.now();
 
     const controller = new AbortController();
