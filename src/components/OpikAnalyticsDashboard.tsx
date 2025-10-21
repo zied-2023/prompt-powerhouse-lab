@@ -15,6 +15,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useTranslation } from '@/hooks/useTranslation';
+import { hierarchicalReflectiveOptimizer } from '@/services/hierarchicalReflectiveOptimizer';
 
 interface TraceData {
   id: string;
@@ -56,6 +57,10 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   const [testProgress, setTestProgress] = useState(0);
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
   const [originalPrompt, setOriginalPrompt] = useState<string>('');
+  const [optimizingTraceId, setOptimizingTraceId] = useState<string | null>(null);
+  const [optimizedPrompt, setOptimizedPrompt] = useState<string>('');
+  const [showOptimizedDialog, setShowOptimizedDialog] = useState(false);
+  const [optimizationInsights, setOptimizationInsights] = useState<string>('');
 
   useEffect(() => {
     if (user) {
@@ -211,6 +216,72 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
       });
     } finally {
       setImprovingTraceId(null);
+    }
+  };
+
+  const optimizeWithReflection = async (trace: TraceData) => {
+    if (!user) return;
+
+    const creditsRemaining = credits?.remaining_credits || 0;
+    if (creditsRemaining < 3) {
+      toast({
+        title: "Crédits insuffisants",
+        description: "L'optimisation réflexive nécessite au moins 3 crédits (1 par itération).",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setOptimizingTraceId(trace.id);
+
+    try {
+      const userHasCredits = creditsRemaining > 0;
+
+      const failureContext = `Données d'analyse:
+- Score actuel: ${trace.feedback_score || 'N/A'}
+- Latence: ${trace.latency_ms}ms (${trace.latency_ms > 5000 ? 'élevée' : 'acceptable'})
+- Tokens utilisés: ${trace.tokens_used}
+- Modèle: ${trace.model}
+- Input original: ${trace.prompt_input}
+
+Problèmes potentiels:
+${trace.latency_ms > 5000 ? '- Latence trop élevée, nécessite optimisation\n' : ''}
+${trace.tokens_used > 3000 ? '- Consommation de tokens élevée\n' : ''}
+${trace.feedback_score && trace.feedback_score < 7 ? '- Score de qualité insuffisant\n' : ''}`;
+
+      toast({
+        title: "Optimisation en cours",
+        description: "Le système effectue 3 itérations réflexives...",
+      });
+
+      const result = await hierarchicalReflectiveOptimizer.optimizeWithReflection(
+        trace.prompt_output,
+        failureContext,
+        userHasCredits,
+        true
+      );
+
+      setOriginalPrompt(trace.prompt_output);
+      setOptimizedPrompt(result.finalPrompt);
+      setOptimizationInsights(result.reflectiveInsights);
+      setShowOptimizedDialog(true);
+
+      await useCredit(result.iterations.length, 'reflective_optimization');
+
+      toast({
+        title: "Optimisation réflexive terminée!",
+        description: `${result.iterations.length} itérations effectuées avec succès.`
+      });
+
+    } catch (error) {
+      console.error('Erreur lors de l\'optimisation réflexive:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'optimiser le prompt. Veuillez réessayer.",
+        variant: "destructive"
+      });
+    } finally {
+      setOptimizingTraceId(null);
     }
   };
 
@@ -567,7 +638,7 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-3 gap-2">
                           <Button
                             onClick={() => openTestDialog(trace)}
                             disabled={!credits || credits.remaining_credits <= 0}
@@ -594,6 +665,26 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                               <>
                                 <Sparkles className="h-4 w-4 mr-2" />
                                 <span className="font-semibold">Améliorer</span>
+                              </>
+                            )}
+                          </Button>
+
+                          <Button
+                            onClick={() => optimizeWithReflection(trace)}
+                            disabled={optimizingTraceId === trace.id || !credits || credits.remaining_credits < 3}
+                            size="sm"
+                            className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 !text-white flex items-center justify-center"
+                            title="Optimisation réflexive (3 itérations, 3 crédits)"
+                          >
+                            {optimizingTraceId === trace.id ? (
+                              <>
+                                <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                                <span className="font-semibold">Optimisation...</span>
+                              </>
+                            ) : (
+                              <>
+                                <TrendingUp className="h-4 w-4 mr-2" />
+                                <span className="font-semibold">Optimiser</span>
                               </>
                             )}
                           </Button>
@@ -648,6 +739,119 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
                 onClick={saveImprovedPrompt}
                 disabled={isSavingPrompt}
                 className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 gap-2"
+              >
+                {isSavingPrompt ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin border-2 border-white border-t-transparent rounded-full" />
+                    Enregistrement...
+                  </>
+                ) : (
+                  <>
+                    <Save className="h-4 w-4" />
+                    Enregistrer
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showOptimizedDialog} onOpenChange={setShowOptimizedDialog}>
+        <DialogContent className="max-w-4xl max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-green-600" />
+              Prompt Optimisé (Réflexif)
+            </DialogTitle>
+            <DialogDescription>
+              Optimisation par itérations réflexives avec analyse des échecs
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {optimizationInsights && (
+              <div className="bg-gradient-to-r from-green-50 to-teal-50 dark:from-green-950/30 dark:to-teal-950/30 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Insights d'optimisation
+                </h4>
+                <p className="text-sm whitespace-pre-wrap">{optimizationInsights}</p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Prompt original</Label>
+              <Textarea
+                value={originalPrompt}
+                readOnly
+                className="min-h-[120px] font-mono text-sm resize-none bg-muted/50"
+              />
+            </div>
+
+            <div className="relative">
+              <Label className="text-sm font-medium">Prompt optimisé</Label>
+              <Textarea
+                value={optimizedPrompt}
+                readOnly
+                className="min-h-[300px] font-mono text-sm resize-none mt-2 bg-gradient-to-br from-green-50/50 to-teal-50/50 dark:from-green-950/20 dark:to-teal-950/20 border-green-200 dark:border-green-800"
+              />
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowOptimizedDialog(false)}
+              >
+                Fermer
+              </Button>
+              <Button
+                onClick={() => copyToClipboard(optimizedPrompt)}
+                variant="outline"
+                className="gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Copier le prompt
+              </Button>
+              <Button
+                onClick={async () => {
+                  setIsSavingPrompt(true);
+                  try {
+                    const title = originalPrompt.slice(0, 50) + (originalPrompt.length > 50 ? '...' : '');
+                    const { error } = await supabase
+                      .from('improved_prompts')
+                      .insert({
+                        user_id: user?.id,
+                        original_prompt: originalPrompt,
+                        improved_prompt: optimizedPrompt,
+                        title: title,
+                        category: 'reflective_optimization',
+                        improvements: {
+                          source: 'opik_dashboard_reflective',
+                          insights: optimizationInsights,
+                          saved_at: new Date().toISOString()
+                        }
+                      });
+
+                    if (error) throw error;
+
+                    toast({
+                      title: "Succès!",
+                      description: "Le prompt optimisé a été enregistré."
+                    });
+                    setShowOptimizedDialog(false);
+                  } catch (error: any) {
+                    toast({
+                      title: "Erreur",
+                      description: error.message || "Impossible d'enregistrer le prompt.",
+                      variant: "destructive"
+                    });
+                  } finally {
+                    setIsSavingPrompt(false);
+                  }
+                }}
+                disabled={isSavingPrompt}
+                className="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 gap-2"
               >
                 {isSavingPrompt ? (
                   <>
