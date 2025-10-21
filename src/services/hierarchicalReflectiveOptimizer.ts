@@ -50,9 +50,23 @@ class HierarchicalReflectiveOptimizer {
         isAuthenticated
       );
 
-      if (failureAnalysis.length === 0) {
+      if (failureAnalysis.length === 0 && iterationCount > 1) {
         console.log('✅ Aucun échec détecté, convergence atteinte');
         break;
+      }
+
+      if (failureAnalysis.length === 0) {
+        console.log('⚠️ Aucune amélioration détectée mais on continue (itération ${iterationCount})');
+        const genericFailure: FailureAnalysis = {
+          failureType: 'Optimisation générale',
+          severity: 5,
+          recommendations: [
+            'Rendre les instructions plus explicites',
+            'Ajouter des exemples concrets si pertinent',
+            'Clarifier le format de sortie attendu'
+          ]
+        };
+        failureAnalysis.push(genericFailure);
       }
 
       const improvedPrompt = await this.applyReflectiveImprovements(
@@ -74,7 +88,7 @@ class HierarchicalReflectiveOptimizer {
 
       currentPrompt = improvedPrompt;
 
-      if (qualityScore >= this.convergenceThreshold) {
+      if (iterationCount >= 2 && qualityScore >= this.convergenceThreshold) {
         console.log(`✅ Convergence atteinte avec score ${qualityScore}`);
         break;
       }
@@ -96,15 +110,25 @@ class HierarchicalReflectiveOptimizer {
     userHasCredits: boolean,
     isAuthenticated: boolean
   ): Promise<FailureAnalysis[]> {
-    const systemPrompt = `Tu es un analyseur expert qui identifie les faiblesses et échecs potentiels dans les prompts.
+    const systemPrompt = `Tu es un analyseur expert CRITIQUE qui identifie TOUJOURS des opportunités d'amélioration dans les prompts.
 
-**MISSION**: Analyser un prompt et identifier ses faiblesses selon une hiérarchie de criticité.
+**MISSION**: Analyser un prompt et identifier AU MINIMUM 2-3 axes d'amélioration, même pour un prompt déjà bon.
+
+**CRITÈRES D'ANALYSE STRICTS**:
+1. **Clarté**: Les instructions sont-elles 100% non-ambiguës?
+2. **Structure**: Le format de sortie est-il explicitement défini?
+3. **Contexte**: Manque-t-il des informations de contexte?
+4. **Contraintes**: Les limites et règles sont-elles claires?
+5. **Exemples**: Y a-t-il des exemples concrets?
+6. **Optimisation**: Peut-on réduire les tokens sans perdre en qualité?
 
 **HIÉRARCHIE DES ÉCHECS**:
-1. **Critique** (Sévérité 10): Ambiguïtés majeures, instructions contradictoires
-2. **Important** (Sévérité 7-9): Manque de contexte, format flou
-3. **Modéré** (Sévérité 4-6): Structure sous-optimale, verbosité
-4. **Mineur** (Sévérité 1-3): Améliorations cosmétiques
+1. **Critique** (Sévérité 8-10): Ambiguïtés, instructions contradictoires, manque de clarté majeur
+2. **Important** (Sévérité 6-7): Manque de contexte, format flou, structure perfectible
+3. **Modéré** (Sévérité 4-5): Optimisation possible, verbosité, manque d'exemples
+4. **Mineur** (Sévérité 2-3): Améliorations cosmétiques
+
+**RÈGLE IMPORTANTE**: Tu DOIS toujours identifier AU MOINS 2 points d'amélioration, même si le prompt semble correct.
 
 **FORMAT DE SORTIE**:
 \`\`\`json
@@ -112,7 +136,7 @@ class HierarchicalReflectiveOptimizer {
   "failures": [
     {
       "failureType": "Type d'échec",
-      "severity": 8,
+      "severity": 7,
       "recommendations": ["rec1", "rec2"]
     }
   ]
@@ -206,17 +230,20 @@ ${prompt}`;
   ): Promise<string> {
     const sortedFailures = failures.sort((a, b) => b.severity - a.severity);
 
-    const systemPrompt = `Tu es un expert en amélioration de prompts qui applique des corrections ciblées.
+    const systemPrompt = `Tu es un expert en amélioration de prompts qui applique des corrections ciblées et CONCRÈTES.
 
-**MISSION**: Corriger les faiblesses identifiées tout en préservant l'intention originale.
+**MISSION**: Corriger TOUTES les faiblesses identifiées en appliquant des améliorations VISIBLES et MESURABLES.
 
 **PRINCIPES**:
-- Traiter les échecs par ordre de sévérité
-- Appliquer des corrections précises et mesurables
-- Préserver la structure existante quand elle est bonne
-- Ne pas sur-corriger
+- Traiter TOUS les échecs par ordre de sévérité
+- Appliquer des corrections CONCRÈTES et SUBSTANTIELLES (pas cosmétiques)
+- Améliorer la clarté, la structure, et les détails
+- Ajouter des exemples, contraintes, ou contexte si recommandé
+- Le prompt amélioré DOIT être significativement différent de l'original
 
-Retourne UNIQUEMENT le prompt amélioré, sans commentaires.`;
+**IMPORTANT**: Ne retourne PAS le prompt original intact. Tu DOIS appliquer les améliorations demandées.
+
+Retourne UNIQUEMENT le prompt amélioré, sans commentaires ni explications.`;
 
     const userPrompt = `**PROMPT À AMÉLIORER**:
 ${prompt}
