@@ -49,7 +49,7 @@ const OPENROUTER_KEYS = [
 const OPENROUTER_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
   keys: OPENROUTER_KEYS,
-  model: 'openai/gpt-4o'
+  model: 'anthropic/claude-3-opus'
 };
 
 // Configuration: utiliser DeepSeek pour les utilisateurs premium
