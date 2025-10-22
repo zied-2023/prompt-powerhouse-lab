@@ -52,15 +52,43 @@ const USE_DEEPSEEK_FOR_PREMIUM = false;
 
 class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
-    // Utiliser Mistral pour tous les utilisateurs
-    console.log('🎯 Utilisation de Mistral API avec votre clé', { isAuthenticated, userHasCredits });
-    return {
-      provider: 'mistral',
-      model: MISTRAL_CONFIG.model,
-      apiKey: MISTRAL_CONFIG.key,
-      endpoint: MISTRAL_CONFIG.endpoint,
-      useEdgeFunction: false
-    };
+    // Si l'utilisateur a des crédits et est authentifié, on peut utiliser OpenRouter ou DeepSeek
+    if (isAuthenticated && userHasCredits && USE_DEEPSEEK_FOR_PREMIUM && DEEPSEEK_CONFIG.key) {
+      console.log('🎯 Utilisation de DeepSeek pour utilisateur premium', { isAuthenticated, userHasCredits });
+      return {
+        provider: 'deepseek',
+        model: DEEPSEEK_CONFIG.model,
+        apiKey: DEEPSEEK_CONFIG.key,
+        endpoint: DEEPSEEK_CONFIG.endpoint,
+        useEdgeFunction: false
+      };
+    }
+
+    // Vérifier si OpenRouter est disponible
+    if (OPENROUTER_CONFIG.key) {
+      console.log('🎯 Utilisation d\'OpenRouter (Claude 3.5)', { isAuthenticated, userHasCredits });
+      return {
+        provider: 'openrouter',
+        model: OPENROUTER_CONFIG.model,
+        apiKey: OPENROUTER_CONFIG.key,
+        endpoint: OPENROUTER_CONFIG.endpoint,
+        useEdgeFunction: false
+      };
+    }
+
+    // Fallback sur Mistral si disponible
+    if (MISTRAL_CONFIG.key) {
+      console.log('🎯 Utilisation de Mistral API', { isAuthenticated, userHasCredits });
+      return {
+        provider: 'mistral',
+        model: MISTRAL_CONFIG.model,
+        apiKey: MISTRAL_CONFIG.key,
+        endpoint: MISTRAL_CONFIG.endpoint,
+        useEdgeFunction: false
+      };
+    }
+
+    throw new Error('Aucune clé API configurée. Veuillez configurer au moins une clé API (Mistral, OpenRouter ou DeepSeek).');
   }
 
   async callLLM(config: LLMConfig, request: LLMRequest): Promise<LLMResponse> {
