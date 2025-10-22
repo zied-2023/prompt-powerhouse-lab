@@ -40,9 +40,15 @@ const DEEPSEEK_CONFIG = {
   model: 'deepseek-chat'
 };
 
+const OPENROUTER_KEYS = [
+  import.meta.env.VITE_OPENROUTER_API_KEY_PRIMARY,
+  import.meta.env.VITE_OPENROUTER_API_KEY_SECONDARY,
+  import.meta.env.VITE_OPENROUTER_API_KEY_TERTIARY
+].filter(key => key);
+
 const OPENROUTER_CONFIG = {
   endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  key: import.meta.env.VITE_OPENROUTER_API_KEY,
+  keys: OPENROUTER_KEYS,
   model: 'anthropic/claude-3.5-sonnet'
 };
 
@@ -64,13 +70,13 @@ class LLMRouter {
       };
     }
 
-    // Vérifier si OpenRouter est disponible
-    if (OPENROUTER_CONFIG.key) {
-      console.log('🎯 Utilisation d\'OpenRouter (Claude 3.5)', { isAuthenticated, userHasCredits });
+    // Vérifier si OpenRouter est disponible avec plusieurs clés
+    if (OPENROUTER_CONFIG.keys.length > 0) {
+      console.log(`🎯 Utilisation d\'OpenRouter (Claude 3.5) - ${OPENROUTER_CONFIG.keys.length} clés disponibles`, { isAuthenticated, userHasCredits });
       return {
         provider: 'openrouter',
         model: OPENROUTER_CONFIG.model,
-        apiKey: OPENROUTER_CONFIG.key,
+        apiKey: OPENROUTER_CONFIG.keys[0],
         endpoint: OPENROUTER_CONFIG.endpoint,
         useEdgeFunction: false
       };
@@ -126,65 +132,88 @@ class LLMRouter {
   }
 
   async callOpenRouter(request: LLMRequest): Promise<LLMResponse> {
-    console.log('🔗 Appel OpenRouter API...');
-    const startTime = Date.now();
+    console.log(`🔗 Appel OpenRouter API avec ${OPENROUTER_CONFIG.keys.length} clés disponibles...`);
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 45000);
+    let lastError: Error | null = null;
 
-    try {
-      const response = await fetch(OPENROUTER_CONFIG.endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${OPENROUTER_CONFIG.key}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': window.location.origin,
-          'X-Title': 'Prompt Generator Pro'
-        },
-        body: JSON.stringify({
-          model: OPENROUTER_CONFIG.model,
-          messages: request.messages,
-          temperature: request.temperature || 0.7,
-          max_tokens: request.maxTokens || 8000
-        }),
-        signal: controller.signal
-      });
+    for (let i = 0; i < OPENROUTER_CONFIG.keys.length; i++) {
+      const apiKey = OPENROUTER_CONFIG.keys[i];
+      console.log(`🔑 Tentative avec la clé #${i + 1}/${OPENROUTER_CONFIG.keys.length}`);
+      const startTime = Date.now();
 
-      clearTimeout(timeoutId);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error('❌ OpenRouter error:', { status: response.status, error: errorData });
+      try {
+        const response = await fetch(OPENROUTER_CONFIG.endpoint, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': window.location.origin,
+            'X-Title': 'Prompt Generator Pro'
+          },
+          body: JSON.stringify({
+            model: OPENROUTER_CONFIG.model,
+            messages: request.messages,
+            temperature: request.temperature || 0.7,
+            max_tokens: request.maxTokens || 8000
+          }),
+          signal: controller.signal
+        });
 
-        if (response.status === 402) {
-          throw new Error('La clé API OpenRouter n\'a plus de crédits disponibles.');
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.warn(`⚠️ OpenRouter clé #${i + 1} a échoué:`, { status: response.status, error: errorData });
+
+          if (response.status === 402 || response.status === 429) {
+            console.log(`⏭️ Passage à la clé suivante...`);
+            lastError = new Error(`Clé #${i + 1}: Crédits épuisés ou limite atteinte`);
+            continue;
+          }
+
+          lastError = new Error(`Erreur API OpenRouter clé #${i + 1}: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
+          continue;
         }
 
-        throw new Error(`Erreur API OpenRouter: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
-      }
+        const data = await response.json();
+        const latency = Date.now() - startTime;
+        console.log(`✅ OpenRouter API réponse reçue avec la clé #${i + 1} en ${latency}ms`);
 
-      const data = await response.json();
-      const latency = Date.now() - startTime;
-      console.log(`✅ OpenRouter API réponse reçue en ${latency}ms`);
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+          console.error('❌ Format de réponse OpenRouter inattendu:', data);
+          lastError = new Error('Format de réponse API OpenRouter inattendu');
+          continue;
+        }
 
-      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-        console.error('❌ Format de réponse OpenRouter inattendu:', data);
-        throw new Error('Format de réponse API OpenRouter inattendu');
+        return {
+          content: data.choices[0].message.content,
+          usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+          model: OPENROUTER_CONFIG.model,
+          provider: 'openrouter'
+        };
+      } catch (error: any) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+          console.warn(`⚠️ Timeout avec la clé #${i + 1}`);
+          lastError = new Error(`Timeout avec la clé #${i + 1}`);
+          continue;
+        }
+        console.warn(`⚠️ Erreur avec la clé #${i + 1}:`, error.message);
+        lastError = error;
+        continue;
       }
-
-      return {
-        content: data.choices[0].message.content,
-        usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-        model: OPENROUTER_CONFIG.model,
-        provider: 'openrouter'
-      };
-    } catch (error: any) {
-      clearTimeout(timeoutId);
-      if (error.name === 'AbortError') {
-        throw new Error('Timeout: La requête OpenRouter a pris trop de temps (>45s)');
-      }
-      throw error;
     }
+
+    console.error('❌ Toutes les clés OpenRouter ont échoué, fallback sur Mistral');
+    if (MISTRAL_CONFIG.key) {
+      console.log('🔄 Utilisation de Mistral comme fallback...');
+      return this.callMistral(request);
+    }
+
+    throw lastError || new Error('Toutes les clés OpenRouter ont échoué et aucun fallback disponible');
   }
 
   async callMistral(request: LLMRequest): Promise<LLMResponse> {
