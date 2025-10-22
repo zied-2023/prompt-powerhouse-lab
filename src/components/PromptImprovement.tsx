@@ -517,6 +517,12 @@ RÈGLES:
                 </p>
               </div>
 
+              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                  💡 <strong>Astuce :</strong> Vous pouvez analyser et optimiser davantage ce prompt dans la section <strong>Analytics</strong> pour suivre ses performances.
+                </p>
+              </div>
+
               {/* Feedback avec étoiles */}
               {currentTraceId && (
                 <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
