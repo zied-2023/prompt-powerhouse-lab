@@ -345,11 +345,21 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       return;
     }
 
+    // Vérifier les crédits AVANT la génération
+    const creditsRemaining = credits?.remaining_credits || 0;
+    if (creditsRemaining <= 0) {
+      toast({
+        title: "Crédits épuisés",
+        description: "Vous n'avez plus de crédits. Rechargez votre compte pour continuer.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsGenerating(true);
     const startTime = Date.now();
     const traceId = opikService.generateTraceId();
 
-    const creditsRemaining = credits?.remaining_credits || 0;
     const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
 
     try {
@@ -357,13 +367,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       const endTime = Date.now();
       const latencyMs = endTime - startTime;
 
-      // Décompter le crédit après le succès de la génération
-      const creditUsed = await useCredit();
-      if (!creditUsed) {
-        throw new Error('Impossible de décompter le crédit');
-      }
-
       const finalPrompt = result.content;
+
+      // Décompter le crédit après le succès de la génération (non bloquant)
+      useCredit().catch(err => {
+        console.error('Erreur lors du décompte du crédit:', err);
+      });
 
       setGeneratedPrompt(finalPrompt);
       setCurrentTraceId(traceId);

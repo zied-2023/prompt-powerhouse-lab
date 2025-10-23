@@ -41,12 +41,22 @@ const PromptImprovement = () => {
       return;
     }
 
+    // Vérifier les crédits AVANT l'amélioration
+    const creditsRemaining = credits?.remaining_credits || 0;
+    if (creditsRemaining <= 0) {
+      toast({
+        title: "Crédits épuisés",
+        description: "Vous n'avez plus de crédits. Rechargez votre compte pour continuer.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsImproving(true);
     const startTime = Date.now();
     const traceId = opikService.generateTraceId();
 
     const isAuthenticated = !!user;
-    const creditsRemaining = credits?.remaining_credits || 0;
     const userHasCredits = creditsRemaining > 0;
 
     console.log('🚀 Amélioration de prompt:', {
@@ -131,15 +141,6 @@ RÈGLES:
           setImprovements(improvementsList);
         }
 
-        // Décompter le crédit après le succès de la génération
-        const creditUsed = await useCredit();
-        if (!creditUsed) {
-          throw new Error('Impossible de décompter le crédit');
-        }
-
-        // Forcer la mise à jour des crédits dans l'interface
-        await refetchCredits();
-
         // Déterminer le mode selon les crédits
         const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
         const modeLabel = mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium';
@@ -154,6 +155,11 @@ RÈGLES:
 
         const endTime = Date.now();
         const latencyMs = endTime - startTime;
+
+        // Décompter le crédit après le succès (non bloquant)
+        useCredit().catch(err => {
+          console.error('Erreur lors du décompte du crédit:', err);
+        });
 
         // Calculate cost
         const tokensUsed = llmResponse.usage.total_tokens;

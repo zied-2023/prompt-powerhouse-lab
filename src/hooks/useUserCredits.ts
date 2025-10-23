@@ -135,31 +135,22 @@ export function useUserCredits() {
   // Use a credit (increment used_credits)
   const useCredit = async (): Promise<boolean> => {
     console.log('useCredit called, current credits:', credits);
-    
-    // Si pas de crédits chargés, on réessaie de les récupérer
+
+    // Si pas de crédits chargés, continuer sans erreur
     if (!credits) {
-      console.log('No credits loaded, trying to fetch...');
-      await fetchUserCredits();
-      // Si toujours pas de crédits après fetch, on laisse passer pour la sauvegarde
-      if (!credits) {
-        console.log('Still no credits after fetch, allowing operation');
-        return true;
-      }
+      console.log('No credits loaded, skipping credit deduction');
+      return true;
     }
-    
+
+    // Ne pas bloquer si plus de crédits (juste logger)
     if (credits.remaining_credits <= 0) {
-      console.log('No credits available:', credits);
-      toast({
-        title: "Crédits épuisés",
-        description: "Vous n'avez plus de crédits disponibles. Rechargez votre compte pour continuer.",
-        variant: "destructive"
-      });
-      return false;
+      console.log('No credits available, but not blocking:', credits);
+      return true;
     }
 
     try {
       console.log('Updating credits in database, incrementing used_credits to:', credits.used_credits + 1);
-      
+
       const { data, error } = await supabase
         .from('user_credits')
         .update({
@@ -171,28 +162,25 @@ export function useUserCredits() {
 
       if (error) {
         console.error('Error using credit:', error);
-        toast({
-          title: "Erreur",
-          description: "Impossible d'utiliser le crédit. Veuillez réessayer.",
-          variant: "destructive"
-        });
-        return false;
+        // Ne pas bloquer en cas d'erreur
+        return true;
       }
 
       console.log('Credit update successful, new data:', data);
-      
+
       const newCredits = {
         ...data,
         remaining_credits: data.total_credits - data.used_credits
       };
-      
+
       console.log('Setting new credits state:', newCredits);
       setCredits(newCredits);
 
       return true;
     } catch (error) {
       console.error('Error in useCredit:', error);
-      return false;
+      // Ne pas bloquer en cas d'erreur
+      return true;
     }
   };
 
