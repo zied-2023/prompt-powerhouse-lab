@@ -272,20 +272,20 @@ const Index = () => {
               <Palette className="h-4 w-4" />
               <span>{t('categories')}</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="history" 
+            <TabsTrigger
+              value="history"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <History className="h-4 w-4" />
               <span>{t('history')}</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="security" 
+            {/* <TabsTrigger
+              value="security"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <Shield className="h-4 w-4" />
               <span>{t('security')}</span>
-            </TabsTrigger>
+            </TabsTrigger> */}
             <TabsTrigger
               value="integration"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
@@ -300,13 +300,13 @@ const Index = () => {
               <Activity className="h-4 w-4" />
               <span>{t('analytics')}</span>
             </TabsTrigger>
-            <TabsTrigger
+            {/* <TabsTrigger
               value="api-keys"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
             >
               <Key className="h-4 w-4" />
               <span>{t('apiKeys')}</span>
-            </TabsTrigger>
+            </TabsTrigger> */}
           </TabsList>
 
           <TabsContent value="generator" className="space-y-8">
@@ -345,9 +345,9 @@ const Index = () => {
             <PromptHistory />
           </TabsContent>
 
-          <TabsContent value="security" className="space-y-8">
+          {/* <TabsContent value="security" className="space-y-8">
             <SecuritySettings />
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="integration" className="space-y-8">
             <IntegrationPanel />
@@ -357,9 +357,9 @@ const Index = () => {
             <OpikAnalyticsDashboard />
           </TabsContent>
 
-          <TabsContent value="api-keys" className="space-y-8">
+          {/* <TabsContent value="api-keys" className="space-y-8">
             <IntelligentApiKeyManager />
-          </TabsContent>
+          </TabsContent> */}
 
         </Tabs>
       </div>
