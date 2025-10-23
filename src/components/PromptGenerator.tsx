@@ -198,31 +198,40 @@ const PromptGenerator = () => {
       }[formData.length] : null;
 
       const systemPrompt = mode === 'free'
-        ? `Tu es expert en prompts IA ultra-compacts. Max 150 mots STRICT.
+        ? `Tu es expert en création de prompts IA structurés et efficaces.
 
-Template OBLIGATOIRE (RESPECTER À LA LETTRE):
-[Rôle IA]: Tu es un(e) [rôle].
-[Objectif]: Ta mission est de [verbe d'action précis + résultat attendu].
-[Contexte]: [secteur ou cas d'usage en une phrase].
-[Livrable attendu]: Fournis [type de sortie : texte, liste, plan, code].
-[Contraintes]: ≤150 mots, ton [style], [1-2 règles de forme].
+Structure OBLIGATOIRE:
+**RÔLE**: [Expert spécialisé]
+**OBJECTIF**: [Précis et mesurable]
+**CONTEXTE**: [Situation en 1-2 phrases]
+**INSTRUCTIONS**:
+- [Points clés directs]
+**FORMAT**: [Type sortie]
+**CONTRAINTES**: [Ton, style, limites]
 
-RÈGLES STRICTES:
-- Utiliser EXACTEMENT ce format avec les crochets []
-- Chaque ligne = 1 phrase courte
-- ZÉRO détail superflu
-- ZÉRO exemple long`
+RÈGLES CRITIQUES:
+- IMPÉRATIF: Tu DOIS terminer COMPLÈTEMENT le prompt avant de t'arrêter
+- JAMAIS de prompt tronqué ou incomplet
+- Toutes les sections doivent être finies avec ponctuation finale
+- Concis mais informatif (150-250 mots)
+- Si tu manques d'espace, privilégie un prompt court MAIS COMPLET`
         : mode === 'basic'
-        ? `Expert prompts IA. Max 300 tokens strict.
+        ? `Tu es expert en création de prompts IA structurés.
 
 Structure OBLIGATOIRE:
 **RÔLE**: [Expert type]
 **OBJECTIF**: [Précis, mesurable]
 **INSTRUCTIONS**:
-- [Points clés directs uniquement]
+- [Points clés directs]
 **FORMAT**: [Type sortie]
+**CONTRAINTES**: [Limites et style]
 
-Max 2 styles. ZÉRO exemple complet. Méthodologie intégrée aux instructions.`
+RÈGLES CRITIQUES:
+- IMPÉRATIF: Tu DOIS terminer COMPLÈTEMENT le prompt
+- JAMAIS de texte tronqué ou incomplet
+- Toutes les sections finies avec ponctuation
+- 250-350 mots maximum
+- Privilégie COMPLET sur LONG`
         : lengthConstraints
         ? `Expert prompts IA professionnel. Longueur cible: ${lengthConstraints.words} (${lengthConstraints.description}).
 
@@ -266,12 +275,13 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       }
 
       // Déterminer les tokens max selon le mode et la longueur demandée
+      // IMPORTANT: On génère d'abord un prompt complet, la compression se fait après
       const maxTokensByMode = mode === 'free'
-        ? 4000
+        ? 1500  // Assez pour générer un prompt complet de 200-300 mots
         : mode === 'basic'
-        ? 6000
+        ? 2000  // Assez pour générer un prompt complet de 300-400 mots
         : lengthConstraints
-        ? lengthConstraints.tokens
+        ? lengthConstraints.tokens + 500  // Marge pour génération complète
         : 8000;
 
       const llmResponse = await llmRouter.generatePrompt(

@@ -188,8 +188,16 @@ class OpikOptimizer {
     const lastLine = prompt.trim().split('\n').pop() || '';
     const lastChar = prompt.trim().slice(-1);
 
-    // Si le prompt ne se termine pas par une ponctuation appropriée
-    if (lastChar && !lastChar.match(/[.!?:]/)) {
+    console.log('🔍 Vérification complétude du prompt:', {
+      longueur: prompt.length,
+      derniereLigne: lastLine.substring(0, 50),
+      dernierCaractère: lastChar
+    });
+
+    // Si le prompt se termine au milieu d'un mot ou sans ponctuation
+    if (lastChar && !lastChar.match(/[.!?:\n]/)) {
+      console.log('⚠️ Prompt incomplet détecté, complétion en cours...');
+
       // Si c'est une liste à puces incomplète
       if (lastLine.startsWith('-') || lastLine.startsWith('•')) {
         prompt += '\n- Respect des contraintes et format demandé';
@@ -198,10 +206,21 @@ class OpikOptimizer {
       else if (lastLine.includes('**')) {
         prompt += ': Instructions claires et précises';
       }
-      // Sinon, terminer proprement la phrase
+      // Si ça se termine au milieu d'une phrase (pas de ponctuation)
+      else if (lastLine.length > 0 && !lastLine.match(/[.!?]$/)) {
+        // Essayer de terminer la phrase intelligemment
+        if (lastLine.includes('libre de') || lastLine.includes('libre d')) {
+          prompt += ' droits';
+        } else {
+          prompt += '.';
+        }
+      }
+      // Sinon, terminer proprement
       else {
         prompt += '.';
       }
+
+      console.log('✅ Prompt complété');
     }
 
     // Vérifier si des sections essentielles sont incomplètes
