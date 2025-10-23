@@ -377,20 +377,7 @@ class OpikOptimizer {
     category?: string
   ): Promise<void> {
     try {
-      const { error } = await supabase
-        .from('opik_prompt_optimizations')
-        .insert({
-          user_id: userId,
-          original_prompt: originalPrompt,
-          optimized_prompt: optimizedPrompt,
-          quality_score: score,
-          category: category || 'general',
-          tokens_saved: this.estimateTokens(originalPrompt) - this.estimateTokens(optimizedPrompt)
-        });
-
-      if (error) {
-        console.error('Erreur lors du logging de l\'optimisation:', error);
-      }
+      console.log('📝 Logging optimization (skipped - table removed)');
     } catch (error) {
       console.error('Exception lors du logging:', error);
     }

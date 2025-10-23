@@ -298,29 +298,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
       // Appliquer la compression selon le mode avec gestion de longueur
       if (mode === 'free') {
-        // Mode GRATUIT: Utiliser Opik pour optimiser AVANT la compression
-        console.log('🚀 Mode Gratuit: Optimisation Opik activée');
-
-        try {
-          const userId = user?.id;
-
-          if (userId) {
-            const opikResult = await opikOptimizer.optimizePrompt(
-              generatedContent,
-              userId,
-              formData.category
-            );
-
-            console.log('✅ Opik Optimization réussie');
-            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
-            console.log(`🎯 Améliorations: ${opikResult.improvements.join(', ')}`);
-
-            // Utiliser le prompt optimisé par Opik
-            generatedContent = opikResult.optimizedPrompt;
-          }
-        } catch (error) {
-          console.error('⚠️ Erreur Opik, utilisation du prompt original:', error);
-        }
+        // Mode GRATUIT: Compression uniquement (Opik désactivé pour éviter les erreurs)
+        console.log('🚀 Mode Gratuit: Compression activée');
 
         // Ensuite appliquer la compression pour respecter les limites
         const result = PromptCompressor.compressFree(generatedContent, promptLength);
@@ -328,56 +307,16 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.log(`Mode Gratuit (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else if (mode === 'basic') {
-        // Mode BASIQUE: Utiliser Opik pour optimiser AVANT la compression
-        console.log('🚀 Mode Basique: Optimisation Opik activée');
-
-        try {
-          const userId = user?.id;
-
-          if (userId) {
-            const opikResult = await opikOptimizer.optimizePrompt(
-              generatedContent,
-              userId,
-              formData.category
-            );
-
-            console.log('✅ Opik Optimization réussie (Basique)');
-            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
-            console.log(`🎯 Améliorations: ${opikResult.improvements.join(', ')}`);
-
-            generatedContent = opikResult.optimizedPrompt;
-          }
-        } catch (error) {
-          console.error('⚠️ Erreur Opik (Basique), utilisation du prompt original:', error);
-        }
+        // Mode BASIQUE: Compression uniquement (Opik désactivé pour éviter les erreurs)
+        console.log('🚀 Mode Basique: Compression activée');
 
         const result = PromptCompressor.compressBasic(generatedContent, promptLength);
         generatedContent = result.compressed;
         console.log(`Mode Basique (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else {
-        // Mode PREMIUM: Utiliser Opik pour optimiser et compléter les prompts
-        console.log('🚀 Mode Premium: Optimisation Opik activée');
-
-        try {
-          const userId = user?.id;
-
-          if (userId) {
-            const opikResult = await opikOptimizer.optimizePrompt(
-              generatedContent,
-              userId,
-              formData.category
-            );
-
-            console.log('✅ Opik Optimization réussie (Premium)');
-            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
-            console.log(`🎯 Améliorations: ${opikResult.improvements.join(', ')}`);
-
-            generatedContent = opikResult.optimizedPrompt;
-          }
-        } catch (error) {
-          console.error('⚠️ Erreur Opik (Premium), utilisation du prompt original:', error);
-        }
+        // Mode PREMIUM: Formatage premium uniquement (Opik désactivé pour éviter les erreurs)
+        console.log('🚀 Mode Premium: Formatage activé');
 
         generatedContent = PromptCompressor.formatPremium(generatedContent, promptLength);
         const tokens = PromptCompressor['estimateTokens'](generatedContent);
@@ -424,21 +363,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         throw new Error('Impossible de décompter le crédit');
       }
 
-      let finalPrompt = result.content;
-      let optimizationInfo = null;
-
-      // Optimisation automatique par Opik pour le mode premium
-      if (mode === 'premium' && user) {
-        console.log('🎯 Mode Premium détecté - Application de l\'optimisation Opik automatique');
-        const optimization = await opikOptimizer.optimizePrompt(
-          result.content,
-          user.id,
-          formData.category
-        );
-        finalPrompt = optimization.optimizedPrompt;
-        optimizationInfo = optimization;
-        console.log('✨ Optimisation Opik appliquée:', optimization.improvements);
-      }
+      const finalPrompt = result.content;
 
       setGeneratedPrompt(finalPrompt);
       setCurrentTraceId(traceId);
@@ -467,8 +392,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             category: formData.category,
             subcategory: formData.subcategory,
             tone: formData.tone,
-            optimized: mode === 'premium',
-            optimizationScore: optimizationInfo?.score
+            mode: mode
           }
         });
 
@@ -483,10 +407,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       
       const modeLabel = mode === 'free' ? 'Gratuit (150 tokens)' : mode === 'basic' ? 'Basique (300 tokens)' : 'Premium (600 tokens)';
 
-      let successMessage = `Mode ${modeLabel} - Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`;
-      if (mode === 'premium' && optimizationInfo) {
-        successMessage += `\n✨ Optimisé par Opik (Score: ${optimizationInfo.score.toFixed(1)}/10)`;
-      }
+      const successMessage = `Mode ${modeLabel} - Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`;
 
       toast({
         title: t('promptCreatedSuccess'),
