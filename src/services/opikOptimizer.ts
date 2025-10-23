@@ -146,25 +146,35 @@ class OpikOptimizer {
   private async applyOptimizations(prompt: string, analysis: any): Promise<string> {
     let optimized = prompt;
 
-    // Compléter les prompts tronqués ou incomplets
+    // ÉTAPE 1: Compléter les prompts tronqués ou incomplets
     optimized = this.completeIncompletePrompt(optimized);
 
-    // Si le prompt manque de structure, l'améliorer
+    // ÉTAPE 2: Si le prompt est trop long, le résumer intelligemment
+    const estimatedTokens = this.estimateTokens(optimized);
+    if (estimatedTokens > 800) {
+      console.log(`⚠️ Prompt trop long (${estimatedTokens} tokens), résumé intelligent...`);
+      optimized = this.smartSummarize(optimized);
+    }
+
+    // ÉTAPE 3: Garantir une structure complète et cohérente
+    optimized = this.ensureCompleteStructure(optimized);
+
+    // ÉTAPE 4: Si le prompt manque de structure, l'améliorer
     if (analysis.structure < 5) {
       optimized = this.improveStructure(optimized);
     }
 
-    // Si le prompt manque de clarté, l'améliorer
+    // ÉTAPE 5: Si le prompt manque de clarté, l'améliorer
     if (analysis.clarity < 6) {
       optimized = this.improveClarity(optimized);
     }
 
-    // Si le prompt manque de spécificité, l'améliorer
+    // ÉTAPE 6: Si le prompt manque de spécificité, l'améliorer
     if (analysis.specificity < 6) {
       optimized = this.improveSpecificity(optimized);
     }
 
-    // Ajouter des sections manquantes essentielles
+    // ÉTAPE 7: Ajouter des sections manquantes essentielles
     if (!analysis.hasRole) {
       optimized = this.addRoleSection(optimized);
     }
@@ -178,6 +188,144 @@ class OpikOptimizer {
     }
 
     return optimized;
+  }
+
+  /**
+   * Résume intelligemment un prompt trop long tout en préservant l'essence
+   */
+  private smartSummarize(prompt: string): string {
+    console.log('📝 Résumé intelligent du prompt...');
+
+    // Extraire les sections principales
+    const sections = this.extractSections(prompt);
+
+    // Construire un prompt résumé mais complet
+    let summarized = '';
+
+    // RÔLE (garder concis)
+    if (sections.role) {
+      const roleText = sections.role.split('\n')[0].substring(0, 100);
+      summarized += `**RÔLE**: ${roleText}\n\n`;
+    }
+
+    // OBJECTIF (garder l'essentiel)
+    if (sections.objective) {
+      const objectiveText = sections.objective.split('\n').slice(0, 2).join(' ').substring(0, 150);
+      summarized += `**OBJECTIF**: ${objectiveText}\n\n`;
+    }
+
+    // CONTEXTE (résumer si trop long)
+    if (sections.context) {
+      const contextText = sections.context.split('\n').slice(0, 2).join(' ').substring(0, 120);
+      summarized += `**CONTEXTE**: ${contextText}\n\n`;
+    }
+
+    // INSTRUCTIONS (garder les points clés)
+    if (sections.instructions) {
+      const instructionsList = sections.instructions
+        .split('\n')
+        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('•'))
+        .slice(0, 5);  // Max 5 instructions
+
+      if (instructionsList.length > 0) {
+        summarized += `**INSTRUCTIONS**:\n${instructionsList.join('\n')}\n\n`;
+      }
+    }
+
+    // FORMAT (garder concis)
+    if (sections.format) {
+      const formatText = sections.format.split('\n').slice(0, 2).join(' ').substring(0, 100);
+      summarized += `**FORMAT**: ${formatText}\n\n`;
+    }
+
+    // CONTRAINTES (garder l'essentiel)
+    if (sections.constraints) {
+      const constraintsList = sections.constraints
+        .split('\n')
+        .filter(line => line.trim().startsWith('-') || line.trim().startsWith('•'))
+        .slice(0, 3);  // Max 3 contraintes
+
+      if (constraintsList.length > 0) {
+        summarized += `**CONTRAINTES**:\n${constraintsList.join('\n')}`;
+      }
+    }
+
+    console.log(`✅ Prompt résumé: ${this.estimateTokens(prompt)} → ${this.estimateTokens(summarized)} tokens`);
+    return summarized.trim();
+  }
+
+  /**
+   * Extrait les sections d'un prompt structuré
+   */
+  private extractSections(prompt: string): {
+    role?: string;
+    objective?: string;
+    context?: string;
+    instructions?: string;
+    format?: string;
+    constraints?: string;
+  } {
+    const sections: any = {};
+
+    // Patterns pour détecter les sections
+    const patterns = {
+      role: /\*\*(?:RÔLE|ROLE)\*\*:?\s*([\s\S]*?)(?=\*\*|$)/i,
+      objective: /\*\*(?:OBJECTIF|OBJECTIVE|MISSION)\*\*:?\s*([\s\S]*?)(?=\*\*|$)/i,
+      context: /\*\*(?:CONTEXTE|CONTEXT)\*\*:?\s*([\s\S]*?)(?=\*\*|$)/i,
+      instructions: /\*\*(?:INSTRUCTIONS|TÂCHES|TASKS)\*\*:?\s*([\s\S]*?)(?=\*\*|$)/i,
+      format: /\*\*(?:FORMAT|LIVRABLE|OUTPUT)\*\*:?\s*([\s\S]*?)(?=\*\*|$)/i,
+      constraints: /\*\*(?:CONTRAINTES|CONSTRAINTS|RÈGLES)\*\*:?\s*([\s\S]*?)(?=\*\*|$)/i,
+    };
+
+    for (const [key, pattern] of Object.entries(patterns)) {
+      const match = prompt.match(pattern);
+      if (match && match[1]) {
+        sections[key] = match[1].trim();
+      }
+    }
+
+    return sections;
+  }
+
+  /**
+   * Garantit que le prompt a une structure complète et cohérente
+   */
+  private ensureCompleteStructure(prompt: string): string {
+    console.log('🔍 Vérification structure complète...');
+
+    // Vérifier que toutes les sections se terminent proprement
+    const lines = prompt.split('\n');
+    const fixedLines: string[] = [];
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const nextLine = i < lines.length - 1 ? lines[i + 1] : null;
+
+      fixedLines.push(line);
+
+      // Si une section commence mais la suivante aussi (section vide)
+      if (line.match(/\*\*[A-Z]+\*\*:?\s*$/) && nextLine?.match(/\*\*/)) {
+        // Ajouter un contenu par défaut
+        if (line.includes('RÔLE')) {
+          fixedLines.push('Expert assistant IA spécialisé');
+        } else if (line.includes('OBJECTIF')) {
+          fixedLines.push('Accomplir la tâche demandée avec précision');
+        } else if (line.includes('FORMAT')) {
+          fixedLines.push('Réponse structurée et claire');
+        }
+      }
+    }
+
+    let complete = fixedLines.join('\n');
+
+    // S'assurer que le prompt se termine correctement
+    const lastLine = complete.trim().split('\n').pop() || '';
+    if (lastLine && !lastLine.match(/[.!?]$/)) {
+      complete += '.';
+    }
+
+    console.log('✅ Structure complète vérifiée');
+    return complete;
   }
 
   /**
@@ -324,6 +472,15 @@ class OpikOptimizer {
       improvements.push('Complétion du prompt tronqué');
     }
 
+    // Détecter si un résumé intelligent a été appliqué
+    const originalTokens = this.estimateTokens(original);
+    const optimizedTokens = this.estimateTokens(optimized);
+
+    if (originalTokens > 800 && optimizedTokens < originalTokens * 0.7) {
+      improvements.push('Résumé intelligent appliqué (prompt trop long)');
+      improvements.push(`Optimisation: ${originalTokens} → ${optimizedTokens} tokens (-${Math.round((1 - optimizedTokens/originalTokens) * 100)}%)`);
+    }
+
     if (!analysis.hasRole && optimized.includes('**RÔLE**')) {
       improvements.push('Ajout d\'une définition de rôle claire');
     }
@@ -348,10 +505,10 @@ class OpikOptimizer {
       improvements.push('Augmentation de la spécificité et de la précision');
     }
 
-    const originalTokens = this.estimateTokens(original);
-    const optimizedTokens = this.estimateTokens(optimized);
-    if (originalTokens > optimizedTokens) {
-      improvements.push(`Réduction de ${originalTokens - optimizedTokens} tokens`);
+    // Détecter si la structure a été complétée
+    if (optimized.includes('**RÔLE**') && optimized.includes('**OBJECTIF**') &&
+        optimized.includes('**FORMAT**') && optimized.includes('**CONTRAINTES**')) {
+      improvements.push('Structure complète garantie (Rôle, Objectif, Format, Contraintes)');
     }
 
     return improvements.length > 0 ? improvements : ['Prompt déjà optimisé'];
