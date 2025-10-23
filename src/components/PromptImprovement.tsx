@@ -144,9 +144,41 @@ RÈGLES:
         // Déterminer le mode selon les crédits
         const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
         const modeLabel = mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium';
-        console.log(`🎯 Mode ${modeLabel} - Amélioration sans Opik (désactivé)`);
 
-        const finalPrompt = extractedPrompt;
+        let finalPrompt = extractedPrompt;
+        let optimizationScore: number | null = null;
+
+        // Optimisation Opik pour modes gratuit et premium
+        if ((mode === 'free' || mode === 'premium') && user) {
+          console.log(`🎯 Mode ${modeLabel} - Application de l'optimisation Opik`);
+
+          try {
+            const optimization = await opikOptimizer.optimizePrompt(
+              extractedPrompt,
+              user.id,
+              'improvement'
+            );
+            finalPrompt = optimization.optimizedPrompt;
+            optimizationScore = optimization.score;
+
+            console.log('✨ Optimisation Opik appliquée (Improvement)');
+            console.log(`📊 Score de qualité: ${optimization.score}/10`);
+
+            // Ajouter les améliorations Opik à la liste
+            if (optimization.improvements.length > 0) {
+              setImprovements(prev => [...prev, ...optimization.improvements.map(imp => `[Opik] ${imp}`)]);
+            }
+          } catch (error) {
+            console.warn(`⚠️ Erreur Opik (${modeLabel}), utilisation du prompt original:`, error);
+          }
+        } else {
+          console.log(`🎯 Mode ${modeLabel} - Amélioration sans Opik`);
+        }
+
+        // Stocker le score de qualité
+        if (optimizationScore !== null) {
+          setQualityScore(optimizationScore);
+        }
 
         setImprovedPrompt(finalPrompt);
 
@@ -185,7 +217,9 @@ RÈGLES:
               provider: llmResponse.provider,
               type: 'improvement',
               has_objective: !!improvementObjective,
-              mode: mode
+              mode: mode,
+              opik_optimized: optimizationScore !== null,
+              opik_score: optimizationScore
             }
           });
 
@@ -196,7 +230,10 @@ RÈGLES:
           }
         }
 
-        const successMessage = `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`;
+        let successMessage = `${t('improvementSuccessDesc')} Crédits restants: ${credits?.remaining_credits ? credits.remaining_credits - 1 : 0}`;
+        if (optimizationScore !== null) {
+          successMessage += `\n✨ Optimisé par Opik (Score: ${optimizationScore.toFixed(1)}/10)`;
+        }
 
         toast({
           title: t('improvementSuccess'),
@@ -426,6 +463,11 @@ RÈGLES:
           <CardTitle className="flex items-center justify-between text-2xl">
             <span className="gradient-text">{t('improvedPrompt')}</span>
             <div className="flex items-center gap-3">
+              {qualityScore !== null && qualityScore > 0 && (
+                <div className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-full text-xs font-bold shadow-lg">
+                  Score Opik: {qualityScore.toFixed(1)}/10
+                </div>
+              )}
               {improvedPrompt && (
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">

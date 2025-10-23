@@ -298,8 +298,24 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
 
       // Appliquer la compression selon le mode avec gestion de longueur
       if (mode === 'free') {
-        // Mode GRATUIT: Compression uniquement (Opik désactivé pour éviter les erreurs)
-        console.log('🚀 Mode Gratuit: Compression activée');
+        // Mode GRATUIT: Optimisation Opik + Compression
+        console.log('🚀 Mode Gratuit: Optimisation Opik + Compression');
+
+        try {
+          const userId = user?.id;
+          if (userId) {
+            const opikResult = await opikOptimizer.optimizePrompt(
+              generatedContent,
+              userId,
+              formData.category
+            );
+            console.log('✅ Opik Optimization réussie (Mode Gratuit)');
+            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
+            generatedContent = opikResult.optimizedPrompt;
+          }
+        } catch (error) {
+          console.warn('⚠️ Erreur Opik (Mode Gratuit), utilisation du prompt original:', error);
+        }
 
         // Ensuite appliquer la compression pour respecter les limites
         const result = PromptCompressor.compressFree(generatedContent, promptLength);
@@ -307,7 +323,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.log(`Mode Gratuit (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else if (mode === 'basic') {
-        // Mode BASIQUE: Compression uniquement (Opik désactivé pour éviter les erreurs)
+        // Mode BASIQUE: Compression uniquement (pas d'optimisation Opik)
         console.log('🚀 Mode Basique: Compression activée');
 
         const result = PromptCompressor.compressBasic(generatedContent, promptLength);
@@ -315,8 +331,24 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.log(`Mode Basique (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else {
-        // Mode PREMIUM: Formatage premium uniquement (Opik désactivé pour éviter les erreurs)
-        console.log('🚀 Mode Premium: Formatage activé');
+        // Mode PREMIUM: Optimisation Opik + Formatage premium
+        console.log('🚀 Mode Premium: Optimisation Opik + Formatage');
+
+        try {
+          const userId = user?.id;
+          if (userId) {
+            const opikResult = await opikOptimizer.optimizePrompt(
+              generatedContent,
+              userId,
+              formData.category
+            );
+            console.log('✅ Opik Optimization réussie (Mode Premium)');
+            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
+            generatedContent = opikResult.optimizedPrompt;
+          }
+        } catch (error) {
+          console.warn('⚠️ Erreur Opik (Mode Premium), utilisation du prompt original:', error);
+        }
 
         generatedContent = PromptCompressor.formatPremium(generatedContent, promptLength);
         const tokens = PromptCompressor['estimateTokens'](generatedContent);
