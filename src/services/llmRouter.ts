@@ -28,28 +28,26 @@ interface LLMResponse {
   provider: string;
 }
 
-const MISTRAL_CONFIG = {
-  endpoint: 'https://api.mistral.ai/v1/chat/completions',
-  key: import.meta.env.VITE_MISTRAL_API_KEY,
-  model: 'mistral-large-latest'
-};
-
-const DEEPSEEK_CONFIG = {
-  endpoint: 'https://api.deepseek.com/v1/chat/completions',
-  key: import.meta.env.VITE_DEEPSEEK_API_KEY,
-  model: 'deepseek-chat'
-};
-
-const OPENROUTER_KEYS = [
-  import.meta.env.VITE_OPENROUTER_API_KEY_PRIMARY,
-  import.meta.env.VITE_OPENROUTER_API_KEY_SECONDARY,
-  import.meta.env.VITE_OPENROUTER_API_KEY_TERTIARY
-].filter(key => key);
-
-const OPENROUTER_CONFIG = {
-  endpoint: 'https://openrouter.ai/api/v1/chat/completions',
-  keys: OPENROUTER_KEYS,
-  model: 'anthropic/claude-3-opus'
+const PROVIDER_CONFIGS = {
+  mistral: {
+    endpoint: 'https://api.mistral.ai/v1/chat/completions',
+    model: 'mistral-large-latest',
+    envKey: import.meta.env.VITE_MISTRAL_API_KEY
+  },
+  deepseek: {
+    endpoint: 'https://api.deepseek.com/v1/chat/completions',
+    model: 'deepseek-chat',
+    envKey: import.meta.env.VITE_DEEPSEEK_API_KEY
+  },
+  openrouter: {
+    endpoint: 'https://openrouter.ai/api/v1/chat/completions',
+    model: 'anthropic/claude-3-opus',
+    envKeys: [
+      import.meta.env.VITE_OPENROUTER_API_KEY_PRIMARY,
+      import.meta.env.VITE_OPENROUTER_API_KEY_SECONDARY,
+      import.meta.env.VITE_OPENROUTER_API_KEY_TERTIARY
+    ].filter(key => key)
+  }
 };
 
 // Configuration: utiliser DeepSeek pour les utilisateurs premium
@@ -57,39 +55,123 @@ const OPENROUTER_CONFIG = {
 const USE_DEEPSEEK_FOR_PREMIUM = false;
 
 class LLMRouter {
-  async selectLLM(isAuthenticated: boolean, userHasCredits: boolean): Promise<LLMConfig> {
+  private cachedApiKeys: Map<string, string[]> = new Map();
+  private lastFetchTime = 0;
+  private cacheDuration = 60000; // 1 minute
+
+  async fetchApiKeysFromSupabase(userId?: string): Promise<Map<string, string[]>> {
+    const now = Date.now();
+
+    // Utiliser le cache si disponible et récent
+    if (this.cachedApiKeys.size > 0 && (now - this.lastFetchTime) < this.cacheDuration) {
+      console.log('🔑 Utilisation des clés API en cache');
+      return this.cachedApiKeys;
+    }
+
+    console.log('🔑 Récupération des clés API depuis Supabase...');
+
+    try {
+      let query = supabase
+        .from('api_keys')
+        .select('provider, api_key_encrypted')
+        .eq('is_active', true)
+        .order('priority', { ascending: false });
+
+      // Si un userId est fourni, filtrer par utilisateur
+      if (userId) {
+        query = query.eq('user_id', userId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error('❌ Erreur lors de la récupération des clés API:', error);
+        return this.getFallbackKeys();
+      }
+
+      if (!data || data.length === 0) {
+        console.warn('⚠️ Aucune clé API trouvée dans Supabase, utilisation des clés .env');
+        return this.getFallbackKeys();
+      }
+
+      // Organiser les clés par provider
+      const keysByProvider = new Map<string, string[]>();
+      for (const row of data) {
+        const provider = row.provider.toLowerCase();
+        if (!keysByProvider.has(provider)) {
+          keysByProvider.set(provider, []);
+        }
+        keysByProvider.get(provider)!.push(row.api_key_encrypted);
+      }
+
+      this.cachedApiKeys = keysByProvider;
+      this.lastFetchTime = now;
+
+      console.log('✅ Clés API récupérées:', Array.from(keysByProvider.keys()));
+      return keysByProvider;
+    } catch (error) {
+      console.error('❌ Exception lors de la récupération des clés API:', error);
+      return this.getFallbackKeys();
+    }
+  }
+
+  private getFallbackKeys(): Map<string, string[]> {
+    const fallbackKeys = new Map<string, string[]>();
+
+    if (PROVIDER_CONFIGS.mistral.envKey) {
+      fallbackKeys.set('mistral', [PROVIDER_CONFIGS.mistral.envKey]);
+    }
+    if (PROVIDER_CONFIGS.deepseek.envKey) {
+      fallbackKeys.set('deepseek', [PROVIDER_CONFIGS.deepseek.envKey]);
+    }
+    if (PROVIDER_CONFIGS.openrouter.envKeys.length > 0) {
+      fallbackKeys.set('openrouter', PROVIDER_CONFIGS.openrouter.envKeys);
+    }
+
+    return fallbackKeys;
+  }
+
+  async selectLLM(isAuthenticated: boolean, userHasCredits: boolean, userId?: string): Promise<LLMConfig> {
+    // Récupérer les clés API depuis Supabase ou fallback sur .env
+    const apiKeys = await this.fetchApiKeysFromSupabase(userId);
+
     // Si l'utilisateur a des crédits et est authentifié, on peut utiliser OpenRouter ou DeepSeek
-    if (isAuthenticated && userHasCredits && USE_DEEPSEEK_FOR_PREMIUM && DEEPSEEK_CONFIG.key) {
-      console.log('🎯 Utilisation de DeepSeek pour utilisateur premium', { isAuthenticated, userHasCredits });
-      return {
-        provider: 'deepseek',
-        model: DEEPSEEK_CONFIG.model,
-        apiKey: DEEPSEEK_CONFIG.key,
-        endpoint: DEEPSEEK_CONFIG.endpoint,
-        useEdgeFunction: false
-      };
+    if (isAuthenticated && userHasCredits && USE_DEEPSEEK_FOR_PREMIUM) {
+      const deepseekKeys = apiKeys.get('deepseek') || [];
+      if (deepseekKeys.length > 0) {
+        console.log('🎯 Utilisation de DeepSeek pour utilisateur premium', { isAuthenticated, userHasCredits });
+        return {
+          provider: 'deepseek',
+          model: PROVIDER_CONFIGS.deepseek.model,
+          apiKey: deepseekKeys[0],
+          endpoint: PROVIDER_CONFIGS.deepseek.endpoint,
+          useEdgeFunction: false
+        };
+      }
     }
 
     // Vérifier si OpenRouter est disponible avec plusieurs clés
-    if (OPENROUTER_CONFIG.keys.length > 0) {
-      console.log(`🎯 Utilisation d\'OpenRouter (Claude 3.5) - ${OPENROUTER_CONFIG.keys.length} clés disponibles`, { isAuthenticated, userHasCredits });
+    const openrouterKeys = apiKeys.get('openrouter') || [];
+    if (openrouterKeys.length > 0) {
+      console.log(`🎯 Utilisation d\'OpenRouter (Claude 3.5) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
       return {
         provider: 'openrouter',
-        model: OPENROUTER_CONFIG.model,
-        apiKey: OPENROUTER_CONFIG.keys[0],
-        endpoint: OPENROUTER_CONFIG.endpoint,
+        model: PROVIDER_CONFIGS.openrouter.model,
+        apiKey: openrouterKeys[0],
+        endpoint: PROVIDER_CONFIGS.openrouter.endpoint,
         useEdgeFunction: false
       };
     }
 
     // Fallback sur Mistral si disponible
-    if (MISTRAL_CONFIG.key) {
+    const mistralKeys = apiKeys.get('mistral') || [];
+    if (mistralKeys.length > 0) {
       console.log('🎯 Utilisation de Mistral API', { isAuthenticated, userHasCredits });
       return {
         provider: 'mistral',
-        model: MISTRAL_CONFIG.model,
-        apiKey: MISTRAL_CONFIG.key,
-        endpoint: MISTRAL_CONFIG.endpoint,
+        model: PROVIDER_CONFIGS.mistral.model,
+        apiKey: mistralKeys[0],
+        endpoint: PROVIDER_CONFIGS.mistral.endpoint,
         useEdgeFunction: false
       };
     }
@@ -131,21 +213,31 @@ class LLMRouter {
     throw new Error(`Provider ${config.provider} not supported for direct calls`);
   }
 
-  async callOpenRouter(request: LLMRequest): Promise<LLMResponse> {
-    console.log(`🔗 Appel OpenRouter API avec ${OPENROUTER_CONFIG.keys.length} clés disponibles...`);
+  async callOpenRouter(request: LLMRequest, apiKeys?: string[]): Promise<LLMResponse> {
+    // Si aucune clé fournie, récupérer depuis Supabase
+    if (!apiKeys) {
+      const keys = await this.fetchApiKeysFromSupabase();
+      apiKeys = keys.get('openrouter') || [];
+    }
+
+    if (apiKeys.length === 0) {
+      throw new Error('Aucune clé OpenRouter disponible');
+    }
+
+    console.log(`🔗 Appel OpenRouter API avec ${apiKeys.length} clés disponibles...`);
 
     let lastError: Error | null = null;
 
-    for (let i = 0; i < OPENROUTER_CONFIG.keys.length; i++) {
-      const apiKey = OPENROUTER_CONFIG.keys[i];
-      console.log(`🔑 Tentative avec la clé #${i + 1}/${OPENROUTER_CONFIG.keys.length}`);
+    for (let i = 0; i < apiKeys.length; i++) {
+      const apiKey = apiKeys[i];
+      console.log(`🔑 Tentative avec la clé #${i + 1}/${apiKeys.length}`);
       const startTime = Date.now();
 
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 45000);
 
       try {
-        const response = await fetch(OPENROUTER_CONFIG.endpoint, {
+        const response = await fetch(PROVIDER_CONFIGS.openrouter.endpoint, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${apiKey}`,
@@ -154,7 +246,7 @@ class LLMRouter {
             'X-Title': 'Prompt Generator Pro'
           },
           body: JSON.stringify({
-            model: OPENROUTER_CONFIG.model,
+            model: PROVIDER_CONFIGS.openrouter.model,
             messages: request.messages,
             temperature: request.temperature || 0.7,
             max_tokens: request.maxTokens || 8000
@@ -191,7 +283,7 @@ class LLMRouter {
         return {
           content: data.choices[0].message.content,
           usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-          model: OPENROUTER_CONFIG.model,
+          model: PROVIDER_CONFIGS.openrouter.model,
           provider: 'openrouter'
         };
       } catch (error: any) {
@@ -208,7 +300,9 @@ class LLMRouter {
     }
 
     console.error('❌ Toutes les clés OpenRouter ont échoué, fallback sur Mistral');
-    if (MISTRAL_CONFIG.key) {
+    const keys = await this.fetchApiKeysFromSupabase();
+    const mistralKeys = keys.get('mistral');
+    if (mistralKeys && mistralKeys.length > 0) {
       console.log('🔄 Utilisation de Mistral comme fallback...');
       return this.callMistral(request);
     }
@@ -216,11 +310,17 @@ class LLMRouter {
     throw lastError || new Error('Toutes les clés OpenRouter ont échoué et aucun fallback disponible');
   }
 
-  async callMistral(request: LLMRequest): Promise<LLMResponse> {
+  async callMistral(request: LLMRequest, apiKey?: string): Promise<LLMResponse> {
     console.log('🔗 Appel Mistral API...');
 
-    if (!MISTRAL_CONFIG.key) {
-      throw new Error('Clé API Mistral manquante. Veuillez configurer VITE_MISTRAL_API_KEY dans votre fichier .env');
+    // Si aucune clé fournie, récupérer depuis Supabase
+    if (!apiKey) {
+      const keys = await this.fetchApiKeysFromSupabase();
+      const mistralKeys = keys.get('mistral') || [];
+      if (mistralKeys.length === 0) {
+        throw new Error('Clé API Mistral manquante. Veuillez configurer une clé Mistral dans les paramètres.');
+      }
+      apiKey = mistralKeys[0];
     }
 
     const startTime = Date.now();
@@ -229,14 +329,14 @@ class LLMRouter {
     const timeoutId = setTimeout(() => controller.abort(), 45000);
 
     try {
-      const response = await fetch(MISTRAL_CONFIG.endpoint, {
+      const response = await fetch(PROVIDER_CONFIGS.mistral.endpoint, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${MISTRAL_CONFIG.key}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: MISTRAL_CONFIG.model,
+          model: PROVIDER_CONFIGS.mistral.model,
           messages: request.messages,
           temperature: request.temperature || 0.7,
           max_tokens: request.maxTokens || 8000,
@@ -268,7 +368,7 @@ class LLMRouter {
       return {
         content: data.choices[0].message.content,
         usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-        model: MISTRAL_CONFIG.model,
+        model: PROVIDER_CONFIGS.mistral.model,
         provider: 'mistral'
       };
     } catch (error: any) {
@@ -280,22 +380,33 @@ class LLMRouter {
     }
   }
 
-  async callDeepSeek(request: LLMRequest): Promise<LLMResponse> {
+  async callDeepSeek(request: LLMRequest, apiKey?: string): Promise<LLMResponse> {
     console.log('🔗 Appel DeepSeek API...');
+
+    // Si aucune clé fournie, récupérer depuis Supabase
+    if (!apiKey) {
+      const keys = await this.fetchApiKeysFromSupabase();
+      const deepseekKeys = keys.get('deepseek') || [];
+      if (deepseekKeys.length === 0) {
+        throw new Error('Clé API DeepSeek manquante. Veuillez configurer une clé DeepSeek dans les paramètres.');
+      }
+      apiKey = deepseekKeys[0];
+    }
+
     const startTime = Date.now();
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 45000);
 
     try {
-      const response = await fetch(DEEPSEEK_CONFIG.endpoint, {
+      const response = await fetch(PROVIDER_CONFIGS.deepseek.endpoint, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${DEEPSEEK_CONFIG.key}`,
+          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          model: DEEPSEEK_CONFIG.model,
+          model: PROVIDER_CONFIGS.deepseek.model,
           messages: request.messages,
           temperature: request.temperature || 0.7,
           max_tokens: request.maxTokens || 8000,
@@ -327,7 +438,7 @@ class LLMRouter {
       return {
         content: data.choices[0].message.content,
         usage: data.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-        model: DEEPSEEK_CONFIG.model,
+        model: PROVIDER_CONFIGS.deepseek.model,
         provider: 'deepseek'
       };
     } catch (error: any) {
@@ -396,9 +507,10 @@ class LLMRouter {
       userHasCredits: boolean;
       temperature?: number;
       maxTokens?: number;
+      userId?: string;
     }
   ): Promise<LLMResponse> {
-    const config = await this.selectLLM(options.isAuthenticated, options.userHasCredits);
+    const config = await this.selectLLM(options.isAuthenticated, options.userHasCredits, options.userId);
 
     console.log('🎯 LLM sélectionné:', {
       provider: config.provider,

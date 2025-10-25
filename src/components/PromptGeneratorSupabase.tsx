@@ -200,7 +200,7 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       const isAuthenticated = !!user;
       const userHasCredits = (credits?.remaining_credits || 0) > 0;
 
-      const llmConfig = await llmRouter.selectLLM(isAuthenticated, userHasCredits);
+      const llmConfig = await llmRouter.selectLLM(isAuthenticated, userHasCredits, user?.id);
       console.log('🎯 Configuration LLM sélectionnée:', llmConfig);
 
       const response = await llmRouter.callLLM(llmConfig, {

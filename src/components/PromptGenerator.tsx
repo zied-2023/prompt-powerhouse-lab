@@ -291,7 +291,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           isAuthenticated,
           userHasCredits,
           temperature: 0.7,
-          maxTokens: maxTokensByMode
+          maxTokens: maxTokensByMode,
+          userId: user?.id
         }
       );
 
