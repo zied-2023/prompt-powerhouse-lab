@@ -191,10 +191,10 @@ const PromptGenerator = () => {
 
       // Déterminer les contraintes de longueur basées sur le mode premium
       const lengthConstraints = mode === 'premium' && formData.length ? {
-        'short': { words: '30-80 mots', tokens: 200, description: 'Direct, efficace, peu contextuel' },
-        'medium': { words: '80-200 mots', tokens: 400, description: 'Meilleur équilibre entre clarté et performance' },
-        'long': { words: '200-500 mots', tokens: 1000, description: 'Idéal pour briefs créatifs, scripts, marketing' },
-        'very-detailed': { words: '500-1000 mots', tokens: 2000, description: 'Réservé aux workflows complexes et multi-rôles' }
+        'short': { words: '50-100 mots', tokens: 300, description: 'Direct et efficace avec structure complète' },
+        'medium': { words: '150-300 mots', tokens: 800, description: 'Équilibre optimal entre détail et performance' },
+        'long': { words: '400-700 mots', tokens: 1800, description: 'Détaillé avec exemples et méthodologie' },
+        'very-detailed': { words: '800-1500 mots', tokens: 3500, description: 'Complet avec workflows multi-étapes et exemples variés' }
       }[formData.length] : null;
 
       const systemPrompt = mode === 'free'
@@ -233,20 +233,27 @@ RÈGLES CRITIQUES:
 - 250-350 mots maximum
 - Privilégie COMPLET sur LONG`
         : lengthConstraints
-        ? `Expert prompts IA professionnel. Longueur cible: ${lengthConstraints.words} (${lengthConstraints.description}).
+        ? `Tu es un expert en création de prompts IA professionnels. Tu DOIS générer un prompt COMPLET de ${lengthConstraints.words}.
 
-Structure OBLIGATOIRE:
-**RÔLE**: [Expert spécialisé détaillé]
-**CONTEXTE**: [Situation et enjeux si pertinent pour longueur demandée]
-**OBJECTIF**: [Précis, mesurable, avec critères de succès]
+RÈGLES CRITIQUES POUR MODE PREMIUM:
+1. Le prompt DOIT être COMPLET - JAMAIS tronqué ou interrompu
+2. TOUTES les sections doivent être FINIES avec ponctuation finale
+3. Respecter STRICTEMENT la longueur: ${lengthConstraints.words}
+4. Structure professionnelle OBLIGATOIRE avec toutes les sections complètes
+
+Structure OBLIGATOIRE COMPLÈTE:
+**RÔLE**: [Expert spécialisé détaillé - 2-3 phrases complètes]
+**CONTEXTE**: [Situation, enjeux et contexte métier - ${lengthConstraints.words.includes('800-1500') ? '4-5 phrases' : lengthConstraints.words.includes('400-700') ? '3-4 phrases' : '2-3 phrases'}]
+**OBJECTIF**: [Objectif précis, mesurable avec critères de succès - 2-3 phrases complètes]
 **INSTRUCTIONS**:
-- [Étapes détaillées avec méthodologie]
-- [Points clés avec exemples concrets si longueur ≥ 200 mots]
-- [Considérations spécifiques si longueur ≥ 500 mots]
-**ÉLÉMENTS REQUIS**: [Éléments clés adaptés à la longueur]
-**LIVRABLE**: [Format structuré détaillé]
+${lengthConstraints.words.includes('800-1500') ? '- [8-12 étapes détaillées avec méthodologie et sous-étapes]\n- [Inclure des workflows multi-phases]\n- [Exemples concrets variés pour chaque étape]' : lengthConstraints.words.includes('400-700') ? '- [6-8 étapes détaillées avec méthodologie]\n- [Exemples concrets pertinents]\n- [Considérations créatives et techniques]' : lengthConstraints.words.includes('150-300') ? '- [4-6 étapes claires et détaillées]\n- [Points clés avec contexte]\n- [Exemples si pertinent]' : '- [3-4 étapes directes mais complètes]\n- [Points essentiels détaillés]'}
+**ÉLÉMENTS REQUIS**: [${lengthConstraints.words.includes('800-1500') ? '6-8 éléments' : lengthConstraints.words.includes('400-700') ? '4-6 éléments' : '3-4 éléments'} clés avec descriptions]
+**FORMAT**: [Format de sortie structuré détaillé - 2-3 phrases]
+**CONTRAINTES**: [${lengthConstraints.words.includes('800-1500') ? '5-7 contraintes' : lengthConstraints.words.includes('400-700') ? '4-5 contraintes' : '3-4 contraintes'} essentielles avec justifications]
 
-IMPORTANT: Respecter strictement la longueur de ${lengthConstraints.words}. ${lengthConstraints.words.includes('500-1000') ? 'Inclure des workflows multi-étapes, exemples variés et considérations avancées.' : lengthConstraints.words.includes('200-500') ? 'Inclure des exemples concrets et des considérations créatives.' : 'Rester concis et direct.'}`
+${lengthConstraints.words.includes('800-1500') ? '**EXEMPLES**: [2-3 exemples concrets et détaillés]\n**WORKFLOWS**: [Processus multi-étapes avec transitions]' : lengthConstraints.words.includes('400-700') ? '**CONSIDÉRATIONS**: [Aspects créatifs, techniques et méthodologiques]' : ''}
+
+IMPÉRATIF: Termine COMPLÈTEMENT chaque section. Si tu approches de la limite, TERMINE proprement plutôt que de couper au milieu d'une phrase.`
         : `Expert prompts IA. Max 600 tokens strict.
 
 Structure OBLIGATOIRE:
@@ -275,13 +282,13 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       }
 
       // Déterminer les tokens max selon le mode et la longueur demandée
-      // IMPORTANT: On génère d'abord un prompt complet, la compression se fait après
+      // MODE PREMIUM: Augmenter significativement les limites pour garantir des prompts complets
       const maxTokensByMode = mode === 'free'
         ? 1500  // Assez pour générer un prompt complet de 200-300 mots
         : mode === 'basic'
         ? 2000  // Assez pour générer un prompt complet de 300-400 mots
         : lengthConstraints
-        ? lengthConstraints.tokens + 500  // Marge pour génération complète
+        ? Math.max(lengthConstraints.tokens * 2, 4000)  // Double des tokens demandés, minimum 4000
         : 8000;
 
       const llmResponse = await llmRouter.generatePrompt(
@@ -342,18 +349,19 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.log(`Mode Basique (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else {
-        // Mode PREMIUM: Optimisation Opik + Formatage premium
-        console.log('🚀 Mode Premium: Optimisation Opik + Formatage');
+        // Mode PREMIUM: Optimisation Opik SEULEMENT (pas de compression!)
+        console.log('🚀 Mode Premium: Optimisation Opik sans compression');
 
         try {
           const userId = user?.id;
           if (userId) {
-            const opikResult = await opikOptimizer.optimizePrompt(
+            const opikResult = await opikOptimizer.optimizePromptPremium(
               generatedContent,
               userId,
-              formData.category
+              formData.category,
+              promptLength
             );
-            console.log('✅ Opik Optimization réussie (Mode Premium)');
+            console.log('✅ Opik Optimization Premium réussie');
             console.log(`📊 Score de qualité: ${opikResult.score}/10`);
             generatedContent = opikResult.optimizedPrompt;
           }
@@ -361,9 +369,9 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
           console.warn('⚠️ Erreur Opik (Mode Premium), utilisation du prompt original:', error);
         }
 
-        generatedContent = PromptCompressor.formatPremium(generatedContent, promptLength);
+        // Mode Premium: PAS de compression, juste vérifier la complétude
         const tokens = PromptCompressor['estimateTokens'](generatedContent);
-        console.log(`Mode Premium (${promptLength}): prompt optimisé - ${tokens} tokens`);
+        console.log(`Mode Premium (${promptLength}): prompt complet préservé - ${tokens} tokens`);
       }
 
       return {

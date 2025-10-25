@@ -10,6 +10,89 @@ export interface OptimizationResult {
 
 class OpikOptimizer {
   /**
+   * Optimise un prompt pour le mode PREMIUM sans compression
+   * Garantit un prompt complet selon la longueur demandée
+   */
+  async optimizePromptPremium(
+    originalPrompt: string,
+    userId: string,
+    category?: string,
+    targetLength?: 'short' | 'medium' | 'long' | 'very_long'
+  ): Promise<OptimizationResult> {
+    try {
+      console.log('🚀 Opik Premium Optimization démarré');
+      console.log('📝 Prompt original longueur:', originalPrompt.length);
+      console.log('🎯 Longueur cible:', targetLength);
+
+      // Analyser le prompt
+      const analysis = this.analyzePrompt(originalPrompt);
+
+      // Mode Premium: Améliorer sans résumer
+      let optimizedPrompt = originalPrompt;
+
+      // ÉTAPE 1: Compléter les prompts incomplets
+      optimizedPrompt = this.completeIncompletePrompt(optimizedPrompt);
+
+      // ÉTAPE 2: Garantir structure complète
+      optimizedPrompt = this.ensureCompleteStructure(optimizedPrompt);
+
+      // ÉTAPE 3: Améliorer la qualité sans réduire la longueur
+      if (analysis.structure < 7) {
+        optimizedPrompt = this.enhanceStructure(optimizedPrompt);
+      }
+
+      if (analysis.clarity < 7) {
+        optimizedPrompt = this.enhanceClarity(optimizedPrompt);
+      }
+
+      // ÉTAPE 4: Enrichir si nécessaire selon la longueur cible
+      if (targetLength === 'very_long' || targetLength === 'long') {
+        optimizedPrompt = this.enrichPromptForLength(optimizedPrompt, targetLength);
+      }
+
+      // ÉTAPE 5: Ajouter sections manquantes essentielles
+      if (!analysis.hasRole) {
+        optimizedPrompt = this.addRoleSection(optimizedPrompt);
+      }
+
+      if (!analysis.hasFormat) {
+        optimizedPrompt = this.addFormatSection(optimizedPrompt);
+      }
+
+      if (!analysis.hasConstraints) {
+        optimizedPrompt = this.addConstraintsSection(optimizedPrompt);
+      }
+
+      // Calculer les améliorations
+      const improvements = this.calculatePremiumImprovements(originalPrompt, optimizedPrompt, analysis);
+
+      // Calculer un score de qualité
+      const score = this.calculateQualityScore(optimizedPrompt, this.analyzePrompt(optimizedPrompt));
+
+      // Logger l'optimisation
+      await this.logOptimization(userId, originalPrompt, optimizedPrompt, score, category);
+
+      console.log('✅ Optimisation Premium terminée');
+      console.log('📊 Score de qualité:', score);
+      console.log('📏 Longueur finale:', optimizedPrompt.length, 'caractères');
+
+      return {
+        optimizedPrompt,
+        improvements,
+        score,
+        clarityImproved: score > 7.5
+      };
+    } catch (error) {
+      console.error('❌ Erreur lors de l\'optimisation Premium:', error);
+      return {
+        optimizedPrompt: originalPrompt,
+        improvements: ['Prompt original conservé'],
+        score: 6
+      };
+    }
+  }
+
+  /**
    * Optimise automatiquement un prompt pour les utilisateurs premium
    */
   async optimizePrompt(
@@ -557,6 +640,145 @@ class OpikOptimizer {
     } catch (error) {
       console.error('Exception lors du logging:', error);
     }
+  }
+
+  /**
+   * Enrichit un prompt selon la longueur cible demandée
+   */
+  private enrichPromptForLength(prompt: string, targetLength: 'long' | 'very_long'): string {
+    console.log(`🎯 Enrichissement du prompt pour longueur: ${targetLength}`);
+
+    const sections = this.extractSections(prompt);
+    let enriched = prompt;
+
+    // Pour les prompts longs et très longs, ajouter du contenu si les sections sont trop courtes
+    if (targetLength === 'very_long') {
+      // Ajouter section EXEMPLES si manquante
+      if (!enriched.includes('**EXEMPLES**')) {
+        enriched += `\n\n**EXEMPLES**:\n1. [Exemple concret illustrant l'application]\n2. [Cas d'usage spécifique avec contexte]\n3. [Scénario détaillé montrant les étapes]`;
+      }
+
+      // Ajouter section WORKFLOW si manquante
+      if (!enriched.includes('**WORKFLOW**') && !enriched.includes('**PROCESSUS**')) {
+        enriched += `\n\n**WORKFLOW**:\n1. Phase de préparation et analyse\n2. Phase d'exécution méthodique\n3. Phase de révision et validation\n4. Phase de livraison et documentation`;
+      }
+
+      // Ajouter section CONSIDÉRATIONS si manquante
+      if (!enriched.includes('**CONSIDÉRATIONS**')) {
+        enriched += `\n\n**CONSIDÉRATIONS**:\n- Aspects techniques à prendre en compte\n- Contraintes métier et réglementaires\n- Bonnes pratiques et recommandations\n- Points d'attention particuliers`;
+      }
+    } else if (targetLength === 'long') {
+      // Pour les prompts longs, ajouter section MÉTHODOLOGIE si manquante
+      if (!enriched.includes('**MÉTHODOLOGIE**') && !enriched.includes('**APPROCHE**')) {
+        enriched += `\n\n**MÉTHODOLOGIE**:\n- Approche structurée et itérative\n- Validation à chaque étape clé\n- Documentation et traçabilité`;
+      }
+    }
+
+    return enriched;
+  }
+
+  /**
+   * Améliore la structure d'un prompt sans le compresser
+   */
+  private enhanceStructure(prompt: string): string {
+    console.log('📐 Amélioration de la structure...');
+
+    // S'assurer que les sections sont bien séparées
+    let enhanced = prompt.replace(/(\*\*[A-Z][^*]+\*\*:)/g, '\n\n$1');
+
+    // Ajouter des sauts de ligne entre les listes
+    enhanced = enhanced.replace(/(-\s[^\n]+)(\n)(-\s)/g, '$1\n$2$3');
+
+    // Nettoyer les sauts de ligne multiples (max 2)
+    enhanced = enhanced.replace(/\n{3,}/g, '\n\n');
+
+    return enhanced.trim();
+  }
+
+  /**
+   * Améliore la clarté d'un prompt sans le compresser
+   */
+  private enhanceClarity(prompt: string): string {
+    console.log('✨ Amélioration de la clarté...');
+
+    let enhanced = prompt;
+
+    // S'assurer que chaque section a une description claire
+    const sections = this.extractSections(enhanced);
+
+    // Si OBJECTIF est trop court, l'enrichir
+    if (sections.objective && sections.objective.length < 50) {
+      enhanced = enhanced.replace(
+        /(\*\*OBJECTIF\*\*:?\s*)([^\n*]+)/i,
+        '$1$2 de manière précise et mesurable, en respectant les critères de qualité attendus'
+      );
+    }
+
+    return enhanced;
+  }
+
+  /**
+   * Calcule les améliorations pour le mode premium (sans compression)
+   */
+  private calculatePremiumImprovements(original: string, optimized: string, analysis: any): string[] {
+    const improvements: string[] = [];
+
+    // Détecter si le prompt était incomplet
+    const lastChar = original.trim().slice(-1);
+    if (!lastChar.match(/[.!?:]/)) {
+      improvements.push('✓ Complétion du prompt tronqué');
+    }
+
+    if (!analysis.hasRole && optimized.includes('**RÔLE**')) {
+      improvements.push('✓ Ajout d\'une définition de rôle professionnelle');
+    }
+
+    if (!analysis.hasFormat && optimized.includes('**FORMAT**')) {
+      improvements.push('✓ Spécification du format de sortie attendu');
+    }
+
+    if (!analysis.hasConstraints && optimized.includes('**CONTRAINTES**')) {
+      improvements.push('✓ Ajout des contraintes et règles métier');
+    }
+
+    if (analysis.structure < 7) {
+      improvements.push('✓ Amélioration de la structure et du formatage');
+    }
+
+    if (analysis.clarity < 7) {
+      improvements.push('✓ Amélioration de la clarté et de la lisibilité');
+    }
+
+    // Détecter les enrichissements premium
+    if (optimized.includes('**EXEMPLES**')) {
+      improvements.push('✓ Ajout d\'exemples concrets et détaillés');
+    }
+
+    if (optimized.includes('**WORKFLOW**') || optimized.includes('**PROCESSUS**')) {
+      improvements.push('✓ Ajout d\'un workflow structuré multi-étapes');
+    }
+
+    if (optimized.includes('**MÉTHODOLOGIE**') || optimized.includes('**APPROCHE**')) {
+      improvements.push('✓ Ajout d\'une méthodologie professionnelle');
+    }
+
+    if (optimized.includes('**CONSIDÉRATIONS**')) {
+      improvements.push('✓ Ajout de considérations techniques et métier');
+    }
+
+    // Analyser la complétude
+    const originalTokens = this.estimateTokens(original);
+    const optimizedTokens = this.estimateTokens(optimized);
+
+    if (optimizedTokens > originalTokens) {
+      improvements.push(`✓ Enrichissement: ${originalTokens} → ${optimizedTokens} tokens (+${Math.round((optimizedTokens/originalTokens - 1) * 100)}%)`);
+    } else if (optimizedTokens === originalTokens) {
+      improvements.push('✓ Structure optimisée sans perte de contenu');
+    }
+
+    improvements.push('✓ Mode Premium: Prompt complet préservé sans compression');
+
+    return improvements.length > 0 ? improvements : ['✓ Prompt premium optimisé'];
   }
 }
 
