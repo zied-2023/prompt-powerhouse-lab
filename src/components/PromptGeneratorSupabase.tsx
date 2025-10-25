@@ -124,6 +124,17 @@ const PromptGeneratorSupabase = () => {
       return;
     }
 
+    // Vérifier les crédits AVANT la génération
+    const creditsRemaining = credits?.remaining_credits || 0;
+    if (creditsRemaining <= 0) {
+      toast({
+        title: "Crédits épuisés",
+        description: "Vous n'avez plus de crédits. Rechargez votre compte pour continuer.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const complexity = analyzePromptComplexity(
       formData.description,
       formData.objective,
@@ -140,7 +151,6 @@ const PromptGeneratorSupabase = () => {
 
     try {
       // Déterminer le mode selon les crédits
-      const creditsRemaining = credits?.remaining_credits || 0;
       const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
       
       const systemPrompt = mode === 'free'
@@ -212,11 +222,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         const endTime = Date.now();
         const latencyMs = endTime - startTime;
 
-        // Décompter le crédit après le succès de la génération
-        const creditUsed = await useCredit();
-        if (!creditUsed) {
-          throw new Error('Impossible de décompter le crédit');
-        }
+        // Décompter le crédit après le succès de la génération (non bloquant)
+        useCredit().catch(err => {
+          console.error('Erreur lors du décompte du crédit:', err);
+        });
 
         let generatedContent = response.content;
         
