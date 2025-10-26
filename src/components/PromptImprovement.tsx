@@ -119,7 +119,12 @@ Structure OBLIGATOIRE du prompt amélioré - CHAQUE SECTION COMPLÈTE:
 • Ton/Style: [amélioration apportée]
 • Longueur: [amélioration apportée]
 
-IMPORTANT: Applique TOUS les 7 critères d'optimisation. Termine TOUTES les sections.`
+IMPORTANT:
+- Applique TOUS les 7 critères d'optimisation
+- Termine TOUTES les sections
+- NE PAS ajouter d'introduction ("Voici le prompt optimisé...")
+- NE PAS ajouter d'explication finale ("Pourquoi ce prompt fonctionne...")
+- Retourne UNIQUEMENT le prompt amélioré avec la structure demandée`
         : `Tu es un expert en ingénierie de prompt. Améliore le prompt en appliquant ces CRITÈRES:
 
 CRITÈRES D'OPTIMISATION (comme dans le générateur):
@@ -162,12 +167,17 @@ Structure OBLIGATOIRE:
 • Ton: [amélioration]
 • Longueur: [amélioration]
 
-RÈGLES:
+RÈGLES STRICTES:
 - Appliquer les 7 critères du générateur
 - Prompt autonome et prêt à l'emploi
-- Maximum 1000 tokens`;
+- Maximum 1000 tokens
+- NE PAS ajouter d'introduction ("Voici le prompt optimisé...")
+- NE PAS ajouter d'explication finale ("Pourquoi ce prompt fonctionne...")
+- Retourne UNIQUEMENT le prompt amélioré avec la structure demandée`;
 
-      let userPrompt = `Améliore ce prompt: "${originalPrompt}"`;
+      let userPrompt = `Améliore ce prompt: "${originalPrompt}"
+
+IMPORTANT: Retourne UNIQUEMENT le prompt amélioré structuré. Pas d'introduction, pas d'explication finale.`;
       if (improvementObjective.trim()) {
         userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
       }
