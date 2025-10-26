@@ -2,11 +2,13 @@
 
 ## Problème résolu
 
-Les prompts générés en mode premium s'arrêtaient brusquement au milieu d'une phrase, indiquant que l'API atteignait la limite de tokens avant de terminer complètement le prompt.
+Les prompts générés en mode premium s'arrêtaient brusquement au milieu d'une phrase ou après l'en-tête d'une section (ex: `📝 **EXEMPLE DE SORTIE**` sans contenu), indiquant que l'API atteignait la limite de tokens avant de terminer complètement le prompt.
+
+Ce problème était particulièrement fréquent dans la section **"Améliorer le prompt"** qui utilise un format avec émojis (🎯, 🧑‍💻, 🗂, 📏, 📝).
 
 ## Solution implémentée
 
-Mise en place d'un système d'**optimisation itérative avec Opik** qui évalue et améliore automatiquement les prompts jusqu'à ce qu'ils soient complets.
+Mise en place d'un système d'**optimisation itérative avec Opik** qui évalue et améliore automatiquement les prompts jusqu'à ce qu'ils soient complets, avec support intelligent des formats multiples (standard et émojis).
 
 ---
 
@@ -40,13 +42,25 @@ Score global = (40% sections présentes) +
 5. Régénère une version améliorée
 6. Répète jusqu'à 3 fois maximum ou score ≥ 0.90
 
-#### Détection intelligente
+#### Détection intelligente multi-formats
 
-Le système détecte automatiquement :
+Le système détecte automatiquement **deux formats** :
+
+**Format standard** :
+- `**RÔLE**`, `**CONTEXTE**`, `**OBJECTIF**`, etc.
+
+**Format avec émojis** (section amélioration) :
+- 🎯 `**CONTEXTE & OBJECTIF**`
+- 🧑‍💻 `**RÔLE DE L'IA**`
+- 🗂 `**STRUCTURE DU LIVRABLE**`
+- 📏 `**CONTRAINTES**`
+- 📝 `**EXEMPLE DE SORTIE**`
+
+**Détection des problèmes** :
 - **Sections manquantes** : Sections requises absentes du prompt
-- **Sections incomplètes** : Sections présentes mais mal terminées
+- **Sections incomplètes** : Sections présentes mais mal terminées (critère strict pour EXEMPLE: min 2 lignes, 50 caractères)
 - **Troncation** :
-  - Se termine par `---`, `...`
+  - Se termine par `...` (note: `---` est reconnu comme séparateur intentionnel)
   - Virgule ou point-virgule final
   - Parenthèse/crochet non fermé
   - Liste à puce sans ponctuation

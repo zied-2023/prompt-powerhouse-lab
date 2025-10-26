@@ -286,6 +286,10 @@ class IterativePromptOptimizer {
         /\*\*(?:CONTRAINTES|CONSTRAINTS|RÈGLES)\*\*:?\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i,
         /📏\s*\*\*(?:CONTRAINTES)\*\*\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i
       ],
+      'EXEMPLE': [
+        /\*\*(?:EXEMPLE|EXAMPLE)\*\*:?\s*([\s\S]*?)(?=(?:\*\*[A-Z]|---|\n\n\n)|$)/i,
+        /📝\s*\*\*(?:EXEMPLE DE SORTIE|EXEMPLE)\*\*\s*([\s\S]*?)(?=(?:\*\*[A-Z]|---|\n\n\n)|$)/i
+      ],
     };
 
     for (const [sectionName, patterns] of Object.entries(sectionPatterns)) {
@@ -298,7 +302,7 @@ class IterativePromptOptimizer {
           const content = match[1].trim();
           sections[sectionName] = {
             present: true,
-            complete: this.isSectionComplete(content),
+            complete: this.isSectionComplete(content, sectionName),
             content
           };
           found = true;
@@ -321,8 +325,18 @@ class IterativePromptOptimizer {
   /**
    * Vérifie si une section est complète
    */
-  private isSectionComplete(content: string): boolean {
+  private isSectionComplete(content: string, sectionName?: string): boolean {
     if (!content || content.length < 10) return false;
+
+    // RÈGLE SPÉCIALE pour la section EXEMPLE: elle doit être plus substantielle
+    if (sectionName === 'EXEMPLE') {
+      // Un exemple doit avoir au moins 50 caractères et 2 lignes
+      const lines = content.trim().split('\n').filter(l => l.trim().length > 0);
+      if (lines.length < 2 || content.length < 50) {
+        console.log(`⚠️ Section EXEMPLE incomplète: ${lines.length} lignes, ${content.length} caractères`);
+        return false;
+      }
+    }
 
     // Vérifier que la section ne se termine pas brusquement
     const lastLine = content.trim().split('\n').pop() || '';
@@ -402,7 +416,8 @@ class IterativePromptOptimizer {
   private getRequiredSections(mode: 'free' | 'basic' | 'premium'): string[] {
     if (mode === 'premium') {
       // CONTEXTE et OBJECTIF sont essentiels (même s'ils peuvent être fusionnés dans le format amélioration)
-      return ['RÔLE', 'CONTEXTE', 'FORMAT', 'CONTRAINTES'];
+      // EXEMPLE est critique car souvent tronqué
+      return ['RÔLE', 'CONTEXTE', 'FORMAT', 'CONTRAINTES', 'EXEMPLE'];
     } else if (mode === 'basic') {
       return ['RÔLE', 'CONTEXTE', 'FORMAT', 'CONTRAINTES'];
     } else {
@@ -436,7 +451,32 @@ class IterativePromptOptimizer {
       issues.push('Le prompt ne se termine pas proprement');
     }
 
-    const systemPrompt = `Tu es un expert en correction et amélioration de prompts IA. Ta mission est de CORRIGER et COMPLÉTER un prompt incomplet.
+    // Détecter si c'est un format avec émojis (format amélioration)
+    const hasEmojiFormat = currentPrompt.includes('🎯') || currentPrompt.includes('🧑‍💻') || currentPrompt.includes('🗂');
+
+    const systemPrompt = hasEmojiFormat
+      ? `Tu es un expert en correction de prompts. Ta mission: COMPLÉTER ce prompt TRONQUÉ en respectant EXACTEMENT son format avec émojis.
+
+RÈGLES CRITIQUES:
+1. PRÉSERVER le format avec émojis (🎯, 🧑‍💻, 🗂, 📏, 📝)
+2. COMPLÉTER les sections incomplètes jusqu'au point final
+3. Si une section se termine brusquement (ex: après "**EXEMPLE DE SORTIE**"), AJOUTER du contenu d'exemple concret
+4. JAMAIS laisser une section vide ou sans contenu
+5. Chaque section DOIT se terminer par un point ou du contenu complet
+
+FORMAT ATTENDU pour les sections avec émojis:
+🎯 **CONTEXTE & OBJECTIF** → 2-3 phrases COMPLÈTES
+🧑‍💻 **RÔLE DE L'IA** → 2 phrases COMPLÈTES
+🗂 **STRUCTURE DU LIVRABLE** → Liste ou description COMPLÈTE
+📏 **CONTRAINTES** → Liste COMPLÈTE de contraintes
+📝 **EXEMPLE DE SORTIE** → EXEMPLE CONCRET avec au moins 3-5 lignes
+
+PROBLÈMES DÉTECTÉS:
+${issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
+
+ATTENTION SPÉCIALE:
+- Si "📝 **EXEMPLE DE SORTIE**" est vide ou incomplet, AJOUTE un exemple concret de 3-5 lignes minimum`
+      : `Tu es un expert en correction et amélioration de prompts IA. Ta mission est de CORRIGER et COMPLÉTER un prompt incomplet.
 
 RÈGLES ABSOLUES:
 1. TOUTES les sections doivent être COMPLÈTES avec ponctuation finale
@@ -452,7 +492,7 @@ ${issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n')}`;
 
 ${currentPrompt}
 
-CORRIGE ET COMPLÈTE ce prompt en résolvant TOUS les problèmes identifiés. Retourne UNIQUEMENT le prompt corrigé, sans commentaire.`;
+CORRIGE ET COMPLÈTE ce prompt en résolvant TOUS les problèmes identifiés. ${hasEmojiFormat ? 'ATTENTION: La section 📝 **EXEMPLE DE SORTIE** doit contenir un exemple concret de 3-5 lignes minimum.' : ''} Retourne UNIQUEMENT le prompt corrigé COMPLET, sans commentaire ni explication.`;
 
     return { system: systemPrompt, user: userPrompt };
   }
