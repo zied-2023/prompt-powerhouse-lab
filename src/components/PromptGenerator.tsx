@@ -13,11 +13,7 @@ import { useUserCredits } from "@/hooks/useUserCredits";
 import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
-import { PromptCompressor } from "@/lib/promptCompressor";
 import { llmRouter } from "@/services/llmRouter";
-import { opikOptimizer } from "@/services/opikOptimizer";
-import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
-import { SEMANTIC_COMPRESSION_STEPS } from "@/lib/semanticCompressionGuide";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -235,59 +231,33 @@ RÈGLES CRITIQUES:
 - 250-350 mots maximum
 - Privilégie COMPLET sur LONG`
         : lengthConstraints
-        ? `Tu es un expert en création de prompts IA professionnels. RÈGLE ABSOLUE: Le prompt DOIT être COMPLET avec toutes les sections TERMINÉES.
+        ? `Tu es un expert en création de prompts IA professionnels. Crée un prompt COMPLET et structuré.
 
-RÈGLES NON-NÉGOCIABLES:
-1. TOUJOURS terminer COMPLÈTEMENT chaque section
-2. JAMAIS s'arrêter au milieu d'une phrase
-3. Utiliser COMPRESSION SÉMANTIQUE pour éviter verbosité
-4. Format propre: # pour titres, • pour listes (PAS d'étoiles **)
-5. Longueur cible: ${lengthConstraints.words} - mais LA COMPLÉTUDE prime sur la longueur
-
-${SEMANTIC_COMPRESSION_STEPS}
-
-APPLICATION AU PROMPT À GÉNÉRER:
-• Étape 1: Identifier valeurs essentielles (contraintes, critères)
-• Étape 2: Fusionner phrases similaires
-• Étape 3: Hiérarchiser en 3 blocs (Rôle+Objectif, Instructions+Format, Contraintes)
-• Étape 4: Langage compact ("doit" vs "il faut que")
-• Étape 5: Format standard (# titres, • listes)
-• Étape 6: ${lengthConstraints.words.includes('800-1500') ? '2-3 exemples substantiels (min 3 lignes chacun)' : '1-2 exemples courts mais complets'}
-• Étape 7: Vérifier contraintes chiffrées, aucune phrase orpheline
-• Étape 8: Sections modulaires réutilisables
-
-Structure OBLIGATOIRE (FORMAT PROPRE) - CHAQUE SECTION COMPLÈTE:
+Structure OBLIGATOIRE - CHAQUE SECTION DOIT ÊTRE COMPLÈTE:
 
 # RÔLE
-[Expert spécialisé - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases COMPLÈTES et CONCISES]
+[Expert spécialisé - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases complètes]
 
 # CONTEXTE
-[Situation et enjeux - ${lengthConstraints.words.includes('800-1500') ? '3-4' : lengthConstraints.words.includes('400-700') ? '2-3' : '2'} phrases COMPLÈTES et COMPACTES]
+[Situation et enjeux - ${lengthConstraints.words.includes('800-1500') ? '3-4' : lengthConstraints.words.includes('400-700') ? '2-3' : '2'} phrases complètes]
 
 # OBJECTIF
-[Objectif mesurable - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases COMPLÈTES avec CRITÈRES CHIFFRÉS]
+[Objectif mesurable avec critères précis]
 
 # INSTRUCTIONS
-${lengthConstraints.words.includes('800-1500') ? '1. [Étape 1 - phrase compacte complète]\n2. [Étape 2 - phrase compacte complète]\n...\n6-8. [6-8 étapes TOTALES]' : lengthConstraints.words.includes('400-700') ? '1. [Étape 1 - phrase compacte complète]\n...\n4-6. [4-6 étapes TOTALES]' : '1. [Étape 1 - compacte]\n...\n3-5. [3-5 étapes TOTALES]'}
+${lengthConstraints.words.includes('800-1500') ? '1-8. [6-8 étapes détaillées]' : lengthConstraints.words.includes('400-700') ? '1-6. [4-6 étapes]' : '1-5. [3-5 étapes]'}
 
 # FORMAT DE SORTIE
-[Format précis - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases COMPLÈTES]
-${lengthConstraints.words.includes('800-1500') || lengthConstraints.words.includes('400-700') ? '\n[Si tableau: MINIMUM 2-3 lignes de données, jamais vide]' : ''}
+[Description du format attendu]
+${lengthConstraints.words.includes('800-1500') || lengthConstraints.words.includes('400-700') ? '[Si tableau nécessaire: inclure 2-3 lignes de données]' : ''}
 
 # CONTRAINTES
-• Longueur: [contrainte CHIFFRÉE]
-• Ton: [spécification PRÉCISE]
-${lengthConstraints.words.includes('800-1500') ? '• [2-3 contraintes additionnelles CHIFFRÉES]' : lengthConstraints.words.includes('400-700') ? '• [1-2 contraintes additionnelles]' : ''}
+• Longueur: ${lengthConstraints.words}
+• [2-3 autres contraintes précises]
 
-${lengthConstraints.words.includes('400-700') || lengthConstraints.words.includes('800-1500') ? '# EXEMPLE(S)\n[' + (lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2') + ' exemple(s) SUBSTANTIEL(S) - minimum 3 lignes CHACUN]' : ''}
+${lengthConstraints.words.includes('400-700') || lengthConstraints.words.includes('800-1500') ? '# EXEMPLE\n[1 exemple concret illustrant le format]' : ''}
 
-VÉRIFICATION FINALE (ÉTAPE 7):
-✓ Toutes sections TERMINÉES avec ponctuation
-✓ Contraintes CHIFFRÉES (200 mots, 10s, 80%)
-✓ Tableaux COMPLETS (min 2-3 lignes données)
-✓ Exemples SUBSTANTIELS (min 3 lignes)
-✓ ZÉRO phrase orpheline
-✓ Format PROPRE (# et • seulement)`
+IMPORTANT: Termine TOUTES les sections avant la limite de tokens.`
         : `Expert prompts IA. Max 600 tokens strict.
 
 Structure OBLIGATOIRE:
@@ -325,113 +295,30 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         ? Math.max(lengthConstraints.tokens * 3, 6000)  // Triple des tokens demandés, minimum 6000
         : 12000;  // Pour mode premium sans longueur spécifiée, utiliser 12000 tokens
 
-      let generatedContent: string;
-      let llmResponse: any;
-
-      // MODE PREMIUM: Utiliser l'optimisation itérative avec Opik
-      if (mode === 'premium' && user?.id) {
-        console.log('🔄 Mode Premium: Utilisation de l\'optimisation itérative Opik');
-
-        const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
-          systemPrompt,
-          userPrompt,
-          user.id,
-          maxTokensByMode,
-          mode
-        );
-
-        generatedContent = iterativeResult.finalPrompt;
-
-        console.log('✅ Optimisation itérative terminée:', {
-          iterations: iterativeResult.iterations,
-          completenessScore: Math.round(iterativeResult.completenessScore.overall * 100) + '%',
-          improvements: iterativeResult.improvements
-        });
-
-        // Afficher les améliorations à l'utilisateur
-        if (iterativeResult.improvements.length > 0) {
-          toast({
-            title: "✅ Prompt optimisé avec Opik",
-            description: iterativeResult.improvements.slice(0, 3).join('\n'),
-          });
+      // Génération rapide directe avec LLM (sans Opik)
+      const llmResponse = await llmRouter.generatePrompt(
+        systemPrompt,
+        userPrompt,
+        {
+          isAuthenticated,
+          userHasCredits,
+          temperature: 0.7,
+          maxTokens: maxTokensByMode,
+          userId: user?.id
         }
+      );
 
-        // Créer un objet llmResponse fictif pour compatibilité
-        llmResponse = {
-          content: generatedContent,
-          provider: 'opik-iterative',
-          model: 'iterative-optimizer',
-          usage: { total_tokens: 0, completion_tokens: 0, prompt_tokens: 0 }
-        };
-      } else {
-        // Modes FREE et BASIC: Génération standard
-        llmResponse = await llmRouter.generatePrompt(
-          systemPrompt,
-          userPrompt,
-          {
-            isAuthenticated,
-            userHasCredits,
-            temperature: 0.7,
-            maxTokens: maxTokensByMode,
-            userId: user?.id
-          }
-        );
+      console.log('✅ Réponse LLM reçue:', {
+        provider: llmResponse.provider,
+        model: llmResponse.model,
+        tokens: llmResponse.usage.total_tokens,
+        completion_tokens: llmResponse.usage.completion_tokens,
+        maxTokensRequested: maxTokensByMode,
+        mode: mode
+      });
 
-        console.log('✅ Réponse LLM reçue:', {
-          provider: llmResponse.provider,
-          model: llmResponse.model,
-          tokens: llmResponse.usage.total_tokens,
-          completion_tokens: llmResponse.usage.completion_tokens,
-          maxTokensRequested: maxTokensByMode,
-          mode: mode
-        });
-
-        generatedContent = llmResponse.content;
-      }
-
-      // Mapper la longueur du formulaire vers le type PromptLength
-      const promptLength = PromptCompressor.mapLengthFromForm(formData.length);
-
-      // Appliquer la compression selon le mode avec gestion de longueur
-      if (mode === 'free') {
-        // Mode GRATUIT: Optimisation Opik + Compression
-        console.log('🚀 Mode Gratuit: Optimisation Opik + Compression');
-
-        try {
-          const userId = user?.id;
-          if (userId) {
-            const opikResult = await opikOptimizer.optimizePrompt(
-              generatedContent,
-              userId,
-              formData.category
-            );
-            console.log('✅ Opik Optimization réussie (Mode Gratuit)');
-            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
-            generatedContent = opikResult.optimizedPrompt;
-          }
-        } catch (error) {
-          console.warn('⚠️ Erreur Opik (Mode Gratuit), utilisation du prompt original:', error);
-        }
-
-        // Ensuite appliquer la compression pour respecter les limites
-        const result = PromptCompressor.compressFree(generatedContent, promptLength);
-        generatedContent = result.compressed;
-        console.log(`Mode Gratuit (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
-        console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
-      } else if (mode === 'basic') {
-        // Mode BASIQUE: Compression uniquement (pas d'optimisation Opik)
-        console.log('🚀 Mode Basique: Compression activée');
-
-        const result = PromptCompressor.compressBasic(generatedContent, promptLength);
-        generatedContent = result.compressed;
-        console.log(`Mode Basique (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
-        console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
-      } else {
-        // Mode PREMIUM: Déjà optimisé de manière itérative plus haut
-        // Pas de compression, pas d'optimisation supplémentaire
-        const tokens = PromptCompressor['estimateTokens'](generatedContent);
-        console.log(`Mode Premium (${promptLength}): prompt complet préservé - ${tokens} tokens`);
-      }
+      // Utiliser directement le contenu généré sans compression
+      const generatedContent = llmResponse.content;
 
       return {
         content: generatedContent,

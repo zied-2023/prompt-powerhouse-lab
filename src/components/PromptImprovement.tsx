@@ -14,9 +14,6 @@ import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
-import { opikOptimizer } from "@/services/opikOptimizer";
-import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
-import { SEMANTIC_COMPRESSION_STEPS } from "@/lib/semanticCompressionGuide";
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
@@ -73,63 +70,36 @@ const PromptImprovement = () => {
 
     try {
       const systemPrompt = mode === 'premium'
-        ? `Tu es un expert en ingénierie de prompt. RÈGLE ABSOLUE: Le prompt amélioré DOIT être COMPLET avec toutes les sections TERMINÉES.
+        ? `Tu es un expert en ingénierie de prompt. Améliore le prompt en le rendant COMPLET et structuré.
 
-RÈGLES NON-NÉGOCIABLES:
-1. TOUTES les sections doivent être COMPLÈTES avec ponctuation finale
-2. JAMAIS de texte tronqué ou coupé au milieu d'une phrase
-3. Utiliser COMPRESSION SÉMANTIQUE pour améliorer ET réduire verbosité
-4. Format propre: # pour titres, • pour listes (PAS d'étoiles **)
-5. Le prompt DOIT être autonome et prêt à l'emploi
-
-${SEMANTIC_COMPRESSION_STEPS}
-
-APPLICATION À L'AMÉLIORATION:
-• Étape 1: Identifier valeur sémantique (garder contraintes, supprimer décor)
-• Étape 2: Fusionner phrases redondantes du prompt original
-• Étape 3: Réorganiser en 3 blocs clairs
-• Étape 4: Compacter langage verbeux
-• Étape 5: Standardiser format (# et •)
-• Étape 6: Exemples courts mais substantiels (min 3 lignes)
-• Étape 7: Vérifier contraintes chiffrées, zéro phrase orpheline
-• Étape 8: Sections modulaires
-
-Structure OBLIGATOIRE (FORMAT PROPRE) - CHAQUE SECTION COMPLÈTE:
+Structure OBLIGATOIRE - CHAQUE SECTION COMPLÈTE:
 
 # CONTEXTE & OBJECTIF
-[2-3 phrases COMPLÈTES et CONCISES décrivant contexte et objectif]
+[2-3 phrases complètes décrivant contexte et objectif]
 
 # RÔLE
-[2 phrases COMPLÈTES et COMPACTES définissant le rôle]
+[2 phrases définissant le rôle]
 
 # STRUCTURE DU LIVRABLE
-[Format exact - 2-3 phrases COMPLÈTES]
-[Si tableau: MINIMUM 2-3 lignes de données, jamais vide]
+[Format exact avec exemples si nécessaire]
+[Si tableau: inclure 2-3 lignes de données]
 
 # CONTRAINTES
-• Longueur: [contrainte CHIFFRÉE - ex: 200-250 mots]
-• Ton: [spécification PRÉCISE]
-• Style: [spécification PRÉCISE]
-• Règles: [liste COMPLÈTE avec valeurs CHIFFRÉES si pertinent]
+• Longueur: [préciser]
+• Ton: [préciser]
+• Style: [préciser]
 
 # EXEMPLE DE SORTIE
-[Exemple SUBSTANTIEL illustrant le format - minimum 3 lignes COMPLÈTES]
+[Exemple illustrant le format]
 
 ---
 
 # AMÉLIORATIONS APPORTÉES
-• [Amélioration 1 - CONCISE et COMPLÈTE]
-• [Amélioration 2 - CONCISE et COMPLÈTE]
-• [Amélioration 3 - CONCISE et COMPLÈTE]
+• [Amélioration 1]
+• [Amélioration 2]
+• [Amélioration 3]
 
-VÉRIFICATION FINALE (ÉTAPE 7):
-✓ Toutes sections TERMINÉES avec ponctuation
-✓ Contraintes CHIFFRÉES préservées
-✓ Tableaux COMPLETS (min 2-3 lignes)
-✓ Exemples SUBSTANTIELS (min 3 lignes)
-✓ ZÉRO phrase orpheline
-✓ Format PROPRE (# et • seulement)
-✓ Verbosité réduite de 30-40%`
+IMPORTANT: Termine TOUTES les sections.`
         : `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
 
 Structure OBLIGATOIRE du prompt amélioré:
@@ -168,58 +138,12 @@ RÈGLES:
         userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
       }
 
-      let finalPrompt = '';
       let optimizationScore: number | null = null;
-      let llmResponse: any;
       let extractedPrompt = '';
 
-      // MODE PREMIUM: Utiliser l'optimisation itérative pour garantir la complétude
-      if (mode === 'premium' && user) {
-        console.log('🔄 Mode Premium Improvement: Utilisation de l\'optimisation itérative Opik');
-
-        // Utiliser la limite maximale du provider (16000 pour Mistral) pour les prompts d'amélioration
-        // Permet de générer des tableaux détaillés et des exemples complets sans troncation
-        const maxTokens = llmRouter.getRecommendedMaxTokens('premium', 'mistral');
-        console.log(`📊 Utilisation de ${maxTokens} tokens max pour prompt d'amélioration`);
-
-        const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
-          systemPrompt,
-          userPrompt,
-          user.id,
-          maxTokens,
-          'premium'
-        );
-
-        finalPrompt = iterativeResult.finalPrompt;
-
-        console.log('✅ Optimisation itérative Improvement terminée:', {
-          iterations: iterativeResult.iterations,
-          completenessScore: Math.round(iterativeResult.completenessScore.overall * 100) + '%',
-          improvements: iterativeResult.improvements
-        });
-
-        // Ajouter les améliorations itératives à la liste
-        const improvementsList = iterativeResult.improvements.map(imp => `[Opik Itératif] ${imp}`);
-        setImprovements(improvementsList);
-
-        optimizationScore = iterativeResult.completenessScore.overall * 10;
-
-        // Créer un objet llmResponse fictif pour compatibilité
-        llmResponse = {
-          content: finalPrompt,
-          provider: 'opik-iterative',
-          model: 'iterative-optimizer',
-          usage: { total_tokens: 0, completion_tokens: 0, prompt_tokens: 0 }
-        };
-
-        // Afficher notification de succès
-        toast({
-          title: "✅ Amélioration Premium avec Opik",
-          description: `${iterativeResult.iterations} itération(s) - Score: ${Math.round(iterativeResult.completenessScore.overall * 100)}%`,
-        });
-      } else {
-        // Modes FREE et BASIC: Génération standard
-        llmResponse = await llmRouter.generatePrompt(
+      // Génération rapide directe (sans Opik)
+      const maxTokens = llmRouter.getRecommendedMaxTokens(mode, 'mistral');
+      const llmResponse = await llmRouter.generatePrompt(
           systemPrompt,
           userPrompt,
           {
@@ -255,35 +179,7 @@ RÈGLES:
           setImprovements(improvementsList);
         }
 
-        // Optimisation Opik pour mode gratuit
-        if (mode === 'free' && user) {
-          console.log(`🎯 Mode ${modeLabel} - Application de l'optimisation Opik`);
-
-          try {
-            const optimization = await opikOptimizer.optimizePrompt(
-              extractedPrompt,
-              user.id,
-              'improvement'
-            );
-            finalPrompt = optimization.optimizedPrompt;
-            optimizationScore = optimization.score;
-
-            console.log('✨ Optimisation Opik appliquée (Improvement)');
-            console.log(`📊 Score de qualité: ${optimization.score}/10`);
-
-            // Ajouter les améliorations Opik à la liste
-            if (optimization.improvements.length > 0) {
-              setImprovements(prev => [...prev, ...optimization.improvements.map(imp => `[Opik] ${imp}`)]);
-            }
-          } catch (error) {
-            console.warn(`⚠️ Erreur Opik (${modeLabel}), utilisation du prompt original:`, error);
-            finalPrompt = extractedPrompt;
-          }
-        } else {
-          console.log(`🎯 Mode ${modeLabel} - Amélioration sans Opik`);
-          finalPrompt = extractedPrompt;
-        }
-      }
+        const finalPrompt = extractedPrompt;
 
       // Stocker le score de qualité
       if (optimizationScore !== null) {
