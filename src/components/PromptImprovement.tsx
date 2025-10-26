@@ -15,6 +15,7 @@ import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
 import { opikOptimizer } from "@/services/opikOptimizer";
+import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
@@ -65,8 +66,51 @@ const PromptImprovement = () => {
       creditsRemaining
     });
 
+    // Déterminer le mode selon les crédits
+    const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
+    const modeLabel = mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium';
+
     try {
-      const systemPrompt = `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
+      const systemPrompt = mode === 'premium'
+        ? `Tu es un expert en ingénierie de prompt. RÈGLE ABSOLUE: Le prompt amélioré DOIT être COMPLET avec toutes les sections TERMINÉES.
+
+RÈGLES NON-NÉGOCIABLES:
+1. TOUTES les sections doivent être COMPLÈTES avec ponctuation finale
+2. JAMAIS de texte tronqué ou coupé au milieu d'une phrase
+3. Chaque section DOIT se terminer par un point
+4. Le prompt DOIT être autonome et prêt à l'emploi
+5. Structure COMPLÈTE obligatoire
+
+Structure OBLIGATOIRE du prompt amélioré - CHAQUE SECTION DOIT ÊTRE COMPLÈTE:
+
+🎯 **CONTEXTE & OBJECTIF**
+[2-3 phrases COMPLÈTES avec point final]
+
+🧑‍💻 **RÔLE DE L'IA**
+[2 phrases COMPLÈTES définissant le rôle avec point final]
+
+🗂 **STRUCTURE DU LIVRABLE**
+[Format exact avec exemples - 2-3 phrases COMPLÈTES avec point final]
+
+📏 **CONTRAINTES**
+- Longueur: [spécification COMPLÈTE]
+- Ton: [spécification COMPLÈTE]
+- Style: [spécification COMPLÈTE]
+- Règles spécifiques: [liste COMPLÈTE]
+
+📝 **EXEMPLE DE SORTIE**
+[Exemple concret illustrant le format - TERMINÉ avec point final]
+
+---
+
+**AMÉLIORATIONS APPORTÉES:**
+• [3-6 améliorations concrètes - chacune COMPLÈTE avec point final]
+
+VÉRIFICATION FINALE OBLIGATOIRE:
+- Vérifie que CHAQUE section se termine par un point
+- Vérifie qu'AUCUNE phrase n'est coupée
+- Si manque d'espace, RÉDUIS le détail mais TERMINE toutes les sections`
+        : `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
 
 Structure OBLIGATOIRE du prompt amélioré:
 
@@ -104,29 +148,74 @@ RÈGLES:
         userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
       }
 
-      const llmResponse = await llmRouter.generatePrompt(
-        systemPrompt,
-        userPrompt,
-        {
-          isAuthenticated,
-          userHasCredits,
-          temperature: 0.7,
-          maxTokens: 8000
-        }
-      );
+      let finalPrompt = '';
+      let optimizationScore: number | null = null;
+      let llmResponse: any;
+      let extractedPrompt = '';
 
-      console.log('✅ Réponse LLM reçue:', {
-        provider: llmResponse.provider,
-        model: llmResponse.model,
-        tokens: llmResponse.usage.total_tokens
-      });
+      // MODE PREMIUM: Utiliser l'optimisation itérative pour garantir la complétude
+      if (mode === 'premium' && user) {
+        console.log('🔄 Mode Premium Improvement: Utilisation de l\'optimisation itérative Opik');
 
-      const content = llmResponse.content;
+        const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
+          systemPrompt,
+          userPrompt,
+          user.id,
+          8000,
+          'premium'
+        );
+
+        finalPrompt = iterativeResult.finalPrompt;
+
+        console.log('✅ Optimisation itérative Improvement terminée:', {
+          iterations: iterativeResult.iterations,
+          completenessScore: Math.round(iterativeResult.completenessScore.overall * 100) + '%',
+          improvements: iterativeResult.improvements
+        });
+
+        // Ajouter les améliorations itératives à la liste
+        const improvementsList = iterativeResult.improvements.map(imp => `[Opik Itératif] ${imp}`);
+        setImprovements(improvementsList);
+
+        optimizationScore = iterativeResult.completenessScore.overall * 10;
+
+        // Créer un objet llmResponse fictif pour compatibilité
+        llmResponse = {
+          content: finalPrompt,
+          provider: 'opik-iterative',
+          model: 'iterative-optimizer',
+          usage: { total_tokens: 0, completion_tokens: 0, prompt_tokens: 0 }
+        };
+
+        // Afficher notification de succès
+        toast({
+          title: "✅ Amélioration Premium avec Opik",
+          description: `${iterativeResult.iterations} itération(s) - Score: ${Math.round(iterativeResult.completenessScore.overall * 100)}%`,
+        });
+      } else {
+        // Modes FREE et BASIC: Génération standard
+        llmResponse = await llmRouter.generatePrompt(
+          systemPrompt,
+          userPrompt,
+          {
+            isAuthenticated,
+            userHasCredits,
+            temperature: 0.7,
+            maxTokens: 8000
+          }
+        );
+
+        console.log('✅ Réponse LLM reçue:', {
+          provider: llmResponse.provider,
+          model: llmResponse.model,
+          tokens: llmResponse.usage.total_tokens
+        });
+
+        const content = llmResponse.content;
 
         const improvedPromptMatch = content.match(/🎯(.*?)---/s);
         const improvementsMatch = content.match(/\*\*AMÉLIORATIONS APPORTÉES:\*\*(.*)/s);
 
-        let extractedPrompt = '';
         if (improvedPromptMatch) {
           extractedPrompt = '🎯' + improvedPromptMatch[1].trim();
         } else {
@@ -141,15 +230,8 @@ RÈGLES:
           setImprovements(improvementsList);
         }
 
-        // Déterminer le mode selon les crédits
-        const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
-        const modeLabel = mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium';
-
-        let finalPrompt = extractedPrompt;
-        let optimizationScore: number | null = null;
-
-        // Optimisation Opik pour modes gratuit et premium
-        if ((mode === 'free' || mode === 'premium') && user) {
+        // Optimisation Opik pour mode gratuit
+        if (mode === 'free' && user) {
           console.log(`🎯 Mode ${modeLabel} - Application de l'optimisation Opik`);
 
           try {
@@ -170,17 +252,20 @@ RÈGLES:
             }
           } catch (error) {
             console.warn(`⚠️ Erreur Opik (${modeLabel}), utilisation du prompt original:`, error);
+            finalPrompt = extractedPrompt;
           }
         } else {
           console.log(`🎯 Mode ${modeLabel} - Amélioration sans Opik`);
+          finalPrompt = extractedPrompt;
         }
+      }
 
-        // Stocker le score de qualité
-        if (optimizationScore !== null) {
-          setQualityScore(optimizationScore);
-        }
+      // Stocker le score de qualité
+      if (optimizationScore !== null) {
+        setQualityScore(optimizationScore);
+      }
 
-        setImprovedPrompt(finalPrompt);
+      setImprovedPrompt(finalPrompt);
 
         setCurrentTraceId(traceId);
         setUserFeedback(null);
