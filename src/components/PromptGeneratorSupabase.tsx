@@ -196,27 +196,21 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
       if (formData.length) userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
 
-      // Utiliser le routeur intelligent LLM
+      // Utiliser le routeur intelligent LLM avec generatePrompt qui gère tout automatiquement
       const isAuthenticated = !!user;
       const userHasCredits = (credits?.remaining_credits || 0) > 0;
 
-      const llmConfig = await llmRouter.selectLLM(isAuthenticated, userHasCredits, user?.id);
-      console.log('🎯 Configuration LLM sélectionnée:', llmConfig);
-
-      const response = await llmRouter.callLLM(llmConfig, {
-        messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: userPrompt
-          }
-        ],
-        temperature: 0.7,
-        maxTokens: 8000
-      });
+      const response = await llmRouter.generatePrompt(
+        systemPrompt,
+        userPrompt,
+        {
+          isAuthenticated,
+          userHasCredits,
+          temperature: 0.7,
+          maxTokens: 8000,
+          userId: user?.id
+        }
+      );
 
       if (response.content) {
         const endTime = Date.now();
@@ -253,12 +247,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
             traceId: traceId,
             promptInput: userPrompt,
             promptOutput: generatedContent,
-            model: llmConfig.model,
+            model: response.model,
             latencyMs: latencyMs,
             tokensUsed: response.usage?.total_tokens || 0,
             cost: 0,
             tags: {
-              provider: llmConfig.provider,
+              provider: response.provider,
               mode: mode,
               domain: formData.domain,
               category: 'prompt_generation'
