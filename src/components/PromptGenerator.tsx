@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { PromptCompressor } from "@/lib/promptCompressor";
 import { llmRouter } from "@/services/llmRouter";
 import { opikOptimizer } from "@/services/opikOptimizer";
+import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -294,28 +295,69 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         ? Math.max(lengthConstraints.tokens * 3, 6000)  // Triple des tokens demandés, minimum 6000
         : 12000;  // Pour mode premium sans longueur spécifiée, utiliser 12000 tokens
 
-      const llmResponse = await llmRouter.generatePrompt(
-        systemPrompt,
-        userPrompt,
-        {
-          isAuthenticated,
-          userHasCredits,
-          temperature: 0.7,
-          maxTokens: maxTokensByMode,
-          userId: user?.id
+      let generatedContent: string;
+      let llmResponse: any;
+
+      // MODE PREMIUM: Utiliser l'optimisation itérative avec Opik
+      if (mode === 'premium' && user?.id) {
+        console.log('🔄 Mode Premium: Utilisation de l\'optimisation itérative Opik');
+
+        const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
+          systemPrompt,
+          userPrompt,
+          user.id,
+          maxTokensByMode,
+          mode
+        );
+
+        generatedContent = iterativeResult.finalPrompt;
+
+        console.log('✅ Optimisation itérative terminée:', {
+          iterations: iterativeResult.iterations,
+          completenessScore: Math.round(iterativeResult.completenessScore.overall * 100) + '%',
+          improvements: iterativeResult.improvements
+        });
+
+        // Afficher les améliorations à l'utilisateur
+        if (iterativeResult.improvements.length > 0) {
+          toast({
+            title: "✅ Prompt optimisé avec Opik",
+            description: iterativeResult.improvements.slice(0, 3).join('\n'),
+          });
         }
-      );
 
-      console.log('✅ Réponse LLM reçue:', {
-        provider: llmResponse.provider,
-        model: llmResponse.model,
-        tokens: llmResponse.usage.total_tokens,
-        completion_tokens: llmResponse.usage.completion_tokens,
-        maxTokensRequested: maxTokensByMode,
-        mode: mode
-      });
+        // Créer un objet llmResponse fictif pour compatibilité
+        llmResponse = {
+          content: generatedContent,
+          provider: 'opik-iterative',
+          model: 'iterative-optimizer',
+          usage: { total_tokens: 0, completion_tokens: 0, prompt_tokens: 0 }
+        };
+      } else {
+        // Modes FREE et BASIC: Génération standard
+        llmResponse = await llmRouter.generatePrompt(
+          systemPrompt,
+          userPrompt,
+          {
+            isAuthenticated,
+            userHasCredits,
+            temperature: 0.7,
+            maxTokens: maxTokensByMode,
+            userId: user?.id
+          }
+        );
 
-      let generatedContent = llmResponse.content;
+        console.log('✅ Réponse LLM reçue:', {
+          provider: llmResponse.provider,
+          model: llmResponse.model,
+          tokens: llmResponse.usage.total_tokens,
+          completion_tokens: llmResponse.usage.completion_tokens,
+          maxTokensRequested: maxTokensByMode,
+          mode: mode
+        });
+
+        generatedContent = llmResponse.content;
+      }
 
       // Mapper la longueur du formulaire vers le type PromptLength
       const promptLength = PromptCompressor.mapLengthFromForm(formData.length);
@@ -355,27 +397,8 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.log(`Mode Basique (${promptLength}): ${result.estimatedTokens} tokens (${result.compressionRate}% compression)`);
         console.log(`Techniques utilisées: ${result.techniques.join(', ')}`);
       } else {
-        // Mode PREMIUM: Optimisation Opik SEULEMENT (pas de compression!)
-        console.log('🚀 Mode Premium: Optimisation Opik sans compression');
-
-        try {
-          const userId = user?.id;
-          if (userId) {
-            const opikResult = await opikOptimizer.optimizePromptPremium(
-              generatedContent,
-              userId,
-              formData.category,
-              promptLength
-            );
-            console.log('✅ Opik Optimization Premium réussie');
-            console.log(`📊 Score de qualité: ${opikResult.score}/10`);
-            generatedContent = opikResult.optimizedPrompt;
-          }
-        } catch (error) {
-          console.warn('⚠️ Erreur Opik (Mode Premium), utilisation du prompt original:', error);
-        }
-
-        // Mode Premium: PAS de compression, juste vérifier la complétude
+        // Mode PREMIUM: Déjà optimisé de manière itérative plus haut
+        // Pas de compression, pas d'optimisation supplémentaire
         const tokens = PromptCompressor['estimateTokens'](generatedContent);
         console.log(`Mode Premium (${promptLength}): prompt complet préservé - ${tokens} tokens`);
       }
