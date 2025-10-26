@@ -247,7 +247,7 @@ class LLMRouter {
             model: PROVIDER_CONFIGS.openrouter.model,
             messages: request.messages,
             temperature: request.temperature || 0.7,
-            max_tokens: request.maxTokens || 8000
+            max_tokens: request.maxTokens || 16000  // Augmenté pour les prompts longs
           }),
           signal: controller.signal
         });
@@ -337,7 +337,7 @@ class LLMRouter {
           model: PROVIDER_CONFIGS.mistral.model,
           messages: request.messages,
           temperature: request.temperature || 0.7,
-          max_tokens: request.maxTokens || 8000,
+          max_tokens: request.maxTokens || 16000,  // Augmenté pour les prompts longs
           stream: false
         }),
         signal: controller.signal
@@ -407,7 +407,7 @@ class LLMRouter {
           model: PROVIDER_CONFIGS.deepseek.model,
           messages: request.messages,
           temperature: request.temperature || 0.7,
-          max_tokens: request.maxTokens || 8000,
+          max_tokens: request.maxTokens || 16000,  // Augmenté pour les prompts longs
           stream: false
         }),
         signal: controller.signal

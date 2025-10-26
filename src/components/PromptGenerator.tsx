@@ -233,27 +233,30 @@ RÈGLES CRITIQUES:
 - 250-350 mots maximum
 - Privilégie COMPLET sur LONG`
         : lengthConstraints
-        ? `Tu es un expert en création de prompts IA professionnels. Tu DOIS générer un prompt COMPLET de ${lengthConstraints.words}.
+        ? `Tu es un expert en création de prompts IA professionnels. RÈGLE ABSOLUE: Le prompt DOIT être COMPLET avec toutes les sections TERMINÉES.
 
-RÈGLES CRITIQUES POUR MODE PREMIUM:
-1. Le prompt DOIT être COMPLET - JAMAIS tronqué ou interrompu
-2. TOUTES les sections doivent être FINIES avec ponctuation finale
-3. Respecter STRICTEMENT la longueur: ${lengthConstraints.words}
-4. Structure professionnelle OBLIGATOIRE avec toutes les sections complètes
+RÈGLES NON-NÉGOCIABLES:
+1. TOUJOURS terminer COMPLÈTEMENT chaque section avant de passer à la suivante
+2. JAMAIS s'arrêter au milieu d'une phrase ou d'une section
+3. Chaque section DOIT se terminer par une ponctuation finale (point, point d'exclamation)
+4. Si tu approches de la limite de tokens, RÉDUIS le contenu mais TERMINE toutes les sections
+5. Longueur cible: ${lengthConstraints.words} - mais LA COMPLÉTUDE prime sur la longueur
 
-Structure OBLIGATOIRE COMPLÈTE:
-**RÔLE**: [Expert spécialisé détaillé - 2-3 phrases complètes]
-**CONTEXTE**: [Situation, enjeux et contexte métier - ${lengthConstraints.words.includes('800-1500') ? '4-5 phrases' : lengthConstraints.words.includes('400-700') ? '3-4 phrases' : '2-3 phrases'}]
-**OBJECTIF**: [Objectif précis, mesurable avec critères de succès - 2-3 phrases complètes]
+Structure OBLIGATOIRE - CHAQUE SECTION DOIT ÊTRE COMPLÈTE:
+**RÔLE**: [Expert spécialisé - 2 phrases COMPLÈTES avec point final]
+**CONTEXTE**: [Situation et enjeux - ${lengthConstraints.words.includes('800-1500') ? '3-4' : lengthConstraints.words.includes('400-700') ? '2-3' : '2'} phrases COMPLÈTES avec point final]
+**OBJECTIF**: [Objectif mesurable - 2 phrases COMPLÈTES avec point final]
 **INSTRUCTIONS**:
-${lengthConstraints.words.includes('800-1500') ? '- [8-12 étapes détaillées avec méthodologie et sous-étapes]\n- [Inclure des workflows multi-phases]\n- [Exemples concrets variés pour chaque étape]' : lengthConstraints.words.includes('400-700') ? '- [6-8 étapes détaillées avec méthodologie]\n- [Exemples concrets pertinents]\n- [Considérations créatives et techniques]' : lengthConstraints.words.includes('150-300') ? '- [4-6 étapes claires et détaillées]\n- [Points clés avec contexte]\n- [Exemples si pertinent]' : '- [3-4 étapes directes mais complètes]\n- [Points essentiels détaillés]'}
-**ÉLÉMENTS REQUIS**: [${lengthConstraints.words.includes('800-1500') ? '6-8 éléments' : lengthConstraints.words.includes('400-700') ? '4-6 éléments' : '3-4 éléments'} clés avec descriptions]
-**FORMAT**: [Format de sortie structuré détaillé - 2-3 phrases]
-**CONTRAINTES**: [${lengthConstraints.words.includes('800-1500') ? '5-7 contraintes' : lengthConstraints.words.includes('400-700') ? '4-5 contraintes' : '3-4 contraintes'} essentielles avec justifications]
+${lengthConstraints.words.includes('800-1500') ? '- [6-8 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point' : lengthConstraints.words.includes('400-700') ? '- [4-6 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point' : lengthConstraints.words.includes('150-300') ? '- [3-5 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point' : '- [3-4 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point'}
+**FORMAT**: [Format de sortie - 1-2 phrases COMPLÈTES avec point final]
+**CONTRAINTES**: [${lengthConstraints.words.includes('800-1500') ? '4-5' : lengthConstraints.words.includes('400-700') ? '3-4' : '2-3'} contraintes COMPLÈTES avec point final pour chacune]
 
-${lengthConstraints.words.includes('800-1500') ? '**EXEMPLES**: [2-3 exemples concrets et détaillés]\n**WORKFLOWS**: [Processus multi-étapes avec transitions]' : lengthConstraints.words.includes('400-700') ? '**CONSIDÉRATIONS**: [Aspects créatifs, techniques et méthodologiques]' : ''}
+${lengthConstraints.words.includes('400-700') || lengthConstraints.words.includes('800-1500') ? '**CONSIDÉRATIONS**: [Points additionnels - phrases COMPLÈTES avec points finaux]' : ''}
 
-IMPÉRATIF: Termine COMPLÈTEMENT chaque section. Si tu approches de la limite, TERMINE proprement plutôt que de couper au milieu d'une phrase.`
+VÉRIFICATION FINALE OBLIGATOIRE:
+- Vérifie que CHAQUE section se termine par un point
+- Vérifie qu'AUCUNE phrase n'est coupée
+- Si manque de tokens, TERMINE proprement en réduisant le détail mais en FINISSANT toutes les sections`
         : `Expert prompts IA. Max 600 tokens strict.
 
 Structure OBLIGATOIRE:
@@ -282,14 +285,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       }
 
       // Déterminer les tokens max selon le mode et la longueur demandée
-      // MODE PREMIUM: Augmenter significativement les limites pour garantir des prompts complets
+      // MODE PREMIUM: Augmenter très significativement les limites
       const maxTokensByMode = mode === 'free'
-        ? 1500  // Assez pour générer un prompt complet de 200-300 mots
+        ? 2000  // Assez pour générer un prompt complet de 200-300 mots
         : mode === 'basic'
-        ? 2000  // Assez pour générer un prompt complet de 300-400 mots
+        ? 3000  // Assez pour générer un prompt complet de 300-400 mots
         : lengthConstraints
-        ? Math.max(lengthConstraints.tokens * 2, 4000)  // Double des tokens demandés, minimum 4000
-        : 8000;
+        ? Math.max(lengthConstraints.tokens * 3, 6000)  // Triple des tokens demandés, minimum 6000
+        : 12000;  // Pour mode premium sans longueur spécifiée, utiliser 12000 tokens
 
       const llmResponse = await llmRouter.generatePrompt(
         systemPrompt,
@@ -306,7 +309,10 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       console.log('✅ Réponse LLM reçue:', {
         provider: llmResponse.provider,
         model: llmResponse.model,
-        tokens: llmResponse.usage.total_tokens
+        tokens: llmResponse.usage.total_tokens,
+        completion_tokens: llmResponse.usage.completion_tokens,
+        maxTokensRequested: maxTokensByMode,
+        mode: mode
       });
 
       let generatedContent = llmResponse.content;
