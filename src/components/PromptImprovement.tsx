@@ -157,11 +157,12 @@ RÈGLES:
       if (mode === 'premium' && user) {
         console.log('🔄 Mode Premium Improvement: Utilisation de l\'optimisation itérative Opik');
 
+        // Utiliser 10000 tokens pour laisser de la place aux tableaux et exemples détaillés
         const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
           systemPrompt,
           userPrompt,
           user.id,
-          8000,
+          10000,
           'premium'
         );
 

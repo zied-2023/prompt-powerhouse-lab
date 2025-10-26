@@ -724,11 +724,58 @@ ${issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
 
 RÈGLE D'OR: Ne retourne le prompt QUE si tu peux cocher TOUS les points de la checklist.`;
 
+    // Construire des instructions spécifiques selon les problèmes détectés
+    const specificInstructions: string[] = [];
+
+    if (qualityIssues?.hasIncompleteTables) {
+      specificInstructions.push(`
+⚠️ TABLEAU INCOMPLET DÉTECTÉ:
+Si tu vois un tableau avec seulement le header (exemple: | Col1 | Col2 |), tu DOIS ajouter AU MINIMUM 2-3 lignes de données concrètes.
+
+Exemple INCORRECT:
+| Temps | Action |
+|-------|--------|
+
+Exemple CORRECT:
+| Temps | Action |
+|-------|--------|
+| 0-2s  | Gros plan sur visage |
+| 2-5s  | Plan large de la scène |
+| 5-10s | Zoom sur l'objet clé |`);
+    }
+
+    if (hasEmojiFormat && qualityIssues?.lacksConcretExample) {
+      specificInstructions.push(`
+⚠️ EXEMPLE MANQUANT/INCOMPLET:
+La section 📝 **EXEMPLE DE SORTIE** doit contenir un exemple RÉEL et CONCRET (minimum 5 lignes).
+Ne mets PAS de placeholder comme [à compléter] ou [example].
+Génère un exemple complet qui montre exactement à quoi doit ressembler le résultat final.`);
+    }
+
+    if (qualityIssues?.lacksQuantifiedConstraints) {
+      specificInstructions.push(`
+⚠️ CONTRAINTES SANS CHIFFRES:
+Toutes les contraintes doivent être QUANTIFIÉES avec des nombres précis.
+Exemple: Remplace "Longueur: Courte" par "Longueur: 200-250 mots"
+         Remplace "Rapide" par "< 2 secondes"
+         Remplace "La plupart" par "80% minimum"`);
+    }
+
     const userPrompt = `Voici le prompt incomplet à corriger:
 
 ${currentPrompt}
 
-CORRIGE ET COMPLÈTE ce prompt en résolvant TOUS les problèmes identifiés. ${hasEmojiFormat ? 'ATTENTION: La section 📝 **EXEMPLE DE SORTIE** doit contenir un exemple concret de 3-5 lignes minimum.' : ''} Retourne UNIQUEMENT le prompt corrigé COMPLET, sans commentaire ni explication.`;
+${specificInstructions.length > 0 ? specificInstructions.join('\n') : ''}
+
+🎯 MISSION: CORRIGE ET COMPLÈTE ce prompt en résolvant TOUS les problèmes identifiés ci-dessus.
+
+RÈGLES STRICTES:
+- Si un tableau a seulement un header, AJOUTE au moins 2-3 lignes de données
+- Si une phrase se termine par ":", AJOUTE le contenu qui suit
+- Si une section "EXEMPLE" est vide, GÉNÈRE un exemple concret de 5+ lignes
+- Si des contraintes manquent de chiffres, AJOUTE des valeurs numériques précises
+
+Retourne UNIQUEMENT le prompt corrigé COMPLET, sans commentaire ni explication.`;
 
     return { system: systemPrompt, user: userPrompt };
   }
