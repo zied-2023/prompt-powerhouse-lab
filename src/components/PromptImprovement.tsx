@@ -70,67 +70,101 @@ const PromptImprovement = () => {
 
     try {
       const systemPrompt = mode === 'premium'
-        ? `Tu es un expert en ingénierie de prompt. Améliore le prompt en le rendant COMPLET et structuré.
+        ? `Tu es un expert en ingénierie de prompt. Améliore le prompt en appliquant ces CRITÈRES D'OPTIMISATION:
 
-Structure OBLIGATOIRE - CHAQUE SECTION COMPLÈTE:
+CRITÈRES D'ANALYSE ET OPTIMISATION:
+1. CATÉGORIE/DOMAINE: Identifier et renforcer le domaine d'expertise
+2. DESCRIPTION DE LA TÂCHE: Clarifier et préciser la tâche exacte
+3. OBJECTIF PRINCIPAL: Définir un objectif mesurable et concret
+4. PUBLIC CIBLE: Adapter le niveau de langage et les attentes
+5. FORMAT DE SORTIE: Spécifier structure exacte (JSON, tableau, texte, etc.)
+6. TON ET STYLE: Définir registre de langue et personnalité
+7. LONGUEUR APPROXIMATIVE: Indiquer contrainte de taille (mots, tokens, durée)
+
+Structure OBLIGATOIRE du prompt amélioré - CHAQUE SECTION COMPLÈTE:
 
 # CONTEXTE & OBJECTIF
-[2-3 phrases complètes décrivant contexte et objectif]
+[2-3 phrases: domaine, tâche, objectif mesurable]
 
-# RÔLE
-[2 phrases définissant le rôle]
+# RÔLE DE L'IA
+[2 phrases: expertise, personnalité adaptée au public cible]
 
 # STRUCTURE DU LIVRABLE
-[Format exact avec exemples si nécessaire]
-[Si tableau: inclure 2-3 lignes de données]
+[Format exact détaillé avec sections/tableaux si nécessaire]
+[Si tableau: inclure 2-3 lignes d'exemple]
 
 # CONTRAINTES
-• Longueur: [préciser]
-• Ton: [préciser]
-• Style: [préciser]
+• Longueur: [nombre précis de mots/tokens/durée]
+• Ton: [registre de langue précis]
+• Style: [caractéristiques stylistiques]
+• Public: [niveau et attentes du public cible]
+• Format: [spécifications techniques]
+
+# CRITÈRES DE QUALITÉ
+• [Critère mesurable 1]
+• [Critère mesurable 2]
+• [Critère mesurable 3]
 
 # EXEMPLE DE SORTIE
-[Exemple illustrant le format]
+[Exemple concret illustrant format, ton, style - minimum 3 lignes]
 
 ---
 
 # AMÉLIORATIONS APPORTÉES
-• [Amélioration 1]
-• [Amélioration 2]
-• [Amélioration 3]
+• Catégorie/Domaine: [amélioration apportée]
+• Description/Tâche: [amélioration apportée]
+• Objectif: [amélioration apportée]
+• Public cible: [amélioration apportée]
+• Format: [amélioration apportée]
+• Ton/Style: [amélioration apportée]
+• Longueur: [amélioration apportée]
 
-IMPORTANT: Termine TOUTES les sections.`
-        : `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
+IMPORTANT: Applique TOUS les 7 critères d'optimisation. Termine TOUTES les sections.`
+        : `Tu es un expert en ingénierie de prompt. Améliore le prompt en appliquant ces CRITÈRES:
 
-Structure OBLIGATOIRE du prompt amélioré:
+CRITÈRES D'OPTIMISATION (comme dans le générateur):
+1. CATÉGORIE: Renforcer le domaine d'expertise
+2. DESCRIPTION: Clarifier la tâche exacte
+3. OBJECTIF: Définir objectif mesurable
+4. PUBLIC CIBLE: Adapter niveau de langage
+5. FORMAT DE SORTIE: Préciser structure exacte
+6. TON: Définir registre de langue
+7. LONGUEUR: Indiquer contrainte de taille
+
+Structure OBLIGATOIRE:
 
 🎯 **CONTEXTE & OBJECTIF**
-[Expliquer en 2 phrases ce que doit produire l'IA et pourquoi]
+[Domaine + Tâche + Objectif mesurable]
 
 🧑‍💻 **RÔLE DE L'IA**
-[Définir le rôle ou la personnalité que l'IA doit adopter]
+[Expertise + Personnalité adaptée au public]
 
 🗂 **STRUCTURE DU LIVRABLE**
-[Indiquer le format exact attendu : JSON, tableau, plan narratif, sections, etc.]
+[Format exact: JSON, tableau, texte structuré, etc.]
 
 📏 **CONTRAINTES**
-- Longueur: [préciser]
-- Ton: [préciser]
-- Style: [préciser]
-- Règles spécifiques: [préciser]
+- Longueur: [précis: X mots/tokens/durée]
+- Ton: [registre précis]
+- Style: [caractéristiques]
+- Public: [niveau et attentes]
 
 📝 **EXEMPLE DE SORTIE**
-[Fournir un mini-exemple (30 sec ou 2-3 lignes) qui illustre le format attendu]
+[Exemple concret 2-3 lignes]
 
 ---
 
 **AMÉLIORATIONS APPORTÉES:**
-• [Liste 3-6 améliorations concrètes]
+• Catégorie: [amélioration]
+• Description: [amélioration]
+• Objectif: [amélioration]
+• Public: [amélioration]
+• Format: [amélioration]
+• Ton: [amélioration]
+• Longueur: [amélioration]
 
 RÈGLES:
-- Le prompt doit être autonome et prêt à l'emploi
-- Ne jamais mélanger explications et prompt final
-- Adapter le ton selon le type de contenu
+- Appliquer les 7 critères du générateur
+- Prompt autonome et prêt à l'emploi
 - Maximum 1000 tokens`;
 
       let userPrompt = `Améliore ce prompt: "${originalPrompt}"`;
