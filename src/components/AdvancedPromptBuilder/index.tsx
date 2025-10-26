@@ -8,6 +8,7 @@ import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
+import { SEMANTIC_COMPRESSION_STEPS } from "@/lib/semanticCompressionGuide";
 
 import { 
   Brain, 

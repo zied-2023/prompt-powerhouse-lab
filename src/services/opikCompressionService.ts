@@ -7,6 +7,7 @@ import { llmRouter } from './llmRouter';
 import { opikService } from './opikService';
 import { iterativePromptOptimizer } from './iterativePromptOptimizer';
 import { cleanExcessiveFormatting } from '@/lib/promptFormatter';
+import { SEMANTIC_COMPRESSION_STEPS } from '@/lib/semanticCompressionGuide';
 
 export interface CompressionResult {
   originalPrompt: string;
@@ -187,20 +188,17 @@ IMPORTANT: Le prompt compressé doit rester COMPLET et FONCTIONNEL.`;
   ): string {
     const basePrompt = `Tu es un expert en compression de prompts IA. Ta mission est de réduire la longueur tout en préservant l'essence et la fonctionnalité.
 
-RÈGLES DE COMPRESSION:
-1. Éliminer les redondances et répétitions
-2. Simplifier les formulations verbeuses
-3. Utiliser des termes précis et concis
-4. Préserver TOUTES les contraintes et critères
-5. Format propre avec # (pas trop d'étoiles **)
-6. Maintenir la structure logique
+${SEMANTIC_COMPRESSION_STEPS}
 
-TECHNIQUES AUTORISÉES:
-• Fusionner des phrases similaires
-• Remplacer phrases longues par équivalents courts
-• Supprimer adverbes et adjectifs non essentiels
-• Utiliser tirets et listes pour condenser
-• Abréger exemples tout en gardant leur valeur`;
+RÈGLES D'APPLICATION:
+• Étape 1: Identifier et garder valeurs essentielles (contraintes, critères)
+• Étape 2: Fusionner phrases similaires
+• Étape 3: Hiérarchiser en 3 blocs clairs
+• Étape 4: Compacter langage ("doit" vs "il faut que")
+• Étape 5: Standardiser format (# titres, • listes)
+• Étape 6: Exemples courts mais substantiels (min 3 lignes)
+• Étape 7: Vérifier contraintes chiffrées, zéro phrase orpheline
+• Étape 8: Modulariser sections`;
 
     if (maintainCompleteness && mode === 'premium') {
       return `${basePrompt}

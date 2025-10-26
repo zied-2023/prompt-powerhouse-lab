@@ -16,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
 import { opikOptimizer } from "@/services/opikOptimizer";
 import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
+import { SEMANTIC_COMPRESSION_STEPS } from "@/lib/semanticCompressionGuide";
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
@@ -77,39 +78,58 @@ const PromptImprovement = () => {
 RÈGLES NON-NÉGOCIABLES:
 1. TOUTES les sections doivent être COMPLÈTES avec ponctuation finale
 2. JAMAIS de texte tronqué ou coupé au milieu d'une phrase
-3. Chaque section DOIT se terminer par un point
-4. Le prompt DOIT être autonome et prêt à l'emploi
-5. Structure COMPLÈTE obligatoire
+3. Utiliser COMPRESSION SÉMANTIQUE pour améliorer ET réduire verbosité
+4. Format propre: # pour titres, • pour listes (PAS d'étoiles **)
+5. Le prompt DOIT être autonome et prêt à l'emploi
 
-Structure OBLIGATOIRE du prompt amélioré - CHAQUE SECTION DOIT ÊTRE COMPLÈTE:
+${SEMANTIC_COMPRESSION_STEPS}
 
-🎯 **CONTEXTE & OBJECTIF**
-[2-3 phrases COMPLÈTES avec point final]
+APPLICATION À L'AMÉLIORATION:
+• Étape 1: Identifier valeur sémantique (garder contraintes, supprimer décor)
+• Étape 2: Fusionner phrases redondantes du prompt original
+• Étape 3: Réorganiser en 3 blocs clairs
+• Étape 4: Compacter langage verbeux
+• Étape 5: Standardiser format (# et •)
+• Étape 6: Exemples courts mais substantiels (min 3 lignes)
+• Étape 7: Vérifier contraintes chiffrées, zéro phrase orpheline
+• Étape 8: Sections modulaires
 
-🧑‍💻 **RÔLE DE L'IA**
-[2 phrases COMPLÈTES définissant le rôle avec point final]
+Structure OBLIGATOIRE (FORMAT PROPRE) - CHAQUE SECTION COMPLÈTE:
 
-🗂 **STRUCTURE DU LIVRABLE**
-[Format exact avec exemples - 2-3 phrases COMPLÈTES avec point final]
+# CONTEXTE & OBJECTIF
+[2-3 phrases COMPLÈTES et CONCISES décrivant contexte et objectif]
 
-📏 **CONTRAINTES**
-- Longueur: [spécification COMPLÈTE]
-- Ton: [spécification COMPLÈTE]
-- Style: [spécification COMPLÈTE]
-- Règles spécifiques: [liste COMPLÈTE]
+# RÔLE
+[2 phrases COMPLÈTES et COMPACTES définissant le rôle]
 
-📝 **EXEMPLE DE SORTIE**
-[Exemple concret illustrant le format - TERMINÉ avec point final]
+# STRUCTURE DU LIVRABLE
+[Format exact - 2-3 phrases COMPLÈTES]
+[Si tableau: MINIMUM 2-3 lignes de données, jamais vide]
+
+# CONTRAINTES
+• Longueur: [contrainte CHIFFRÉE - ex: 200-250 mots]
+• Ton: [spécification PRÉCISE]
+• Style: [spécification PRÉCISE]
+• Règles: [liste COMPLÈTE avec valeurs CHIFFRÉES si pertinent]
+
+# EXEMPLE DE SORTIE
+[Exemple SUBSTANTIEL illustrant le format - minimum 3 lignes COMPLÈTES]
 
 ---
 
-**AMÉLIORATIONS APPORTÉES:**
-• [3-6 améliorations concrètes - chacune COMPLÈTE avec point final]
+# AMÉLIORATIONS APPORTÉES
+• [Amélioration 1 - CONCISE et COMPLÈTE]
+• [Amélioration 2 - CONCISE et COMPLÈTE]
+• [Amélioration 3 - CONCISE et COMPLÈTE]
 
-VÉRIFICATION FINALE OBLIGATOIRE:
-- Vérifie que CHAQUE section se termine par un point
-- Vérifie qu'AUCUNE phrase n'est coupée
-- Si manque d'espace, RÉDUIS le détail mais TERMINE toutes les sections`
+VÉRIFICATION FINALE (ÉTAPE 7):
+✓ Toutes sections TERMINÉES avec ponctuation
+✓ Contraintes CHIFFRÉES préservées
+✓ Tableaux COMPLETS (min 2-3 lignes)
+✓ Exemples SUBSTANTIELS (min 3 lignes)
+✓ ZÉRO phrase orpheline
+✓ Format PROPRE (# et • seulement)
+✓ Verbosité réduite de 30-40%`
         : `Tu es un expert en ingénierie de prompt. Ta mission est de transformer un prompt brut en un prompt structuré, clair et directement utilisable.
 
 Structure OBLIGATOIRE du prompt amélioré:

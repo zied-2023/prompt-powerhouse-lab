@@ -17,6 +17,7 @@ import { PromptCompressor } from "@/lib/promptCompressor";
 import { llmRouter } from "@/services/llmRouter";
 import { opikOptimizer } from "@/services/opikOptimizer";
 import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
+import { SEMANTIC_COMPRESSION_STEPS } from "@/lib/semanticCompressionGuide";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -237,27 +238,56 @@ RÈGLES CRITIQUES:
         ? `Tu es un expert en création de prompts IA professionnels. RÈGLE ABSOLUE: Le prompt DOIT être COMPLET avec toutes les sections TERMINÉES.
 
 RÈGLES NON-NÉGOCIABLES:
-1. TOUJOURS terminer COMPLÈTEMENT chaque section avant de passer à la suivante
-2. JAMAIS s'arrêter au milieu d'une phrase ou d'une section
-3. Chaque section DOIT se terminer par une ponctuation finale (point, point d'exclamation)
-4. Si tu approches de la limite de tokens, RÉDUIS le contenu mais TERMINE toutes les sections
+1. TOUJOURS terminer COMPLÈTEMENT chaque section
+2. JAMAIS s'arrêter au milieu d'une phrase
+3. Utiliser COMPRESSION SÉMANTIQUE pour éviter verbosité
+4. Format propre: # pour titres, • pour listes (PAS d'étoiles **)
 5. Longueur cible: ${lengthConstraints.words} - mais LA COMPLÉTUDE prime sur la longueur
 
-Structure OBLIGATOIRE - CHAQUE SECTION DOIT ÊTRE COMPLÈTE:
-**RÔLE**: [Expert spécialisé - 2 phrases COMPLÈTES avec point final]
-**CONTEXTE**: [Situation et enjeux - ${lengthConstraints.words.includes('800-1500') ? '3-4' : lengthConstraints.words.includes('400-700') ? '2-3' : '2'} phrases COMPLÈTES avec point final]
-**OBJECTIF**: [Objectif mesurable - 2 phrases COMPLÈTES avec point final]
-**INSTRUCTIONS**:
-${lengthConstraints.words.includes('800-1500') ? '- [6-8 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point' : lengthConstraints.words.includes('400-700') ? '- [4-6 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point' : lengthConstraints.words.includes('150-300') ? '- [3-5 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point' : '- [3-4 étapes COMPLÈTES]\n- Chaque point DOIT se terminer par un point'}
-**FORMAT**: [Format de sortie - 1-2 phrases COMPLÈTES avec point final]
-**CONTRAINTES**: [${lengthConstraints.words.includes('800-1500') ? '4-5' : lengthConstraints.words.includes('400-700') ? '3-4' : '2-3'} contraintes COMPLÈTES avec point final pour chacune]
+${SEMANTIC_COMPRESSION_STEPS}
 
-${lengthConstraints.words.includes('400-700') || lengthConstraints.words.includes('800-1500') ? '**CONSIDÉRATIONS**: [Points additionnels - phrases COMPLÈTES avec points finaux]' : ''}
+APPLICATION AU PROMPT À GÉNÉRER:
+• Étape 1: Identifier valeurs essentielles (contraintes, critères)
+• Étape 2: Fusionner phrases similaires
+• Étape 3: Hiérarchiser en 3 blocs (Rôle+Objectif, Instructions+Format, Contraintes)
+• Étape 4: Langage compact ("doit" vs "il faut que")
+• Étape 5: Format standard (# titres, • listes)
+• Étape 6: ${lengthConstraints.words.includes('800-1500') ? '2-3 exemples substantiels (min 3 lignes chacun)' : '1-2 exemples courts mais complets'}
+• Étape 7: Vérifier contraintes chiffrées, aucune phrase orpheline
+• Étape 8: Sections modulaires réutilisables
 
-VÉRIFICATION FINALE OBLIGATOIRE:
-- Vérifie que CHAQUE section se termine par un point
-- Vérifie qu'AUCUNE phrase n'est coupée
-- Si manque de tokens, TERMINE proprement en réduisant le détail mais en FINISSANT toutes les sections`
+Structure OBLIGATOIRE (FORMAT PROPRE) - CHAQUE SECTION COMPLÈTE:
+
+# RÔLE
+[Expert spécialisé - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases COMPLÈTES et CONCISES]
+
+# CONTEXTE
+[Situation et enjeux - ${lengthConstraints.words.includes('800-1500') ? '3-4' : lengthConstraints.words.includes('400-700') ? '2-3' : '2'} phrases COMPLÈTES et COMPACTES]
+
+# OBJECTIF
+[Objectif mesurable - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases COMPLÈTES avec CRITÈRES CHIFFRÉS]
+
+# INSTRUCTIONS
+${lengthConstraints.words.includes('800-1500') ? '1. [Étape 1 - phrase compacte complète]\n2. [Étape 2 - phrase compacte complète]\n...\n6-8. [6-8 étapes TOTALES]' : lengthConstraints.words.includes('400-700') ? '1. [Étape 1 - phrase compacte complète]\n...\n4-6. [4-6 étapes TOTALES]' : '1. [Étape 1 - compacte]\n...\n3-5. [3-5 étapes TOTALES]'}
+
+# FORMAT DE SORTIE
+[Format précis - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases COMPLÈTES]
+${lengthConstraints.words.includes('800-1500') || lengthConstraints.words.includes('400-700') ? '\n[Si tableau: MINIMUM 2-3 lignes de données, jamais vide]' : ''}
+
+# CONTRAINTES
+• Longueur: [contrainte CHIFFRÉE]
+• Ton: [spécification PRÉCISE]
+${lengthConstraints.words.includes('800-1500') ? '• [2-3 contraintes additionnelles CHIFFRÉES]' : lengthConstraints.words.includes('400-700') ? '• [1-2 contraintes additionnelles]' : ''}
+
+${lengthConstraints.words.includes('400-700') || lengthConstraints.words.includes('800-1500') ? '# EXEMPLE(S)\n[' + (lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2') + ' exemple(s) SUBSTANTIEL(S) - minimum 3 lignes CHACUN]' : ''}
+
+VÉRIFICATION FINALE (ÉTAPE 7):
+✓ Toutes sections TERMINÉES avec ponctuation
+✓ Contraintes CHIFFRÉES (200 mots, 10s, 80%)
+✓ Tableaux COMPLETS (min 2-3 lignes données)
+✓ Exemples SUBSTANTIELS (min 3 lignes)
+✓ ZÉRO phrase orpheline
+✓ Format PROPRE (# et • seulement)`
         : `Expert prompts IA. Max 600 tokens strict.
 
 Structure OBLIGATOIRE:
