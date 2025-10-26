@@ -9,6 +9,10 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
 import { SEMANTIC_COMPRESSION_STEPS } from "@/lib/semanticCompressionGuide";
+import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
+import { llmRouter } from "@/services/llmRouter";
+import { useUserCredits } from "@/hooks/useUserCredits";
+import { buildStructuredPrompt } from "@/lib/promptFormatter";
 
 import { 
   Brain, 
@@ -36,6 +40,7 @@ import { validateStep, calculateOverallProgress, getStepSuggestions } from './ut
 const AdvancedPromptBuilder = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { credits } = useUserCredits();
   const stepConfigs = getStepConfigs(t);
   
   // États principaux
@@ -124,34 +129,157 @@ const AdvancedPromptBuilder = () => {
     const startTime = Date.now();
 
     try {
-      // Simulation de génération avec l'API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const creditsRemaining = credits?.remaining_credits || 0;
+      const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
 
-      const prompt = buildFinalPrompt(promptData);
+      console.log('🚀 Génération prompt avancé:', { mode, creditsRemaining, hasUser: !!user });
+
+      let finalPrompt: string;
+
+      // MODE PREMIUM: Utiliser Opik pour génération complète et optimisée
+      if (mode === 'premium' && user) {
+        console.log('🔄 Mode Premium Advanced: Utilisation de l\'optimisation itérative Opik');
+
+        const systemPrompt = `Tu es un expert en création de prompts IA professionnels. RÈGLE ABSOLUE: Le prompt DOIT être COMPLET avec toutes les sections TERMINÉES.
+
+RÈGLES NON-NÉGOCIABLES:
+1. TOUJOURS terminer COMPLÈTEMENT chaque section
+2. JAMAIS s'arrêter au milieu d'une phrase
+3. Utiliser COMPRESSION SÉMANTIQUE pour éviter verbosité
+4. Format propre: # pour titres, • pour listes (PAS d'étoiles **)
+5. Le prompt doit être COMPLET et prêt à l'emploi
+
+${SEMANTIC_COMPRESSION_STEPS}
+
+APPLICATION:
+• Étape 1: Identifier valeurs essentielles
+• Étape 2: Fusionner phrases similaires
+• Étape 3: Hiérarchiser en 3 blocs (Rôle+Objectif, Instructions+Format, Contraintes)
+• Étape 4: Langage compact
+• Étape 5: Format standard (# titres, • listes)
+• Étape 6: Exemples substantiels (min 3 lignes)
+• Étape 7: Vérifier contraintes chiffrées, aucune phrase orpheline
+• Étape 8: Sections modulaires
+
+Structure OBLIGATOIRE (FORMAT PROPRE) - CHAQUE SECTION COMPLÈTE:
+
+# RÔLE
+[Expert spécialisé - 2 phrases COMPLÈTES et CONCISES]
+
+# CONTEXTE
+[Situation et enjeux - 2-3 phrases COMPLÈTES et COMPACTES]
+
+# OBJECTIF
+[Objectif mesurable - 2 phrases COMPLÈTES avec CRITÈRES CHIFFRÉS]
+
+# INSTRUCTIONS
+1. [Étape 1 - phrase compacte complète]
+2. [Étape 2 - phrase compacte complète]
+...
+[4-6 étapes TOTALES selon complexité]
+
+# FORMAT DE SORTIE
+[Format précis - 2 phrases COMPLÈTES]
+[Si tableau: MINIMUM 2-3 lignes de données, jamais vide]
+
+# CONTRAINTES
+• [Contrainte 1 CHIFFRÉE si pertinent]
+• [Contrainte 2 PRÉCISE]
+• [Contrainte 3 PRÉCISE]
+
+# CRITÈRES DE QUALITÉ
+• [Critère 1]
+• [Critère 2]
+• [Critère 3]
+
+VÉRIFICATION FINALE (ÉTAPE 7):
+✓ Toutes sections TERMINÉES avec ponctuation
+✓ Contraintes CHIFFRÉES présentes
+✓ Tableaux COMPLETS (min 2-3 lignes)
+✓ Format PROPRE (# et • seulement)
+✓ ZÉRO phrase orpheline`;
+
+        const userPrompt = `Crée un prompt expert COMPLET avec ces spécifications:
+
+SPÉCIFICATIONS:
+- Modèle IA: ${promptData.aiModel || 'IA généraliste'}
+- Objectif: ${promptData.objective}
+- Contexte: ${promptData.context}
+- Public: ${promptData.audience}
+- Ton: ${promptData.tone}
+- Format sortie: ${promptData.outputFormat}
+${promptData.constraints.length > 0 ? `- Contraintes: ${promptData.constraints.join(', ')}` : ''}
+${promptData.keywords.length > 0 ? `- Mots-clés: ${promptData.keywords.join(', ')}` : ''}
+${promptData.examples.length > 0 ? `- ${promptData.examples.length} exemple(s) fourni(s)` : ''}
+
+GÉNÈRE un prompt COMPLET, structuré, optimisé avec compression sémantique, prêt à l'emploi.`;
+
+        const maxTokens = llmRouter.getRecommendedMaxTokens('premium', 'mistral');
+
+        const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
+          systemPrompt,
+          userPrompt,
+          user.id,
+          maxTokens,
+          'premium'
+        );
+
+        finalPrompt = iterativeResult.finalPrompt;
+
+        console.log('✅ Optimisation itérative Advanced terminée:', {
+          iterations: iterativeResult.iterations,
+          completenessScore: Math.round(iterativeResult.completenessScore.overall * 100) + '%'
+        });
+
+        if (iterativeResult.improvements.length > 0) {
+          toast({
+            title: "✅ Prompt optimisé avec Opik",
+            description: `${iterativeResult.iterations} itération(s) - Score: ${Math.round(iterativeResult.completenessScore.overall * 100)}%`,
+          });
+        }
+      } else {
+        // MODE FREE/BASIC: Template structuré propre
+        finalPrompt = buildStructuredPrompt({
+          role: `Expert en ${promptData.context || 'votre domaine'}`,
+          context: promptData.context,
+          objective: promptData.objective,
+          instructions: promptData.constraints.length > 0 ? promptData.constraints : [
+            'Analyser la demande en détail',
+            'Structurer la réponse de manière claire',
+            'Fournir des exemples concrets si pertinent'
+          ],
+          format: promptData.outputFormat,
+          constraints: [
+            `Public cible: ${promptData.audience}`,
+            `Ton: ${promptData.tone}`,
+            ...(promptData.keywords.length > 0 ? [`Mots-clés: ${promptData.keywords.join(', ')}`] : [])
+          ],
+          style: 'clean'
+        });
+      }
+
       const latency = Date.now() - startTime;
-      setGeneratedPrompt(prompt);
+      setGeneratedPrompt(finalPrompt);
       setShowPreview(true);
 
-      // Enregistrer la trace dans Opik si l'utilisateur est connecté
+      // Enregistrer la trace dans Opik
       if (user) {
         const traceId = opikService.generateTraceId();
-
-        // Créer une description de l'input basée sur les données du prompt
-        const promptInput = `Générer un prompt avec: Objectif: ${promptData.objective}, Contexte: ${promptData.context}, Audience: ${promptData.audience}, Ton: ${promptData.tone}`;
+        const promptInput = `Objectif: ${promptData.objective}, Contexte: ${promptData.context}`;
 
         await opikService.createTrace({
           userId: user.id,
           traceId: traceId,
           promptInput: promptInput,
-          promptOutput: prompt,
-          model: promptData.aiModel || 'advanced-builder',
+          promptOutput: finalPrompt,
+          model: mode === 'premium' ? 'mistral-large-latest' : 'advanced-builder-template',
           latencyMs: latency,
-          tokensUsed: Math.ceil(prompt.length / 4),
+          tokensUsed: Math.ceil(finalPrompt.length / 4),
           cost: 0,
           tags: {
             source: 'advanced-builder',
+            mode,
             hasConstraints: promptData.constraints.length > 0,
-            hasKeywords: promptData.keywords.length > 0,
             outputFormat: promptData.outputFormat
           }
         });
@@ -161,9 +289,10 @@ const AdvancedPromptBuilder = () => {
 
       toast({
         title: "Prompt généré avec succès",
-        description: "Votre prompt optimisé est prêt à être utilisé."
+        description: mode === 'premium' ? "Prompt optimisé avec Opik" : "Template généré"
       });
     } catch (error) {
+      console.error('Erreur génération prompt avancé:', error);
       toast({
         title: "Erreur de génération",
         description: "Impossible de générer le prompt. Réessayez.",
