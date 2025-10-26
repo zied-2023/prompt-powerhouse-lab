@@ -77,10 +77,8 @@ class LLMRouter {
         .eq('is_active', true)
         .order('priority', { ascending: false });
 
-      // Si un userId est fourni, filtrer par utilisateur
-      if (userId) {
-        query = query.eq('user_id', userId);
-      }
+      // Ne pas filtrer par user_id pour permettre l'utilisation des clés système
+      // Les clés avec user_id=null sont des clés partagées pour tous les utilisateurs
 
       const { data, error } = await query;
 
