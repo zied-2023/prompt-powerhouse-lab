@@ -184,8 +184,20 @@ class IterativePromptOptimizer {
    * Évalue la complétude d'un prompt
    */
   private evaluateCompleteness(prompt: string, mode: 'free' | 'basic' | 'premium'): CompletenessScore {
-    const sections = this.detectSections(prompt);
+    // Si le prompt contient "---", on évalue uniquement la partie avant le séparateur
+    // (car après c'est la section AMÉLIORATIONS qui n'est pas le prompt lui-même)
+    let promptToEvaluate = prompt;
+    if (prompt.includes('---')) {
+      const parts = prompt.split('---');
+      promptToEvaluate = parts[0].trim();
+      console.log('📊 Évaluation de la partie avant "---" uniquement');
+    }
+
+    const sections = this.detectSections(promptToEvaluate);
     const requiredSections = this.getRequiredSections(mode);
+
+    console.log('🔍 Sections détectées:', Object.keys(sections).filter(k => sections[k].present));
+    console.log('🎯 Sections requises:', requiredSections);
 
     // Vérifier les sections manquantes
     const missingSections = requiredSections.filter(
@@ -197,11 +209,14 @@ class IterativePromptOptimizer {
       section => sections[section]?.present && !sections[section]?.complete
     );
 
+    console.log('❌ Sections manquantes:', missingSections);
+    console.log('⚠️ Sections incomplètes:', incompleteSections);
+
     // Vérifier la troncation
-    const truncationCheck = this.checkForTruncation(prompt);
+    const truncationCheck = this.checkForTruncation(promptToEvaluate);
 
     // Vérifier la fin propre
-    const properEnding = this.checkProperEnding(prompt);
+    const properEnding = this.checkProperEnding(promptToEvaluate);
 
     // Calculer le score global
     const hasAllSections = missingSections.length === 0;
@@ -224,6 +239,8 @@ class IterativePromptOptimizer {
     // 10% pour une fin propre
     if (properEnding) score += 0.1;
 
+    console.log('📊 Score de complétude calculé:', Math.round(score * 100) + '%');
+
     return {
       overall: Math.round(score * 100) / 100,
       hasAllSections,
@@ -244,25 +261,52 @@ class IterativePromptOptimizer {
   private detectSections(prompt: string): Record<string, { present: boolean; complete: boolean; content: string }> {
     const sections: Record<string, { present: boolean; complete: boolean; content: string }> = {};
 
+    // Patterns pour format standard (avec ou sans émojis)
     const sectionPatterns = {
-      'RÔLE': /\*\*(?:RÔLE|ROLE)\*\*:?\s*([\s\S]*?)(?=\*\*[A-Z]|\n\n\n|$)/i,
-      'CONTEXTE': /\*\*(?:CONTEXTE|CONTEXT)\*\*:?\s*([\s\S]*?)(?=\*\*[A-Z]|\n\n\n|$)/i,
-      'OBJECTIF': /\*\*(?:OBJECTIF|OBJECTIVE|MISSION)\*\*:?\s*([\s\S]*?)(?=\*\*[A-Z]|\n\n\n|$)/i,
-      'INSTRUCTIONS': /\*\*(?:INSTRUCTIONS|TÂCHES|TASKS)\*\*:?\s*([\s\S]*?)(?=\*\*[A-Z]|\n\n\n|$)/i,
-      'FORMAT': /\*\*(?:FORMAT|LIVRABLE|OUTPUT)\*\*:?\s*([\s\S]*?)(?=\*\*[A-Z]|\n\n\n|$)/i,
-      'CONTRAINTES': /\*\*(?:CONTRAINTES|CONSTRAINTS|RÈGLES)\*\*:?\s*([\s\S]*?)(?=\*\*[A-Z]|\n\n\n|$)/i,
+      'RÔLE': [
+        /\*\*(?:RÔLE|ROLE)\*\*:?\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i,
+        /🧑‍💻\s*\*\*(?:RÔLE DE L'IA|RÔLE)\*\*\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i
+      ],
+      'CONTEXTE': [
+        /\*\*(?:CONTEXTE|CONTEXT)\*\*:?\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i,
+        /🎯\s*\*\*(?:CONTEXTE & OBJECTIF|CONTEXTE)\*\*\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i
+      ],
+      'OBJECTIF': [
+        /\*\*(?:OBJECTIF|OBJECTIVE|MISSION)\*\*:?\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i,
+        /🎯\s*\*\*(?:CONTEXTE & OBJECTIF|OBJECTIF)\*\*\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i
+      ],
+      'INSTRUCTIONS': [
+        /\*\*(?:INSTRUCTIONS|TÂCHES|TASKS)\*\*:?\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i
+      ],
+      'FORMAT': [
+        /\*\*(?:FORMAT|LIVRABLE|OUTPUT)\*\*:?\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i,
+        /🗂\s*\*\*(?:STRUCTURE DU LIVRABLE|FORMAT)\*\*\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i
+      ],
+      'CONTRAINTES': [
+        /\*\*(?:CONTRAINTES|CONSTRAINTS|RÈGLES)\*\*:?\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i,
+        /📏\s*\*\*(?:CONTRAINTES)\*\*\s*([\s\S]*?)(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z]|---|\n\n\n)|$)/i
+      ],
     };
 
-    for (const [sectionName, pattern] of Object.entries(sectionPatterns)) {
-      const match = prompt.match(pattern);
-      if (match && match[1]) {
-        const content = match[1].trim();
-        sections[sectionName] = {
-          present: true,
-          complete: this.isSectionComplete(content),
-          content
-        };
-      } else {
+    for (const [sectionName, patterns] of Object.entries(sectionPatterns)) {
+      let found = false;
+
+      // Essayer chaque pattern pour cette section
+      for (const pattern of patterns) {
+        const match = prompt.match(pattern);
+        if (match && match[1]) {
+          const content = match[1].trim();
+          sections[sectionName] = {
+            present: true,
+            complete: this.isSectionComplete(content),
+            content
+          };
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
         sections[sectionName] = {
           present: false,
           complete: false,
@@ -306,9 +350,19 @@ class IterativePromptOptimizer {
     const lastLine = lines[lines.length - 1].trim();
     const lastChar = prompt.trim().slice(-1);
 
+    // Exception: Si le prompt se termine par "---" suivi d'une section AMÉLIORATIONS
+    // ce n'est PAS une troncation mais un séparateur intentionnel
+    if (prompt.includes('---') && prompt.includes('AMÉLIORATIONS APPORTÉES')) {
+      // Vérifier si le texte après --- est complet
+      const afterSeparator = prompt.split('---')[1];
+      if (afterSeparator && afterSeparator.trim().length > 20) {
+        // Il y a du contenu après ---, donc pas de troncation
+        return { truncated: false };
+      }
+    }
+
     // Signes de troncation
     const truncationPatterns = [
-      /---$/,           // Se termine par ---
       /\.\.\.$/,        // Se termine par ...
       /[,;]\s*$/,       // Se termine par une virgule ou point-virgule
       /\([^)]*$/,       // Parenthèse ouvrante non fermée
@@ -322,8 +376,8 @@ class IterativePromptOptimizer {
       }
     }
 
-    // Si la dernière ligne est très courte et sans ponctuation
-    if (lastLine.length < 20 && !lastChar.match(/[.!?:]/)) {
+    // Si la dernière ligne est très courte et sans ponctuation (sauf si c'est juste après ---)
+    if (lastLine.length < 20 && !lastChar.match(/[.!?:]/) && !prompt.trim().endsWith('---')) {
       return { truncated: true, position: prompt.length - lastLine.length };
     }
 
@@ -343,14 +397,16 @@ class IterativePromptOptimizer {
 
   /**
    * Retourne les sections requises selon le mode
+   * Note: Pour la section amélioration, CONTEXTE et OBJECTIF peuvent être fusionnés
    */
   private getRequiredSections(mode: 'free' | 'basic' | 'premium'): string[] {
     if (mode === 'premium') {
-      return ['RÔLE', 'CONTEXTE', 'OBJECTIF', 'INSTRUCTIONS', 'FORMAT', 'CONTRAINTES'];
+      // CONTEXTE et OBJECTIF sont essentiels (même s'ils peuvent être fusionnés dans le format amélioration)
+      return ['RÔLE', 'CONTEXTE', 'FORMAT', 'CONTRAINTES'];
     } else if (mode === 'basic') {
-      return ['RÔLE', 'OBJECTIF', 'INSTRUCTIONS', 'FORMAT', 'CONTRAINTES'];
+      return ['RÔLE', 'CONTEXTE', 'FORMAT', 'CONTRAINTES'];
     } else {
-      return ['RÔLE', 'OBJECTIF', 'INSTRUCTIONS', 'FORMAT'];
+      return ['RÔLE', 'CONTEXTE', 'FORMAT'];
     }
   }
 
