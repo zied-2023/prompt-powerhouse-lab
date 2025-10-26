@@ -16,6 +16,13 @@ export interface CompletenessScore {
     missingSections: string[];
     incompleteSections: string[];
     truncationPoint?: number;
+    qualityIssues?: {
+      hasOrphanPhrases: boolean;
+      hasIncompleteTables: boolean;
+      hasIncompleteLists: boolean;
+      lacksConcretExample: boolean;
+      lacksQuantifiedConstraints: boolean;
+    };
   };
 }
 
@@ -181,7 +188,7 @@ class IterativePromptOptimizer {
   }
 
   /**
-   * Évalue la complétude d'un prompt
+   * Évalue la complétude d'un prompt selon la CHECKLIST PRE-PUBLICATION
    */
   private evaluateCompleteness(prompt: string, mode: 'free' | 'basic' | 'premium'): CompletenessScore {
     // Si le prompt contient "---", on évalue uniquement la partie avant le séparateur
@@ -199,45 +206,74 @@ class IterativePromptOptimizer {
     console.log('🔍 Sections détectées:', Object.keys(sections).filter(k => sections[k].present));
     console.log('🎯 Sections requises:', requiredSections);
 
-    // Vérifier les sections manquantes
+    // CHECKLIST 1: STRUCTURE (sections de base)
     const missingSections = requiredSections.filter(
       section => !sections[section] || !sections[section].present
     );
 
-    // Vérifier les sections incomplètes
     const incompleteSections = requiredSections.filter(
       section => sections[section]?.present && !sections[section]?.complete
     );
 
+    // CHECKLIST 2: COMPLÉTUDE (troncation et qualité de fin)
+    const truncationCheck = this.checkForTruncation(promptToEvaluate);
+    const properEnding = this.checkProperEnding(promptToEvaluate);
+    const hasOrphanPhrases = this.detectOrphanPhrases(promptToEvaluate);
+    const hasIncompleteTables = this.detectIncompleteTables(promptToEvaluate);
+    const hasIncompleteLists = this.detectIncompleteBulletLists(promptToEvaluate);
+
+    // CHECKLIST 3: CONTENU (exemple concret, contraintes chiffrées)
+    const hasConcreteExample = this.hasSubstantialExample(sections['EXEMPLE']);
+    const hasQuantifiedConstraints = this.hasQuantifiedConstraints(sections['CONTRAINTES']);
+
     console.log('❌ Sections manquantes:', missingSections);
     console.log('⚠️ Sections incomplètes:', incompleteSections);
+    console.log('📋 Checklist complétude:', {
+      hasOrphanPhrases,
+      hasIncompleteTables,
+      hasIncompleteLists,
+      hasConcreteExample,
+      hasQuantifiedConstraints
+    });
 
-    // Vérifier la troncation
-    const truncationCheck = this.checkForTruncation(promptToEvaluate);
-
-    // Vérifier la fin propre
-    const properEnding = this.checkProperEnding(promptToEvaluate);
-
-    // Calculer le score global
+    // Calculer le score global selon la CHECKLIST
     const hasAllSections = missingSections.length === 0;
     const allSectionsComplete = incompleteSections.length === 0;
     const noTruncation = !truncationCheck.truncated;
+    const noOrphans = !hasOrphanPhrases;
+    const noIncompleteTables = !hasIncompleteTables;
+    const noIncompleteLists = !hasIncompleteLists;
 
     let score = 0;
 
-    // 40% pour avoir toutes les sections
-    if (hasAllSections) score += 0.4;
-    else score += (1 - missingSections.length / requiredSections.length) * 0.4;
+    // 30% pour avoir toutes les sections requises
+    if (hasAllSections) score += 0.30;
+    else score += (1 - missingSections.length / requiredSections.length) * 0.30;
 
-    // 40% pour que toutes les sections soient complètes
-    if (allSectionsComplete) score += 0.4;
-    else score += (1 - incompleteSections.length / requiredSections.length) * 0.4;
+    // 30% pour que toutes les sections soient complètes
+    if (allSectionsComplete) score += 0.30;
+    else score += (1 - incompleteSections.length / requiredSections.length) * 0.30;
 
-    // 10% pour l'absence de troncation
-    if (noTruncation) score += 0.1;
+    // 15% pour l'absence de troncation et fin propre
+    if (noTruncation && properEnding) score += 0.15;
+    else if (noTruncation || properEnding) score += 0.075;
 
-    // 10% pour une fin propre
-    if (properEnding) score += 0.1;
+    // 10% pour l'absence d'éléments orphelins/incomplets
+    if (noOrphans && noIncompleteTables && noIncompleteLists) score += 0.10;
+    else {
+      let subScore = 0;
+      if (noOrphans) subScore += 0.033;
+      if (noIncompleteTables) subScore += 0.033;
+      if (noIncompleteLists) subScore += 0.033;
+      score += subScore;
+    }
+
+    // 15% pour la qualité du contenu (exemple + contraintes)
+    if (hasConcreteExample && hasQuantifiedConstraints) score += 0.15;
+    else {
+      if (hasConcreteExample) score += 0.10;
+      if (hasQuantifiedConstraints) score += 0.05;
+    }
 
     console.log('📊 Score de complétude calculé:', Math.round(score * 100) + '%');
 
@@ -250,7 +286,14 @@ class IterativePromptOptimizer {
       details: {
         missingSections,
         incompleteSections,
-        truncationPoint: truncationCheck.truncated ? truncationCheck.position : undefined
+        truncationPoint: truncationCheck.truncated ? truncationCheck.position : undefined,
+        qualityIssues: {
+          hasOrphanPhrases,
+          hasIncompleteTables,
+          hasIncompleteLists,
+          lacksConcretExample: !hasConcreteExample,
+          lacksQuantifiedConstraints: !hasQuantifiedConstraints
+        }
       }
     };
   }
@@ -426,6 +469,148 @@ class IterativePromptOptimizer {
   }
 
   /**
+   * CHECKLIST: Détecte les phrases orphelines (ex: "Code snippets :" seul)
+   */
+  private detectOrphanPhrases(prompt: string): boolean {
+    const lines = prompt.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Une phrase orpheline se termine par ":" sans contenu après
+      if (line.endsWith(':') && line.length < 50) {
+        // Vérifier si la ligne suivante existe et contient du contenu
+        const nextLine = i < lines.length - 1 ? lines[i + 1] : '';
+
+        // Si c'est la dernière ligne ou si la suivante est vide/courte, c'est orphelin
+        if (!nextLine || nextLine.length < 10) {
+          console.log('🚨 Phrase orpheline détectée:', line);
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * CHECKLIST: Détecte les tableaux incomplets (header sans ligne d'exemple)
+   */
+  private detectIncompleteTables(prompt: string): boolean {
+    const lines = prompt.split('\n');
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      // Détecte un header de tableau markdown (avec |)
+      if (line.includes('|') && line.split('|').length > 2) {
+        // Vérifier s'il y a une ligne de séparation après (|---|---|)
+        const nextLine = i < lines.length - 1 ? lines[i + 1].trim() : '';
+        const hasSeperator = nextLine.includes('---') && nextLine.includes('|');
+
+        if (hasSeperator) {
+          // Vérifier s'il y a au moins une ligne de données après le séparateur
+          const dataLine = i < lines.length - 2 ? lines[i + 2].trim() : '';
+
+          if (!dataLine || !dataLine.includes('|')) {
+            console.log('🚨 Tableau incomplet détecté (header sans données)');
+            return true;
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * CHECKLIST: Détecte les listes à puces incomplètes
+   */
+  private detectIncompleteBulletLists(prompt: string): boolean {
+    const lines = prompt.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+
+      // Détecte une puce (-, •, *)
+      if (line.match(/^[-•*]\s/)) {
+        // Vérifier si la ligne de puce est trop courte ou sans contenu
+        const content = line.replace(/^[-•*]\s/, '').trim();
+
+        if (content.length < 5 || content.endsWith(':')) {
+          console.log('🚨 Liste à puce incomplète:', line);
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * CHECKLIST: Vérifie si la section EXEMPLE a un contenu substantiel et concret
+   */
+  private hasSubstantialExample(exempleSection: { present: boolean; complete: boolean; content: string } | undefined): boolean {
+    if (!exempleSection || !exempleSection.present || !exempleSection.content) {
+      return false;
+    }
+
+    const content = exempleSection.content.trim();
+
+    // Un exemple substantiel doit avoir:
+    // - Au moins 100 caractères (pas juste un titre)
+    // - Au moins 3 lignes
+    // - Du contenu concret (pas juste des placeholders)
+
+    const lines = content.split('\n').filter(l => l.trim().length > 0);
+    const hasMinLength = content.length >= 100;
+    const hasMinLines = lines.length >= 3;
+    const hasConcreteContent = !content.includes('[à compléter]') &&
+                               !content.includes('[example]') &&
+                               !content.includes('[...]');
+
+    const isSubstantial = hasMinLength && hasMinLines && hasConcreteContent;
+
+    if (!isSubstantial) {
+      console.log('⚠️ Exemple non substantiel:', { hasMinLength, hasMinLines, hasConcreteContent });
+    }
+
+    return isSubstantial;
+  }
+
+  /**
+   * CHECKLIST: Vérifie si les contraintes contiennent des chiffres/mesures concrètes
+   */
+  private hasQuantifiedConstraints(contraintesSection: { present: boolean; complete: boolean; content: string } | undefined): boolean {
+    if (!contraintesSection || !contraintesSection.present || !contraintesSection.content) {
+      return false;
+    }
+
+    const content = contraintesSection.content;
+
+    // Cherche des patterns de quantification:
+    // - Nombres (100, 200-250, <2, >5)
+    // - Unités (mots, caractères, secondes, tokens, ko, mo)
+    // - Pourcentages (80%, 90%)
+
+    const quantificationPatterns = [
+      /\d+\s*-\s*\d+/,           // Range: 200-250
+      /[<>≤≥]\s*\d+/,            // Comparaison: <2, >5
+      /\d+\s*(mots?|caractères?|secondes?|minutes?|tokens?|ko|mo|go)/i,
+      /\d+%/,                     // Pourcentages: 80%
+      /\d+\s*lignes?/i,          // Lignes: 10 lignes
+    ];
+
+    const hasQuantification = quantificationPatterns.some(pattern => pattern.test(content));
+
+    if (!hasQuantification) {
+      console.log('⚠️ Contraintes sans quantification détectée');
+    }
+
+    return hasQuantification;
+  }
+
+  /**
    * Construit un prompt de correction basé sur l'analyse
    */
   private buildCorrectionPrompt(
@@ -435,6 +620,7 @@ class IterativePromptOptimizer {
   ): { system: string; user: string } {
     const issues: string[] = [];
 
+    // CHECKLIST STRUCTURE
     if (score.details.missingSections.length > 0) {
       issues.push(`Sections manquantes: ${score.details.missingSections.join(', ')}`);
     }
@@ -443,6 +629,7 @@ class IterativePromptOptimizer {
       issues.push(`Sections incomplètes: ${score.details.incompleteSections.join(', ')}`);
     }
 
+    // CHECKLIST COMPLÉTUDE
     if (!score.noTruncation) {
       issues.push('Le prompt est tronqué et doit être complété');
     }
@@ -451,42 +638,91 @@ class IterativePromptOptimizer {
       issues.push('Le prompt ne se termine pas proprement');
     }
 
+    // CHECKLIST QUALITÉ
+    const qualityIssues = score.details.qualityIssues;
+    if (qualityIssues) {
+      if (qualityIssues.hasOrphanPhrases) {
+        issues.push('Phrases orphelines détectées (ex: "Code snippets :" sans suite) - À compléter');
+      }
+      if (qualityIssues.hasIncompleteTables) {
+        issues.push('Tableaux incomplets (header sans ligne d\'exemple) - Ajouter au moins 1 ligne');
+      }
+      if (qualityIssues.hasIncompleteLists) {
+        issues.push('Listes à puces incomplètes - Compléter chaque élément');
+      }
+      if (qualityIssues.lacksConcretExample) {
+        issues.push('Section EXEMPLE manquante ou non substantielle - Ajouter un exemple concret de 3-5 lignes minimum');
+      }
+      if (qualityIssues.lacksQuantifiedConstraints) {
+        issues.push('Contraintes sans chiffres - Ajouter des mesures concrètes (ex: 200-250 mots, <2s, 80%)');
+      }
+    }
+
     // Détecter si c'est un format avec émojis (format amélioration)
     const hasEmojiFormat = currentPrompt.includes('🎯') || currentPrompt.includes('🧑‍💻') || currentPrompt.includes('🗂');
 
     const systemPrompt = hasEmojiFormat
-      ? `Tu es un expert en correction de prompts. Ta mission: COMPLÉTER ce prompt TRONQUÉ en respectant EXACTEMENT son format avec émojis.
+      ? `Tu es un expert en correction de prompts selon la CHECKLIST PRE-PUBLICATION professionnelle.
 
-RÈGLES CRITIQUES:
-1. PRÉSERVER le format avec émojis (🎯, 🧑‍💻, 🗂, 📏, 📝)
-2. COMPLÉTER les sections incomplètes jusqu'au point final
-3. Si une section se termine brusquement (ex: après "**EXEMPLE DE SORTIE**"), AJOUTER du contenu d'exemple concret
-4. JAMAIS laisser une section vide ou sans contenu
-5. Chaque section DOIT se terminer par un point ou du contenu complet
+📋 CHECKLIST À RESPECTER:
 
-FORMAT ATTENDU pour les sections avec émojis:
+**STRUCTURE** (obligatoire):
+✓ Introduction claire (contexte + objectif)
+✓ Rôle de l'IA défini précisément
+✓ Livrables attendus explicités
+✓ Section Contraintes présente
+✓ Section Exemples présente
+
+**COMPLÉTUDE** (critique):
+✓ Le prompt ne s'arrête PAS brutalement
+✓ Dernière section COMPLÈTE (lire jusqu'à la fin)
+✓ ZÉRO phrases orphelines (ex: "Code snippets :" seul)
+✓ Tableaux commencés = tableaux terminés (min 1 ligne de données)
+✓ Listes complètes (pas de bullet point vide)
+
+**CONTENU** (qualité):
+✓ Exemple de sortie CONCRET (min 3-5 lignes, pas de placeholder)
+✓ Contraintes CHIFFRÉES (200-250 mots, <2s, 80%, etc.)
+✓ Ton cohérent du début à la fin
+
+FORMAT SPÉCIFIQUE avec émojis:
 🎯 **CONTEXTE & OBJECTIF** → 2-3 phrases COMPLÈTES
 🧑‍💻 **RÔLE DE L'IA** → 2 phrases COMPLÈTES
 🗂 **STRUCTURE DU LIVRABLE** → Liste ou description COMPLÈTE
-📏 **CONTRAINTES** → Liste COMPLÈTE de contraintes
-📝 **EXEMPLE DE SORTIE** → EXEMPLE CONCRET avec au moins 3-5 lignes
+📏 **CONTRAINTES** → Contraintes CHIFFRÉES (avec nombres/unités)
+📝 **EXEMPLE DE SORTIE** → Exemple CONCRET de 5+ lignes (pas [à compléter])
 
-PROBLÈMES DÉTECTÉS:
+🚨 PROBLÈMES DÉTECTÉS À CORRIGER:
 ${issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
 
-ATTENTION SPÉCIALE:
-- Si "📝 **EXEMPLE DE SORTIE**" est vide ou incomplet, AJOUTE un exemple concret de 3-5 lignes minimum`
-      : `Tu es un expert en correction et amélioration de prompts IA. Ta mission est de CORRIGER et COMPLÉTER un prompt incomplet.
+RÈGLE D'OR: Ne retourne le prompt QUE si tu peux cocher TOUS les points de la checklist.`
+      : `Tu es un expert en correction de prompts selon la CHECKLIST PRE-PUBLICATION professionnelle.
 
-RÈGLES ABSOLUES:
-1. TOUTES les sections doivent être COMPLÈTES avec ponctuation finale
-2. JAMAIS de texte tronqué ou coupé au milieu d'une phrase
-3. Chaque section DOIT se terminer par un point
-4. Si une section manque, l'ajouter
-5. Si une section est incomplète, la terminer proprement
+📋 CHECKLIST À RESPECTER:
 
-PROBLÈMES À CORRIGER:
-${issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n')}`;
+**STRUCTURE** (obligatoire):
+✓ Introduction claire (contexte + objectif)
+✓ Rôle de l'IA défini précisément
+✓ Livrables attendus explicités
+✓ Section Contraintes présente
+✓ Section Exemples présente
+
+**COMPLÉTUDE** (critique):
+✓ Le prompt ne s'arrête PAS brutalement
+✓ Dernière section COMPLÈTE (lire jusqu'à la fin)
+✓ ZÉRO phrases orphelines (ex: "Code snippets :" seul)
+✓ Tableaux commencés = tableaux terminés (min 1 ligne de données)
+✓ Listes complètes (pas de bullet point vide)
+
+**CONTENU** (qualité):
+✓ Exemple de sortie CONCRET (min 3-5 lignes, pas de placeholder)
+✓ Contraintes CHIFFRÉES (200-250 mots, <2s, 80%, etc.)
+✓ Ton cohérent du début à la fin
+
+🚨 PROBLÈMES DÉTECTÉS À CORRIGER:
+${issues.map((issue, i) => `${i + 1}. ${issue}`).join('\n')}
+
+RÈGLE D'OR: Ne retourne le prompt QUE si tu peux cocher TOUS les points de la checklist.`;
 
     const userPrompt = `Voici le prompt incomplet à corriger:
 
