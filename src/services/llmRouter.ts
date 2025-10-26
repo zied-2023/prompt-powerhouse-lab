@@ -32,12 +32,14 @@ const PROVIDER_CONFIGS = {
   mistral: {
     endpoint: 'https://api.mistral.ai/v1/chat/completions',
     model: 'mistral-large-latest',
-    envKey: import.meta.env.VITE_MISTRAL_API_KEY
+    envKey: import.meta.env.VITE_MISTRAL_API_KEY,
+    maxOutputTokens: 16000 // Mistral Large supporte jusqu'à 128k context, 16k output
   },
   deepseek: {
     endpoint: 'https://api.deepseek.com/v1/chat/completions',
     model: 'deepseek-chat',
-    envKey: import.meta.env.VITE_DEEPSEEK_API_KEY
+    envKey: import.meta.env.VITE_DEEPSEEK_API_KEY,
+    maxOutputTokens: 8000
   },
   openrouter: {
     endpoint: 'https://openrouter.ai/api/v1/chat/completions',
@@ -46,7 +48,8 @@ const PROVIDER_CONFIGS = {
       import.meta.env.VITE_OPENROUTER_API_KEY_PRIMARY,
       import.meta.env.VITE_OPENROUTER_API_KEY_SECONDARY,
       import.meta.env.VITE_OPENROUTER_API_KEY_TERTIARY
-    ].filter(key => key)
+    ].filter(key => key),
+    maxOutputTokens: 4096
   }
 };
 
@@ -495,6 +498,21 @@ class LLMRouter {
       model: config.model,
       provider: config.provider
     };
+  }
+
+  /**
+   * Retourne le nombre maximum de tokens recommandé pour un mode donné
+   * Utilise la limite du provider si aucun maxTokens n'est spécifié
+   */
+  getRecommendedMaxTokens(mode: 'free' | 'basic' | 'premium', provider?: 'mistral' | 'deepseek' | 'openrouter'): number {
+    // Pour le mode premium avec prompt d'amélioration, utiliser la limite maximale du provider
+    if (mode === 'premium') {
+      const providerConfig = provider ? PROVIDER_CONFIGS[provider] : PROVIDER_CONFIGS.mistral;
+      return providerConfig.maxOutputTokens;
+    }
+
+    // Pour les autres modes, utiliser des limites raisonnables
+    return mode === 'basic' ? 8000 : 4000;
   }
 
   async generatePrompt(

@@ -157,12 +157,16 @@ RÈGLES:
       if (mode === 'premium' && user) {
         console.log('🔄 Mode Premium Improvement: Utilisation de l\'optimisation itérative Opik');
 
-        // Utiliser 10000 tokens pour laisser de la place aux tableaux et exemples détaillés
+        // Utiliser la limite maximale du provider (16000 pour Mistral) pour les prompts d'amélioration
+        // Permet de générer des tableaux détaillés et des exemples complets sans troncation
+        const maxTokens = llmRouter.getRecommendedMaxTokens('premium', 'mistral');
+        console.log(`📊 Utilisation de ${maxTokens} tokens max pour prompt d'amélioration`);
+
         const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
           systemPrompt,
           userPrompt,
           user.id,
-          10000,
+          maxTokens,
           'premium'
         );
 
