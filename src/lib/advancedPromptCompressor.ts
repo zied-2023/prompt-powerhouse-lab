@@ -315,8 +315,9 @@ export class AdvancedPromptCompressor {
     const reductionRate = ((originalTokens - compressedTokens) / originalTokens) * 100;
 
     // Validation compression dans la fourchette cible
-    if (reductionRate < config.targetReduction.min) {
-      // Compression insuffisante → appliquer compression agressive
+    // NOTE: En mode gratuit, on privilégie la COMPLÉTUDE sur la compression maximale
+    if (reductionRate < config.targetReduction.min - 10) {
+      // Seulement si vraiment en dessous de l'objectif (-10%)
       compressed = this.aggressiveCompress(compressed, type, config.targetReduction.min);
       allTechniques.push('Compression agressive appliquée');
     } else if (reductionRate > config.targetReduction.max) {
@@ -345,24 +346,54 @@ export class AdvancedPromptCompressor {
    * Compression agressive pour atteindre taux cible
    */
   private static aggressiveCompress(text: string, type: PromptType, targetReduction: number): string {
-    // Garder seulement l'essentiel
-    const lines = text.split('\n').filter(l => l.trim());
-    const essential: string[] = [];
+    // NE PAS appliquer de compression agressive qui tronque
+    // À la place, appliquer des techniques plus subtiles
+
+    // 1. Réduire les espaces multiples
+    text = text.replace(/\s+/g, ' ');
+
+    // 2. Réduire les longues listes
+    const lines = text.split('\n');
+    const processed: string[] = [];
+    let consecutiveListItems = 0;
 
     for (const line of lines) {
-      const isHeader = line.match(/^\*\*[A-ZÉ]+\*\*/);
-      const isAction = line.match(/^[\-\*•\d]/);
+      const isListItem = line.match(/^[\s]*[\-\*•\d]/);
 
-      if (isHeader || isAction) {
-        const compressed = line
-          .replace(/\s+/g, ' ')
-          .replace(/\b(qui|que|dont|où|ainsi que)\b/gi, '')
-          .trim();
-        essential.push(compressed);
+      if (isListItem) {
+        consecutiveListItems++;
+        // Garder max 8 items consécutifs
+        if (consecutiveListItems <= 8) {
+          processed.push(line.trim());
+        }
+      } else {
+        consecutiveListItems = 0;
+        processed.push(line.trim());
       }
     }
 
-    return essential.join('\n').trim();
+    // 3. Assurer que le texte se termine proprement
+    let result = processed.filter(l => l).join('\n');
+
+    // Si le dernier caractère n'est pas une ponctuation, ne pas tronquer
+    // Chercher la dernière phrase complète
+    if (!result.match(/[.!?]$/)) {
+      const lastPunctuation = Math.max(
+        result.lastIndexOf('.'),
+        result.lastIndexOf('!'),
+        result.lastIndexOf('?')
+      );
+
+      if (lastPunctuation > result.length * 0.8) {
+        // Si on trouve une ponctuation dans les 80% finaux, couper là
+        result = result.substring(0, lastPunctuation + 1);
+      } else {
+        // Sinon, ajouter un point final
+        result = result.trim() + '.';
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -387,22 +418,22 @@ export class AdvancedPromptCompressor {
   }
 
   /**
-   * Compression spécifique mode gratuit (maximale mais qualité préservée)
+   * Compression spécifique mode gratuit (équilibrée, qualité préservée)
    */
   static compressFreeMode(prompt: string): AdvancedCompressionResult {
     const type = this.detectPromptType(prompt);
 
-    // En mode gratuit, on vise la limite haute de compression
-    const config = COMPRESSION_CONFIGS[type];
+    // En mode gratuit, on applique la compression standard
+    // SANS forcer la compression agressive pour éviter les troncatures
     const result = this.compress(prompt, type);
 
-    // Si pas assez compressé, forcer compression maximale
-    if (result.reductionRate < config.targetReduction.max) {
-      result.compressed = this.aggressiveCompress(result.compressed, type, config.targetReduction.max);
-      result.compressedTokens = this.estimateTokens(result.compressed);
-      result.reductionRate = ((result.originalTokens - result.compressedTokens) / result.originalTokens) * 100;
-      result.appliedTechniques.push('Mode gratuit: compression maximale');
+    // Vérifier que le prompt se termine correctement
+    if (!result.compressed.match(/[.!?]$/)) {
+      // Ajouter ponctuation finale si manquante
+      result.compressed = result.compressed.trim() + '.';
     }
+
+    result.appliedTechniques.push('Mode gratuit: compression équilibrée sans troncature');
 
     return result;
   }
