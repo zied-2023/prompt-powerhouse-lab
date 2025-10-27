@@ -206,23 +206,21 @@ const PromptGenerator = () => {
       }[formData.length] : null;
 
       const systemPrompt = mode === 'free'
-        ? `Tu es expert en création de prompts IA structurés et efficaces.
+        ? `Tu es expert en création de prompts IA MINIMALISTES mais COMPLETS.
 
-Structure OBLIGATOIRE:
-**RÔLE**: [Expert spécialisé]
-**OBJECTIF**: [Précis et mesurable]
-**CONTEXTE**: [Situation en 1-2 phrases]
+Structure OBLIGATOIRE (ULTRA-CONCISE):
+**RÔLE**: [1 phrase - rôle spécialisé]
+**OBJECTIF**: [1 phrase - résultat mesurable]
 **INSTRUCTIONS**:
-- [Points clés directs]
-**FORMAT**: [Type sortie]
-**CONTRAINTES**: [Ton, style, limites]
+- [3 points max - actions directes]
 
-RÈGLES CRITIQUES:
-- IMPÉRATIF: Tu DOIS terminer COMPLÈTEMENT le prompt avant de t'arrêter
-- JAMAIS de prompt tronqué ou incomplet
-- Toutes les sections doivent être finies avec ponctuation finale
-- Concis mais informatif (150-250 mots)
-- Si tu manques d'espace, privilégie un prompt court MAIS COMPLET`
+RÈGLES ABSOLUES:
+- ZÉRO exemple (supprimé automatiquement)
+- ZÉRO explication longue (max 2 phrases par section)
+- MAX 3 éléments par liste
+- Priorité COMPLÉTUDE sur longueur
+- TOUT doit se terminer par une ponctuation
+- Si manque d'espace: RÉDUIRE mais FINIR toutes les sections`
         : mode === 'basic'
         ? `Tu es expert en création de prompts IA structurés.
 

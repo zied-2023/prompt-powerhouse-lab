@@ -41,6 +41,181 @@ class IterativePromptOptimizer {
   private readonly FREE_MODE_THRESHOLD = 0.85; // Mode gratuit: seuil moins strict
 
   /**
+   * Compresse un prompt en mode gratuit en éliminant tout ce qui n'est pas essentiel
+   * tout en maintenant la complétude
+   */
+  private compressForFreeMode(prompt: string): string {
+    console.log('🗜️ Compression mode gratuit: élimination des éléments non essentiels');
+
+    let compressed = prompt;
+
+    // 1. ÉLIMINER LES EXEMPLES (trop verbeux pour le mode gratuit)
+    compressed = this.removeExamples(compressed);
+
+    // 2. RÉDUIRE LES LISTES À PUCES (garder 3 max par section)
+    compressed = this.reduceBulletLists(compressed);
+
+    // 3. SIMPLIFIER LES DESCRIPTIONS (garder l'essentiel)
+    compressed = this.simplifyDescriptions(compressed);
+
+    // 4. ÉLIMINER LES RÉPÉTITIONS
+    compressed = this.removeRedundancy(compressed);
+
+    // 5. COMPACTER LE FORMATAGE (réduire espaces inutiles)
+    compressed = this.compactFormatting(compressed);
+
+    const originalTokens = this.estimateTokens(prompt);
+    const compressedTokens = this.estimateTokens(compressed);
+    const reduction = Math.round((1 - compressedTokens / originalTokens) * 100);
+
+    console.log(`✅ Compression terminée: ${originalTokens} → ${compressedTokens} tokens (-${reduction}%)`);
+
+    return compressed;
+  }
+
+  /**
+   * Élimine les sections EXEMPLE qui sont trop verbeuses pour le mode gratuit
+   */
+  private removeExamples(prompt: string): string {
+    // Supprimer les sections EXEMPLE complètes
+    const patterns = [
+      /\*\*(?:EXEMPLE|EXAMPLE)S?\*\*:?\s*[\s\S]*?(?=\*\*[A-Z]|$)/gi,
+      /📝\s*\*\*(?:EXEMPLE DE SORTIE|EXEMPLE)\*\*\s*[\s\S]*?(?=(?:🎯|🧑‍💻|🗂|📏|📝|\*\*[A-Z])|$)/gi,
+    ];
+
+    let result = prompt;
+    for (const pattern of patterns) {
+      result = result.replace(pattern, '');
+    }
+
+    return result;
+  }
+
+  /**
+   * Réduit les listes à puces à 3 éléments maximum par section
+   */
+  private reduceBulletLists(prompt: string): string {
+    const lines = prompt.split('\n');
+    const result: string[] = [];
+    let bulletCount = 0;
+    let inBulletList = false;
+    let lastSectionHeader = '';
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+
+      // Détecter les en-têtes de section
+      if (line.match(/^\*\*[A-Z]/i) || line.match(/^[🎯🧑‍💻🗂📏📝]/)) {
+        bulletCount = 0;
+        inBulletList = false;
+        lastSectionHeader = line;
+        result.push(lines[i]);
+        continue;
+      }
+
+      // Détecter une puce
+      if (line.match(/^[-•*]\s/)) {
+        inBulletList = true;
+        bulletCount++;
+
+        // Garder seulement les 3 premières puces par section
+        if (bulletCount <= 3) {
+          result.push(lines[i]);
+        } else if (bulletCount === 4) {
+          // Ajouter une indication qu'il y a plus d'éléments
+          const indent = lines[i].match(/^(\s*)/)?.[0] || '';
+          result.push(`${indent}- [Liste complète disponible en mode Basic+]`);
+        }
+      } else {
+        // Ligne non-puce
+        if (inBulletList && line.length === 0) {
+          // Ligne vide après liste - garder
+          result.push(lines[i]);
+        } else if (!inBulletList || line.length > 0) {
+          // Autre contenu - garder
+          result.push(lines[i]);
+          inBulletList = false;
+        }
+      }
+    }
+
+    return result.join('\n');
+  }
+
+  /**
+   * Simplifie les descriptions en gardant l'essentiel
+   */
+  private simplifyDescriptions(prompt: string): string {
+    let result = prompt;
+
+    // Réduire les phrases explicatives longues
+    // Pattern: identifier les phrases de plus de 100 caractères et les raccourcir
+    const sections = result.split(/(\*\*[A-Z][^*]+\*\*:?)/i);
+
+    for (let i = 0; i < sections.length; i++) {
+      if (i % 2 === 0) continue; // Sauter les en-têtes
+
+      const content = sections[i + 1];
+      if (!content) continue;
+
+      // Si le contenu est trop long (>200 chars) et n'est pas une liste
+      if (content.length > 200 && !content.includes('- ') && !content.includes('• ')) {
+        // Garder seulement les 2 premières phrases
+        const sentences = content.match(/[^.!?]+[.!?]+/g) || [];
+        if (sentences.length > 2) {
+          sections[i + 1] = sentences.slice(0, 2).join(' ').trim() + '\n';
+        }
+      }
+    }
+
+    return sections.join('');
+  }
+
+  /**
+   * Élimine les répétitions et redondances
+   */
+  private removeRedundancy(prompt: string): string {
+    let result = prompt;
+
+    // Éliminer les phrases qui se répètent
+    const sentences = result.split(/([.!?]+)/);
+    const seen = new Set<string>();
+    const filtered: string[] = [];
+
+    for (let i = 0; i < sentences.length; i += 2) {
+      const sentence = sentences[i].trim().toLowerCase();
+      const punct = sentences[i + 1] || '';
+
+      if (!seen.has(sentence) && sentence.length > 10) {
+        filtered.push(sentences[i] + punct);
+        seen.add(sentence);
+      } else if (sentence.length <= 10) {
+        filtered.push(sentences[i] + punct);
+      }
+    }
+
+    return filtered.join('');
+  }
+
+  /**
+   * Compacte le formatage en réduisant les espaces inutiles
+   */
+  private compactFormatting(prompt: string): string {
+    let result = prompt;
+
+    // Réduire les sauts de ligne multiples à 2 maximum
+    result = result.replace(/\n{3,}/g, '\n\n');
+
+    // Supprimer les espaces en début/fin de lignes
+    result = result.split('\n').map(line => line.trimEnd()).join('\n');
+
+    // Supprimer les lignes vides en début et fin
+    result = result.trim();
+
+    return result;
+  }
+
+  /**
    * Optimise un prompt de manière itérative jusqu'à ce qu'il soit complet
    */
   async optimizeUntilComplete(
@@ -81,6 +256,17 @@ class IterativePromptOptimizer {
     );
 
     currentPrompt = firstResponse.content;
+
+    // MODE GRATUIT: Appliquer la compression intelligente après génération
+    if (mode === 'free') {
+      console.log('🗜️ Application compression mode gratuit...');
+      const beforeCompression = currentPrompt;
+      currentPrompt = this.compressForFreeMode(currentPrompt);
+
+      // Logger la différence
+      improvements.push(`🗜️ Compression appliquée: ${this.estimateTokens(beforeCompression)} → ${this.estimateTokens(currentPrompt)} tokens`);
+    }
+
     completenessScore = this.evaluateCompleteness(currentPrompt, mode);
 
     console.log('📊 Score de complétude initial:', completenessScore.overall);
@@ -146,6 +332,18 @@ class IterativePromptOptimizer {
       );
 
       currentPrompt = improvedResponse.content;
+
+      // MODE GRATUIT: Appliquer la compression après chaque itération
+      if (mode === 'free') {
+        console.log('🗜️ Application compression après itération...');
+        const beforeCompression = currentPrompt;
+        currentPrompt = this.compressForFreeMode(currentPrompt);
+
+        const tokensBefore = this.estimateTokens(beforeCompression);
+        const tokensAfter = this.estimateTokens(currentPrompt);
+        console.log(`   Compression iter ${iteration}: ${tokensBefore} → ${tokensAfter} tokens`);
+      }
+
       completenessScore = this.evaluateCompleteness(currentPrompt, mode);
 
       console.log(`📊 Score de complétude après itération ${iteration}:`, completenessScore.overall);
@@ -474,7 +672,8 @@ class IterativePromptOptimizer {
     } else if (mode === 'basic') {
       return ['RÔLE', 'CONTEXTE', 'FORMAT', 'CONTRAINTES'];
     } else {
-      return ['RÔLE', 'CONTEXTE', 'FORMAT'];
+      // MODE GRATUIT: Sections minimales essentielles (pas d'EXEMPLE car supprimé par compression)
+      return ['RÔLE', 'OBJECTIF', 'INSTRUCTIONS'];
     }
   }
 
