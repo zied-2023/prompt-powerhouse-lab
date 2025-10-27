@@ -14,6 +14,7 @@ import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
+import { AdvancedPromptCompressor } from "@/lib/advancedPromptCompressor";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -35,6 +36,14 @@ const PromptGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentTraceId, setCurrentTraceId] = useState<string | null>(null);
   const [userFeedback, setUserFeedback] = useState<number | null>(null);
+  const [compressionStats, setCompressionStats] = useState<{
+    type: string;
+    originalTokens: number;
+    compressedTokens: number;
+    reductionRate: number;
+    qualityScore: number;
+    techniques: string[];
+  } | null>(null);
 
   // Nouvelles catégories restructurées
   const categories = [
@@ -317,8 +326,35 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         mode: mode
       });
 
-      // Utiliser directement le contenu généré sans compression
-      const generatedContent = llmResponse.content;
+      // Appliquer compression intelligente en mode gratuit
+      let generatedContent = llmResponse.content;
+
+      if (mode === 'free') {
+        console.log('🗜️ Application compression avancée (mode gratuit)...');
+        const compressionResult = AdvancedPromptCompressor.compressFreeMode(generatedContent);
+        generatedContent = compressionResult.compressed;
+
+        console.log('✅ Compression terminée:', {
+          type: compressionResult.type,
+          originalTokens: compressionResult.originalTokens,
+          compressedTokens: compressionResult.compressedTokens,
+          reduction: `${compressionResult.reductionRate}%`,
+          quality: `${compressionResult.qualityScore}/100`,
+          techniques: compressionResult.appliedTechniques.length
+        });
+
+        // Sauvegarder stats pour affichage
+        setCompressionStats({
+          type: compressionResult.type,
+          originalTokens: compressionResult.originalTokens,
+          compressedTokens: compressionResult.compressedTokens,
+          reductionRate: compressionResult.reductionRate,
+          qualityScore: compressionResult.qualityScore,
+          techniques: compressionResult.appliedTechniques
+        });
+      } else {
+        setCompressionStats(null);
+      }
 
       return {
         content: generatedContent,
@@ -753,6 +789,39 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
                   🤖 <strong>{t('generatedByAI')} :</strong> {t('aiGeneratedDesc')}
                 </p>
               </div>
+
+              {/* Statistiques de compression (mode gratuit) */}
+              {compressionStats && (
+                <div className="mt-4 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                  <p className="text-sm font-bold text-purple-900 dark:text-purple-100 mb-2">
+                    🗜️ Compression Intelligente Appliquée
+                  </p>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-purple-700 dark:text-purple-300">
+                    <div>
+                      <span className="font-semibold">Type détecté:</span> {compressionStats.type}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Réduction:</span> {compressionStats.reductionRate}%
+                    </div>
+                    <div>
+                      <span className="font-semibold">Tokens:</span> {compressionStats.originalTokens} → {compressionStats.compressedTokens}
+                    </div>
+                    <div>
+                      <span className="font-semibold">Qualité:</span> {compressionStats.qualityScore}/100 {compressionStats.qualityScore >= 90 ? '✅' : compressionStats.qualityScore >= 70 ? '⚠️' : '❌'}
+                    </div>
+                  </div>
+                  <details className="mt-2">
+                    <summary className="text-xs font-semibold text-purple-800 dark:text-purple-200 cursor-pointer">
+                      Voir techniques appliquées ({compressionStats.techniques.length})
+                    </summary>
+                    <ul className="mt-2 space-y-1 text-xs text-purple-600 dark:text-purple-400">
+                      {compressionStats.techniques.map((tech, idx) => (
+                        <li key={idx}>• {tech}</li>
+                      ))}
+                    </ul>
+                  </details>
+                </div>
+              )}
 
               <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
                 <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
