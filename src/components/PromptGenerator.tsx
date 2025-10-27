@@ -326,10 +326,14 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         mode: mode
       });
 
-      // Appliquer compression intelligente en mode gratuit
+      // Appliquer compression intelligente en mode gratuit (DÉSACTIVÉE pour éviter troncatures)
       let generatedContent = llmResponse.content;
 
-      if (mode === 'free') {
+      // TEMPORAIREMENT DÉSACTIVÉ: La compression causait des troncatures
+      // TODO: Réactiver après optimisation complète
+      const ENABLE_COMPRESSION = false;
+
+      if (mode === 'free' && ENABLE_COMPRESSION) {
         console.log('🗜️ Application compression avancée (mode gratuit)...');
         const compressionResult = AdvancedPromptCompressor.compressFreeMode(generatedContent);
         generatedContent = compressionResult.compressed;
