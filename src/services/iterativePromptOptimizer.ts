@@ -37,6 +37,8 @@ export interface IterativeOptimizationResult {
 class IterativePromptOptimizer {
   private readonly MAX_ITERATIONS = 3;
   private readonly COMPLETENESS_THRESHOLD = 0.9;
+  private readonly FREE_MODE_MAX_ITERATIONS = 2; // Mode gratuit: max 2 itérations
+  private readonly FREE_MODE_THRESHOLD = 0.85; // Mode gratuit: seuil moins strict
 
   /**
    * Optimise un prompt de manière itérative jusqu'à ce qu'il soit complet
@@ -51,6 +53,12 @@ class IterativePromptOptimizer {
     console.log('🔄 Démarrage optimisation itérative Opik');
     console.log(`📊 Mode: ${mode}, Max tokens: ${maxTokens}`);
 
+    // Adapter les limites selon le mode
+    const maxIterations = mode === 'free' ? this.FREE_MODE_MAX_ITERATIONS : this.MAX_ITERATIONS;
+    const completenessThreshold = mode === 'free' ? this.FREE_MODE_THRESHOLD : this.COMPLETENESS_THRESHOLD;
+
+    console.log(`🎯 Limites pour mode ${mode}: max ${maxIterations} itérations, seuil ${Math.round(completenessThreshold * 100)}%`);
+
     const traceId = opikService.generateTraceId();
     const improvements: string[] = [];
     let currentPrompt = '';
@@ -59,7 +67,7 @@ class IterativePromptOptimizer {
 
     // Première génération
     iteration++;
-    console.log(`\n🔄 Itération ${iteration}/${this.MAX_ITERATIONS}`);
+    console.log(`\n🔄 Itération ${iteration}/${maxIterations}`);
 
     const firstResponse = await llmRouter.generatePrompt(
       systemPrompt,
@@ -90,12 +98,14 @@ class IterativePromptOptimizer {
       tags: {
         mode,
         iteration,
-        completenessScore: completenessScore.overall
+        completenessScore: completenessScore.overall,
+        maxIterations,
+        threshold: completenessThreshold
       }
     });
 
     // Si le prompt est déjà complet, retourner
-    if (completenessScore.overall >= this.COMPLETENESS_THRESHOLD) {
+    if (completenessScore.overall >= completenessThreshold) {
       console.log('✅ Prompt complet dès la première génération');
       improvements.push(`✓ Prompt généré complet dès la première itération (score: ${Math.round(completenessScore.overall * 100)}%)`);
 
@@ -109,9 +119,9 @@ class IterativePromptOptimizer {
     }
 
     // Itérations d'amélioration
-    while (iteration < this.MAX_ITERATIONS && completenessScore.overall < this.COMPLETENESS_THRESHOLD) {
+    while (iteration < maxIterations && completenessScore.overall < completenessThreshold) {
       iteration++;
-      console.log(`\n🔄 Itération ${iteration}/${this.MAX_ITERATIONS}`);
+      console.log(`\n🔄 Itération ${iteration}/${maxIterations}`);
       console.log('🔍 Problèmes détectés:', completenessScore.details);
 
       // Créer un prompt de correction basé sur l'analyse
@@ -159,7 +169,7 @@ class IterativePromptOptimizer {
       });
 
       // Si le score s'améliore peu, arrêter
-      if (iteration > 1 && completenessScore.overall >= this.COMPLETENESS_THRESHOLD) {
+      if (iteration > 1 && completenessScore.overall >= completenessThreshold) {
         console.log('✅ Prompt suffisamment complet');
         break;
       }
@@ -168,10 +178,10 @@ class IterativePromptOptimizer {
     // Résumé des améliorations
     improvements.push(`✓ Score final: ${Math.round(completenessScore.overall * 100)}% après ${iteration} itération(s)`);
 
-    if (completenessScore.overall >= this.COMPLETENESS_THRESHOLD) {
+    if (completenessScore.overall >= completenessThreshold) {
       improvements.push('✓ Prompt entièrement complet avec toutes les sections terminées');
     } else {
-      improvements.push('⚠️ Prompt amélioré mais limite d\'itérations atteinte');
+      improvements.push(`⚠️ Prompt amélioré mais limite d'itérations atteinte (${maxIterations} max en mode ${mode})`);
     }
 
     console.log('\n✅ Optimisation itérative terminée');

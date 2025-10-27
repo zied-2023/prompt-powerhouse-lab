@@ -15,6 +15,7 @@ import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
 import { AdvancedPromptCompressor } from "@/lib/advancedPromptCompressor";
+import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -304,61 +305,76 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         ? Math.max(lengthConstraints.tokens * 3, 6000)  // Triple des tokens demandés, minimum 6000
         : 12000;  // Pour mode premium sans longueur spécifiée, utiliser 12000 tokens
 
-      // Génération rapide directe avec LLM (sans Opik)
-      const llmResponse = await llmRouter.generatePrompt(
-        systemPrompt,
-        userPrompt,
-        {
-          isAuthenticated,
-          userHasCredits,
-          temperature: 0.7,
-          maxTokens: maxTokensByMode,
-          userId: user?.id
-        }
-      );
+      // MODE GRATUIT: Utiliser l'optimisation itérative Opik pour garantir complétude
+      let generatedContent = '';
+      let llmResponse: any;
 
-      console.log('✅ Réponse LLM reçue:', {
-        provider: llmResponse.provider,
-        model: llmResponse.model,
-        tokens: llmResponse.usage.total_tokens,
-        completion_tokens: llmResponse.usage.completion_tokens,
-        maxTokensRequested: maxTokensByMode,
-        mode: mode
-      });
+      if (mode === 'free' && user?.id) {
+        console.log('🎯 MODE GRATUIT: Activation de l\'optimisation itérative Opik');
 
-      // Appliquer compression intelligente en mode gratuit (DÉSACTIVÉE pour éviter troncatures)
-      let generatedContent = llmResponse.content;
+        const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
+          systemPrompt,
+          userPrompt,
+          user.id,
+          maxTokensByMode,
+          'free'
+        );
 
-      // TEMPORAIREMENT DÉSACTIVÉ: La compression causait des troncatures
-      // TODO: Réactiver après optimisation complète
-      const ENABLE_COMPRESSION = false;
+        generatedContent = iterativeResult.finalPrompt;
 
-      if (mode === 'free' && ENABLE_COMPRESSION) {
-        console.log('🗜️ Application compression avancée (mode gratuit)...');
-        const compressionResult = AdvancedPromptCompressor.compressFreeMode(generatedContent);
-        generatedContent = compressionResult.compressed;
+        // Créer un objet llmResponse compatible pour la suite
+        llmResponse = {
+          content: generatedContent,
+          provider: 'opik-optimized',
+          model: 'free-mode-iterative',
+          usage: {
+            total_tokens: 0, // Sera mis à jour par les traces Opik
+            completion_tokens: 0,
+            prompt_tokens: 0
+          }
+        };
 
-        console.log('✅ Compression terminée:', {
-          type: compressionResult.type,
-          originalTokens: compressionResult.originalTokens,
-          compressedTokens: compressionResult.compressedTokens,
-          reduction: `${compressionResult.reductionRate}%`,
-          quality: `${compressionResult.qualityScore}/100`,
-          techniques: compressionResult.appliedTechniques.length
+        console.log('✅ Optimisation Opik terminée:', {
+          iterations: iterativeResult.iterations,
+          score: Math.round(iterativeResult.completenessScore.overall * 100) + '%',
+          improvements: iterativeResult.improvements.length
         });
 
-        // Sauvegarder stats pour affichage
-        setCompressionStats({
-          type: compressionResult.type,
-          originalTokens: compressionResult.originalTokens,
-          compressedTokens: compressionResult.compressedTokens,
-          reductionRate: compressionResult.reductionRate,
-          qualityScore: compressionResult.qualityScore,
-          techniques: compressionResult.appliedTechniques
+        // Afficher un toast avec les améliorations
+        toast({
+          title: "✅ Prompt optimisé avec Opik",
+          description: `${iterativeResult.iterations} itération(s) - Score: ${Math.round(iterativeResult.completenessScore.overall * 100)}%`,
         });
+
       } else {
-        setCompressionStats(null);
+        // MODES BASIC ET PREMIUM: Génération directe
+        llmResponse = await llmRouter.generatePrompt(
+          systemPrompt,
+          userPrompt,
+          {
+            isAuthenticated,
+            userHasCredits,
+            temperature: 0.7,
+            maxTokens: maxTokensByMode,
+            userId: user?.id
+          }
+        );
+
+        console.log('✅ Réponse LLM reçue:', {
+          provider: llmResponse.provider,
+          model: llmResponse.model,
+          tokens: llmResponse.usage.total_tokens,
+          completion_tokens: llmResponse.usage.completion_tokens,
+          maxTokensRequested: maxTokensByMode,
+          mode: mode
+        });
+
+        generatedContent = llmResponse.content;
       }
+
+      // Note: La compression a été remplacée par l'optimisation itérative Opik
+      // qui garantit des prompts complets sans troncature en mode gratuit
+      setCompressionStats(null);
 
       return {
         content: generatedContent,
