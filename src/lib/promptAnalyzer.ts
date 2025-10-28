@@ -1,7 +1,7 @@
 export interface PromptComplexity {
   score: number;
   type: 'simple' | 'medium' | 'complex' | 'creative';
-  suggestedProvider: 'openai' | 'deepseek' | 'openrouter';
+  suggestedProvider: 'openai' | 'deepseek' | 'openrouter' | 'gemini';
   suggestedModel: string;
   reasoning: string;
 }

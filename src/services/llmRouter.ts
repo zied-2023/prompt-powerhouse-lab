@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 interface LLMConfig {
-  provider: 'mistral' | 'openrouter' | 'openai' | 'deepseek';
+  provider: 'mistral' | 'openrouter' | 'openai' | 'deepseek' | 'gemini';
   model: string;
   apiKey?: string;
   endpoint?: string;
@@ -50,6 +50,12 @@ const PROVIDER_CONFIGS = {
       import.meta.env.VITE_OPENROUTER_API_KEY_TERTIARY
     ].filter(key => key),
     maxOutputTokens: 4096
+  },
+  gemini: {
+    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/',
+    model: 'gemini-1.5-flash',
+    envKey: 'AIzaSyCgl-H781pntE5MBo2RzP0FlDugIbVevcM',
+    maxOutputTokens: 8192
   }
 };
 
@@ -128,6 +134,9 @@ class LLMRouter {
     if (PROVIDER_CONFIGS.openrouter.envKeys.length > 0) {
       fallbackKeys.set('openrouter', PROVIDER_CONFIGS.openrouter.envKeys);
     }
+    if (PROVIDER_CONFIGS.gemini.envKey) {
+      fallbackKeys.set('gemini', [PROVIDER_CONFIGS.gemini.envKey]);
+    }
 
     return fallbackKeys;
   }
@@ -135,6 +144,21 @@ class LLMRouter {
   async selectLLM(isAuthenticated: boolean, userHasCredits: boolean, userId?: string): Promise<LLMConfig> {
     // Récupérer les clés API depuis Supabase ou fallback sur .env
     const apiKeys = await this.fetchApiKeysFromSupabase(userId);
+
+    // Mode gratuit: utiliser Gemini
+    if (!isAuthenticated || !userHasCredits) {
+      const geminiKeys = apiKeys.get('gemini') || [];
+      if (geminiKeys.length > 0) {
+        console.log('🎯 Utilisation de Gemini pour mode gratuit', { isAuthenticated, userHasCredits });
+        return {
+          provider: 'gemini',
+          model: PROVIDER_CONFIGS.gemini.model,
+          apiKey: geminiKeys[0],
+          endpoint: PROVIDER_CONFIGS.gemini.endpoint,
+          useEdgeFunction: false
+        };
+      }
+    }
 
     // Si l'utilisateur a des crédits et est authentifié, on peut utiliser OpenRouter ou DeepSeek
     if (isAuthenticated && userHasCredits && USE_DEEPSEEK_FOR_PREMIUM) {
@@ -177,7 +201,7 @@ class LLMRouter {
       };
     }
 
-    throw new Error('Aucune clé API configurée. Veuillez configurer au moins une clé API (Mistral, OpenRouter ou DeepSeek).');
+    throw new Error('Aucune clé API configurée. Veuillez configurer au moins une clé API (Mistral, OpenRouter, DeepSeek ou Gemini).');
   }
 
   async callLLM(config: LLMConfig, request: LLMRequest): Promise<LLMResponse> {
@@ -209,6 +233,10 @@ class LLMRouter {
 
     if (config.provider === 'openrouter') {
       return this.callOpenRouter(request);
+    }
+
+    if (config.provider === 'gemini') {
+      return this.callGemini(request);
     }
 
     throw new Error(`Provider ${config.provider} not supported for direct calls`);
@@ -446,6 +474,97 @@ class LLMRouter {
       clearTimeout(timeoutId);
       if (error.name === 'AbortError') {
         throw new Error('Timeout: La requête DeepSeek a pris trop de temps (>45s)');
+      }
+      throw error;
+    }
+  }
+
+  async callGemini(request: LLMRequest, apiKey?: string): Promise<LLMResponse> {
+    console.log('🔗 Appel Gemini API...');
+
+    // Si aucune clé fournie, récupérer depuis Supabase
+    if (!apiKey) {
+      const keys = await this.fetchApiKeysFromSupabase();
+      const geminiKeys = keys.get('gemini') || [];
+      if (geminiKeys.length === 0) {
+        throw new Error('Clé API Gemini manquante.');
+      }
+      apiKey = geminiKeys[0];
+    }
+
+    const startTime = Date.now();
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+    try {
+      // Convertir les messages au format Gemini
+      const systemInstruction = request.messages.find(m => m.role === 'system')?.content || '';
+      const userMessages = request.messages.filter(m => m.role === 'user' || m.role === 'assistant');
+
+      const contents = userMessages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        parts: [{ text: msg.content }]
+      }));
+
+      const geminiEndpoint = `${PROVIDER_CONFIGS.gemini.endpoint}${PROVIDER_CONFIGS.gemini.model}:generateContent?key=${apiKey}`;
+
+      const response = await fetch(geminiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          contents,
+          systemInstruction: systemInstruction ? {
+            parts: [{ text: systemInstruction }]
+          } : undefined,
+          generationConfig: {
+            temperature: request.temperature || 0.7,
+            maxOutputTokens: request.maxTokens || 8192,
+          }
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+
+        if (response.status === 429) {
+          throw new Error('La clé API Gemini a atteint sa limite de requêtes.');
+        }
+
+        throw new Error(`Erreur API Gemini: ${response.status} - ${errorData.error?.message || response.statusText}`);
+      }
+
+      const data = await response.json();
+      const latency = Date.now() - startTime;
+      console.log(`✅ Gemini API réponse reçue en ${latency}ms`);
+
+      if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
+        throw new Error('Format de réponse API Gemini inattendu');
+      }
+
+      const content = data.candidates[0].content.parts.map((part: any) => part.text).join('');
+      const promptTokens = data.usageMetadata?.promptTokenCount || 0;
+      const completionTokens = data.usageMetadata?.candidatesTokenCount || 0;
+
+      return {
+        content,
+        usage: {
+          prompt_tokens: promptTokens,
+          completion_tokens: completionTokens,
+          total_tokens: promptTokens + completionTokens
+        },
+        model: PROVIDER_CONFIGS.gemini.model,
+        provider: 'gemini'
+      };
+    } catch (error: any) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Timeout: La requête Gemini a pris trop de temps (>45s)');
       }
       throw error;
     }
