@@ -4,6 +4,7 @@
  */
 
 import { UltraCompressor } from './ultraCompressor';
+import { IntelligentCompressor } from './intelligentCompressor';
 
 export interface CompressionResult {
   compressed: string;
@@ -288,18 +289,35 @@ export class PromptCompressor {
   }
 
   /**
-   * Mode GRATUIT avec longueur - Utilise UltraCompressor
+   * Mode GRATUIT avec longueur - Utilise IntelligentCompressor
    */
   static compressFree(prompt: string, length: PromptLength = 'medium'): CompressionResult {
-    const ultraResult = UltraCompressor.compress(prompt);
+    const maxTokens = TOKEN_LIMITS.free[length];
+
+    // Utiliser le compresseur intelligent avec cible de tokens
+    const intelligentResult = IntelligentCompressor.compressToTarget(prompt, maxTokens);
+
+    // Validation de la compression
+    const validation = IntelligentCompressor.validateCompression(intelligentResult);
+
+    const techniques = [
+      'Compression sémantique intelligente',
+      'Extraction métadonnées standardisées',
+      'Préservation contraintes critiques',
+      ...intelligentResult.metadata
+    ];
+
+    if (!validation.isValid) {
+      console.warn('⚠️ Compression validation issues:', validation.issues);
+    }
 
     return {
-      compressed: ultraResult.compressed,
+      compressed: intelligentResult.compressed,
       originalLength: prompt.length,
-      compressedLength: ultraResult.compressed.length,
-      compressionRate: ultraResult.reductionRate,
-      estimatedTokens: Math.ceil(ultraResult.compressedWords / 0.75),
-      techniques: ultraResult.techniques
+      compressedLength: intelligentResult.compressed.length,
+      compressionRate: intelligentResult.reductionRate,
+      estimatedTokens: intelligentResult.compressedTokens,
+      techniques
     };
   }
 
