@@ -18,6 +18,7 @@ import { useUserCredits } from '@/hooks/useUserCredits';
 import SEOHead from '@/components/SEOHead';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@supabase/supabase-js';
+import { detectLanguage } from '@/lib/languageDetector';
 
 // Configuration API - Mistral
 const API_CONFIG = {
@@ -140,6 +141,16 @@ const SimplePromptGenerator = () => {
       
       userPrompt += `\n\nVeuillez créer un prompt clair, précis et efficace qui m'aidera à atteindre cet objectif. Le prompt doit être directement utilisable.`;
 
+      // Détection de la langue de la description
+      const detectedLanguage = detectLanguage(description);
+      console.log('🌍 Langue détectée:', detectedLanguage);
+
+      const systemPromptContent = detectedLanguage === 'fr'
+        ? 'Tu es un expert en création de prompts. Tu dois créer des prompts clairs, précis et efficaces. Réponds directement avec le prompt optimisé, sans préambule ni explication supplémentaire.'
+        : detectedLanguage === 'ar'
+        ? 'أنت خبير في إنشاء المطالبات. يجب عليك إنشاء مطالبات واضحة ودقيقة وفعالة. رد مباشرة بالمطالبة المحسّنة، بدون مقدمة أو شرح إضافي.'
+        : 'You are an expert in creating prompts. You must create clear, precise and effective prompts. Respond directly with the optimized prompt, without preamble or additional explanation.';
+
       const response = await fetch(API_CONFIG.endpoint, {
         method: 'POST',
         headers: {
@@ -151,7 +162,7 @@ const SimplePromptGenerator = () => {
           messages: [
             {
               role: 'system',
-              content: 'Tu es un expert en création de prompts. Tu dois créer des prompts clairs, précis et efficaces. Réponds directement avec le prompt optimisé, sans préambule ni explication supplémentaire.'
+              content: systemPromptContent
             },
             {
               role: 'user',

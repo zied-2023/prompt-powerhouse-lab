@@ -14,6 +14,8 @@ import { PromptEvaluationWidget } from "@/components/PromptEvaluationWidget";
 import { opikService } from "@/services/opikService";
 import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
+import { detectLanguage } from "@/lib/languageDetector";
+import { buildImprovementSystemPrompt } from "@/lib/systemPromptBuilder";
 
 const PromptImprovement = () => {
   const { t } = useTranslation();
@@ -68,118 +70,30 @@ const PromptImprovement = () => {
     const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
     const modeLabel = mode === 'free' ? 'Gratuit' : mode === 'basic' ? 'Basique' : 'Premium';
 
+    // Détecter la langue du prompt original
+    const detectedLanguage = detectLanguage(originalPrompt);
+    console.log('🌍 Langue détectée pour amélioration:', detectedLanguage);
+
     try {
-      const systemPrompt = mode === 'premium'
-        ? `Tu es un expert en ingénierie de prompt. Améliore le prompt en appliquant ces CRITÈRES D'OPTIMISATION:
+      // Construire le system prompt dans la langue détectée
+      const systemPrompt = buildImprovementSystemPrompt(detectedLanguage, mode);
 
-CRITÈRES D'ANALYSE ET OPTIMISATION:
-1. CATÉGORIE/DOMAINE: Identifier et renforcer le domaine d'expertise
-2. DESCRIPTION DE LA TÂCHE: Clarifier et préciser la tâche exacte
-3. OBJECTIF PRINCIPAL: Définir un objectif mesurable et concret
-4. PUBLIC CIBLE: Adapter le niveau de langage et les attentes
-5. FORMAT DE SORTIE: Spécifier structure exacte (JSON, tableau, texte, etc.)
-6. TON ET STYLE: Définir registre de langue et personnalité
-7. LONGUEUR APPROXIMATIVE: Indiquer contrainte de taille (mots, tokens, durée)
+      // Construire le user prompt dans la langue détectée
+      const improveText = detectedLanguage === 'fr' ? 'Améliore ce prompt' :
+                          detectedLanguage === 'ar' ? 'حسّن هذه المطالبة' :
+                          'Improve this prompt';
+      const importantText = detectedLanguage === 'fr' ? 'IMPORTANT: Retourne UNIQUEMENT le prompt amélioré structuré. Pas d\'introduction, pas d\'explication finale.' :
+                            detectedLanguage === 'ar' ? 'هام: أرجع المطالبة المحسنة المنظمة فقط. لا مقدمة، لا شرح نهائي.' :
+                            'IMPORTANT: Return ONLY the improved structured prompt. No introduction, no final explanation.';
+      const objectiveText = detectedLanguage === 'fr' ? 'Objectif d\'amélioration spécifique' :
+                           detectedLanguage === 'ar' ? 'هدف التحسين المحدد' :
+                           'Specific improvement objective';
 
-Structure OBLIGATOIRE du prompt amélioré - CHAQUE SECTION COMPLÈTE:
+      let userPrompt = `${improveText}: "${originalPrompt}"
 
-# CONTEXTE & OBJECTIF
-[2-3 phrases: domaine, tâche, objectif mesurable]
-
-# RÔLE DE L'IA
-[2 phrases: expertise, personnalité adaptée au public cible]
-
-# STRUCTURE DU LIVRABLE
-[Format exact détaillé avec sections/tableaux si nécessaire]
-[Si tableau: inclure 2-3 lignes d'exemple]
-
-# CONTRAINTES
-• Longueur: [nombre précis de mots/tokens/durée]
-• Ton: [registre de langue précis]
-• Style: [caractéristiques stylistiques]
-• Public: [niveau et attentes du public cible]
-• Format: [spécifications techniques]
-
-# CRITÈRES DE QUALITÉ
-• [Critère mesurable 1]
-• [Critère mesurable 2]
-• [Critère mesurable 3]
-
-# EXEMPLE DE SORTIE
-[Exemple concret illustrant format, ton, style - minimum 3 lignes]
-
----
-
-# AMÉLIORATIONS APPORTÉES
-• Catégorie/Domaine: [amélioration apportée]
-• Description/Tâche: [amélioration apportée]
-• Objectif: [amélioration apportée]
-• Public cible: [amélioration apportée]
-• Format: [amélioration apportée]
-• Ton/Style: [amélioration apportée]
-• Longueur: [amélioration apportée]
-
-IMPORTANT:
-- Applique TOUS les 7 critères d'optimisation
-- Termine TOUTES les sections
-- NE PAS ajouter d'introduction ("Voici le prompt optimisé...")
-- NE PAS ajouter d'explication finale ("Pourquoi ce prompt fonctionne...")
-- Retourne UNIQUEMENT le prompt amélioré avec la structure demandée`
-        : `Tu es un expert en ingénierie de prompt. Améliore le prompt en appliquant ces CRITÈRES:
-
-CRITÈRES D'OPTIMISATION (comme dans le générateur):
-1. CATÉGORIE: Renforcer le domaine d'expertise
-2. DESCRIPTION: Clarifier la tâche exacte
-3. OBJECTIF: Définir objectif mesurable
-4. PUBLIC CIBLE: Adapter niveau de langage
-5. FORMAT DE SORTIE: Préciser structure exacte
-6. TON: Définir registre de langue
-7. LONGUEUR: Indiquer contrainte de taille
-
-Structure OBLIGATOIRE:
-
-🎯 **CONTEXTE & OBJECTIF**
-[Domaine + Tâche + Objectif mesurable]
-
-🧑‍💻 **RÔLE DE L'IA**
-[Expertise + Personnalité adaptée au public]
-
-🗂 **STRUCTURE DU LIVRABLE**
-[Format exact: JSON, tableau, texte structuré, etc.]
-
-📏 **CONTRAINTES**
-- Longueur: [précis: X mots/tokens/durée]
-- Ton: [registre précis]
-- Style: [caractéristiques]
-- Public: [niveau et attentes]
-
-📝 **EXEMPLE DE SORTIE**
-[Exemple concret 2-3 lignes]
-
----
-
-**AMÉLIORATIONS APPORTÉES:**
-• Catégorie: [amélioration]
-• Description: [amélioration]
-• Objectif: [amélioration]
-• Public: [amélioration]
-• Format: [amélioration]
-• Ton: [amélioration]
-• Longueur: [amélioration]
-
-RÈGLES STRICTES:
-- Appliquer les 7 critères du générateur
-- Prompt autonome et prêt à l'emploi
-- Maximum 1000 tokens
-- NE PAS ajouter d'introduction ("Voici le prompt optimisé...")
-- NE PAS ajouter d'explication finale ("Pourquoi ce prompt fonctionne...")
-- Retourne UNIQUEMENT le prompt amélioré avec la structure demandée`;
-
-      let userPrompt = `Améliore ce prompt: "${originalPrompt}"
-
-IMPORTANT: Retourne UNIQUEMENT le prompt amélioré structuré. Pas d'introduction, pas d'explication finale.`;
+${importantText}`;
       if (improvementObjective.trim()) {
-        userPrompt += `\n\nObjectif d'amélioration spécifique: ${improvementObjective}`;
+        userPrompt += `\n\n${objectiveText}: ${improvementObjective}`;
       }
 
       let optimizationScore: number | null = null;

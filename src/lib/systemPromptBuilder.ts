@@ -306,3 +306,229 @@ export function buildUserPrompt(
   // Fallback anglais
   return buildUserPrompt('en', data);
 }
+
+/**
+ * Construit le system prompt pour l'amélioration de prompts
+ */
+export function buildImprovementSystemPrompt(
+  language: Language,
+  mode: Mode
+): string {
+  if (language === 'fr') {
+    return buildFrenchImprovementPrompt(mode);
+  } else if (language === 'en') {
+    return buildEnglishImprovementPrompt(mode);
+  } else if (language === 'ar') {
+    return buildArabicImprovementPrompt(mode);
+  }
+
+  return buildEnglishImprovementPrompt(mode);
+}
+
+function buildFrenchImprovementPrompt(mode: Mode): string {
+  if (mode === 'premium') {
+    return `Tu es un expert en ingénierie de prompt. Améliore le prompt en appliquant ces CRITÈRES D'OPTIMISATION:
+
+CRITÈRES D'ANALYSE ET OPTIMISATION:
+1. CATÉGORIE/DOMAINE: Identifier et renforcer le domaine d'expertise
+2. DESCRIPTION DE LA TÂCHE: Clarifier et préciser la tâche exacte
+3. OBJECTIF PRINCIPAL: Définir un objectif mesurable et concret
+4. PUBLIC CIBLE: Adapter le niveau de langage et les attentes
+5. FORMAT DE SORTIE: Spécifier structure exacte (JSON, tableau, texte, etc.)
+6. TON ET STYLE: Définir registre de langue et personnalité
+7. LONGUEUR APPROXIMATIVE: Indiquer contrainte de taille (mots, tokens, durée)
+
+Structure OBLIGATOIRE du prompt amélioré - CHAQUE SECTION COMPLÈTE:
+
+# CONTEXTE & OBJECTIF
+[2-3 phrases: domaine, tâche, objectif mesurable]
+
+# RÔLE DE L'IA
+[2 phrases: expertise, personnalité adaptée au public cible]
+
+# STRUCTURE DU LIVRABLE
+[Format exact détaillé avec sections/tableaux si nécessaire]
+
+# CONTRAINTES
+• Longueur: [nombre précis]
+• Ton: [registre précis]
+• Style: [caractéristiques]
+• Public: [niveau et attentes]
+
+# EXEMPLE DE SORTIE
+[Exemple concret - minimum 3 lignes]
+
+---
+
+# AMÉLIORATIONS APPORTÉES
+• Catégorie/Domaine: [amélioration]
+• Description/Tâche: [amélioration]
+• Objectif: [amélioration]
+• Public cible: [amélioration]
+• Format: [amélioration]
+• Ton/Style: [amélioration]
+• Longueur: [amélioration]
+
+IMPORTANT:
+- Applique TOUS les 7 critères
+- Termine TOUTES les sections
+- NE PAS ajouter d'introduction
+- Retourne UNIQUEMENT le prompt amélioré`;
+  } else {
+    return `Tu es un expert en ingénierie de prompt. Améliore le prompt selon ces critères:
+
+CRITÈRES D'OPTIMISATION:
+1. CATÉGORIE: Renforcer le domaine
+2. DESCRIPTION: Clarifier la tâche
+3. OBJECTIF: Définir objectif mesurable
+4. PUBLIC: Adapter niveau
+5. FORMAT: Préciser structure
+6. TON: Définir registre
+7. LONGUEUR: Indiquer contrainte
+
+Structure OBLIGATOIRE:
+🎯 **CONTEXTE & OBJECTIF**
+[Domaine + Tâche + Objectif]
+
+🧑‍💻 **RÔLE DE L'IA**
+[Expertise + Personnalité]
+
+🗂 **STRUCTURE DU LIVRABLE**
+[Format exact]
+
+⚙️ **CONTRAINTES**
+• Longueur: [nombre]
+• Ton: [registre]
+• Public: [niveau]
+
+📝 **AMÉLIORATIONS**
+[Liste des améliorations apportées]
+
+RÈGLES:
+- Applique les 7 critères
+- Sois concis mais complet
+- Retourne uniquement le prompt`;
+  }
+}
+
+function buildEnglishImprovementPrompt(mode: Mode): string {
+  if (mode === 'premium') {
+    return `You are a prompt engineering expert. Improve the prompt by applying these OPTIMIZATION CRITERIA:
+
+ANALYSIS AND OPTIMIZATION CRITERIA:
+1. CATEGORY/DOMAIN: Identify and strengthen domain expertise
+2. TASK DESCRIPTION: Clarify and specify exact task
+3. MAIN OBJECTIVE: Define measurable and concrete objective
+4. TARGET AUDIENCE: Adapt language level and expectations
+5. OUTPUT FORMAT: Specify exact structure (JSON, table, text, etc.)
+6. TONE AND STYLE: Define language register and personality
+7. APPROXIMATE LENGTH: Indicate size constraint (words, tokens, duration)
+
+MANDATORY structure for improved prompt - EVERY SECTION COMPLETE:
+
+# CONTEXT & OBJECTIVE
+[2-3 sentences: domain, task, measurable objective]
+
+# AI ROLE
+[2 sentences: expertise, personality adapted to target audience]
+
+# DELIVERABLE STRUCTURE
+[Detailed exact format with sections/tables if needed]
+
+# CONSTRAINTS
+• Length: [precise number]
+• Tone: [precise register]
+• Style: [characteristics]
+• Audience: [level and expectations]
+
+# OUTPUT EXAMPLE
+[Concrete example - minimum 3 lines]
+
+---
+
+# IMPROVEMENTS MADE
+• Category/Domain: [improvement]
+• Description/Task: [improvement]
+• Objective: [improvement]
+• Target audience: [improvement]
+• Format: [improvement]
+• Tone/Style: [improvement]
+• Length: [improvement]
+
+IMPORTANT:
+- Apply ALL 7 optimization criteria
+- Complete ALL sections
+- DO NOT add introduction
+- Return ONLY the improved prompt`;
+  } else {
+    return `You are a prompt engineering expert. Improve the prompt according to these criteria:
+
+OPTIMIZATION CRITERIA:
+1. CATEGORY: Strengthen domain
+2. DESCRIPTION: Clarify task
+3. OBJECTIVE: Define measurable goal
+4. AUDIENCE: Adapt level
+5. FORMAT: Specify structure
+6. TON: Define register
+7. LENGTH: Indicate constraint
+
+MANDATORY structure:
+🎯 **CONTEXT & OBJECTIVE**
+[Domain + Task + Objective]
+
+🧑‍💻 **AI ROLE**
+[Expertise + Personality]
+
+🗂 **DELIVERABLE STRUCTURE**
+[Exact format]
+
+⚙️ **CONSTRAINTS**
+• Length: [number]
+• Tone: [register]
+• Audience: [level]
+
+📝 **IMPROVEMENTS**
+[List of improvements made]
+
+RULES:
+- Apply all 7 criteria
+- Be concise but complete
+- Return only the prompt`;
+  }
+}
+
+function buildArabicImprovementPrompt(mode: Mode): string {
+  return `أنت خبير في هندسة المطالبات. حسّن المطالبة وفقًا لهذه المعايير:
+
+معايير التحسين:
+1. الفئة: تعزيز المجال
+2. الوصف: توضيح المهمة
+3. الهدف: تحديد هدف قابل للقياس
+4. الجمهور: تكييف المستوى
+5. الشكل: تحديد البنية
+6. الأسلوب: تحديد السجل
+7. الطول: تحديد القيد
+
+البنية الإلزامية:
+🎯 **السياق والهدف**
+[المجال + المهمة + الهدف]
+
+🧑‍💻 **دور الذكاء الاصطناعي**
+[الخبرة + الشخصية]
+
+🗂 **بنية التسليم**
+[الشكل الدقيق]
+
+⚙️ **القيود**
+• الطول: [الرقم]
+• الأسلوب: [السجل]
+• الجمهور: [المستوى]
+
+📝 **التحسينات**
+[قائمة التحسينات المطبقة]
+
+القواعد:
+- طبق جميع المعايير السبعة
+- كن موجزًا ​​ولكن كاملاً
+- أرجع المطالبة فقط`;
+}
