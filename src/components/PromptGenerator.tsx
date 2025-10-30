@@ -16,6 +16,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { llmRouter } from "@/services/llmRouter";
 import { AdvancedPromptCompressor } from "@/lib/advancedPromptCompressor";
 import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
+import { detectLanguage } from "@/lib/languageDetector";
+import { buildSystemPrompt, buildUserPrompt } from "@/lib/systemPromptBuilder";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
@@ -199,6 +201,10 @@ const PromptGenerator = () => {
       const subcategoryLabel = formData.subcategory ?
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
+      // Détecter la langue de la description utilisateur
+      const detectedLanguage = detectLanguage(formData.description);
+      console.log('🌍 Langue détectée:', detectedLanguage, 'pour description:', formData.description.substring(0, 50));
+
       // Déterminer les contraintes de longueur basées sur le mode premium
       const lengthConstraints = mode === 'premium' && formData.length ? {
         'short': { words: '50-100 mots', tokens: 300, description: 'Direct et efficace avec structure complète' },
@@ -207,93 +213,23 @@ const PromptGenerator = () => {
         'very-detailed': { words: '800-1500 mots', tokens: 3500, description: 'Complet avec workflows multi-étapes et exemples variés' }
       }[formData.length] : null;
 
-      const systemPrompt = mode === 'free'
-        ? `Tu es expert en création de prompts IA MINIMALISTES mais COMPLETS.
+      // Construire le system prompt dans la langue détectée
+      const systemPrompt = buildSystemPrompt(detectedLanguage, mode, lengthConstraints);
 
-Structure OBLIGATOIRE (ULTRA-CONCISE):
-**RÔLE**: [1 phrase - rôle spécialisé]
-**OBJECTIF**: [1 phrase - résultat mesurable]
-**INSTRUCTIONS**:
-- [3 points max - actions directes]
+      // Construire le user prompt dans la langue détectée
+      const userPrompt = buildUserPrompt(detectedLanguage, {
+        categoryLabel,
+        subcategoryLabel,
+        description: formData.description,
+        objective: formData.objective,
+        targetAudience: formData.targetAudience,
+        format: formData.format ? outputFormats.find(f => f.value === formData.format)?.label : undefined,
+        tone: formData.tone ? toneOptions.find(t => t.value === formData.tone)?.label : undefined,
+        length: formData.length ? lengthOptions.find(l => l.value === formData.length)?.label : undefined
+      });
 
-RÈGLES ABSOLUES:
-- ZÉRO exemple (supprimé automatiquement)
-- ZÉRO explication longue (max 2 phrases par section)
-- MAX 3 éléments par liste
-- Priorité COMPLÉTUDE sur longueur
-- TOUT doit se terminer par une ponctuation
-- Si manque d'espace: RÉDUIRE mais FINIR toutes les sections`
-        : mode === 'basic'
-        ? `Tu es expert en création de prompts IA structurés.
-
-Structure OBLIGATOIRE:
-**RÔLE**: [Expert type]
-**OBJECTIF**: [Précis, mesurable]
-**INSTRUCTIONS**:
-- [Points clés directs]
-**FORMAT**: [Type sortie]
-**CONTRAINTES**: [Limites et style]
-
-RÈGLES CRITIQUES:
-- IMPÉRATIF: Tu DOIS terminer COMPLÈTEMENT le prompt
-- JAMAIS de texte tronqué ou incomplet
-- Toutes les sections finies avec ponctuation
-- 250-350 mots maximum
-- Privilégie COMPLET sur LONG`
-        : lengthConstraints
-        ? `Tu es un expert en création de prompts IA professionnels. Crée un prompt COMPLET et structuré.
-
-Structure OBLIGATOIRE - CHAQUE SECTION DOIT ÊTRE COMPLÈTE:
-
-# RÔLE
-[Expert spécialisé - ${lengthConstraints.words.includes('800-1500') ? '2-3' : '1-2'} phrases complètes]
-
-# CONTEXTE
-[Situation et enjeux - ${lengthConstraints.words.includes('800-1500') ? '3-4' : lengthConstraints.words.includes('400-700') ? '2-3' : '2'} phrases complètes]
-
-# OBJECTIF
-[Objectif mesurable avec critères précis]
-
-# INSTRUCTIONS
-${lengthConstraints.words.includes('800-1500') ? '1-8. [6-8 étapes détaillées]' : lengthConstraints.words.includes('400-700') ? '1-6. [4-6 étapes]' : '1-5. [3-5 étapes]'}
-
-# FORMAT DE SORTIE
-[Description du format attendu]
-${lengthConstraints.words.includes('800-1500') || lengthConstraints.words.includes('400-700') ? '[Si tableau nécessaire: inclure 2-3 lignes de données]' : ''}
-
-# CONTRAINTES
-• Longueur: ${lengthConstraints.words}
-• [2-3 autres contraintes précises]
-
-${lengthConstraints.words.includes('400-700') || lengthConstraints.words.includes('800-1500') ? '# EXEMPLE\n[1 exemple concret illustrant le format]' : ''}
-
-IMPORTANT: Termine TOUTES les sections avant la limite de tokens.`
-        : `Expert prompts IA. Max 600 tokens strict.
-
-Structure OBLIGATOIRE:
-**RÔLE**: [Expert spécialisé]
-**OBJECTIF**: [Précis et mesurable]
-**INSTRUCTIONS**:
-- [Étapes avec méthodologie intégrée]
-**ÉLÉMENTS REQUIS**: [2-3 éléments clés]
-**LIVRABLE**: [Format structuré]
-
-Max 3 styles. ZÉRO exemple long. ZÉRO section méthodologie séparée. Instructions ultra-directes sans justification.`;
-
-      let userPrompt = `Crée un prompt expert pour:
-- Domaine: ${categoryLabel}
-${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
-- Description: ${formData.description}`;
-
-      if (formData.objective) userPrompt += `\n- Objectif: ${formData.objective}`;
-      if (formData.targetAudience) userPrompt += `\n- Public cible: ${formData.targetAudience}`;
-      if (formData.format) userPrompt += `\n- Format souhaité: ${outputFormats.find(f => f.value === formData.format)?.label}`;
-      if (formData.tone) userPrompt += `\n- Ton: ${toneOptions.find(t => t.value === formData.tone)?.label}`;
-      if (formData.length && lengthConstraints) {
-        userPrompt += `\n- Longueur demandée: ${lengthConstraints.words} (RESPECTER STRICTEMENT cette contrainte)`;
-      } else if (formData.length) {
-        userPrompt += `\n- Longueur: ${lengthOptions.find(l => l.value === formData.length)?.label}`;
-      }
+      console.log('📝 System prompt langue:', detectedLanguage);
+      console.log('📝 User prompt:', userPrompt.substring(0, 100));
 
       // Déterminer les tokens max selon le mode et la longueur demandée
       // MODE PREMIUM: Augmenter très significativement les limites
