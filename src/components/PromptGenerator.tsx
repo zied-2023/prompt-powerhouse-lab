@@ -431,12 +431,16 @@ const PromptGenerator = () => {
     mode: string
   ) => {
     try {
+      // Détecter la langue du prompt initial
+      const promptLanguage = detectLanguage(initialPrompt);
       console.log('🔄 Optimisation Opik en arrière-plan démarrée...');
+      console.log('🌍 Langue du prompt détectée:', promptLanguage);
 
       // Import dynamique pour ne pas ralentir le chargement initial
       const { opikOptimizer } = await import('@/services/opikOptimizer');
 
       // Appliquer l'optimisation Opik (rapide, local, pas d'appel LLM)
+      // Note: opikOptimizer travaille dans la même langue que le prompt
       const optimizationResult = await opikOptimizer.optimizePrompt(
         initialPrompt,
         user!.id,

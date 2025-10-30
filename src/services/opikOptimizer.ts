@@ -1,4 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
+import { detectLanguage } from '@/lib/languageDetector';
+
+type Language = 'fr' | 'en' | 'ar';
 
 export interface OptimizationResult {
   optimizedPrompt: string;
@@ -278,6 +281,7 @@ class OpikOptimizer {
    */
   private smartSummarize(prompt: string): string {
     console.log('📝 Résumé intelligent du prompt...');
+    const lang = this.getPromptLanguage(prompt);
 
     // Extraire les sections principales
     const sections = this.extractSections(prompt);
@@ -288,19 +292,37 @@ class OpikOptimizer {
     // RÔLE (garder concis)
     if (sections.role) {
       const roleText = sections.role.split('\n')[0].substring(0, 100);
-      summarized += `**RÔLE**: ${roleText}\n\n`;
+      if (lang === 'en') {
+        summarized += `**ROLE**: ${roleText}\n\n`;
+      } else if (lang === 'ar') {
+        summarized += `**الدور**: ${roleText}\n\n`;
+      } else {
+        summarized += `**RÔLE**: ${roleText}\n\n`;
+      }
     }
 
     // OBJECTIF (garder l'essentiel)
     if (sections.objective) {
       const objectiveText = sections.objective.split('\n').slice(0, 2).join(' ').substring(0, 150);
-      summarized += `**OBJECTIF**: ${objectiveText}\n\n`;
+      if (lang === 'en') {
+        summarized += `**OBJECTIVE**: ${objectiveText}\n\n`;
+      } else if (lang === 'ar') {
+        summarized += `**الهدف**: ${objectiveText}\n\n`;
+      } else {
+        summarized += `**OBJECTIF**: ${objectiveText}\n\n`;
+      }
     }
 
     // CONTEXTE (résumer si trop long)
     if (sections.context) {
       const contextText = sections.context.split('\n').slice(0, 2).join(' ').substring(0, 120);
-      summarized += `**CONTEXTE**: ${contextText}\n\n`;
+      if (lang === 'en') {
+        summarized += `**CONTEXT**: ${contextText}\n\n`;
+      } else if (lang === 'ar') {
+        summarized += `**السياق**: ${contextText}\n\n`;
+      } else {
+        summarized += `**CONTEXTE**: ${contextText}\n\n`;
+      }
     }
 
     // INSTRUCTIONS (garder les points clés)
@@ -311,14 +333,26 @@ class OpikOptimizer {
         .slice(0, 5);  // Max 5 instructions
 
       if (instructionsList.length > 0) {
-        summarized += `**INSTRUCTIONS**:\n${instructionsList.join('\n')}\n\n`;
+        if (lang === 'en') {
+          summarized += `**INSTRUCTIONS**:\n${instructionsList.join('\n')}\n\n`;
+        } else if (lang === 'ar') {
+          summarized += `**التعليمات**:\n${instructionsList.join('\n')}\n\n`;
+        } else {
+          summarized += `**INSTRUCTIONS**:\n${instructionsList.join('\n')}\n\n`;
+        }
       }
     }
 
     // FORMAT (garder concis)
     if (sections.format) {
       const formatText = sections.format.split('\n').slice(0, 2).join(' ').substring(0, 100);
-      summarized += `**FORMAT**: ${formatText}\n\n`;
+      if (lang === 'en') {
+        summarized += `**FORMAT**: ${formatText}\n\n`;
+      } else if (lang === 'ar') {
+        summarized += `**الشكل**: ${formatText}\n\n`;
+      } else {
+        summarized += `**FORMAT**: ${formatText}\n\n`;
+      }
     }
 
     // CONTRAINTES (garder l'essentiel)
@@ -329,7 +363,13 @@ class OpikOptimizer {
         .slice(0, 3);  // Max 3 contraintes
 
       if (constraintsList.length > 0) {
-        summarized += `**CONTRAINTES**:\n${constraintsList.join('\n')}`;
+        if (lang === 'en') {
+          summarized += `**CONSTRAINTS**:\n${constraintsList.join('\n')}`;
+        } else if (lang === 'ar') {
+          summarized += `**القيود**:\n${constraintsList.join('\n')}`;
+        } else {
+          summarized += `**CONTRAINTES**:\n${constraintsList.join('\n')}`;
+        }
       }
     }
 
@@ -375,6 +415,7 @@ class OpikOptimizer {
    */
   private ensureCompleteStructure(prompt: string): string {
     console.log('🔍 Vérification structure complète...');
+    const lang = this.getPromptLanguage(prompt);
 
     // Vérifier que toutes les sections se terminent proprement
     const lines = prompt.split('\n');
@@ -388,13 +429,31 @@ class OpikOptimizer {
 
       // Si une section commence mais la suivante aussi (section vide)
       if (line.match(/\*\*[A-Z]+\*\*:?\s*$/) && nextLine?.match(/\*\*/)) {
-        // Ajouter un contenu par défaut
-        if (line.includes('RÔLE')) {
-          fixedLines.push('Expert assistant IA spécialisé');
-        } else if (line.includes('OBJECTIF')) {
-          fixedLines.push('Accomplir la tâche demandée avec précision');
-        } else if (line.includes('FORMAT')) {
-          fixedLines.push('Réponse structurée et claire');
+        // Ajouter un contenu par défaut selon la langue
+        if (line.includes('RÔLE') || line.includes('ROLE') || line.includes('الدور')) {
+          if (lang === 'en') {
+            fixedLines.push('Expert AI assistant');
+          } else if (lang === 'ar') {
+            fixedLines.push('مساعد الذكاء الاصطناعي الخبير');
+          } else {
+            fixedLines.push('Expert assistant IA spécialisé');
+          }
+        } else if (line.includes('OBJECTIF') || line.includes('OBJECTIVE') || line.includes('الهدف')) {
+          if (lang === 'en') {
+            fixedLines.push('Accomplish the requested task with precision');
+          } else if (lang === 'ar') {
+            fixedLines.push('إنجاز المهمة المطلوبة بدقة');
+          } else {
+            fixedLines.push('Accomplir la tâche demandée avec précision');
+          }
+        } else if (line.includes('FORMAT') || line.includes('الشكل')) {
+          if (lang === 'en') {
+            fixedLines.push('Structured and clear response');
+          } else if (lang === 'ar') {
+            fixedLines.push('استجابة منظمة وواضحة');
+          } else {
+            fixedLines.push('Réponse structurée et claire');
+          }
         }
       }
     }
@@ -415,12 +474,15 @@ class OpikOptimizer {
    * Complète les prompts incomplets ou tronqués
    */
   private completeIncompletePrompt(prompt: string): string {
+    const lang = this.getPromptLanguage(prompt);
+
     // Détecter si le prompt se termine de manière incomplète
     const lastLine = prompt.trim().split('\n').pop() || '';
     const lastChar = prompt.trim().slice(-1);
 
     console.log('🔍 Vérification complétude du prompt:', {
       longueur: prompt.length,
+      langue: lang,
       derniereLigne: lastLine.substring(0, 50),
       dernierCaractère: lastChar
     });
@@ -431,17 +493,31 @@ class OpikOptimizer {
 
       // Si c'est une liste à puces incomplète
       if (lastLine.startsWith('-') || lastLine.startsWith('•')) {
-        prompt += '\n- Respect des contraintes et format demandé';
+        if (lang === 'en') {
+          prompt += '\n- Respect constraints and requested format';
+        } else if (lang === 'ar') {
+          prompt += '\n- احترام القيود والصيغة المطلوبة';
+        } else {
+          prompt += '\n- Respect des contraintes et format demandé';
+        }
       }
       // Si c'est une section en cours
       else if (lastLine.includes('**')) {
-        prompt += ': Instructions claires et précises';
+        if (lang === 'en') {
+          prompt += ': Clear and precise instructions';
+        } else if (lang === 'ar') {
+          prompt += ': تعليمات واضحة ودقيقة';
+        } else {
+          prompt += ': Instructions claires et précises';
+        }
       }
       // Si ça se termine au milieu d'une phrase (pas de ponctuation)
       else if (lastLine.length > 0 && !lastLine.match(/[.!?]$/)) {
         // Essayer de terminer la phrase intelligemment
         if (lastLine.includes('libre de') || lastLine.includes('libre d')) {
           prompt += ' droits';
+        } else if (lastLine.includes('free of') || lastLine.includes('free from')) {
+          prompt += ' rights';
         } else {
           prompt += '.';
         }
@@ -455,27 +531,74 @@ class OpikOptimizer {
     }
 
     // Vérifier si des sections essentielles sont incomplètes
-    const sections = ['RÔLE', 'OBJECTIF', 'INSTRUCTIONS', 'FORMAT', 'CONTRAINTES'];
-    for (const section of sections) {
-      const sectionRegex = new RegExp(`\\*\\*${section}\\*\\*:?\\s*$`, 'im');
+    const sectionPatterns = [
+      { fr: 'RÔLE', en: 'ROLE', ar: 'الدور' },
+      { fr: 'OBJECTIF', en: 'OBJECTIVE', ar: 'الهدف' },
+      { fr: 'INSTRUCTIONS', en: 'INSTRUCTIONS', ar: 'التعليمات' },
+      { fr: 'FORMAT', en: 'FORMAT', ar: 'الشكل' },
+      { fr: 'CONTRAINTES', en: 'CONSTRAINTS', ar: 'القيود' }
+    ];
+
+    for (const pattern of sectionPatterns) {
+      const sectionRegex = new RegExp(`\\*\\*(${pattern.fr}|${pattern.en}|${pattern.ar})\\*\\*:?\\s*$`, 'im');
       if (sectionRegex.test(prompt)) {
         // Section présente mais vide, ajouter du contenu par défaut
-        switch (section) {
-          case 'RÔLE':
-            prompt += ' Expert assistant IA spécialisé';
-            break;
-          case 'OBJECTIF':
-            prompt += ' Fournir une réponse précise et structurée';
-            break;
-          case 'INSTRUCTIONS':
-            prompt += '\n- Analyser la demande attentivement\n- Structurer la réponse de manière claire\n- Respecter le format demandé';
-            break;
-          case 'FORMAT':
-            prompt += ' Réponse structurée et professionnelle';
-            break;
-          case 'CONTRAINTES':
-            prompt += '\n- Ton professionnel et précis\n- Réponse complète et détaillée';
-            break;
+        const sectionType = pattern.fr;
+
+        if (lang === 'en') {
+          switch (sectionType) {
+            case 'RÔLE':
+              prompt += ' Expert AI assistant';
+              break;
+            case 'OBJECTIF':
+              prompt += ' Provide precise and structured response';
+              break;
+            case 'INSTRUCTIONS':
+              prompt += '\n- Analyze request carefully\n- Structure response clearly\n- Respect requested format';
+              break;
+            case 'FORMAT':
+              prompt += ' Structured and professional response';
+              break;
+            case 'CONTRAINTES':
+              prompt += '\n- Professional and precise tone\n- Complete and detailed response';
+              break;
+          }
+        } else if (lang === 'ar') {
+          switch (sectionType) {
+            case 'RÔLE':
+              prompt += ' مساعد الذكاء الاصطناعي الخبير';
+              break;
+            case 'OBJECTIF':
+              prompt += ' تقديم استجابة دقيقة ومنظمة';
+              break;
+            case 'INSTRUCTIONS':
+              prompt += '\n- تحليل الطلب بعناية\n- هيكلة الاستجابة بوضوح\n- احترام الصيغة المطلوبة';
+              break;
+            case 'FORMAT':
+              prompt += ' استجابة منظمة ومهنية';
+              break;
+            case 'CONTRAINTES':
+              prompt += '\n- أسلوب محترف ودقيق\n- استجابة كاملة ومفصلة';
+              break;
+          }
+        } else {
+          switch (sectionType) {
+            case 'RÔLE':
+              prompt += ' Expert assistant IA spécialisé';
+              break;
+            case 'OBJECTIF':
+              prompt += ' Fournir une réponse précise et structurée';
+              break;
+            case 'INSTRUCTIONS':
+              prompt += '\n- Analyser la demande attentivement\n- Structurer la réponse de manière claire\n- Respecter le format demandé';
+              break;
+            case 'FORMAT':
+              prompt += ' Réponse structurée et professionnelle';
+              break;
+            case 'CONTRAINTES':
+              prompt += '\n- Ton professionnel et précis\n- Réponse complète et détaillée';
+              break;
+          }
         }
       }
     }
@@ -515,17 +638,41 @@ class OpikOptimizer {
    * Améliore la spécificité d'un prompt
    */
   private improveSpecificity(prompt: string): string {
+    const lang = this.getPromptLanguage(prompt);
+
     // Si le prompt est trop vague, ajouter une note de spécificité
-    if (prompt.length < 100 && !prompt.includes('précis')) {
-      return `${prompt}\n\n**NOTE**: Sois précis et détaillé dans ta réponse.`;
+    const hasSpecificityKeywords = /précis|precise|exact|detailed|دقيق|مفصل/i.test(prompt);
+
+    if (prompt.length < 100 && !hasSpecificityKeywords) {
+      if (lang === 'en') {
+        return `${prompt}\n\n**NOTE**: Be precise and detailed in your response.`;
+      } else if (lang === 'ar') {
+        return `${prompt}\n\n**ملاحظة**: كن دقيقاً ومفصلاً في إجابتك.`;
+      } else {
+        return `${prompt}\n\n**NOTE**: Sois précis et détaillé dans ta réponse.`;
+      }
     }
     return prompt;
+  }
+
+  /**
+   * Détecte la langue du prompt pour adaptation
+   */
+  private getPromptLanguage(prompt: string): Language {
+    return detectLanguage(prompt);
   }
 
   /**
    * Ajoute une section rôle si manquante
    */
   private addRoleSection(prompt: string): string {
+    const lang = this.getPromptLanguage(prompt);
+
+    if (lang === 'en') {
+      return `**ROLE**: Expert AI assistant\n\n${prompt}`;
+    } else if (lang === 'ar') {
+      return `**الدور**: مساعد الذكاء الاصطناعي الخبير\n\n${prompt}`;
+    }
     return `**RÔLE**: Expert assistant IA\n\n${prompt}`;
   }
 
@@ -533,6 +680,13 @@ class OpikOptimizer {
    * Ajoute une section format si manquante
    */
   private addFormatSection(prompt: string): string {
+    const lang = this.getPromptLanguage(prompt);
+
+    if (lang === 'en') {
+      return `${prompt}\n\n**FORMAT**: Structured and clear response`;
+    } else if (lang === 'ar') {
+      return `${prompt}\n\n**الشكل**: استجابة منظمة وواضحة`;
+    }
     return `${prompt}\n\n**FORMAT**: Réponse structurée et claire`;
   }
 
@@ -540,6 +694,13 @@ class OpikOptimizer {
    * Ajoute une section contraintes si manquante
    */
   private addConstraintsSection(prompt: string): string {
+    const lang = this.getPromptLanguage(prompt);
+
+    if (lang === 'en') {
+      return `${prompt}\n\n**CONSTRAINTS**:\n- Professional and precise tone\n- Complete and structured response`;
+    } else if (lang === 'ar') {
+      return `${prompt}\n\n**القيود**:\n- أسلوب محترف ودقيق\n- استجابة كاملة ومنظمة`;
+    }
     return `${prompt}\n\n**CONTRAINTES**:\n- Ton professionnel et précis\n- Réponse complète et structurée`;
   }
 
@@ -647,6 +808,7 @@ class OpikOptimizer {
    */
   private enrichPromptForLength(prompt: string, targetLength: 'long' | 'very_long'): string {
     console.log(`🎯 Enrichissement du prompt pour longueur: ${targetLength}`);
+    const lang = this.getPromptLanguage(prompt);
 
     const sections = this.extractSections(prompt);
     let enriched = prompt;
@@ -654,23 +816,51 @@ class OpikOptimizer {
     // Pour les prompts longs et très longs, ajouter du contenu si les sections sont trop courtes
     if (targetLength === 'very_long') {
       // Ajouter section EXEMPLES si manquante
-      if (!enriched.includes('**EXEMPLES**')) {
-        enriched += `\n\n**EXEMPLES**:\n1. [Exemple concret illustrant l'application]\n2. [Cas d'usage spécifique avec contexte]\n3. [Scénario détaillé montrant les étapes]`;
+      const hasExamples = /\*\*(EXEMPLES|EXAMPLES|أمثلة)\*\*/i.test(enriched);
+      if (!hasExamples) {
+        if (lang === 'en') {
+          enriched += `\n\n**EXAMPLES**:\n1. [Concrete example illustrating the application]\n2. [Specific use case with context]\n3. [Detailed scenario showing steps]`;
+        } else if (lang === 'ar') {
+          enriched += `\n\n**أمثلة**:\n1. [مثال ملموس يوضح التطبيق]\n2. [حالة استخدام محددة مع السياق]\n3. [سيناريو مفصل يوضح الخطوات]`;
+        } else {
+          enriched += `\n\n**EXEMPLES**:\n1. [Exemple concret illustrant l'application]\n2. [Cas d'usage spécifique avec contexte]\n3. [Scénario détaillé montrant les étapes]`;
+        }
       }
 
       // Ajouter section WORKFLOW si manquante
-      if (!enriched.includes('**WORKFLOW**') && !enriched.includes('**PROCESSUS**')) {
-        enriched += `\n\n**WORKFLOW**:\n1. Phase de préparation et analyse\n2. Phase d'exécution méthodique\n3. Phase de révision et validation\n4. Phase de livraison et documentation`;
+      const hasWorkflow = /\*\*(WORKFLOW|PROCESSUS|PROCESS|سير العمل)\*\*/i.test(enriched);
+      if (!hasWorkflow) {
+        if (lang === 'en') {
+          enriched += `\n\n**WORKFLOW**:\n1. Preparation and analysis phase\n2. Methodical execution phase\n3. Review and validation phase\n4. Delivery and documentation phase`;
+        } else if (lang === 'ar') {
+          enriched += `\n\n**سير العمل**:\n1. مرحلة التحضير والتحليل\n2. مرحلة التنفيذ المنهجي\n3. مرحلة المراجعة والتحقق\n4. مرحلة التسليم والتوثيق`;
+        } else {
+          enriched += `\n\n**WORKFLOW**:\n1. Phase de préparation et analyse\n2. Phase d'exécution méthodique\n3. Phase de révision et validation\n4. Phase de livraison et documentation`;
+        }
       }
 
       // Ajouter section CONSIDÉRATIONS si manquante
-      if (!enriched.includes('**CONSIDÉRATIONS**')) {
-        enriched += `\n\n**CONSIDÉRATIONS**:\n- Aspects techniques à prendre en compte\n- Contraintes métier et réglementaires\n- Bonnes pratiques et recommandations\n- Points d'attention particuliers`;
+      const hasConsiderations = /\*\*(CONSIDÉRATIONS|CONSIDERATIONS|اعتبارات)\*\*/i.test(enriched);
+      if (!hasConsiderations) {
+        if (lang === 'en') {
+          enriched += `\n\n**CONSIDERATIONS**:\n- Technical aspects to consider\n- Business and regulatory constraints\n- Best practices and recommendations\n- Particular points of attention`;
+        } else if (lang === 'ar') {
+          enriched += `\n\n**اعتبارات**:\n- الجوانب التقنية التي يجب مراعاتها\n- القيود التجارية والتنظيمية\n- أفضل الممارسات والتوصيات\n- نقاط الاهتمام الخاصة`;
+        } else {
+          enriched += `\n\n**CONSIDÉRATIONS**:\n- Aspects techniques à prendre en compte\n- Contraintes métier et réglementaires\n- Bonnes pratiques et recommandations\n- Points d'attention particuliers`;
+        }
       }
     } else if (targetLength === 'long') {
       // Pour les prompts longs, ajouter section MÉTHODOLOGIE si manquante
-      if (!enriched.includes('**MÉTHODOLOGIE**') && !enriched.includes('**APPROCHE**')) {
-        enriched += `\n\n**MÉTHODOLOGIE**:\n- Approche structurée et itérative\n- Validation à chaque étape clé\n- Documentation et traçabilité`;
+      const hasMethodology = /\*\*(MÉTHODOLOGIE|METHODOLOGY|APPROCHE|APPROACH|المنهجية)\*\*/i.test(enriched);
+      if (!hasMethodology) {
+        if (lang === 'en') {
+          enriched += `\n\n**METHODOLOGY**:\n- Structured and iterative approach\n- Validation at each key step\n- Documentation and traceability`;
+        } else if (lang === 'ar') {
+          enriched += `\n\n**المنهجية**:\n- نهج منظم ومتكرر\n- التحقق في كل خطوة رئيسية\n- التوثيق والتتبع`;
+        } else {
+          enriched += `\n\n**MÉTHODOLOGIE**:\n- Approche structurée et itérative\n- Validation à chaque étape clé\n- Documentation et traçabilité`;
+        }
       }
     }
 
@@ -700,6 +890,7 @@ class OpikOptimizer {
    */
   private enhanceClarity(prompt: string): string {
     console.log('✨ Amélioration de la clarté...');
+    const lang = this.getPromptLanguage(prompt);
 
     let enhanced = prompt;
 
@@ -708,10 +899,22 @@ class OpikOptimizer {
 
     // Si OBJECTIF est trop court, l'enrichir
     if (sections.objective && sections.objective.length < 50) {
-      enhanced = enhanced.replace(
-        /(\*\*OBJECTIF\*\*:?\s*)([^\n*]+)/i,
-        '$1$2 de manière précise et mesurable, en respectant les critères de qualité attendus'
-      );
+      if (lang === 'en') {
+        enhanced = enhanced.replace(
+          /(\*\*(OBJECTIF|OBJECTIVE)\*\*:?\s*)([^\n*]+)/i,
+          '$1$3 in a precise and measurable manner, respecting expected quality criteria'
+        );
+      } else if (lang === 'ar') {
+        enhanced = enhanced.replace(
+          /(\*\*(OBJECTIF|OBJECTIVE|الهدف)\*\*:?\s*)([^\n*]+)/i,
+          '$1$3 بطريقة دقيقة وقابلة للقياس، مع احترام معايير الجودة المتوقعة'
+        );
+      } else {
+        enhanced = enhanced.replace(
+          /(\*\*OBJECTIF\*\*:?\s*)([^\n*]+)/i,
+          '$1$2 de manière précise et mesurable, en respectant les critères de qualité attendus'
+        );
+      }
     }
 
     return enhanced;
