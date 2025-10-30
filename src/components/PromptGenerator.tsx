@@ -45,6 +45,8 @@ const PromptGenerator = () => {
     qualityScore: number;
     techniques: string[];
   } | null>(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [optimizationApplied, setOptimizationApplied] = useState(false);
 
   // Nouvelles catégories restructurées
   const categories = [
@@ -303,49 +305,12 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         ? Math.max(lengthConstraints.tokens * 3, 6000)  // Triple des tokens demandés, minimum 6000
         : 12000;  // Pour mode premium sans longueur spécifiée, utiliser 12000 tokens
 
-      // MODE GRATUIT: Utiliser l'optimisation itérative Opik pour garantir complétude
+      // MODE GRATUIT: Génération rapide + optimisation en arrière-plan
       let generatedContent = '';
       let llmResponse: any;
 
-      if (mode === 'free' && user?.id) {
-        console.log('🎯 MODE GRATUIT: Activation de l\'optimisation itérative Opik');
-
-        const iterativeResult = await iterativePromptOptimizer.optimizeUntilComplete(
-          systemPrompt,
-          userPrompt,
-          user.id,
-          maxTokensByMode,
-          'free'
-        );
-
-        generatedContent = iterativeResult.finalPrompt;
-
-        // Créer un objet llmResponse compatible pour la suite
-        llmResponse = {
-          content: generatedContent,
-          provider: 'opik-optimized',
-          model: 'free-mode-iterative',
-          usage: {
-            total_tokens: 0, // Sera mis à jour par les traces Opik
-            completion_tokens: 0,
-            prompt_tokens: 0
-          }
-        };
-
-        console.log('✅ Optimisation Opik terminée:', {
-          iterations: iterativeResult.iterations,
-          score: Math.round(iterativeResult.completenessScore.overall * 100) + '%',
-          improvements: iterativeResult.improvements.length
-        });
-
-        // Afficher un toast avec les améliorations
-        toast({
-          title: "✅ Prompt optimisé avec Opik",
-          description: `${iterativeResult.iterations} itération(s) - Score: ${Math.round(iterativeResult.completenessScore.overall * 100)}%`,
-        });
-
-      } else {
-        // MODES BASIC ET PREMIUM: Génération directe
+      // Toujours générer directement pour être rapide
+      {
         llmResponse = await llmRouter.generatePrompt(
           systemPrompt,
           userPrompt,
@@ -368,6 +333,19 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         });
 
         generatedContent = llmResponse.content;
+
+        // MODE GRATUIT: Optimiser en arrière-plan après génération
+        if (mode === 'free' && user?.id) {
+          console.log('🎯 MODE GRATUIT: Planification optimisation Opik en arrière-plan');
+          // Retourner le résultat immédiatement, l'optimisation se fera après
+          return {
+            content: generatedContent,
+            usage: llmResponse.usage,
+            provider: llmResponse.provider,
+            model: llmResponse.model,
+            needsOptimization: true // Flag pour déclencher optimisation après
+          };
+        }
       }
 
       // Note: La compression a été remplacée par l'optimisation itérative Opik
@@ -425,9 +403,22 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
         console.error('Erreur lors du décompte du crédit:', err);
       });
 
+      // Afficher le prompt (et déclencher optimisation si mode gratuit)
       setGeneratedPrompt(finalPrompt);
       setCurrentTraceId(traceId);
       setUserFeedback(null);
+
+      // Déclencher l'optimisation en arrière-plan pour mode gratuit
+      if (result.needsOptimization && user?.id && mode === 'free') {
+        setOptimizationApplied(false);
+        setIsOptimizing(true);
+
+        // Optimiser en arrière-plan sans bloquer
+        optimizePromptInBackground(finalPrompt, traceId, formData, mode).catch(err => {
+          console.error('Erreur optimisation arrière-plan:', err);
+          setIsOptimizing(false);
+        });
+      }
 
       // Calculate cost (Mistral pricing: ~$0.001 per 1k tokens)
       const estimatedCost = (result.usage.total_tokens / 1000) * 0.001;
@@ -490,6 +481,71 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
       });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  /**
+   * Optimise le prompt en arrière-plan avec Opik Optimizer
+   * Sans bloquer l'affichage initial
+   */
+  const optimizePromptInBackground = async (
+    initialPrompt: string,
+    traceId: string,
+    formData: any,
+    mode: string
+  ) => {
+    try {
+      console.log('🔄 Optimisation Opik en arrière-plan démarrée...');
+
+      // Import dynamique pour ne pas ralentir le chargement initial
+      const { opikOptimizer } = await import('@/services/opikOptimizer');
+
+      // Appliquer l'optimisation Opik (rapide, local, pas d'appel LLM)
+      const optimizationResult = await opikOptimizer.optimizePrompt(
+        initialPrompt,
+        user!.id,
+        formData.category
+      );
+
+      console.log('✅ Optimisation Opik terminée:', {
+        score: optimizationResult.score,
+        improvements: optimizationResult.improvements.length,
+        tokensReduced: optimizationResult.tokensReduced || 0
+      });
+
+      // Mettre à jour le prompt avec la version optimisée
+      setGeneratedPrompt(optimizationResult.optimizedPrompt);
+      setOptimizationApplied(true);
+      setIsOptimizing(false);
+
+      // Afficher un toast discret avec les améliorations
+      toast({
+        title: "✨ Prompt optimisé automatiquement",
+        description: `${optimizationResult.improvements.length} amélioration(s) appliquée(s) - Score: ${Math.round(optimizationResult.score)}/10`,
+      });
+
+      // Mettre à jour la trace Opik avec le prompt optimisé
+      if (traceId) {
+        await opikService.createTrace({
+          userId: user!.id,
+          traceId: `${traceId}-optimized`,
+          promptInput: initialPrompt,
+          promptOutput: optimizationResult.optimizedPrompt,
+          model: 'opik-optimizer',
+          latencyMs: 0,
+          tokensUsed: 0,
+          tags: {
+            type: 'optimization',
+            mode: mode,
+            score: optimizationResult.score,
+            improvements: optimizationResult.improvements.length
+          }
+        });
+      }
+    } catch (error) {
+      console.error('❌ Erreur optimisation arrière-plan:', error);
+      setIsOptimizing(false);
+      // Ne pas afficher d'erreur à l'utilisateur, le prompt initial reste utilisable
     }
   };
 
@@ -802,6 +858,27 @@ ${subcategoryLabel ? `- Spécialisation: ${subcategoryLabel}` : ''}
               <pre className="whitespace-pre-wrap text-sm text-gray-800 dark:text-gray-200 font-mono leading-relaxed max-h-96 overflow-y-auto">
                 {generatedPrompt}
               </pre>
+              {/* Indicateur d'optimisation en cours (mode gratuit) */}
+              {isOptimizing && (
+                <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                      ✨ Optimisation automatique en cours avec Opik...
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Badge d'optimisation appliquée */}
+              {optimizationApplied && (
+                <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                  <p className="text-sm text-green-700 dark:text-green-300 font-medium">
+                    ✅ <strong>Prompt optimisé automatiquement</strong> : Structure améliorée, clarté renforcée, complétude garantie
+                  </p>
+                </div>
+              )}
+
               <div className="mt-4 p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700">
                 <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
                   🤖 <strong>{t('generatedByAI')} :</strong> {t('aiGeneratedDesc')}
