@@ -131,34 +131,44 @@ const SimplePromptGenerator = () => {
     setIsLoading(true);
     
     try {
-      // Construction du prompt pour l'API Mistral
-      let userPrompt = `Je veux créer un prompt optimisé pour atteindre cet objectif: "${objective}"`;
-      
-      if (tone) {
-        const selectedTone = toneOptions.find(t => t.value === tone);
-        userPrompt += `\n\nTon souhaité: ${selectedTone?.label}`;
-      }
+      // Détecter d'abord la langue de l'objectif (ce que l'utilisateur a écrit)
+      const detectedLanguage = detectLanguage(objective);
 
-      // Détecter la langue de la description
-      const detectedLanguage = detectLanguage(description);
-
-      // PRIORITÉ: Si la description est dans une langue différente du sélecteur, utiliser la langue détectée
-      // Cela permet à un utilisateur arabophone d'écrire en arabe et d'obtenir un prompt en arabe
+      // PRIORITÉ: Si l'objectif est dans une langue différente du français, utiliser la langue détectée
+      // Cela permet à un utilisateur anglophone/arabophone d'écrire dans sa langue et d'obtenir un prompt dans cette langue
       // même si l'interface est en français
       const effectiveLanguage = (detectedLanguage && detectedLanguage !== 'fr')
         ? detectedLanguage
         : language;
 
       console.log('🌍 Langue du sélecteur:', language);
-      console.log('🔍 Langue détectée dans la description:', detectedLanguage);
+      console.log('🔍 Langue détectée dans l\'objectif:', detectedLanguage);
       console.log('✅ Langue finale utilisée:', effectiveLanguage);
+      console.log('📝 Objectif:', objective.substring(0, 50));
 
-      // Construire le user prompt dans la langue appropriée
+      // Construction du prompt pour l'API Mistral DANS LA LANGUE DÉTECTÉE
+      let userPrompt = '';
+
       if (effectiveLanguage === 'fr') {
+        userPrompt = `Je veux créer un prompt optimisé pour atteindre cet objectif: "${objective}"`;
+        if (tone) {
+          const selectedTone = toneOptions.find(t => t.value === tone);
+          userPrompt += `\n\nTon souhaité: ${selectedTone?.label}`;
+        }
         userPrompt += `\n\nVeuillez créer un prompt clair, précis et efficace qui m'aidera à atteindre cet objectif. Le prompt doit être directement utilisable.`;
       } else if (effectiveLanguage === 'ar') {
+        userPrompt = `أريد إنشاء مطالبة محسّنة لتحقيق هذا الهدف: "${objective}"`;
+        if (tone) {
+          const selectedTone = toneOptions.find(t => t.value === tone);
+          userPrompt += `\n\nالأسلوب المطلوب: ${selectedTone?.label}`;
+        }
         userPrompt += `\n\nالرجاء إنشاء مطالبة واضحة ودقيقة وفعالة تساعدني على تحقيق هذا الهدف. يجب أن تكون المطالبة قابلة للاستخدام مباشرة.`;
       } else {
+        userPrompt = `I want to create an optimized prompt to achieve this objective: "${objective}"`;
+        if (tone) {
+          const selectedTone = toneOptions.find(t => t.value === tone);
+          userPrompt += `\n\nDesired tone: ${selectedTone?.label}`;
+        }
         userPrompt += `\n\nPlease create a clear, precise and effective prompt that will help me achieve this objective. The prompt must be directly usable.`;
       }
 
