@@ -203,9 +203,20 @@ const PromptGenerator = () => {
       const subcategoryLabel = formData.subcategory ?
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
-      // Utiliser la langue choisie par l'utilisateur via le sélecteur de langue
-      const userLanguage = language as 'fr' | 'en' | 'ar';
-      console.log('🌍 Langue utilisateur:', userLanguage, 'pour description:', formData.description.substring(0, 50));
+      // Détecter la langue de la description de l'utilisateur
+      const detectedLanguage = detectLanguage(formData.description);
+
+      // PRIORITÉ: Si la description est dans une langue différente du sélecteur, utiliser la langue détectée
+      // Cela permet à un utilisateur arabophone d'écrire en arabe et d'obtenir un prompt en arabe
+      // même si l'interface est en français
+      const userLanguage = (detectedLanguage && detectedLanguage !== 'fr')
+        ? detectedLanguage
+        : (language as 'fr' | 'en' | 'ar');
+
+      console.log('🌍 Langue du sélecteur:', language);
+      console.log('🔍 Langue détectée dans la description:', detectedLanguage);
+      console.log('✅ Langue finale utilisée:', userLanguage);
+      console.log('📝 Description:', formData.description.substring(0, 50));
 
       // Déterminer les contraintes de longueur basées sur le mode premium
       const lengthConstraints = mode === 'premium' && formData.length ? {
