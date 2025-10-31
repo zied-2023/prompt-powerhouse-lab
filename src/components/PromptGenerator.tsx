@@ -18,12 +18,14 @@ import { AdvancedPromptCompressor } from "@/lib/advancedPromptCompressor";
 import { iterativePromptOptimizer } from "@/services/iterativePromptOptimizer";
 import { detectLanguage } from "@/lib/languageDetector";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/systemPromptBuilder";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const PromptGenerator = () => {
   const { t } = useTranslation();
   const { savePrompt, isSaving } = usePrompts();
   const { credits, useCredit } = useUserCredits();
   const { user } = useAuth();
+  const { language } = useLanguage();
   const [formData, setFormData] = useState({
     category: '',
     subcategory: '',
@@ -201,9 +203,9 @@ const PromptGenerator = () => {
       const subcategoryLabel = formData.subcategory ?
         getSubcategories(formData.category).find(sub => sub.value === formData.subcategory)?.label : '';
 
-      // Détecter la langue de la description utilisateur
-      const detectedLanguage = detectLanguage(formData.description);
-      console.log('🌍 Langue détectée:', detectedLanguage, 'pour description:', formData.description.substring(0, 50));
+      // Utiliser la langue choisie par l'utilisateur via le sélecteur de langue
+      const userLanguage = language as 'fr' | 'en' | 'ar';
+      console.log('🌍 Langue utilisateur:', userLanguage, 'pour description:', formData.description.substring(0, 50));
 
       // Déterminer les contraintes de longueur basées sur le mode premium
       const lengthConstraints = mode === 'premium' && formData.length ? {
@@ -213,11 +215,11 @@ const PromptGenerator = () => {
         'very-detailed': { words: '800-1500 mots', tokens: 3500, description: 'Complet avec workflows multi-étapes et exemples variés' }
       }[formData.length] : null;
 
-      // Construire le system prompt dans la langue détectée
-      const systemPrompt = buildSystemPrompt(detectedLanguage, mode, lengthConstraints);
+      // Construire le system prompt dans la langue choisie par l'utilisateur
+      const systemPrompt = buildSystemPrompt(userLanguage, mode, lengthConstraints);
 
-      // Construire le user prompt dans la langue détectée
-      const userPrompt = buildUserPrompt(detectedLanguage, {
+      // Construire le user prompt dans la langue choisie par l'utilisateur
+      const userPrompt = buildUserPrompt(userLanguage, {
         categoryLabel,
         subcategoryLabel,
         description: formData.description,
@@ -228,7 +230,7 @@ const PromptGenerator = () => {
         length: formData.length ? lengthOptions.find(l => l.value === formData.length)?.label : undefined
       });
 
-      console.log('📝 System prompt langue:', detectedLanguage);
+      console.log('📝 System prompt langue:', userLanguage);
       console.log('📝 User prompt:', userPrompt.substring(0, 100));
 
       // Déterminer les tokens max selon le mode et la longueur demandée

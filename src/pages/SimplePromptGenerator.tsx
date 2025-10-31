@@ -139,15 +139,21 @@ const SimplePromptGenerator = () => {
         userPrompt += `\n\nTon souhaité: ${selectedTone?.label}`;
       }
       
-      userPrompt += `\n\nVeuillez créer un prompt clair, précis et efficace qui m'aidera à atteindre cet objectif. Le prompt doit être directement utilisable.`;
+      // Utiliser la langue choisie par l'utilisateur via le sélecteur
+      console.log('🌍 Langue utilisateur choisie:', language);
 
-      // Détection de la langue de la description
-      const detectedLanguage = detectLanguage(description);
-      console.log('🌍 Langue détectée:', detectedLanguage);
+      // Construire le user prompt dans la langue appropriée
+      if (language === 'fr') {
+        userPrompt += `\n\nVeuillez créer un prompt clair, précis et efficace qui m'aidera à atteindre cet objectif. Le prompt doit être directement utilisable.`;
+      } else if (language === 'ar') {
+        userPrompt += `\n\nالرجاء إنشاء مطالبة واضحة ودقيقة وفعالة تساعدني على تحقيق هذا الهدف. يجب أن تكون المطالبة قابلة للاستخدام مباشرة.`;
+      } else {
+        userPrompt += `\n\nPlease create a clear, precise and effective prompt that will help me achieve this objective. The prompt must be directly usable.`;
+      }
 
-      const systemPromptContent = detectedLanguage === 'fr'
+      const systemPromptContent = language === 'fr'
         ? 'Tu es un expert en création de prompts. Tu dois créer des prompts clairs, précis et efficaces. Réponds directement avec le prompt optimisé, sans préambule ni explication supplémentaire.'
-        : detectedLanguage === 'ar'
+        : language === 'ar'
         ? 'أنت خبير في إنشاء المطالبات. يجب عليك إنشاء مطالبات واضحة ودقيقة وفعالة. رد مباشرة بالمطالبة المحسّنة، بدون مقدمة أو شرح إضافي.'
         : 'You are an expert in creating prompts. You must create clear, precise and effective prompts. Respond directly with the optimized prompt, without preamble or additional explanation.';
 
