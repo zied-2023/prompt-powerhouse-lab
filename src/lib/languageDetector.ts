@@ -40,10 +40,12 @@ export function detectLanguage(text: string): Language {
   // Détection arabe (caractères arabes Unicode)
   const hasArabicChars = /[\u0600-\u06FF]/.test(text);
   if (hasArabicChars) {
-    const arabicScore = arabicIndicators.filter(word =>
-      lowerText.includes(word)
-    ).length;
-    if (arabicScore > 0) return 'ar';
+    // Si au moins 30% des caractères non-espaces sont arabes, c'est de l'arabe
+    const arabicCharsCount = (text.match(/[\u0600-\u06FF]/g) || []).length;
+    const totalNonSpaceChars = text.replace(/\s/g, '').length;
+    if (arabicCharsCount / totalNonSpaceChars > 0.3) {
+      return 'ar';
+    }
   }
 
   // Compter les correspondances

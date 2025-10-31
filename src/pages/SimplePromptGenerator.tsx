@@ -138,22 +138,33 @@ const SimplePromptGenerator = () => {
         const selectedTone = toneOptions.find(t => t.value === tone);
         userPrompt += `\n\nTon souhaité: ${selectedTone?.label}`;
       }
-      
-      // Utiliser la langue choisie par l'utilisateur via le sélecteur
-      console.log('🌍 Langue utilisateur choisie:', language);
+
+      // Détecter la langue de la description
+      const detectedLanguage = detectLanguage(description);
+
+      // PRIORITÉ: Si la description est dans une langue différente du sélecteur, utiliser la langue détectée
+      // Cela permet à un utilisateur arabophone d'écrire en arabe et d'obtenir un prompt en arabe
+      // même si l'interface est en français
+      const effectiveLanguage = (detectedLanguage && detectedLanguage !== 'fr')
+        ? detectedLanguage
+        : language;
+
+      console.log('🌍 Langue du sélecteur:', language);
+      console.log('🔍 Langue détectée dans la description:', detectedLanguage);
+      console.log('✅ Langue finale utilisée:', effectiveLanguage);
 
       // Construire le user prompt dans la langue appropriée
-      if (language === 'fr') {
+      if (effectiveLanguage === 'fr') {
         userPrompt += `\n\nVeuillez créer un prompt clair, précis et efficace qui m'aidera à atteindre cet objectif. Le prompt doit être directement utilisable.`;
-      } else if (language === 'ar') {
+      } else if (effectiveLanguage === 'ar') {
         userPrompt += `\n\nالرجاء إنشاء مطالبة واضحة ودقيقة وفعالة تساعدني على تحقيق هذا الهدف. يجب أن تكون المطالبة قابلة للاستخدام مباشرة.`;
       } else {
         userPrompt += `\n\nPlease create a clear, precise and effective prompt that will help me achieve this objective. The prompt must be directly usable.`;
       }
 
-      const systemPromptContent = language === 'fr'
+      const systemPromptContent = effectiveLanguage === 'fr'
         ? 'Tu es un expert en création de prompts. Tu dois créer des prompts clairs, précis et efficaces. Réponds directement avec le prompt optimisé, sans préambule ni explication supplémentaire.'
-        : language === 'ar'
+        : effectiveLanguage === 'ar'
         ? 'أنت خبير في إنشاء المطالبات. يجب عليك إنشاء مطالبات واضحة ودقيقة وفعالة. رد مباشرة بالمطالبة المحسّنة، بدون مقدمة أو شرح إضافي.'
         : 'You are an expert in creating prompts. You must create clear, precise and effective prompts. Respond directly with the optimized prompt, without preamble or additional explanation.';
 
