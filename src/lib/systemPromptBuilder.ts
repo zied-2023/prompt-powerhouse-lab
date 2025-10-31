@@ -124,6 +124,8 @@ function buildEnglishSystemPrompt(
   if (mode === 'free') {
     return `You are an expert in creating MINIMALIST but COMPLETE AI prompts.
 
+CRITICAL: Generate the ENTIRE prompt in ENGLISH ONLY. Do NOT use French or any other language.
+
 MANDATORY STRUCTURE (ULTRA-CONCISE):
 **ROLE**: [1 sentence - specialized role]
 **OBJECTIVE**: [1 sentence - measurable result]
@@ -136,9 +138,12 @@ ABSOLUTE RULES:
 - MAX 3 items per list
 - Priority: COMPLETENESS over length
 - EVERYTHING must end with punctuation
-- If space limited: REDUCE but FINISH all sections`;
+- If space limited: REDUCE but FINISH all sections
+- OUTPUT LANGUAGE: ENGLISH ONLY`;
   } else if (mode === 'basic') {
     return `You are an expert in creating structured AI prompts.
+
+CRITICAL: Generate the ENTIRE prompt in ENGLISH ONLY. Do NOT use French or any other language.
 
 MANDATORY STRUCTURE:
 **ROLE**: [Expert type]
@@ -153,9 +158,12 @@ CRITICAL RULES:
 - NEVER truncated or incomplete text
 - All sections finished with punctuation
 - 250-350 words maximum
-- Favor COMPLETE over LONG`;
+- Favor COMPLETE over LONG
+- OUTPUT LANGUAGE: ENGLISH ONLY`;
   } else if (lengthConstraints) {
     return `You are an expert in creating professional AI prompts. Create a COMPLETE and structured prompt.
+
+CRITICAL: Generate the ENTIRE prompt in ENGLISH ONLY. Do NOT use French or any other language.
 
 MANDATORY STRUCTURE - EVERY SECTION MUST BE COMPLETE:
 
@@ -181,9 +189,12 @@ ${lengthConstraints.words.includes('800-1500') || lengthConstraints.words.includ
 
 ${lengthConstraints.words.includes('400-700') || lengthConstraints.words.includes('800-1500') ? '# EXAMPLE\n[1 concrete example illustrating the format]' : ''}
 
-IMPORTANT: Finish ALL sections before token limit.`;
+IMPORTANT: Finish ALL sections before token limit.
+OUTPUT LANGUAGE: ENGLISH ONLY`;
   } else {
     return `AI prompts expert. Max 600 tokens strict.
+
+CRITICAL: Generate the ENTIRE prompt in ENGLISH ONLY. Do NOT use French or any other language.
 
 MANDATORY STRUCTURE:
 **ROLE**: [Specialized expert]
@@ -193,7 +204,8 @@ MANDATORY STRUCTURE:
 **REQUIRED ELEMENTS**: [2-3 key elements]
 **DELIVERABLE**: [Structured format]
 
-Max 3 styles. ZERO long examples. ZERO separate methodology section. Ultra-direct instructions without justification.`;
+Max 3 styles. ZERO long examples. ZERO separate methodology section. Ultra-direct instructions without justification.
+OUTPUT LANGUAGE: ENGLISH ONLY`;
   }
 }
 
@@ -207,6 +219,8 @@ function buildArabicSystemPrompt(
   if (mode === 'free') {
     return `أنت خبير في إنشاء مطالبات الذكاء الاصطناعي المُختصرة والكاملة.
 
+حرج: أنشئ المطالبة بالكامل باللغة العربية فقط. لا تستخدم الفرنسية أو أي لغة أخرى.
+
 البنية الإلزامية (مُختصرة للغاية):
 **الدور**: [جملة واحدة - دور متخصص]
 **الهدف**: [جملة واحدة - نتيجة قابلة للقياس]
@@ -219,9 +233,12 @@ function buildArabicSystemPrompt(
 - 3 عناصر كحد أقصى لكل قائمة
 - الأولوية: الاكتمال على الطول
 - يجب أن ينتهي كل شيء بعلامة ترقيم
-- إذا كانت المساحة محدودة: اختصر لكن أكمل جميع الأقسام`;
+- إذا كانت المساحة محدودة: اختصر لكن أكمل جميع الأقسام
+- لغة الإخراج: العربية فقط`;
   } else if (mode === 'basic') {
     return `أنت خبير في إنشاء مطالبات الذكاء الاصطناعي المنظمة.
+
+حرج: أنشئ المطالبة بالكامل باللغة العربية فقط. لا تستخدم الفرنسية أو أي لغة أخرى.
 
 البنية الإلزامية:
 **الدور**: [نوع الخبير]
@@ -236,9 +253,12 @@ function buildArabicSystemPrompt(
 - لا نصوص مبتورة أو غير مكتملة أبدًا
 - جميع الأقسام منتهية بعلامات الترقيم
 - 250-350 كلمة كحد أقصى
-- فضّل الكامل على الطويل`;
+- فضّل الكامل على الطويل
+- لغة الإخراج: العربية فقط`;
   } else {
     return `خبير في مطالبات الذكاء الاصطناعي. 600 رمز كحد أقصى صارم.
+
+حرج: أنشئ المطالبة بالكامل باللغة العربية فقط. لا تستخدم الفرنسية أو أي لغة أخرى.
 
 البنية الإلزامية:
 **الدور**: [خبير متخصص]
@@ -248,7 +268,8 @@ function buildArabicSystemPrompt(
 **العناصر المطلوبة**: [2-3 عناصر رئيسية]
 **التسليم**: [شكل منظم]
 
-3 أنماط كحد أقصى. صفر أمثلة طويلة. صفر قسم منهجية منفصل. تعليمات مباشرة للغاية بدون تبرير.`;
+3 أنماط كحد أقصى. صفر أمثلة طويلة. صفر قسم منهجية منفصل. تعليمات مباشرة للغاية بدون تبرير.
+لغة الإخراج: العربية فقط`;
   }
 }
 
