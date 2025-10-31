@@ -292,7 +292,8 @@ const PromptGenerator = () => {
             usage: llmResponse.usage,
             provider: llmResponse.provider,
             model: llmResponse.model,
-            needsOptimization: true // Flag pour déclencher optimisation après
+            needsOptimization: true, // Flag pour déclencher optimisation après
+            detectedLanguage: userLanguage // Passer la langue détectée pour l'optimisation
           };
         }
       }
@@ -305,7 +306,8 @@ const PromptGenerator = () => {
         content: generatedContent,
         usage: llmResponse.usage,
         provider: llmResponse.provider,
-        model: llmResponse.model
+        model: llmResponse.model,
+        detectedLanguage: userLanguage // Toujours retourner la langue détectée
       };
     } catch (error) {
       console.error('Erreur lors de la génération du prompt:', error);
@@ -362,8 +364,8 @@ const PromptGenerator = () => {
         setOptimizationApplied(false);
         setIsOptimizing(true);
 
-        // Optimiser en arrière-plan sans bloquer
-        optimizePromptInBackground(finalPrompt, traceId, formData, mode).catch(err => {
+        // Optimiser en arrière-plan sans bloquer - passer la langue détectée
+        optimizePromptInBackground(finalPrompt, traceId, formData, mode, result.detectedLanguage).catch(err => {
           console.error('Erreur optimisation arrière-plan:', err);
           setIsOptimizing(false);
         });
@@ -441,23 +443,26 @@ const PromptGenerator = () => {
     initialPrompt: string,
     traceId: string,
     formData: any,
-    mode: string
+    mode: string,
+    targetLanguage?: 'fr' | 'en' | 'ar'
   ) => {
     try {
-      // Détecter la langue du prompt initial
-      const promptLanguage = detectLanguage(initialPrompt);
+      // Utiliser la langue fournie (déjà détectée lors de la génération) ou détecter
+      const promptLanguage = targetLanguage || detectLanguage(initialPrompt);
       console.log('🔄 Optimisation Opik en arrière-plan démarrée...');
-      console.log('🌍 Langue du prompt détectée:', promptLanguage);
+      console.log('🌍 Langue cible pour optimisation:', promptLanguage);
+      console.log('🎯 Langue fournie:', targetLanguage || 'non fournie (détection automatique)');
 
       // Import dynamique pour ne pas ralentir le chargement initial
       const { opikOptimizer } = await import('@/services/opikOptimizer');
 
       // Appliquer l'optimisation Opik (rapide, local, pas d'appel LLM)
-      // Note: opikOptimizer travaille dans la même langue que le prompt
+      // Note: on passe la langue cible pour forcer l'optimisation dans cette langue
       const optimizationResult = await opikOptimizer.optimizePrompt(
         initialPrompt,
         user!.id,
-        formData.category
+        formData.category,
+        promptLanguage // Passer la langue détectée lors de la génération
       );
 
       console.log('✅ Optimisation Opik terminée:', {

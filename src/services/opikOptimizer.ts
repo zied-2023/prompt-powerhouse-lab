@@ -12,6 +12,8 @@ export interface OptimizationResult {
 }
 
 class OpikOptimizer {
+  private targetLanguage?: Language; // Langue cible pour forcer l'optimisation
+
   /**
    * Optimise un prompt pour le mode PREMIUM sans compression
    * Garantit un prompt complet selon la longueur demandée
@@ -101,17 +103,25 @@ class OpikOptimizer {
   async optimizePrompt(
     originalPrompt: string,
     userId: string,
-    category?: string
+    category?: string,
+    targetLanguage?: Language
   ): Promise<OptimizationResult> {
     try {
       console.log('🚀 Opik Auto-Optimization démarré pour mode premium');
       console.log('📝 Prompt original longueur:', originalPrompt.length);
+      console.log('🌍 Langue cible forcée:', targetLanguage || 'détection automatique');
+
+      // Forcer la langue cible si fournie
+      this.targetLanguage = targetLanguage;
 
       // Analyser le prompt pour identifier les améliorations possibles
       const analysis = this.analyzePrompt(originalPrompt);
 
       // Appliquer les optimisations Opik
       const optimizedPrompt = await this.applyOptimizations(originalPrompt, analysis);
+
+      // Réinitialiser la langue cible après optimisation
+      this.targetLanguage = undefined;
 
       // Calculer les améliorations
       const improvements = this.calculateImprovements(originalPrompt, optimizedPrompt, analysis);
@@ -657,9 +667,19 @@ class OpikOptimizer {
 
   /**
    * Détecte la langue du prompt pour adaptation
+   * Si targetLanguage est défini, l'utilise en priorité
    */
   private getPromptLanguage(prompt: string): Language {
-    return detectLanguage(prompt);
+    // Si une langue cible est forcée, l'utiliser
+    if (this.targetLanguage) {
+      console.log('✅ Utilisation de la langue cible forcée:', this.targetLanguage);
+      return this.targetLanguage;
+    }
+
+    // Sinon, détecter automatiquement
+    const detected = detectLanguage(prompt);
+    console.log('🔍 Langue détectée automatiquement:', detected);
+    return detected;
   }
 
   /**
