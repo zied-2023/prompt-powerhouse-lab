@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
-import { Video, Copy, Wand2, Sparkles, ChevronDown, Settings2 } from "lucide-react";
+import { Video, Copy, Sparkles, ChevronDown, Settings2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
-import { llmRouter } from "@/services/llmRouter";
 
 const Wan2VideoPromptGenerator = () => {
   const { t } = useTranslation();
@@ -21,10 +18,12 @@ const Wan2VideoPromptGenerator = () => {
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
-    subject: '',
-    context: '',
-    visualStyle: '',
-    movement: ''
+    who: 'woman',
+    what: 'white lace dress',
+    emotion: 'silent tears',
+    where: 'windswept beach',
+    camera: 'slow-push',
+    lighting: 'golden hour'
   });
 
   const [advancedSettings, setAdvancedSettings] = useState({
@@ -42,36 +41,56 @@ const Wan2VideoPromptGenerator = () => {
   const [optimizationApplied, setOptimizationApplied] = useState(false);
   const [optimizationScore, setOptimizationScore] = useState<number | null>(null);
 
-  const visualStyles = [
-    { value: 'realistic', label: 'Realistic', hint: 'Ultra-realistic rendering, photographic quality' },
-    { value: 'anime', label: 'Anime', hint: 'Japanese animation style, vibrant colors' },
-    { value: 'cinematic', label: 'Cinematic', hint: 'Film-like quality, dramatic lighting' },
-    { value: 'cyberpunk', label: 'Cyberpunk', hint: 'Futuristic neon aesthetics' },
-    { value: '3d-render', label: '3D Render', hint: 'Clean 3D computer graphics' },
-    { value: 'watercolor', label: 'Watercolor', hint: 'Soft, artistic painting style' }
+  const whoOptions = [
+    'woman', 'man', 'elderly couple', 'lonely boy', 'young girl',
+    'child', 'teenager', 'group of friends', 'family', 'soldier',
+    'dancer', 'artist', 'musician', 'athlete', 'traveler'
   ];
 
-  const movementOptions = [
-    { value: 'static', label: 'Static', hint: 'No camera movement' },
+  const whatOptions = [
+    'white lace dress', 'torn coat', 'flowing scarf', 'black suit', 'red kimono',
+    'leather jacket', 'silk gown', 'wool sweater', 'vintage hat', 'long cloak',
+    'summer dress', 'military uniform', 'casual jeans', 'elegant robe', 'worn shoes'
+  ];
+
+  const emotionOptions = [
+    'silent tears', 'trembling hands', 'faint smile', 'closed eyes', 'clenched fist',
+    'deep sigh', 'gentle laugh', 'worried look', 'peaceful face', 'intense gaze',
+    'nervous gesture', 'confident stance', 'sad expression', 'joyful movement', 'contemplative pose'
+  ];
+
+  const whereOptions = [
+    'windswept beach', 'stormy shore', 'deserted pier', 'dune at sunset', 'rocky coast',
+    'foggy forest', 'empty street', 'vintage cafe', 'mountain peak', 'urban rooftop',
+    'abandoned warehouse', 'flower field', 'rainy alley', 'snowy landscape', 'desert plain',
+    'neon-lit city', 'ancient ruins', 'modern gallery', 'traditional temple', 'subway station'
+  ];
+
+  const cameraOptions = [
     { value: 'slow-push', label: 'Slow Push', hint: 'Gentle forward movement' },
-    { value: '360-orbit', label: '360 Orbit', hint: 'Circular camera rotation' },
-    { value: 'timelapse', label: 'Timelapse', hint: 'Accelerated time passage' },
+    { value: 'dolly-in', label: 'Dolly In', hint: 'Smooth forward tracking' },
+    { value: 'pan-left', label: 'Pan Left', hint: 'Horizontal left sweep' },
+    { value: 'pan-right', label: 'Pan Right', hint: 'Horizontal right sweep' },
+    { value: '360-orbit', label: '360 Orbit', hint: 'Full circular rotation' },
+    { value: 'static-shot', label: 'Static Shot', hint: 'No camera movement' },
     { value: 'zoom-in', label: 'Zoom In', hint: 'Gradual zoom toward subject' },
-    { value: 'pan-left', label: 'Pan Left', hint: 'Horizontal left movement' },
-    { value: 'pan-right', label: 'Pan Right', hint: 'Horizontal right movement' },
-    { value: 'tracking', label: 'Tracking', hint: 'Following subject movement' }
+    { value: 'tracking', label: 'Tracking', hint: 'Following subject movement' },
+    { value: 'crane-up', label: 'Crane Up', hint: 'Vertical upward movement' },
+    { value: 'handheld', label: 'Handheld', hint: 'Natural camera shake' }
+  ];
+
+  const lightingOptions = [
+    { value: 'golden hour', label: 'Golden Hour', hint: 'Warm sunset/sunrise light' },
+    { value: 'blue hour', label: 'Blue Hour', hint: 'Cool twilight ambiance' },
+    { value: 'neon lights', label: 'Neon Lights', hint: 'Vibrant artificial glow' },
+    { value: 'soft daylight', label: 'Soft Daylight', hint: 'Natural diffused light' },
+    { value: 'dramatic shadows', label: 'Dramatic Shadows', hint: 'High contrast lighting' },
+    { value: 'moonlight', label: 'Moonlight', hint: 'Subtle night illumination' },
+    { value: 'foggy atmosphere', label: 'Foggy Atmosphere', hint: 'Misty ambient light' },
+    { value: 'studio lighting', label: 'Studio Lighting', hint: 'Professional controlled light' }
   ];
 
   const generateWan2Prompt = async () => {
-    if (!formData.subject || !formData.visualStyle || !formData.movement) {
-      toast({
-        title: t('missingInfo'),
-        description: 'Veuillez remplir au minimum: Sujet principal, Style visuel et Mouvement',
-        variant: "destructive"
-      });
-      return;
-    }
-
     const creditsRemaining = credits?.remaining_credits || 0;
     if (creditsRemaining <= 50) {
       toast({
@@ -87,80 +106,31 @@ const Wan2VideoPromptGenerator = () => {
     setOptimizationScore(null);
 
     try {
-      // Détecter l'éclairage approprié
-      const isNightOrCyber = formData.context?.toLowerCase().includes('neon') ||
-                            formData.context?.toLowerCase().includes('night') ||
-                            formData.visualStyle === 'cyberpunk';
-      const lighting = isNightOrCyber ? 'neon' : 'golden hour';
+      let prompt = `${formData.who} ${formData.what} ${formData.emotion} ${formData.where} ${formData.camera} ${formData.lighting} cinematic`;
 
-      const selectedStyle = visualStyles.find(s => s.value === formData.visualStyle);
-      const selectedMovement = movementOptions.find(m => m.value === formData.movement);
-
-      // Construire un prompt pour Mistral qui génère un prompt WAN-2.2
-      const systemPrompt = `You are a prompt engineer for WAN-2.2 (T2V 14B).
-
-Rules:
-- Generate ONE sentence, ≤ 200 characters, English only
-- NO commas, NO special characters, NO quotes
-- Start with subject, add 1-2 style tags, 1 motion verb, 1 lighting hint
-- Banned words: text, watermark, lowres, blurry, oversaturated
-- Aspect ratio 16:9, 24 fps, 3s duration (implicit, don't write)
-
-Output ONLY the prompt string, nothing else.`;
-
-      const userPrompt = `Generate a WAN-2.2 video prompt with:
-- Subject: ${formData.subject}
-- Context: ${formData.context || 'none'}
-- Visual Style: ${selectedStyle?.label}
-- Movement: ${selectedMovement?.label}
-- Lighting: ${lighting}
-
-Create a complete, natural sentence under 200 characters.`;
-
-      console.log('🎥 Génération prompt WAN-2.2 avec Mistral...');
-
-      // Appeler Mistral via llmRouter
-      const response = await llmRouter.generatePrompt(
-        systemPrompt,
-        userPrompt,
-        {
-          isAuthenticated: !!user,
-          userHasCredits: true,
-          temperature: 0.7,
-          maxTokens: 100, // Court pour WAN-2.2
-          userId: user?.id
-        }
-      );
-
-      let generatedPrompt = response.content.trim();
-
-      // Nettoyer le prompt selon les règles WAN-2.2
-      generatedPrompt = generatedPrompt
-        .replace(/["'`]/g, '') // Supprimer guillemets
-        .replace(/,/g, '') // Supprimer virgules
-        .replace(/[^a-zA-Z0-9\s-]/g, '') // Supprimer caractères spéciaux
-        .replace(/\s+/g, ' ') // Normaliser espaces
+      prompt = prompt
+        .replace(/["'`]/g, '')
+        .replace(/,/g, '')
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, ' ')
         .trim();
 
-      // Filtrer mots interdits
       const bannedWords = ['text', 'watermark', 'lowres', 'blurry', 'oversaturated'];
       bannedWords.forEach(word => {
         const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        generatedPrompt = generatedPrompt.replace(regex, '');
+        prompt = prompt.replace(regex, '');
       });
 
-      generatedPrompt = generatedPrompt.replace(/\s+/g, ' ').trim();
+      prompt = prompt.replace(/\s+/g, ' ').trim();
 
-      // Vérifier et tronquer si nécessaire
-      if (generatedPrompt.length > 200) {
-        // Trouver le dernier espace avant 200 pour couper proprement
-        const lastSpace = generatedPrompt.lastIndexOf(' ', 197);
-        generatedPrompt = generatedPrompt.substring(0, lastSpace > 0 ? lastSpace : 197);
+      if (prompt.length > 200) {
+        const lastSpace = prompt.lastIndexOf(' ', 197);
+        prompt = prompt.substring(0, lastSpace > 0 ? lastSpace : 197);
       }
 
-      console.log('✅ Prompt WAN-2.2 généré:', generatedPrompt);
+      console.log('✅ Prompt WAN-2.2 généré:', prompt, `(${prompt.length} caractères)`);
 
-      setGeneratedPrompt(generatedPrompt);
+      setGeneratedPrompt(prompt);
 
       const creditCost = advancedSettings.duration === '5s' ? 2 : 1;
 
@@ -171,13 +141,12 @@ Create a complete, natural sentence under 200 characters.`;
       }
 
       toast({
-        title: "Prompt WAN-2.2 généré avec Mistral",
-        description: `${generatedPrompt.length} caractères - Format: ${advancedSettings.aspectRatio}, ${advancedSettings.duration}`,
+        title: "Prompt WAN-2.2 généré",
+        description: `${prompt.length}/200 caractères - Format: ${advancedSettings.aspectRatio}, ${advancedSettings.duration}`,
       });
 
-      // Optimisation Opik en arrière-plan
       if (user?.id) {
-        optimizeWan2PromptInBackground(generatedPrompt).catch(err => {
+        optimizeWan2PromptInBackground(prompt).catch(err => {
           console.error('Erreur optimisation Opik:', err);
         });
       }
@@ -201,12 +170,11 @@ Create a complete, natural sentence under 200 characters.`;
 
       const { opikOptimizer } = await import('@/services/opikOptimizer');
 
-      // Optimisation spécifique pour WAN-2.2
       const optimizationResult = await opikOptimizer.optimizePrompt(
         initialPrompt,
         user!.id,
-        'video-audio', // Catégorie appropriée pour vidéo
-        'en' // WAN-2.2 n'accepte que l'anglais
+        'video-audio',
+        'en'
       );
 
       console.log('✅ Optimisation WAN-2.2 terminée:', {
@@ -214,18 +182,15 @@ Create a complete, natural sentence under 200 characters.`;
         improvements: optimizationResult.improvements.length
       });
 
-      // Appliquer les contraintes WAN-2.2 après optimisation
       let optimizedPrompt = optimizationResult.optimizedPrompt;
 
-      // Nettoyer les virgules et caractères spéciaux
       optimizedPrompt = optimizedPrompt
-        .replace(/[\"'`]/g, '') // Supprimer guillemets
-        .replace(/,/g, '') // Supprimer virgules
-        .replace(/[^a-zA-Z0-9\s-]/g, '') // Caractères spéciaux
+        .replace(/["'`]/g, '')
+        .replace(/,/g, '')
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
 
-      // Filtrer les mots interdits
       const bannedWords = ['text', 'watermark', 'lowres', 'blurry', 'oversaturated'];
       bannedWords.forEach(word => {
         const regex = new RegExp(`\\b${word}\\b`, 'gi');
@@ -234,18 +199,15 @@ Create a complete, natural sentence under 200 characters.`;
 
       optimizedPrompt = optimizedPrompt.replace(/\s+/g, ' ').trim();
 
-      // S'assurer que le prompt se termine proprement et ≤ 200 caractères
       if (optimizedPrompt.length > 200) {
-        // Trouver le dernier espace avant 200 pour couper à un mot entier
         const lastSpace = optimizedPrompt.lastIndexOf(' ', 197);
-        if (lastSpace > 150) { // Seulement si on coupe pas trop
+        if (lastSpace > 150) {
           optimizedPrompt = optimizedPrompt.substring(0, lastSpace);
         } else {
           optimizedPrompt = optimizedPrompt.substring(0, 197);
         }
       }
 
-      // Vérifier que le prompt se termine bien (pas au milieu d'un mot)
       optimizedPrompt = optimizedPrompt.trim();
 
       console.log('📏 Prompt final:', {
@@ -263,7 +225,6 @@ Create a complete, natural sentence under 200 characters.`;
         description: `Score: ${Math.round(optimizationResult.score)}/10 - ${optimizedPrompt.length}/200 caractères`,
       });
 
-      // Enregistrer dans Opik
       await opikService.createTrace({
         userId: user!.id,
         traceId: `wan2-${Date.now()}`,
@@ -309,168 +270,158 @@ Create a complete, natural sentence under 200 characters.`;
             <span className="gradient-text">Générateur WAN-2.2/2.5</span>
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
-            Créez des prompts optimisés pour le modèle de génération vidéo WAN-2.2 (T2V 14B)
+            Structure optimisée : Who + What + Emotion + Where + Camera + Lighting
           </CardDescription>
           {!isPremium && (
             <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
               <p className="text-sm text-orange-700 dark:text-orange-300 font-medium">
-                ⚠️ Mode Premium requis (plus de 50 crédits)
+                Mode Premium requis (plus de 50 crédits)
               </p>
             </div>
           )}
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-3">
-            <Label htmlFor="subject" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              ① Sujet principal <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="subject"
-              placeholder="Ex: sphinx cat, red sports car, dancing robot..."
-              value={formData.subject}
-              onChange={(e) => setFormData({...formData, subject: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800"
-              maxLength={50}
-              disabled={!isPremium}
-            />
-            <p className="text-xs text-muted-foreground">1-4 mots décrivant le sujet principal</p>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Who (Sujet)</Label>
+              <Select value={formData.who} onValueChange={(value) => setFormData({...formData, who: value})}>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {whoOptions.map(option => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-3">
-            <Label htmlFor="context" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              ② Lieu / Contexte
-            </Label>
-            <Input
-              id="context"
-              placeholder="Ex: vintage Paris cafe, neon Tokyo street, desert sunset..."
-              value={formData.context}
-              onChange={(e) => setFormData({...formData, context: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800"
-              maxLength={50}
-              disabled={!isPremium}
-            />
-            <p className="text-xs text-muted-foreground">Aide le modèle 14B à choisir décor & lumière</p>
-          </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">What (Vêtement/Objet)</Label>
+              <Select value={formData.what} onValueChange={(value) => setFormData({...formData, what: value})}>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {whatOptions.map(option => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-3">
-            <Label htmlFor="visualStyle" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              ③ Style visuel <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.visualStyle}
-              onValueChange={(value) => setFormData({...formData, visualStyle: value})}
-              disabled={!isPremium}
-            >
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
-                <SelectValue placeholder="Choisir un style visuel" />
-              </SelectTrigger>
-              <SelectContent className="shadow-xl z-50">
-                {visualStyles.map((style) => (
-                  <SelectItem key={style.value} value={style.value} className="font-medium py-3 px-4 hover:bg-accent cursor-pointer">
-                    <div className="flex flex-col">
-                      <div className="font-semibold text-foreground">{style.label}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{style.hint}</div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">Ajoute un tag maître + palette couleur</p>
-          </div>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Emotion (Expression)</Label>
+              <Select value={formData.emotion} onValueChange={(value) => setFormData({...formData, emotion: value})}>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {emotionOptions.map(option => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <div className="space-y-3">
-            <Label htmlFor="movement" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              ④ Mouvement clé <span className="text-red-500">*</span>
-            </Label>
-            <Select
-              value={formData.movement}
-              onValueChange={(value) => setFormData({...formData, movement: value})}
-              disabled={!isPremium}
-            >
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
-                <SelectValue placeholder="Choisir un mouvement" />
-              </SelectTrigger>
-              <SelectContent className="shadow-xl z-50">
-                {movementOptions.map((movement) => (
-                  <SelectItem key={movement.value} value={movement.value} className="font-medium py-3 px-4 hover:bg-accent cursor-pointer">
-                    <div className="flex flex-col">
-                      <div className="font-semibold text-foreground">{movement.label}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{movement.hint}</div>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">WAN-2.2 comprend ces mots-clés optimisés</p>
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Where (Lieu)</Label>
+              <Select value={formData.where} onValueChange={(value) => setFormData({...formData, where: value})}>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {whereOptions.map(option => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Camera (Mouvement)</Label>
+              <Select value={formData.camera} onValueChange={(value) => setFormData({...formData, camera: value})}>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {cameraOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label} - {option.hint}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Lighting (Éclairage)</Label>
+              <Select value={formData.lighting} onValueChange={(value) => setFormData({...formData, lighting: value})}>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {lightingOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label} - {option.hint}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
-            <CollapsibleTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full mb-4 flex items-center justify-between hover:bg-accent"
-                disabled={!isPremium}
-              >
-                <div className="flex items-center gap-2">
-                  <Settings2 className="h-4 w-4" />
-                  <span className="font-semibold">Paramètres Avancés</span>
-                </div>
-                <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
-              </Button>
+            <CollapsibleTrigger className="flex items-center justify-between w-full p-3 bg-gray-50 dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+              <span className="flex items-center gap-2 font-semibold">
+                <Settings2 className="h-4 w-4" />
+                Paramètres Avancés
+              </span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
             </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-4 mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold">Seed (reproductibilité)</Label>
-                <Input
-                  type="number"
-                  value={advancedSettings.seed}
-                  onChange={(e) => setAdvancedSettings({...advancedSettings, seed: parseInt(e.target.value) || -1})}
-                  placeholder="-1 pour random, 0-9999 pour fixe"
-                  className="bg-white dark:bg-gray-800"
+            <CollapsibleContent className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <Label className="text-sm">Seed (Aléatoire: -1)</Label>
+                <Slider
+                  value={[advancedSettings.seed]}
+                  onValueChange={([value]) => setAdvancedSettings({...advancedSettings, seed: value})}
                   min={-1}
                   max={9999}
+                  step={1}
+                  className="w-full"
                 />
-                <p className="text-xs text-muted-foreground">-1 = aléatoire, valeur fixe pour reproduire</p>
+                <p className="text-xs text-muted-foreground">{advancedSettings.seed === -1 ? 'Random' : advancedSettings.seed}</p>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-semibold">Steps (qualité)</Label>
-                  <span className="text-sm font-bold text-primary">{advancedSettings.steps}</span>
-                </div>
+              <div className="space-y-2">
+                <Label className="text-sm">Steps (15-35)</Label>
                 <Slider
                   value={[advancedSettings.steps]}
                   onValueChange={([value]) => setAdvancedSettings({...advancedSettings, steps: value})}
                   min={15}
-                  max={50}
-                  step={5}
+                  max={35}
+                  step={1}
                   className="w-full"
                 />
-                <p className="text-xs text-muted-foreground">15-50 steps - Plus = meilleure qualité mais 2× plus long</p>
+                <p className="text-xs text-muted-foreground">{advancedSettings.steps}</p>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-semibold">CFG Scale (guidance)</Label>
-                  <span className="text-sm font-bold text-primary">{advancedSettings.cfg}</span>
-                </div>
+              <div className="space-y-2">
+                <Label className="text-sm">CFG Scale (3-12)</Label>
                 <Slider
                   value={[advancedSettings.cfg]}
                   onValueChange={([value]) => setAdvancedSettings({...advancedSettings, cfg: value})}
-                  min={5}
+                  min={3}
                   max={12}
                   step={0.5}
                   className="w-full"
                 />
-                <p className="text-xs text-muted-foreground">5-12 - Sweet spot: 7 (équilibre créativité/précision)</p>
+                <p className="text-xs text-muted-foreground">{advancedSettings.cfg}</p>
               </div>
 
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold">Durée</Label>
-                <Select
-                  value={advancedSettings.duration}
-                  onValueChange={(value) => setAdvancedSettings({...advancedSettings, duration: value})}
-                >
+              <div className="space-y-2">
+                <Label className="text-sm">Durée</Label>
+                <Select value={advancedSettings.duration} onValueChange={(value) => setAdvancedSettings({...advancedSettings, duration: value})}>
                   <SelectTrigger className="bg-white dark:bg-gray-800">
                     <SelectValue />
                   </SelectTrigger>
@@ -481,12 +432,9 @@ Create a complete, natural sentence under 200 characters.`;
                 </Select>
               </div>
 
-              <div className="space-y-3">
-                <Label className="text-sm font-semibold">Aspect Ratio</Label>
-                <Select
-                  value={advancedSettings.aspectRatio}
-                  onValueChange={(value) => setAdvancedSettings({...advancedSettings, aspectRatio: value})}
-                >
+              <div className="space-y-2">
+                <Label className="text-sm">Aspect Ratio</Label>
+                <Select value={advancedSettings.aspectRatio} onValueChange={(value) => setAdvancedSettings({...advancedSettings, aspectRatio: value})}>
                   <SelectTrigger className="bg-white dark:bg-gray-800">
                     <SelectValue />
                   </SelectTrigger>
@@ -520,13 +468,12 @@ Create a complete, natural sentence under 200 characters.`;
 
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
             <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-              <strong>🔒 Paramètres cachés appliqués:</strong>
+              <strong>Structure WAN-2.2 optimisée:</strong>
             </p>
             <ul className="text-xs text-blue-600 dark:text-blue-400 mt-2 space-y-1">
-              <li>• Lighting: golden hour (jour) / neon (nuit/cyber)</li>
-              <li>• Durée: {advancedSettings.duration}, FPS: 24 (implicite)</li>
+              <li>• Who + What + Emotion + Where + Camera + Lighting + cinematic</li>
+              <li>• Durée: {advancedSettings.duration}, FPS: 24, Ratio: {advancedSettings.aspectRatio}</li>
               <li>• Négatif: text, watermark, lowres, blurry, oversaturated</li>
-              <li>• Ratio: {advancedSettings.aspectRatio} par défaut</li>
             </ul>
           </div>
         </CardContent>
@@ -561,7 +508,7 @@ Create a complete, natural sentence under 200 characters.`;
                   <div className="flex items-center gap-2">
                     <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
                     <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-                      ✨ Optimisation Opik en cours pour WAN-2.2...
+                      Optimisation Opik en cours pour WAN-2.2...
                     </p>
                   </div>
                 </div>
@@ -571,7 +518,7 @@ Create a complete, natural sentence under 200 characters.`;
                 <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-sm text-green-700 dark:text-green-300 font-bold">
-                      ✅ Prompt optimisé par Opik
+                      Prompt optimisé par Opik
                     </p>
                     <span className="px-3 py-1 bg-green-100 dark:bg-green-800 rounded-full text-xs font-bold text-green-800 dark:text-green-200">
                       Score: {Math.round(optimizationScore)}/10
@@ -618,38 +565,18 @@ Create a complete, natural sentence under 200 characters.`;
                   </div>
                 </div>
               )}
-
-              <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700">
-                <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
-                  ✅ <strong>Optimisé pour WAN-2.2:</strong> Format anglais, sans virgules, sans caractères spéciaux, mots-clés optimisés
-                </p>
-              </div>
-
-              <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                <p className="text-sm text-purple-700 dark:text-purple-300 font-medium mb-2">
-                  <strong>🎬 Prompt négatif (automatique):</strong>
-                </p>
-                <p className="text-xs text-purple-600 dark:text-purple-400 font-mono">
-                  text, watermark, lowres, blurry, oversaturated
-                </p>
-                <p className="text-xs text-purple-500 dark:text-purple-500 mt-2">
-                  Ces mots-clés sont automatiquement exclus de la génération
-                </p>
-              </div>
-
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
-                <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
-                  💡 <strong>Astuce:</strong> Utilisez ce prompt directement dans WAN-2.2 ou WAN-2.5 pour générer votre vidéo
-                </p>
-              </div>
             </div>
           ) : (
-            <div className="text-center py-16 text-gray-500">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900 dark:to-purple-900 rounded-2xl flex items-center justify-center">
-                <Video className="h-8 w-8 text-pink-400" />
+            <div className="flex flex-col items-center justify-center py-16 space-y-4 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full flex items-center justify-center">
+                <Video className="h-8 w-8 text-pink-600 dark:text-pink-400" />
               </div>
-              <p className="font-medium text-lg mb-2">Prêt à créer votre prompt vidéo</p>
-              <p className="text-sm">Remplissez les champs requis et générez un prompt optimisé pour WAN-2.2</p>
+              <p className="text-gray-500 dark:text-gray-400 font-medium">
+                Configurez les paramètres et générez votre prompt WAN-2.2
+              </p>
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                Structure optimisée avec 6 éléments clés
+              </p>
             </div>
           )}
         </CardContent>
