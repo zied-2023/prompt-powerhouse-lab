@@ -13,6 +13,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
+import { llmRouter } from "@/services/llmRouter";
 
 const Wan2VideoPromptGenerator = () => {
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ const Wan2VideoPromptGenerator = () => {
     { value: 'tracking', label: 'Tracking', hint: 'Following subject movement' }
   ];
 
-  const generateWan2Prompt = () => {
+  const generateWan2Prompt = async () => {
     if (!formData.subject || !formData.visualStyle || !formData.movement) {
       toast({
         title: t('missingInfo'),
@@ -82,51 +83,84 @@ const Wan2VideoPromptGenerator = () => {
     }
 
     setIsGenerating(true);
+    setOptimizationApplied(false);
+    setOptimizationScore(null);
 
     try {
-      let prompt = formData.subject;
-
-      const selectedStyle = visualStyles.find(s => s.value === formData.visualStyle);
-      if (selectedStyle) {
-        prompt += ` ${selectedStyle.label.toLowerCase()}`;
-      }
-
-      if (formData.context) {
-        prompt += ` in ${formData.context}`;
-      }
-
-      const selectedMovement = movementOptions.find(m => m.value === formData.movement);
-      if (selectedMovement) {
-        prompt += ` ${selectedMovement.value.replace('-', ' ')}`;
-      }
-
+      // Détecter l'éclairage approprié
       const isNightOrCyber = formData.context?.toLowerCase().includes('neon') ||
                             formData.context?.toLowerCase().includes('night') ||
                             formData.visualStyle === 'cyberpunk';
       const lighting = isNightOrCyber ? 'neon' : 'golden hour';
-      prompt += ` cinematic ${lighting}`;
 
-      if (prompt.length > 200) {
-        prompt = prompt.substring(0, 197) + '...';
-      }
+      const selectedStyle = visualStyles.find(s => s.value === formData.visualStyle);
+      const selectedMovement = movementOptions.find(m => m.value === formData.movement);
 
-      prompt = prompt
-        .replace(/,/g, '')
-        .replace(/[^a-zA-Z0-9\s-]/g, '')
-        .replace(/\s+/g, ' ')
+      // Construire un prompt pour Mistral qui génère un prompt WAN-2.2
+      const systemPrompt = `You are a prompt engineer for WAN-2.2 (T2V 14B).
+
+Rules:
+- Generate ONE sentence, ≤ 200 characters, English only
+- NO commas, NO special characters, NO quotes
+- Start with subject, add 1-2 style tags, 1 motion verb, 1 lighting hint
+- Banned words: text, watermark, lowres, blurry, oversaturated
+- Aspect ratio 16:9, 24 fps, 3s duration (implicit, don't write)
+
+Output ONLY the prompt string, nothing else.`;
+
+      const userPrompt = `Generate a WAN-2.2 video prompt with:
+- Subject: ${formData.subject}
+- Context: ${formData.context || 'none'}
+- Visual Style: ${selectedStyle?.label}
+- Movement: ${selectedMovement?.label}
+- Lighting: ${lighting}
+
+Create a complete, natural sentence under 200 characters.`;
+
+      console.log('🎥 Génération prompt WAN-2.2 avec Mistral...');
+
+      // Appeler Mistral via llmRouter
+      const response = await llmRouter.generatePrompt(
+        systemPrompt,
+        userPrompt,
+        {
+          isAuthenticated: !!user,
+          userHasCredits: true,
+          temperature: 0.7,
+          maxTokens: 100, // Court pour WAN-2.2
+          userId: user?.id
+        }
+      );
+
+      let generatedPrompt = response.content.trim();
+
+      // Nettoyer le prompt selon les règles WAN-2.2
+      generatedPrompt = generatedPrompt
+        .replace(/["'`]/g, '') // Supprimer guillemets
+        .replace(/,/g, '') // Supprimer virgules
+        .replace(/[^a-zA-Z0-9\s-]/g, '') // Supprimer caractères spéciaux
+        .replace(/\s+/g, ' ') // Normaliser espaces
         .trim();
 
-      const bannedWords = ['text', 'watermark', 'lowres', 'blurry'];
+      // Filtrer mots interdits
+      const bannedWords = ['text', 'watermark', 'lowres', 'blurry', 'oversaturated'];
       bannedWords.forEach(word => {
         const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        prompt = prompt.replace(regex, '');
+        generatedPrompt = generatedPrompt.replace(regex, '');
       });
 
-      prompt = prompt.replace(/\s+/g, ' ').trim();
+      generatedPrompt = generatedPrompt.replace(/\s+/g, ' ').trim();
 
-      setGeneratedPrompt(prompt);
-      setOptimizationApplied(false);
-      setOptimizationScore(null);
+      // Vérifier et tronquer si nécessaire
+      if (generatedPrompt.length > 200) {
+        // Trouver le dernier espace avant 200 pour couper proprement
+        const lastSpace = generatedPrompt.lastIndexOf(' ', 197);
+        generatedPrompt = generatedPrompt.substring(0, lastSpace > 0 ? lastSpace : 197);
+      }
+
+      console.log('✅ Prompt WAN-2.2 généré:', generatedPrompt);
+
+      setGeneratedPrompt(generatedPrompt);
 
       const creditCost = advancedSettings.duration === '5s' ? 2 : 1;
 
@@ -137,13 +171,13 @@ const Wan2VideoPromptGenerator = () => {
       }
 
       toast({
-        title: "Prompt WAN-2.2 généré",
-        description: `Format: ${advancedSettings.aspectRatio}, 24 fps, ${advancedSettings.duration} - Crédits: -${creditCost}`,
+        title: "Prompt WAN-2.2 généré avec Mistral",
+        description: `${generatedPrompt.length} caractères - Format: ${advancedSettings.aspectRatio}, ${advancedSettings.duration}`,
       });
 
       // Optimisation Opik en arrière-plan
       if (user?.id) {
-        optimizeWan2PromptInBackground(prompt).catch(err => {
+        optimizeWan2PromptInBackground(generatedPrompt).catch(err => {
           console.error('Erreur optimisation Opik:', err);
         });
       }
@@ -183,15 +217,11 @@ const Wan2VideoPromptGenerator = () => {
       // Appliquer les contraintes WAN-2.2 après optimisation
       let optimizedPrompt = optimizationResult.optimizedPrompt;
 
-      // S'assurer que le prompt reste ≤ 200 caractères
-      if (optimizedPrompt.length > 200) {
-        optimizedPrompt = optimizedPrompt.substring(0, 197) + '...';
-      }
-
       // Nettoyer les virgules et caractères spéciaux
       optimizedPrompt = optimizedPrompt
-        .replace(/,/g, '')
-        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/[\"'`]/g, '') // Supprimer guillemets
+        .replace(/,/g, '') // Supprimer virgules
+        .replace(/[^a-zA-Z0-9\s-]/g, '') // Caractères spéciaux
         .replace(/\s+/g, ' ')
         .trim();
 
@@ -204,14 +234,33 @@ const Wan2VideoPromptGenerator = () => {
 
       optimizedPrompt = optimizedPrompt.replace(/\s+/g, ' ').trim();
 
+      // S'assurer que le prompt se termine proprement et ≤ 200 caractères
+      if (optimizedPrompt.length > 200) {
+        // Trouver le dernier espace avant 200 pour couper à un mot entier
+        const lastSpace = optimizedPrompt.lastIndexOf(' ', 197);
+        if (lastSpace > 150) { // Seulement si on coupe pas trop
+          optimizedPrompt = optimizedPrompt.substring(0, lastSpace);
+        } else {
+          optimizedPrompt = optimizedPrompt.substring(0, 197);
+        }
+      }
+
+      // Vérifier que le prompt se termine bien (pas au milieu d'un mot)
+      optimizedPrompt = optimizedPrompt.trim();
+
+      console.log('📏 Prompt final:', {
+        length: optimizedPrompt.length,
+        content: optimizedPrompt
+      });
+
       setGeneratedPrompt(optimizedPrompt);
       setOptimizationApplied(true);
       setOptimizationScore(optimizationResult.score);
       setIsOptimizing(false);
 
       toast({
-        title: "✨ Prompt WAN-2.2 optimisé",
-        description: `Score Opik: ${Math.round(optimizationResult.score)}/10 - ${optimizationResult.improvements.length} amélioration(s)`,
+        title: "✨ Prompt WAN-2.2 optimisé avec Opik",
+        description: `Score: ${Math.round(optimizationResult.score)}/10 - ${optimizedPrompt.length}/200 caractères`,
       });
 
       // Enregistrer dans Opik
@@ -228,7 +277,8 @@ const Wan2VideoPromptGenerator = () => {
           score: optimizationResult.score,
           improvements: optimizationResult.improvements.length,
           aspectRatio: advancedSettings.aspectRatio,
-          duration: advancedSettings.duration
+          duration: advancedSettings.duration,
+          finalLength: optimizedPrompt.length
         }
       });
 
