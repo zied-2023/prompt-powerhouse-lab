@@ -11,10 +11,13 @@ import { toast } from "@/hooks/use-toast";
 import { Video, Copy, Wand2, Sparkles, ChevronDown, Settings2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
+import { useAuth } from "@/contexts/AuthContext";
+import { opikService } from "@/services/opikService";
 
 const Wan2VideoPromptGenerator = () => {
   const { t } = useTranslation();
   const { credits, useCredit } = useUserCredits();
+  const { user } = useAuth();
 
   const [formData, setFormData] = useState({
     subject: '',
@@ -34,6 +37,9 @@ const Wan2VideoPromptGenerator = () => {
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(false);
+  const [optimizationApplied, setOptimizationApplied] = useState(false);
+  const [optimizationScore, setOptimizationScore] = useState<number | null>(null);
 
   const visualStyles = [
     { value: 'realistic', label: 'Realistic', hint: 'Ultra-realistic rendering, photographic quality' },
@@ -119,6 +125,8 @@ const Wan2VideoPromptGenerator = () => {
       prompt = prompt.replace(/\s+/g, ' ').trim();
 
       setGeneratedPrompt(prompt);
+      setOptimizationApplied(false);
+      setOptimizationScore(null);
 
       const creditCost = advancedSettings.duration === '5s' ? 2 : 1;
 
@@ -133,6 +141,13 @@ const Wan2VideoPromptGenerator = () => {
         description: `Format: ${advancedSettings.aspectRatio}, 24 fps, ${advancedSettings.duration} - Crédits: -${creditCost}`,
       });
 
+      // Optimisation Opik en arrière-plan
+      if (user?.id) {
+        optimizeWan2PromptInBackground(prompt).catch(err => {
+          console.error('Erreur optimisation Opik:', err);
+        });
+      }
+
     } catch (error) {
       console.error('Erreur:', error);
       toast({
@@ -142,6 +157,84 @@ const Wan2VideoPromptGenerator = () => {
       });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const optimizeWan2PromptInBackground = async (initialPrompt: string) => {
+    try {
+      setIsOptimizing(true);
+      console.log('🔄 Optimisation Opik WAN-2.2 en arrière-plan...');
+
+      const { opikOptimizer } = await import('@/services/opikOptimizer');
+
+      // Optimisation spécifique pour WAN-2.2
+      const optimizationResult = await opikOptimizer.optimizePrompt(
+        initialPrompt,
+        user!.id,
+        'video-audio', // Catégorie appropriée pour vidéo
+        'en' // WAN-2.2 n'accepte que l'anglais
+      );
+
+      console.log('✅ Optimisation WAN-2.2 terminée:', {
+        score: optimizationResult.score,
+        improvements: optimizationResult.improvements.length
+      });
+
+      // Appliquer les contraintes WAN-2.2 après optimisation
+      let optimizedPrompt = optimizationResult.optimizedPrompt;
+
+      // S'assurer que le prompt reste ≤ 200 caractères
+      if (optimizedPrompt.length > 200) {
+        optimizedPrompt = optimizedPrompt.substring(0, 197) + '...';
+      }
+
+      // Nettoyer les virgules et caractères spéciaux
+      optimizedPrompt = optimizedPrompt
+        .replace(/,/g, '')
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      // Filtrer les mots interdits
+      const bannedWords = ['text', 'watermark', 'lowres', 'blurry', 'oversaturated'];
+      bannedWords.forEach(word => {
+        const regex = new RegExp(`\\b${word}\\b`, 'gi');
+        optimizedPrompt = optimizedPrompt.replace(regex, '');
+      });
+
+      optimizedPrompt = optimizedPrompt.replace(/\s+/g, ' ').trim();
+
+      setGeneratedPrompt(optimizedPrompt);
+      setOptimizationApplied(true);
+      setOptimizationScore(optimizationResult.score);
+      setIsOptimizing(false);
+
+      toast({
+        title: "✨ Prompt WAN-2.2 optimisé",
+        description: `Score Opik: ${Math.round(optimizationResult.score)}/10 - ${optimizationResult.improvements.length} amélioration(s)`,
+      });
+
+      // Enregistrer dans Opik
+      await opikService.createTrace({
+        userId: user!.id,
+        traceId: `wan2-${Date.now()}`,
+        promptInput: initialPrompt,
+        promptOutput: optimizedPrompt,
+        model: 'opik-optimizer-wan2',
+        latencyMs: 0,
+        tokensUsed: 0,
+        tags: {
+          type: 'wan2-video-optimization',
+          score: optimizationResult.score,
+          improvements: optimizationResult.improvements.length,
+          aspectRatio: advancedSettings.aspectRatio,
+          duration: advancedSettings.duration
+        }
+      });
+
+    } catch (error) {
+      console.error('❌ Erreur optimisation WAN-2.2:', error);
+      setIsOptimizing(false);
     }
   };
 
@@ -412,6 +505,33 @@ const Wan2VideoPromptGenerator = () => {
                   {generatedPrompt}
                 </p>
               </div>
+
+              {isOptimizing && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 animate-pulse">
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                    <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                      ✨ Optimisation Opik en cours pour WAN-2.2...
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {optimizationApplied && optimizationScore && (
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-sm text-green-700 dark:text-green-300 font-bold">
+                      ✅ Prompt optimisé par Opik
+                    </p>
+                    <span className="px-3 py-1 bg-green-100 dark:bg-green-800 rounded-full text-xs font-bold text-green-800 dark:text-green-200">
+                      Score: {Math.round(optimizationScore)}/10
+                    </span>
+                  </div>
+                  <p className="text-xs text-green-600 dark:text-green-400">
+                    Améliorations appliquées : clarté renforcée, mots-clés optimisés, structure WAN-2.2 validée
+                  </p>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
