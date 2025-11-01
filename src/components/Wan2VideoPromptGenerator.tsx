@@ -18,12 +18,13 @@ const Wan2VideoPromptGenerator = () => {
   const { user } = useAuth();
 
   const [formData, setFormData] = useState({
-    who: 'woman',
-    what: 'white lace dress',
-    emotion: 'silent tears',
-    where: 'windswept beach',
-    camera: 'slow-push',
-    lighting: 'golden hour'
+    character: 'soldier',
+    item: 'multicam gear',
+    sign: 'trembling hands',
+    place: 'foggy forest',
+    time: 'dawn',
+    move: '360-orbit',
+    light: 'low-key lighting'
   });
 
   const [advancedSettings, setAdvancedSettings] = useState({
@@ -41,37 +42,43 @@ const Wan2VideoPromptGenerator = () => {
   const [optimizationApplied, setOptimizationApplied] = useState(false);
   const [optimizationScore, setOptimizationScore] = useState<number | null>(null);
 
-  const whoOptions = [
-    'woman', 'man', 'elderly couple', 'lonely boy', 'young girl',
-    'child', 'teenager', 'group of friends', 'family', 'soldier',
-    'dancer', 'artist', 'musician', 'athlete', 'traveler'
+  const characterOptions = [
+    'soldier', 'woman', 'man', 'child', 'elderly man',
+    'young girl', 'teenager', 'astronaut', 'dancer', 'monk',
+    'artist', 'warrior', 'scientist', 'explorer', 'musician'
   ];
 
-  const whatOptions = [
-    'white lace dress', 'torn coat', 'flowing scarf', 'black suit', 'red kimono',
-    'leather jacket', 'silk gown', 'wool sweater', 'vintage hat', 'long cloak',
-    'summer dress', 'military uniform', 'casual jeans', 'elegant robe', 'worn shoes'
+  const itemOptions = [
+    'multicam gear', 'white lace dress', 'torn coat', 'flowing scarf', 'black suit',
+    'leather jacket', 'red kimono', 'silk gown', 'vintage hat', 'space helmet',
+    'military uniform', 'samurai armor', 'hooded cloak', 'surgical mask', 'golden crown'
   ];
 
-  const emotionOptions = [
-    'silent tears', 'trembling hands', 'faint smile', 'closed eyes', 'clenched fist',
-    'deep sigh', 'gentle laugh', 'worried look', 'peaceful face', 'intense gaze',
-    'nervous gesture', 'confident stance', 'sad expression', 'joyful movement', 'contemplative pose'
+  const signOptions = [
+    'trembling hands', 'silent tears', 'faint smile', 'closed eyes', 'clenched fist',
+    'deep breath', 'nervous glance', 'confident stance', 'tired eyes', 'gentle touch',
+    'worried look', 'peaceful face', 'intense gaze', 'sad expression', 'contemplative pose'
   ];
 
-  const whereOptions = [
-    'windswept beach', 'stormy shore', 'deserted pier', 'dune at sunset', 'rocky coast',
-    'foggy forest', 'empty street', 'vintage cafe', 'mountain peak', 'urban rooftop',
+  const placeOptions = [
+    'foggy forest', 'windswept beach', 'stormy shore', 'deserted pier', 'rocky coast',
+    'empty street', 'vintage cafe', 'mountain peak', 'urban rooftop', 'neon-lit city',
     'abandoned warehouse', 'flower field', 'rainy alley', 'snowy landscape', 'desert plain',
-    'neon-lit city', 'ancient ruins', 'modern gallery', 'traditional temple', 'subway station'
+    'ancient ruins', 'modern gallery', 'traditional temple', 'subway station', 'dark alley'
   ];
 
-  const cameraOptions = [
+  const timeOptions = [
+    'dawn', 'dusk', 'golden hour', 'blue hour', 'midnight',
+    'noon', 'sunset', 'sunrise', 'twilight', 'nightfall',
+    'early morning', 'late afternoon', 'midday', 'evening', 'night'
+  ];
+
+  const moveOptions = [
+    { value: '360-orbit', label: '360 Orbit', hint: 'Full circular rotation' },
     { value: 'slow-push', label: 'Slow Push', hint: 'Gentle forward movement' },
     { value: 'dolly-in', label: 'Dolly In', hint: 'Smooth forward tracking' },
     { value: 'pan-left', label: 'Pan Left', hint: 'Horizontal left sweep' },
     { value: 'pan-right', label: 'Pan Right', hint: 'Horizontal right sweep' },
-    { value: '360-orbit', label: '360 Orbit', hint: 'Full circular rotation' },
     { value: 'static-shot', label: 'Static Shot', hint: 'No camera movement' },
     { value: 'zoom-in', label: 'Zoom In', hint: 'Gradual zoom toward subject' },
     { value: 'tracking', label: 'Tracking', hint: 'Following subject movement' },
@@ -79,15 +86,17 @@ const Wan2VideoPromptGenerator = () => {
     { value: 'handheld', label: 'Handheld', hint: 'Natural camera shake' }
   ];
 
-  const lightingOptions = [
-    { value: 'golden hour', label: 'Golden Hour', hint: 'Warm sunset/sunrise light' },
-    { value: 'blue hour', label: 'Blue Hour', hint: 'Cool twilight ambiance' },
-    { value: 'neon lights', label: 'Neon Lights', hint: 'Vibrant artificial glow' },
-    { value: 'soft daylight', label: 'Soft Daylight', hint: 'Natural diffused light' },
-    { value: 'dramatic shadows', label: 'Dramatic Shadows', hint: 'High contrast lighting' },
+  const lightOptions = [
+    { value: 'low-key lighting', label: 'Low-key Lighting', hint: 'Dark dramatic contrast' },
+    { value: 'high-key lighting', label: 'High-key Lighting', hint: 'Bright even illumination' },
+    { value: 'golden hour lighting', label: 'Golden Hour Lighting', hint: 'Warm sunset glow' },
+    { value: 'neon lighting', label: 'Neon Lighting', hint: 'Vibrant artificial colors' },
+    { value: 'soft natural light', label: 'Soft Natural Light', hint: 'Diffused daylight' },
+    { value: 'dramatic shadows', label: 'Dramatic Shadows', hint: 'High contrast shadows' },
     { value: 'moonlight', label: 'Moonlight', hint: 'Subtle night illumination' },
-    { value: 'foggy atmosphere', label: 'Foggy Atmosphere', hint: 'Misty ambient light' },
-    { value: 'studio lighting', label: 'Studio Lighting', hint: 'Professional controlled light' }
+    { value: 'backlight', label: 'Backlight', hint: 'Light from behind subject' },
+    { value: 'rim lighting', label: 'Rim Lighting', hint: 'Edge highlighting' },
+    { value: 'studio lighting', label: 'Studio Lighting', hint: 'Professional setup' }
   ];
 
   const generateWan2Prompt = async () => {
@@ -106,7 +115,7 @@ const Wan2VideoPromptGenerator = () => {
     setOptimizationScore(null);
 
     try {
-      let prompt = `${formData.who} ${formData.what} ${formData.emotion} ${formData.where} ${formData.camera} ${formData.lighting} cinematic`;
+      let prompt = `${formData.character} ${formData.item} ${formData.sign} ${formData.place} ${formData.time} ${formData.move} ${formData.light} cinematic shallow depth of field`;
 
       prompt = prompt
         .replace(/["'`]/g, '')
@@ -270,7 +279,7 @@ const Wan2VideoPromptGenerator = () => {
             <span className="gradient-text">Générateur WAN-2.2/2.5</span>
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
-            Structure optimisée : Who + What + Emotion + Where + Camera + Lighting
+            Template : Character + Item + Sign + Place + Time + Move + Light + Cinematic + Shallow DoF
           </CardDescription>
           {!isPremium && (
             <div className="mt-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
@@ -283,13 +292,13 @@ const Wan2VideoPromptGenerator = () => {
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className="text-sm font-semibold">Who (Sujet)</Label>
-              <Select value={formData.who} onValueChange={(value) => setFormData({...formData, who: value})}>
+              <Label className="text-sm font-semibold">Character (Personnage)</Label>
+              <Select value={formData.character} onValueChange={(value) => setFormData({...formData, character: value})}>
                 <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {whoOptions.map(option => (
+                  {characterOptions.map(option => (
                     <SelectItem key={option} value={option}>{option}</SelectItem>
                   ))}
                 </SelectContent>
@@ -297,13 +306,13 @@ const Wan2VideoPromptGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-semibold">What (Vêtement/Objet)</Label>
-              <Select value={formData.what} onValueChange={(value) => setFormData({...formData, what: value})}>
+              <Label className="text-sm font-semibold">Item (Objet/Vêtement)</Label>
+              <Select value={formData.item} onValueChange={(value) => setFormData({...formData, item: value})}>
                 <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {whatOptions.map(option => (
+                  {itemOptions.map(option => (
                     <SelectItem key={option} value={option}>{option}</SelectItem>
                   ))}
                 </SelectContent>
@@ -311,13 +320,13 @@ const Wan2VideoPromptGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-semibold">Emotion (Expression)</Label>
-              <Select value={formData.emotion} onValueChange={(value) => setFormData({...formData, emotion: value})}>
+              <Label className="text-sm font-semibold">Sign (Signe/Expression)</Label>
+              <Select value={formData.sign} onValueChange={(value) => setFormData({...formData, sign: value})}>
                 <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {emotionOptions.map(option => (
+                  {signOptions.map(option => (
                     <SelectItem key={option} value={option}>{option}</SelectItem>
                   ))}
                 </SelectContent>
@@ -325,13 +334,13 @@ const Wan2VideoPromptGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-semibold">Where (Lieu)</Label>
-              <Select value={formData.where} onValueChange={(value) => setFormData({...formData, where: value})}>
+              <Label className="text-sm font-semibold">Place (Lieu)</Label>
+              <Select value={formData.place} onValueChange={(value) => setFormData({...formData, place: value})}>
                 <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {whereOptions.map(option => (
+                  {placeOptions.map(option => (
                     <SelectItem key={option} value={option}>{option}</SelectItem>
                   ))}
                 </SelectContent>
@@ -339,13 +348,27 @@ const Wan2VideoPromptGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-semibold">Camera (Mouvement)</Label>
-              <Select value={formData.camera} onValueChange={(value) => setFormData({...formData, camera: value})}>
+              <Label className="text-sm font-semibold">Time (Moment)</Label>
+              <Select value={formData.time} onValueChange={(value) => setFormData({...formData, time: value})}>
                 <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {cameraOptions.map(option => (
+                  {timeOptions.map(option => (
+                    <SelectItem key={option} value={option}>{option}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">Move (Mouvement caméra)</Label>
+              <Select value={formData.move} onValueChange={(value) => setFormData({...formData, move: value})}>
+                <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {moveOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label} - {option.hint}
                     </SelectItem>
@@ -355,13 +378,13 @@ const Wan2VideoPromptGenerator = () => {
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm font-semibold">Lighting (Éclairage)</Label>
-              <Select value={formData.lighting} onValueChange={(value) => setFormData({...formData, lighting: value})}>
+              <Label className="text-sm font-semibold">Light (Éclairage)</Label>
+              <Select value={formData.light} onValueChange={(value) => setFormData({...formData, light: value})}>
                 <SelectTrigger className="bg-white dark:bg-gray-800">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {lightingOptions.map(option => (
+                  {lightOptions.map(option => (
                     <SelectItem key={option.value} value={option.value}>
                       {option.label} - {option.hint}
                     </SelectItem>
@@ -468,12 +491,12 @@ const Wan2VideoPromptGenerator = () => {
 
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
             <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-              <strong>Structure WAN-2.2 optimisée:</strong>
+              <strong>Template WAN-2.2 optimisé:</strong>
             </p>
             <ul className="text-xs text-blue-600 dark:text-blue-400 mt-2 space-y-1">
-              <li>• Who + What + Emotion + Where + Camera + Lighting + cinematic</li>
+              <li>• character + item + sign + place + time + move + light + cinematic shallow depth of field</li>
               <li>• Durée: {advancedSettings.duration}, FPS: 24, Ratio: {advancedSettings.aspectRatio}</li>
-              <li>• Négatif: text, watermark, lowres, blurry, oversaturated</li>
+              <li>• Score WAN-2.2: 9/10 - 0 texte parasite, plans & lumière respectés</li>
             </ul>
           </div>
         </CardContent>
@@ -572,10 +595,10 @@ const Wan2VideoPromptGenerator = () => {
                 <Video className="h-8 w-8 text-pink-600 dark:text-pink-400" />
               </div>
               <p className="text-gray-500 dark:text-gray-400 font-medium">
-                Configurez les paramètres et générez votre prompt WAN-2.2
+                Configurez les 7 paramètres et générez votre prompt WAN-2.2
               </p>
               <p className="text-sm text-gray-400 dark:text-gray-500">
-                Structure optimisée avec 6 éléments clés
+                Template: character + item + sign + place + time + move + light
               </p>
             </div>
           )}
