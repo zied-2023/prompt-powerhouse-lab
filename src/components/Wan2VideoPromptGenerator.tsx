@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
-import { Video, Copy, Wand2, Sparkles } from "lucide-react";
+import { Video, Copy, Wand2, Sparkles, ChevronDown, Settings2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 
@@ -20,8 +23,17 @@ const Wan2VideoPromptGenerator = () => {
     movement: ''
   });
 
+  const [advancedSettings, setAdvancedSettings] = useState({
+    seed: -1,
+    steps: 25,
+    cfg: 7,
+    duration: '3s',
+    aspectRatio: '16:9'
+  });
+
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   const visualStyles = [
     { value: 'realistic', label: 'Realistic', hint: 'Ultra-realistic rendering, photographic quality' },
@@ -82,7 +94,11 @@ const Wan2VideoPromptGenerator = () => {
         prompt += ` ${selectedMovement.value.replace('-', ' ')}`;
       }
 
-      prompt += ' cinematic lighting';
+      const isNightOrCyber = formData.context?.toLowerCase().includes('neon') ||
+                            formData.context?.toLowerCase().includes('night') ||
+                            formData.visualStyle === 'cyberpunk';
+      const lighting = isNightOrCyber ? 'neon' : 'golden hour';
+      prompt += ` cinematic ${lighting}`;
 
       if (prompt.length > 200) {
         prompt = prompt.substring(0, 197) + '...';
@@ -104,13 +120,17 @@ const Wan2VideoPromptGenerator = () => {
 
       setGeneratedPrompt(prompt);
 
-      useCredit().catch(err => {
-        console.error('Erreur lors du décompte du crédit:', err);
-      });
+      const creditCost = advancedSettings.duration === '5s' ? 2 : 1;
+
+      for (let i = 0; i < creditCost; i++) {
+        useCredit().catch(err => {
+          console.error('Erreur lors du décompte du crédit:', err);
+        });
+      }
 
       toast({
         title: "Prompt WAN-2.2 généré",
-        description: `Format: 16:9, 24 fps, 3s - Crédits restants: ${creditsRemaining - 1}`,
+        description: `Format: ${advancedSettings.aspectRatio}, 24 fps, ${advancedSettings.duration} - Crédits: -${creditCost}`,
       });
 
     } catch (error) {
@@ -241,6 +261,102 @@ const Wan2VideoPromptGenerator = () => {
             <p className="text-xs text-muted-foreground">WAN-2.2 comprend ces mots-clés optimisés</p>
           </div>
 
+          <Collapsible open={showAdvanced} onOpenChange={setShowAdvanced}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full mb-4 flex items-center justify-between hover:bg-accent"
+                disabled={!isPremium}
+              >
+                <div className="flex items-center gap-2">
+                  <Settings2 className="h-4 w-4" />
+                  <span className="font-semibold">Paramètres Avancés</span>
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform ${showAdvanced ? 'rotate-180' : ''}`} />
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-4 mb-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-200 dark:border-gray-700">
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Seed (reproductibilité)</Label>
+                <Input
+                  type="number"
+                  value={advancedSettings.seed}
+                  onChange={(e) => setAdvancedSettings({...advancedSettings, seed: parseInt(e.target.value) || -1})}
+                  placeholder="-1 pour random, 0-9999 pour fixe"
+                  className="bg-white dark:bg-gray-800"
+                  min={-1}
+                  max={9999}
+                />
+                <p className="text-xs text-muted-foreground">-1 = aléatoire, valeur fixe pour reproduire</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-semibold">Steps (qualité)</Label>
+                  <span className="text-sm font-bold text-primary">{advancedSettings.steps}</span>
+                </div>
+                <Slider
+                  value={[advancedSettings.steps]}
+                  onValueChange={([value]) => setAdvancedSettings({...advancedSettings, steps: value})}
+                  min={15}
+                  max={50}
+                  step={5}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">15-50 steps - Plus = meilleure qualité mais 2× plus long</p>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-semibold">CFG Scale (guidance)</Label>
+                  <span className="text-sm font-bold text-primary">{advancedSettings.cfg}</span>
+                </div>
+                <Slider
+                  value={[advancedSettings.cfg]}
+                  onValueChange={([value]) => setAdvancedSettings({...advancedSettings, cfg: value})}
+                  min={5}
+                  max={12}
+                  step={0.5}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">5-12 - Sweet spot: 7 (équilibre créativité/précision)</p>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Durée</Label>
+                <Select
+                  value={advancedSettings.duration}
+                  onValueChange={(value) => setAdvancedSettings({...advancedSettings, duration: value})}
+                >
+                  <SelectTrigger className="bg-white dark:bg-gray-800">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3s">3 secondes (1 crédit)</SelectItem>
+                    <SelectItem value="5s">5 secondes (2 crédits)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold">Aspect Ratio</Label>
+                <Select
+                  value={advancedSettings.aspectRatio}
+                  onValueChange={(value) => setAdvancedSettings({...advancedSettings, aspectRatio: value})}
+                >
+                  <SelectTrigger className="bg-white dark:bg-gray-800">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="16:9">16:9 (Paysage)</SelectItem>
+                    <SelectItem value="9:16">9:16 (Portrait)</SelectItem>
+                    <SelectItem value="1:1">1:1 (Carré)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+
           <Button
             onClick={generateWan2Prompt}
             disabled={isGenerating || !isPremium}
@@ -254,18 +370,21 @@ const Wan2VideoPromptGenerator = () => {
             ) : (
               <>
                 <Sparkles className="h-5 w-5 mr-3" />
-                Générer Prompt WAN-2.2
+                Générer Prompt WAN-2.2 {advancedSettings.duration === '5s' && '(2 crédits)'}
               </>
             )}
           </Button>
 
           <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
             <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-              <strong>Format automatique:</strong> 16:9 aspect ratio, 24 fps, 3s duration
+              <strong>🔒 Paramètres cachés appliqués:</strong>
             </p>
-            <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
-              <strong>Règles appliquées:</strong> 1 phrase, ≤200 caractères, anglais, sans virgules, sans caractères spéciaux
-            </p>
+            <ul className="text-xs text-blue-600 dark:text-blue-400 mt-2 space-y-1">
+              <li>• Lighting: golden hour (jour) / neon (nuit/cyber)</li>
+              <li>• Durée: {advancedSettings.duration}, FPS: 24 (implicite)</li>
+              <li>• Négatif: text, watermark, lowres, blurry, oversaturated</li>
+              <li>• Ratio: {advancedSettings.aspectRatio} par défaut</li>
+            </ul>
           </div>
         </CardContent>
       </Card>
@@ -301,7 +420,7 @@ const Wan2VideoPromptGenerator = () => {
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                   <p className="text-muted-foreground">Format</p>
-                  <p className="font-bold text-lg">16:9</p>
+                  <p className="font-bold text-lg">{advancedSettings.aspectRatio}</p>
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                   <p className="text-muted-foreground">FPS</p>
@@ -309,9 +428,26 @@ const Wan2VideoPromptGenerator = () => {
                 </div>
                 <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                   <p className="text-muted-foreground">Durée</p>
-                  <p className="font-bold text-lg">3 sec</p>
+                  <p className="font-bold text-lg">{advancedSettings.duration}</p>
                 </div>
               </div>
+
+              {showAdvanced && (
+                <div className="grid grid-cols-3 gap-3 text-xs">
+                  <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                    <p className="text-muted-foreground">Seed</p>
+                    <p className="font-bold text-lg">{advancedSettings.seed === -1 ? 'Random' : advancedSettings.seed}</p>
+                  </div>
+                  <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                    <p className="text-muted-foreground">Steps</p>
+                    <p className="font-bold text-lg">{advancedSettings.steps}</p>
+                  </div>
+                  <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                    <p className="text-muted-foreground">CFG</p>
+                    <p className="font-bold text-lg">{advancedSettings.cfg}</p>
+                  </div>
+                </div>
+              )}
 
               <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700">
                 <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
@@ -321,10 +457,13 @@ const Wan2VideoPromptGenerator = () => {
 
               <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
                 <p className="text-sm text-purple-700 dark:text-purple-300 font-medium mb-2">
-                  <strong>🎬 Mots-clés interdits filtrés:</strong>
+                  <strong>🎬 Prompt négatif (automatique):</strong>
                 </p>
-                <p className="text-xs text-purple-600 dark:text-purple-400">
-                  text, watermark, lowres, blurry - automatiquement supprimés
+                <p className="text-xs text-purple-600 dark:text-purple-400 font-mono">
+                  text, watermark, lowres, blurry, oversaturated
+                </p>
+                <p className="text-xs text-purple-500 dark:text-purple-500 mt-2">
+                  Ces mots-clés sont automatiquement exclus de la génération
                 </p>
               </div>
 
