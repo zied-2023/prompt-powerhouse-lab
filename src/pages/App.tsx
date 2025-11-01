@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard, Shield, BarChart3, Activity } from "lucide-react";
+import { Search, Plus, Zap, Brain, Settings, Sparkles, Palette, Code, TrendingUp, History, Key, Coins, ShoppingCart, CreditCard, Shield, BarChart3, Activity, Video } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useLanguage } from "@/contexts/LanguageContext";
 import LanguageSelector from "@/components/LanguageSelector";
@@ -28,6 +28,7 @@ import MarketplacePromptGrid from "@/components/MarketplacePromptGrid";
 import SellerDashboard from "@/components/SellerDashboard";
 import { OpikAnalyticsDashboard } from "@/components/OpikAnalyticsDashboard";
 import IntelligentApiKeyManager from "@/components/IntelligentApiKeyManager";
+import Wan2VideoPromptGenerator from "@/components/Wan2VideoPromptGenerator";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("generator");
@@ -300,6 +301,16 @@ const Index = () => {
               <Activity className="h-4 w-4" />
               <span>{t('analytics')}</span>
             </TabsTrigger>
+            <TabsTrigger
+              value="wan2-video"
+              className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
+            >
+              <Video className="h-4 w-4" />
+              <span>WAN-2.2 Video</span>
+              <Badge variant="secondary" className="ml-2 bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200 text-xs">
+                Premium
+              </Badge>
+            </TabsTrigger>
             {/* <TabsTrigger
               value="api-keys"
               className="flex items-center space-x-2 data-[state=active]:bg-white/80 dark:data-[state=active]:bg-gray-800/80 data-[state=active]:shadow-lg data-[state=active]:text-violet-700 dark:data-[state=active]:text-violet-300 hover-lift font-medium px-4 py-2 rounded-md"
@@ -355,6 +366,10 @@ const Index = () => {
 
           <TabsContent value="analytics" className="space-y-8">
             <OpikAnalyticsDashboard />
+          </TabsContent>
+
+          <TabsContent value="wan2-video" className="space-y-8">
+            <Wan2VideoPromptGenerator />
           </TabsContent>
 
           {/* <TabsContent value="api-keys" className="space-y-8">
