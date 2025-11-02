@@ -72,7 +72,7 @@ const StepConstraints = ({ data, updateData }: StepConstraintsProps) => {
                   tone: value
                 }
               })}>
-                <SelectTrigger className="animated-border bg-white dark:bg-gray-800">
+                <SelectTrigger className="animated-border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder={t('selectTone')} />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-800">
@@ -95,7 +95,7 @@ const StepConstraints = ({ data, updateData }: StepConstraintsProps) => {
                   length: value
                 }
               })}>
-                <SelectTrigger className="animated-border bg-white dark:bg-gray-800">
+                <SelectTrigger className="animated-border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder={t('selectLength')} />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-800">
@@ -118,7 +118,7 @@ const StepConstraints = ({ data, updateData }: StepConstraintsProps) => {
                   technicalLevel: value
                 }
               })}>
-                <SelectTrigger className="animated-border bg-white dark:bg-gray-800">
+                <SelectTrigger className="animated-border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder={t('selectTechnicalLevel')} />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-800">
@@ -145,7 +145,7 @@ const StepConstraints = ({ data, updateData }: StepConstraintsProps) => {
                   format: value
                 }
               })}>
-                <SelectTrigger className="animated-border bg-white dark:bg-gray-800">
+                <SelectTrigger className="animated-border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder={t('selectFormat')} />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-800">
@@ -168,7 +168,7 @@ const StepConstraints = ({ data, updateData }: StepConstraintsProps) => {
                   style: value
                 }
               })}>
-                <SelectTrigger className="animated-border bg-white dark:bg-gray-800">
+                <SelectTrigger className="animated-border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder={t('selectStyle')} />
                 </SelectTrigger>
                 <SelectContent className="bg-white dark:bg-gray-800">

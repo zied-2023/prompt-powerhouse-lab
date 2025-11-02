@@ -124,7 +124,7 @@ const ObjectiveStep: React.FC<{
           value={data.aiModel}
           onValueChange={(value) => onChange({ ...data, aiModel: value })}
         >
-          <SelectTrigger className="mt-2">
+          <SelectTrigger className="mt-2 text-gray-900 dark:text-gray-100">
             <SelectValue placeholder={t('selectAiModel')} />
           </SelectTrigger>
           <SelectContent>
@@ -224,7 +224,7 @@ const ToneStep: React.FC<{
           value={data.tone}
           onValueChange={(value) => onChange({ ...data, tone: value })}
         >
-          <SelectTrigger className="mt-2">
+          <SelectTrigger className="mt-2 text-gray-900 dark:text-gray-100">
             <SelectValue placeholder={t('chooseTone')} />
           </SelectTrigger>
           <SelectContent>
@@ -248,7 +248,7 @@ const ToneStep: React.FC<{
           value={data.outputFormat}
           onValueChange={(value) => onChange({ ...data, outputFormat: value })}
         >
-          <SelectTrigger className="mt-2">
+          <SelectTrigger className="mt-2 text-gray-900 dark:text-gray-100">
             <SelectValue placeholder={t('responseFormat')} />
           </SelectTrigger>
           <SelectContent>

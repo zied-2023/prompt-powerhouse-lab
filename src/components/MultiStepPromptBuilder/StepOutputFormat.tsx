@@ -140,7 +140,7 @@ const StepOutputFormat = ({ data, updateData }: StepOutputFormatProps) => {
             structure: value
           }
         })}>
-          <SelectTrigger className="animated-border bg-white dark:bg-gray-800">
+          <SelectTrigger className="animated-border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
             <SelectValue placeholder={t('selectStructure')} />
           </SelectTrigger>
           <SelectContent className="bg-white dark:bg-gray-800">

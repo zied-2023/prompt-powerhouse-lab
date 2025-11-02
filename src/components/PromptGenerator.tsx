@@ -612,7 +612,7 @@ const PromptGenerator = () => {
               {t('mainCategory')} {t('required')}
             </Label>
             <Select value={formData.category} onValueChange={handleCategoryChange}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 text-gray-900 dark:text-gray-100">
                 <SelectValue placeholder={t('selectDomain')} />
               </SelectTrigger>
               <SelectContent className="shadow-xl z-50 max-h-80">
@@ -635,7 +635,7 @@ const PromptGenerator = () => {
                 {t('subcategory')} {t('optional')}
               </Label>
               <Select value={formData.subcategory} onValueChange={(value) => setFormData({...formData, subcategory: value})}>
-                <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
+                <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 text-gray-900 dark:text-gray-100">
                   <SelectValue placeholder={t('chooseSpecialization')} />
                 </SelectTrigger>
                 <SelectContent className="shadow-xl z-50 max-h-80">
@@ -698,7 +698,7 @@ const PromptGenerator = () => {
               {t('outputFormat')} {t('optional')}
             </Label>
             <Select value={formData.format} onValueChange={(value) => setFormData({...formData, format: value})}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 text-gray-900 dark:text-gray-100">
                 <SelectValue placeholder={t('chooseFormat')} />
               </SelectTrigger>
               <SelectContent className="shadow-xl z-50">
@@ -717,7 +717,7 @@ const PromptGenerator = () => {
               {t('toneStyle')} {t('optional')}
             </Label>
             <Select value={formData.tone} onValueChange={(value) => setFormData({...formData, tone: value})}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 text-gray-900 dark:text-gray-100">
                 <SelectValue placeholder={t('chooseTone')} />
               </SelectTrigger>
               <SelectContent className="shadow-xl z-50">
@@ -736,7 +736,7 @@ const PromptGenerator = () => {
               {t('approximateLength')} {t('optional')}
             </Label>
             <Select value={formData.length} onValueChange={(value) => setFormData({...formData, length: value})}>
-              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200">
+              <SelectTrigger className="animated-border hover:shadow-lg transition-all duration-200 text-gray-900 dark:text-gray-100">
                 <SelectValue placeholder={t('chooseLength')} />
               </SelectTrigger>
               <SelectContent className="shadow-xl z-50">

@@ -228,7 +228,7 @@ const StepContext = ({ data, updateData }: StepContextProps) => {
               industry: value
             }
           })}>
-            <SelectTrigger className="animated-border bg-white dark:bg-gray-800">
+            <SelectTrigger className="animated-border bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
               <SelectValue placeholder={t('selectIndustry')} />
             </SelectTrigger>
             <SelectContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">

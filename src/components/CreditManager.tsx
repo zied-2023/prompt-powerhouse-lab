@@ -172,7 +172,7 @@ const CreditManager = () => {
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">Méthode de paiement</label>
         <Select value={paymentMethod} onValueChange={(value: 'stripe' | 'monetique' | 'edinar' | 'essai') => setPaymentMethod(value)}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full text-gray-900 dark:text-gray-100">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

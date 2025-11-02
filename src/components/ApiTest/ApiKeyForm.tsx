@@ -164,7 +164,7 @@ const ApiKeyForm: React.FC<ApiKeyFormProps> = ({ onTestComplete }) => {
             Fournisseur d'API
           </Label>
           <Select value={selectedProvider} onValueChange={setSelectedProvider}>
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full text-gray-900 dark:text-gray-100">
               <SelectValue placeholder="Sélectionnez un fournisseur d'API" />
             </SelectTrigger>
             <SelectContent>

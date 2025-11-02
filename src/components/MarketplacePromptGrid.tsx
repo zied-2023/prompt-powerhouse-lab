@@ -227,7 +227,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                   {t('category')}
                 </Label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
+                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100">
                     <SelectValue placeholder="Toutes" />
                   </SelectTrigger>
                   <SelectContent>
@@ -270,7 +270,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                   {t('sortBy')}
                 </Label>
                 <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
+                  <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -289,7 +289,7 @@ const MarketplacePromptGrid: React.FC<MarketplacePromptGridProps> = ({
                     {t('license')}
                   </Label>
                   <Select value={licenseFilter} onValueChange={setLicenseFilter}>
-                    <SelectTrigger className="bg-white/50 dark:bg-gray-800/50">
+                    <SelectTrigger className="bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100">
                       <SelectValue placeholder="Toutes" />
                     </SelectTrigger>
                     <SelectContent>
