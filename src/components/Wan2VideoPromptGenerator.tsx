@@ -226,7 +226,7 @@ const Wan2VideoPromptGenerator = () => {
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Character (Personnage)</Label>
               <Select value={formData.character} onValueChange={(value) => setFormData({...formData, character: value})}>
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -240,7 +240,7 @@ const Wan2VideoPromptGenerator = () => {
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Item (Objet/Vêtement)</Label>
               <Select value={formData.item} onValueChange={(value) => setFormData({...formData, item: value})}>
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -254,7 +254,7 @@ const Wan2VideoPromptGenerator = () => {
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Sign (Signe/Expression)</Label>
               <Select value={formData.sign} onValueChange={(value) => setFormData({...formData, sign: value})}>
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -268,7 +268,7 @@ const Wan2VideoPromptGenerator = () => {
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Place (Lieu)</Label>
               <Select value={formData.place} onValueChange={(value) => setFormData({...formData, place: value})}>
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -282,7 +282,7 @@ const Wan2VideoPromptGenerator = () => {
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Time (Moment)</Label>
               <Select value={formData.time} onValueChange={(value) => setFormData({...formData, time: value})}>
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -296,7 +296,7 @@ const Wan2VideoPromptGenerator = () => {
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Move (Mouvement caméra)</Label>
               <Select value={formData.move} onValueChange={(value) => setFormData({...formData, move: value})}>
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -312,7 +312,7 @@ const Wan2VideoPromptGenerator = () => {
             <div className="space-y-2">
               <Label className="text-sm font-semibold">Light (Éclairage)</Label>
               <Select value={formData.light} onValueChange={(value) => setFormData({...formData, light: value})}>
-                <SelectTrigger className="bg-white dark:bg-gray-800">
+                <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -377,7 +377,7 @@ const Wan2VideoPromptGenerator = () => {
               <div className="space-y-2">
                 <Label className="text-sm">Durée</Label>
                 <Select value={advancedSettings.duration} onValueChange={(value) => setAdvancedSettings({...advancedSettings, duration: value})}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -390,7 +390,7 @@ const Wan2VideoPromptGenerator = () => {
               <div className="space-y-2">
                 <Label className="text-sm">Aspect Ratio</Label>
                 <Select value={advancedSettings.aspectRatio} onValueChange={(value) => setAdvancedSettings({...advancedSettings, aspectRatio: value})}>
-                  <SelectTrigger className="bg-white dark:bg-gray-800">
+                  <SelectTrigger className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
