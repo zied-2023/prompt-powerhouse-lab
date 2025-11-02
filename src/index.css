@@ -846,11 +846,12 @@
   border-color: hsl(220 13% 35%) !important;
 }
 
-.dark .card *,
+/* Commenté car trop agressif - empêche les Select de fonctionner correctement */
+/* .dark .card *,
 .dark [class*="card"] *,
 .dark [class*="Card"] * {
   color: hsl(0 0% 95%) !important;
-}
+} */
 
 .dark .card .light-in-dark,
 .dark [class*="card"] .light-in-dark,
@@ -865,7 +866,20 @@
   color: black !important;
 }
 
-/* Autres règles spécifiques... */
-/* ... (le reste de votre CSS original) ... */
+/* Règles spécifiques pour Radix UI Select - permettre l'héritage correct des couleurs */
+.dark [data-radix-select-content] {
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+}
+
+.dark [data-radix-select-item] {
+  color: hsl(var(--popover-foreground)) !important;
+}
+
+.dark [data-radix-select-item]:hover,
+.dark [data-radix-select-item][data-highlighted] {
+  background-color: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+}
 
 /* FIN DU FICHIER */
