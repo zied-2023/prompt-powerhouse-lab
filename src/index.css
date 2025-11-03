@@ -868,18 +868,18 @@
 
 /* Règles spécifiques pour Radix UI Select - permettre l'héritage correct des couleurs */
 .dark [data-radix-select-content] {
-  background-color: hsl(var(--popover)) !important;
-  color: hsl(var(--popover-foreground)) !important;
+  background-color: hsl(220 13% 18%) !important;
+  color: hsl(0 0% 98%) !important;
 }
 
 .dark [data-radix-select-item] {
-  color: hsl(var(--popover-foreground)) !important;
+  color: hsl(0 0% 98%) !important;
 }
 
 .dark [data-radix-select-item]:hover,
 .dark [data-radix-select-item][data-highlighted] {
-  background-color: hsl(var(--accent)) !important;
-  color: hsl(var(--accent-foreground)) !important;
+  background-color: hsl(220 13% 30%) !important;
+  color: hsl(0 0% 100%) !important;
 }
 
 /* FIN DU FICHIER */
