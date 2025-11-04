@@ -32,10 +32,10 @@ const Wan2VideoFullMotionGenerator = () => {
     kelvin: 3200,
     motion: [
       { pct: 0, duration: 0.0, action: 'walksForward(2)', camera: 'static', fx: 'dustPuff' },
-      { pct: 20, duration: 1.0, action: 'turnHead(left,45)', camera: 'pan(left,20)', fx: '' },
+      { pct: 20, duration: 1.0, action: 'turnHead(left,45)', camera: 'pan(left,20)', fx: 'none' },
       { pct: 40, duration: 2.0, action: 'adjustMask()', camera: 'dolly(in,1)', fx: 'breathFog' },
       { pct: 60, duration: 3.0, action: 'stepBack(1)', camera: 'whipPan(right,90)', fx: 'revealSilhouette' },
-      { pct: 80, duration: 4.0, action: 'idle(tense)', camera: 'orbit(cw,30)', fx: '' },
+      { pct: 80, duration: 4.0, action: 'idle(tense)', camera: 'orbit(cw,30)', fx: 'none' },
       { pct: 100, duration: 5.0, action: 'exit(right)', camera: 'crashZoom(in,2)', fx: 'fadeBlack' },
     ],
     cameraPreset: 'handheld',

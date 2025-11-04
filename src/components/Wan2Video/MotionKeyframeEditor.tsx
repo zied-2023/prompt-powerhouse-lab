@@ -22,7 +22,7 @@ export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyf
       duration: keyframes.length > 0 ? keyframes[keyframes.length - 1].duration + 1 : 0,
       action: 'walksForward(2)',
       camera: 'static',
-      fx: '',
+      fx: 'none',
     };
 
     onChange([...keyframes, newKeyframe]);
@@ -161,7 +161,7 @@ export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyf
                 <SelectContent>
                   {FX_EVENTS.map((fx) => (
                     <SelectItem key={fx} value={fx} className="text-xs">
-                      {fx || 'No FX'}
+                      {fx === 'none' ? 'No FX' : fx}
                     </SelectItem>
                   ))}
                 </SelectContent>

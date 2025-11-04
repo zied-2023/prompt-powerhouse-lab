@@ -25,7 +25,7 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
     if (config.motion.length > 0) {
       parts.push('\nMotion Timeline:');
       config.motion.forEach((kf) => {
-        parts.push(`  ${kf.pct}% (${kf.duration}s): ${kf.action} | Camera: ${kf.camera}${kf.fx ? ` | FX: ${kf.fx}` : ''}`);
+        parts.push(`  ${kf.pct}% (${kf.duration}s): ${kf.action} | Camera: ${kf.camera}${kf.fx && kf.fx !== 'none' ? ` | FX: ${kf.fx}` : ''}`);
       });
     }
 

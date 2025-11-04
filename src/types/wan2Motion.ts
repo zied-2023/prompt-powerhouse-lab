@@ -69,7 +69,7 @@ export const CAMERA_ACTIONS = [
 ] as const;
 
 export const FX_EVENTS = [
-  "",
+  "none",
   "dustPuff",
   "breathFog",
   "lensFlare",
