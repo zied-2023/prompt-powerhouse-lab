@@ -214,7 +214,7 @@ const Wan2VideoPromptGenerator = () => {
               className="flex items-center gap-2"
             >
               <Zap className="h-4 w-4" />
-              Simple Mode
+              {t('wan2VideoSimpleMode')}
             </Button>
             <Button
               variant={generatorMode === 'advanced' ? 'default' : 'outline'}
@@ -222,9 +222,9 @@ const Wan2VideoPromptGenerator = () => {
               className="flex items-center gap-2"
             >
               <Sparkles className="h-4 w-4" />
-              Full Motion Engine
+              {t('wan2VideoFullMotion')}
               <Badge variant="secondary" className="ml-1 bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200">
-                New
+                {t('wan2VideoNewBadge')}
               </Badge>
             </Button>
           </div>

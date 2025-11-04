@@ -65,21 +65,21 @@ const Wan2VideoFullMotionGenerator = () => {
 
     for (let i = 1; i < config.motion.length; i++) {
       if (config.motion[i].pct <= config.motion[i - 1].pct) {
-        errors.push('Motion keyframes must have ascending percentages');
+        errors.push(t('wan2VideoInvalidTimeline'));
         break;
       }
     }
 
     if (config.motion.some(kf => kf.pct < 0 || kf.pct > 100)) {
-      errors.push('Keyframe percentages must be between 0 and 100');
+      errors.push(t('wan2VideoInvalidTimeline'));
     }
 
     if (config.seedEnd < config.seed) {
-      errors.push('End seed must be greater than or equal to start seed');
+      errors.push(t('wan2VideoInvalidSeeds'));
     }
 
     if (config.kelvin < 2200 || config.kelvin > 10000) {
-      errors.push('Kelvin temperature must be between 2200K and 10000K');
+      errors.push(t('wan2VideoInvalidKelvin'));
     }
 
     return errors;
@@ -129,8 +129,8 @@ const Wan2VideoFullMotionGenerator = () => {
       );
 
       toast({
-        title: "Configuration Generated!",
-        description: `WAN-2.2 configuration created with ${config.motion.length} keyframes`,
+        title: t('wan2VideoGenerate'),
+        description: `WAN-2.2 configuration created with ${config.motion.length} ${t('wan2VideoTotalKeyframes')}`,
       });
     } catch (error) {
       console.error('Generation error:', error);
@@ -155,13 +155,13 @@ const Wan2VideoFullMotionGenerator = () => {
               </div>
               <div>
                 <CardTitle className="text-2xl flex items-center gap-2">
-                  WAN-2.2 Full Motion Generator
+                  {t('wan2VideoTitle')}
                   <Badge variant="secondary" className="bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200">
                     Premium
                   </Badge>
                 </CardTitle>
                 <CardDescription className="mt-1">
-                  Advanced video prompt generator with complete motion control and timeline editing
+                  {t('wan2VideoMotionEngineDesc')}
                 </CardDescription>
               </div>
             </div>
@@ -171,7 +171,7 @@ const Wan2VideoFullMotionGenerator = () => {
           <div className="flex items-center gap-2 text-sm">
             <Sparkles className="h-4 w-4 text-pink-500" />
             <span className="text-muted-foreground">
-              Professional-grade video generation with keyframe-based motion control
+              {t('wan2VideoCameraPhysicsDesc')}
             </span>
           </div>
         </CardContent>
@@ -202,9 +202,9 @@ const Wan2VideoFullMotionGenerator = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Motion Timeline Engine</CardTitle>
+          <CardTitle>{t('wan2VideoMotionEngine')}</CardTitle>
           <CardDescription>
-            Define precise keyframe actions for character, camera, and effects
+            {t('wan2VideoMotionEngineDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -260,12 +260,12 @@ const Wan2VideoFullMotionGenerator = () => {
           {isGenerating ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-              Generating...
+              {t('wan2VideoGenerating')}
             </>
           ) : (
             <>
               <Sparkles className="h-5 w-5 mr-2" />
-              Generate WAN-2.2 Configuration
+              {t('wan2VideoGenerate')}
             </>
           )}
         </Button>

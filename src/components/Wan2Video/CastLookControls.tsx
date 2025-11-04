@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -32,21 +33,23 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
   kelvin,
   onChange,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <User className="h-5 w-5" />
-          Cast & Look
+          {t('wan2VideoCastLook')}
         </CardTitle>
         <CardDescription>
-          Define the main character, props, and scene setting
+          {t('wan2VideoCastLookDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="character">Character</Label>
+            <Label htmlFor="character">{t('wan2VideoCharacter')}</Label>
             <Input
               id="character"
               value={character}
@@ -57,7 +60,7 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="item">Item / Prop</Label>
+            <Label htmlFor="item">{t('wan2VideoItem')}</Label>
             <Input
               id="item"
               value={item}
@@ -69,7 +72,7 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="sign">Expression / Gesture</Label>
+          <Label htmlFor="sign">{t('wan2VideoSign')}</Label>
           <Select value={sign} onValueChange={(value) => onChange({ sign: value })}>
             <SelectTrigger id="sign" className="h-9">
               <SelectValue />
@@ -85,7 +88,7 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="place">Place / Location</Label>
+          <Label htmlFor="place">{t('wan2VideoPlace')}</Label>
           <Input
             id="place"
             value={place}
@@ -97,7 +100,7 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="time">Time of Day</Label>
+            <Label htmlFor="time">{t('wan2VideoTime')}</Label>
             <Select value={time} onValueChange={(value) => onChange({ time: value })}>
               <SelectTrigger id="time" className="h-9">
                 <SelectValue />
@@ -113,7 +116,7 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="kelvin-input">Color Temperature (K)</Label>
+            <Label htmlFor="kelvin-input">{t('wan2VideoColorTemp')} (K)</Label>
             <Input
               id="kelvin-input"
               type="number"

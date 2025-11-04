@@ -536,6 +536,77 @@ export interface TranslationKey {
   templates: string;
   security: string;
   apiKeys: string;
+
+  // WAN-2.2 Video Generator
+  wan2VideoTitle: string;
+  wan2VideoSimpleMode: string;
+  wan2VideoFullMotion: string;
+  wan2VideoNewBadge: string;
+  wan2VideoCharacter: string;
+  wan2VideoItem: string;
+  wan2VideoSign: string;
+  wan2VideoPlace: string;
+  wan2VideoTime: string;
+  wan2VideoMove: string;
+  wan2VideoLight: string;
+  wan2VideoCastLook: string;
+  wan2VideoCastLookDesc: string;
+  wan2VideoMotionEngine: string;
+  wan2VideoMotionEngineDesc: string;
+  wan2VideoCameraPhysics: string;
+  wan2VideoCameraPhysicsDesc: string;
+  wan2VideoLightAtmosphere: string;
+  wan2VideoLightAtmosphereDesc: string;
+  wan2VideoNegativeSafety: string;
+  wan2VideoNegativeSafetyDesc: string;
+  wan2VideoBatchMetadata: string;
+  wan2VideoBatchMetadataDesc: string;
+  wan2VideoAddKeyframe: string;
+  wan2VideoRemoveKeyframe: string;
+  wan2VideoPercentage: string;
+  wan2VideoDuration: string;
+  wan2VideoActorAction: string;
+  wan2VideoCameraAction: string;
+  wan2VideoFxEvent: string;
+  wan2VideoNoKeyframes: string;
+  wan2VideoClickToAdd: string;
+  wan2VideoCameraPreset: string;
+  wan2VideoShakeIntensity: string;
+  wan2VideoShakeFreq: string;
+  wan2VideoShakeAmp: string;
+  wan2VideoMotionSmoothing: string;
+  wan2VideoColorTemp: string;
+  wan2VideoDustDensity: string;
+  wan2VideoHazeScatter: string;
+  wan2VideoLensRain: string;
+  wan2VideoNeonFlicker: string;
+  wan2VideoNegativePrompt: string;
+  wan2VideoQuickSuggestions: string;
+  wan2VideoClearAll: string;
+  wan2VideoSeedStart: string;
+  wan2VideoSeedEnd: string;
+  wan2VideoVaryStrength: string;
+  wan2VideoAppendHash: string;
+  wan2VideoBatchGeneration: string;
+  wan2VideoConfigPreview: string;
+  wan2VideoConfigPreviewDesc: string;
+  wan2VideoJsonFormat: string;
+  wan2VideoPlainText: string;
+  wan2VideoCopyJson: string;
+  wan2VideoCopyPlain: string;
+  wan2VideoGenerate: string;
+  wan2VideoGenerating: string;
+  wan2VideoValidationError: string;
+  wan2VideoTooManyKeyframes: string;
+  wan2VideoInvalidTimeline: string;
+  wan2VideoInvalidSeeds: string;
+  wan2VideoInvalidKelvin: string;
+  wan2VideoTotalKeyframes: string;
+  wan2VideoBatchSize: string;
+  wan2VideoApplyInterpolation: string;
+  wan2VideoWaterDroplets: string;
+  wan2VideoFlickeringLight: string;
+  wan2VideoNoFx: string;
 }
 
 const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
@@ -1075,7 +1146,78 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     // Tabs and sections
     templates: "Templates",
     security: "Sécurité",
-    apiKeys: "Clés API"
+    apiKeys: "Clés API",
+
+    // WAN-2.2 Video Generator
+    wan2VideoTitle: "Générateur Vidéo WAN-2.2",
+    wan2VideoSimpleMode: "Mode Simple",
+    wan2VideoFullMotion: "Moteur de Mouvement Complet",
+    wan2VideoNewBadge: "Nouveau",
+    wan2VideoCharacter: "Personnage",
+    wan2VideoItem: "Objet/Vêtement",
+    wan2VideoSign: "Expression/Geste",
+    wan2VideoPlace: "Lieu",
+    wan2VideoTime: "Moment",
+    wan2VideoMove: "Mouvement caméra",
+    wan2VideoLight: "Éclairage",
+    wan2VideoCastLook: "Personnage & Apparence",
+    wan2VideoCastLookDesc: "Définir le personnage principal, les accessoires et le décor",
+    wan2VideoMotionEngine: "Timeline de Mouvement",
+    wan2VideoMotionEngineDesc: "Définir les actions précises par keyframe pour personnage, caméra et effets",
+    wan2VideoCameraPhysics: "Caméra & Physique",
+    wan2VideoCameraPhysicsDesc: "Configurer les patterns de mouvement et comportement de tremblement",
+    wan2VideoLightAtmosphere: "Lumière & Atmosphère",
+    wan2VideoLightAtmosphereDesc: "Contrôler la température d'éclairage et effets atmosphériques",
+    wan2VideoNegativeSafety: "Prompt Négatif & Sécurité",
+    wan2VideoNegativeSafetyDesc: "Spécifier les éléments indésirables à éviter",
+    wan2VideoBatchMetadata: "Génération en Lot & Métadonnées",
+    wan2VideoBatchMetadataDesc: "Configurer la plage de seeds et paramètres de variation",
+    wan2VideoAddKeyframe: "Ajouter Keyframe",
+    wan2VideoRemoveKeyframe: "Supprimer",
+    wan2VideoPercentage: "%",
+    wan2VideoDuration: "Temps (s)",
+    wan2VideoActorAction: "Action Acteur",
+    wan2VideoCameraAction: "Action Caméra",
+    wan2VideoFxEvent: "Effet FX",
+    wan2VideoNoKeyframes: "Aucune keyframe définie",
+    wan2VideoClickToAdd: "Cliquez sur 'Ajouter Keyframe' pour commencer",
+    wan2VideoCameraPreset: "Preset Caméra",
+    wan2VideoShakeIntensity: "Intensité Tremblement",
+    wan2VideoShakeFreq: "Fréquence Tremblement",
+    wan2VideoShakeAmp: "Amplitude Tremblement",
+    wan2VideoMotionSmoothing: "Lissage des Mouvements",
+    wan2VideoColorTemp: "Température Couleur",
+    wan2VideoDustDensity: "Densité Poussière",
+    wan2VideoHazeScatter: "Diffusion Brume",
+    wan2VideoLensRain: "Pluie sur Objectif",
+    wan2VideoNeonFlicker: "Scintillement Néon",
+    wan2VideoNegativePrompt: "Prompt Négatif",
+    wan2VideoQuickSuggestions: "Suggestions Rapides",
+    wan2VideoClearAll: "Tout Effacer",
+    wan2VideoSeedStart: "Seed Début",
+    wan2VideoSeedEnd: "Seed Fin",
+    wan2VideoVaryStrength: "Force de Variation",
+    wan2VideoAppendHash: "Ajouter Hash au Nom",
+    wan2VideoBatchGeneration: "Génération en Lot",
+    wan2VideoConfigPreview: "Aperçu de Configuration",
+    wan2VideoConfigPreviewDesc: "Aperçu en temps réel de votre configuration WAN-2.2",
+    wan2VideoJsonFormat: "Format JSON",
+    wan2VideoPlainText: "Texte Brut",
+    wan2VideoCopyJson: "Copier JSON",
+    wan2VideoCopyPlain: "Copier Texte",
+    wan2VideoGenerate: "Générer Configuration WAN-2.2",
+    wan2VideoGenerating: "Génération en cours...",
+    wan2VideoValidationError: "Erreurs de validation",
+    wan2VideoTooManyKeyframes: "Avertissement performance : Plus de 5 keyframes peut affecter le temps de traitement WAN",
+    wan2VideoInvalidTimeline: "Timeline invalide : Les pourcentages doivent être en ordre croissant (0-100)",
+    wan2VideoInvalidSeeds: "Seed de fin doit être supérieur ou égal au seed de début",
+    wan2VideoInvalidKelvin: "La température Kelvin doit être entre 2200K et 10000K",
+    wan2VideoTotalKeyframes: "keyframes au total",
+    wan2VideoBatchSize: "génération(s)",
+    wan2VideoApplyInterpolation: "Appliquer l'interpolation entre les keyframes",
+    wan2VideoWaterDroplets: "Ajouter des gouttelettes d'eau sur l'objectif",
+    wan2VideoFlickeringLight: "Ajouter un effet de lumière néon scintillante",
+    wan2VideoNoFx: "Aucun FX"
   },
   
   ar: {
@@ -1614,7 +1756,78 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     // Tabs and sections
     templates: "القوالب",
     security: "الأمان",
-    apiKeys: "مفاتيح API"
+    apiKeys: "مفاتيح API",
+
+    // WAN-2.2 Video Generator
+    wan2VideoTitle: "مولد فيديو WAN-2.2",
+    wan2VideoSimpleMode: "الوضع البسيط",
+    wan2VideoFullMotion: "محرك الحركة الكامل",
+    wan2VideoNewBadge: "جديد",
+    wan2VideoCharacter: "الشخصية",
+    wan2VideoItem: "عنصر/ملابس",
+    wan2VideoSign: "تعبير/إيماءة",
+    wan2VideoPlace: "المكان",
+    wan2VideoTime: "الوقت",
+    wan2VideoMove: "حركة الكاميرا",
+    wan2VideoLight: "الإضاءة",
+    wan2VideoCastLook: "الشخصية والمظهر",
+    wan2VideoCastLookDesc: "تحديد الشخصية الرئيسية والإكسسوارات والمشهد",
+    wan2VideoMotionEngine: "الجدول الزمني للحركة",
+    wan2VideoMotionEngineDesc: "تحديد إجراءات دقيقة لكل إطار للشخصية والكاميرا والتأثيرات",
+    wan2VideoCameraPhysics: "الكاميرا والفيزياء",
+    wan2VideoCameraPhysicsDesc: "تكوين أنماط الحركة وسلوك الاهتزاز",
+    wan2VideoLightAtmosphere: "الإضاءة والغلاف الجوي",
+    wan2VideoLightAtmosphereDesc: "التحكم في درجة حرارة الإضاءة والتأثيرات الجوية",
+    wan2VideoNegativeSafety: "التوجيه السلبي والسلامة",
+    wan2VideoNegativeSafetyDesc: "تحديد العناصر غير المرغوب فيها لتجنبها",
+    wan2VideoBatchMetadata: "التوليد المجمّع والبيانات الوصفية",
+    wan2VideoBatchMetadataDesc: "تكوين نطاق البذور ومعلمات التباين",
+    wan2VideoAddKeyframe: "إضافة إطار رئيسي",
+    wan2VideoRemoveKeyframe: "حذف",
+    wan2VideoPercentage: "%",
+    wan2VideoDuration: "المدة (ث)",
+    wan2VideoActorAction: "إجراء الممثل",
+    wan2VideoCameraAction: "إجراء الكاميرا",
+    wan2VideoFxEvent: "تأثير FX",
+    wan2VideoNoKeyframes: "لم يتم تعريف إطارات رئيسية",
+    wan2VideoClickToAdd: "انقر على 'إضافة إطار رئيسي' للبدء",
+    wan2VideoCameraPreset: "إعداد الكاميرا المسبق",
+    wan2VideoShakeIntensity: "شدة الاهتزاز",
+    wan2VideoShakeFreq: "تردد الاهتزاز",
+    wan2VideoShakeAmp: "سعة الاهتزاز",
+    wan2VideoMotionSmoothing: "تنعيم الحركة",
+    wan2VideoColorTemp: "درجة حرارة اللون",
+    wan2VideoDustDensity: "كثافة الغبار",
+    wan2VideoHazeScatter: "انتشار الضباب",
+    wan2VideoLensRain: "مطر على العدسة",
+    wan2VideoNeonFlicker: "وميض النيون",
+    wan2VideoNegativePrompt: "التوجيه السلبي",
+    wan2VideoQuickSuggestions: "اقتراحات سريعة",
+    wan2VideoClearAll: "مسح الكل",
+    wan2VideoSeedStart: "البذرة الأولى",
+    wan2VideoSeedEnd: "البذرة الأخيرة",
+    wan2VideoVaryStrength: "قوة التباين",
+    wan2VideoAppendHash: "إضافة هاش للاسم",
+    wan2VideoBatchGeneration: "التوليد المجمّع",
+    wan2VideoConfigPreview: "معاينة الإعدادات",
+    wan2VideoConfigPreviewDesc: "معاينة في الوقت الفعلي لإعدادات WAN-2.2",
+    wan2VideoJsonFormat: "تنسيق JSON",
+    wan2VideoPlainText: "نص عادي",
+    wan2VideoCopyJson: "نسخ JSON",
+    wan2VideoCopyPlain: "نسخ نص",
+    wan2VideoGenerate: "توليد إعدادات WAN-2.2",
+    wan2VideoGenerating: "جاري التوليد...",
+    wan2VideoValidationError: "أخطاء في التحقق",
+    wan2VideoTooManyKeyframes: "تحذير الأداء: أكثر من 5 إطارات رئيسية قد تؤثر على وقت معالجة WAN",
+    wan2VideoInvalidTimeline: "جدول زمني غير صالح: يجب أن تكون النسب المئوية بترتيب تصاعدي (0-100)",
+    wan2VideoInvalidSeeds: "يجب أن تكون البذرة الأخيرة أكبر من أو تساوي البذرة الأولى",
+    wan2VideoInvalidKelvin: "يجب أن تكون درجة حرارة كلفن بين 2200K و 10000K",
+    wan2VideoTotalKeyframes: "إطار رئيسي إجمالاً",
+    wan2VideoBatchSize: "توليد",
+    wan2VideoApplyInterpolation: "تطبيق الاستيفاء بين الإطارات الرئيسية",
+    wan2VideoWaterDroplets: "إضافة قطرات ماء على العدسة",
+    wan2VideoFlickeringLight: "إضافة تأثير ضوء نيون وامض",
+    wan2VideoNoFx: "بدون تأثيرات"
   },
   
   en: {
@@ -2153,7 +2366,78 @@ const translations: Record<'fr' | 'ar' | 'en', TranslationKey> = {
     // Tabs and sections
     templates: "Templates",
     security: "Security",
-    apiKeys: "API Keys"
+    apiKeys: "API Keys",
+
+    // WAN-2.2 Video Generator
+    wan2VideoTitle: "WAN-2.2 Video Generator",
+    wan2VideoSimpleMode: "Simple Mode",
+    wan2VideoFullMotion: "Full Motion Engine",
+    wan2VideoNewBadge: "New",
+    wan2VideoCharacter: "Character",
+    wan2VideoItem: "Item/Prop",
+    wan2VideoSign: "Expression/Gesture",
+    wan2VideoPlace: "Place",
+    wan2VideoTime: "Time",
+    wan2VideoMove: "Camera Movement",
+    wan2VideoLight: "Lighting",
+    wan2VideoCastLook: "Cast & Look",
+    wan2VideoCastLookDesc: "Define the main character, props, and scene setting",
+    wan2VideoMotionEngine: "Motion Timeline",
+    wan2VideoMotionEngineDesc: "Define precise keyframe actions for character, camera, and effects",
+    wan2VideoCameraPhysics: "Camera & Physics",
+    wan2VideoCameraPhysicsDesc: "Configure camera movement patterns and shake behavior",
+    wan2VideoLightAtmosphere: "Light & Atmosphere",
+    wan2VideoLightAtmosphereDesc: "Control lighting temperature and atmospheric effects",
+    wan2VideoNegativeSafety: "Negative Prompt & Safety",
+    wan2VideoNegativeSafetyDesc: "Specify unwanted elements to avoid in generation",
+    wan2VideoBatchMetadata: "Batch Generation & Metadata",
+    wan2VideoBatchMetadataDesc: "Configure seed range and variation parameters",
+    wan2VideoAddKeyframe: "Add Keyframe",
+    wan2VideoRemoveKeyframe: "Remove",
+    wan2VideoPercentage: "%",
+    wan2VideoDuration: "Time (s)",
+    wan2VideoActorAction: "Actor Action",
+    wan2VideoCameraAction: "Camera Action",
+    wan2VideoFxEvent: "FX Event",
+    wan2VideoNoKeyframes: "No keyframes defined",
+    wan2VideoClickToAdd: "Click 'Add Keyframe' to start building your motion timeline",
+    wan2VideoCameraPreset: "Camera Preset",
+    wan2VideoShakeIntensity: "Shake Intensity",
+    wan2VideoShakeFreq: "Shake Frequency",
+    wan2VideoShakeAmp: "Shake Amplitude",
+    wan2VideoMotionSmoothing: "Motion Smoothing",
+    wan2VideoColorTemp: "Color Temperature",
+    wan2VideoDustDensity: "Dust Density",
+    wan2VideoHazeScatter: "Haze Scatter",
+    wan2VideoLensRain: "Lens Rain Effect",
+    wan2VideoNeonFlicker: "Neon Flicker",
+    wan2VideoNegativePrompt: "Negative Prompt",
+    wan2VideoQuickSuggestions: "Quick Suggestions",
+    wan2VideoClearAll: "Clear All",
+    wan2VideoSeedStart: "Seed Start",
+    wan2VideoSeedEnd: "Seed End",
+    wan2VideoVaryStrength: "Variation Strength",
+    wan2VideoAppendHash: "Append Hash to Filename",
+    wan2VideoBatchGeneration: "Batch Generation",
+    wan2VideoConfigPreview: "Configuration Preview",
+    wan2VideoConfigPreviewDesc: "Real-time preview of your WAN-2.2 configuration",
+    wan2VideoJsonFormat: "JSON Format",
+    wan2VideoPlainText: "Plain Text",
+    wan2VideoCopyJson: "Copy JSON",
+    wan2VideoCopyPlain: "Copy Plain",
+    wan2VideoGenerate: "Generate WAN-2.2 Configuration",
+    wan2VideoGenerating: "Generating...",
+    wan2VideoValidationError: "Validation errors",
+    wan2VideoTooManyKeyframes: "Performance warning: More than 5 keyframes may affect WAN-2.2 processing time",
+    wan2VideoInvalidTimeline: "Invalid timeline: Percentages must be in ascending order (0-100)",
+    wan2VideoInvalidSeeds: "End seed must be greater than or equal to start seed",
+    wan2VideoInvalidKelvin: "Kelvin temperature must be between 2200K and 10000K",
+    wan2VideoTotalKeyframes: "keyframes total",
+    wan2VideoBatchSize: "generation(s)",
+    wan2VideoApplyInterpolation: "Apply interpolation between keyframes",
+    wan2VideoWaterDroplets: "Add water droplets on camera lens",
+    wan2VideoFlickeringLight: "Add flickering neon light effect",
+    wan2VideoNoFx: "No FX"
   }
 };
 
