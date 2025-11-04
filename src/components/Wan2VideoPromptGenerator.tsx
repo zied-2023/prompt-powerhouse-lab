@@ -11,8 +11,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Wan2VideoFullMotionGenerator from "./Wan2VideoFullMotionGenerator";
+import { Badge } from "@/components/ui/badge";
 
 const Wan2VideoPromptGenerator = () => {
   const [generatorMode, setGeneratorMode] = useState<'simple' | 'advanced'>('simple');
@@ -205,20 +205,34 @@ const Wan2VideoPromptGenerator = () => {
 
   return (
     <div className="space-y-6">
-      <Tabs value={generatorMode} onValueChange={(value) => setGeneratorMode(value as 'simple' | 'advanced')}>
-        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-          <TabsTrigger value="simple" className="flex items-center gap-2">
-            <Zap className="h-4 w-4" />
-            Simple Mode
-          </TabsTrigger>
-          <TabsTrigger value="advanced" className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4" />
-            Full Motion Engine
-          </TabsTrigger>
-        </TabsList>
+      <Card className="border-2">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-center gap-4">
+            <Button
+              variant={generatorMode === 'simple' ? 'default' : 'outline'}
+              onClick={() => setGeneratorMode('simple')}
+              className="flex items-center gap-2"
+            >
+              <Zap className="h-4 w-4" />
+              Simple Mode
+            </Button>
+            <Button
+              variant={generatorMode === 'advanced' ? 'default' : 'outline'}
+              onClick={() => setGeneratorMode('advanced')}
+              className="flex items-center gap-2"
+            >
+              <Sparkles className="h-4 w-4" />
+              Full Motion Engine
+              <Badge variant="secondary" className="ml-1 bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-200">
+                New
+              </Badge>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-        <TabsContent value="simple" className="mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {generatorMode === 'simple' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center space-x-3 text-2xl">
@@ -540,13 +554,12 @@ const Wan2VideoPromptGenerator = () => {
           )}
         </CardContent>
       </Card>
-          </div>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="advanced" className="mt-6">
-          <Wan2VideoFullMotionGenerator />
-        </TabsContent>
-      </Tabs>
+      {generatorMode === 'advanced' && (
+        <Wan2VideoFullMotionGenerator />
+      )}
     </div>
   );
 };
