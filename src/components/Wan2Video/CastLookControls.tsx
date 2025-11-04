@@ -1,5 +1,7 @@
 import React from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateSignExpression, translateTimeOption } from '@/lib/wan2VideoTranslations';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,6 +36,7 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
   onChange,
 }) => {
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   return (
     <Card>
@@ -80,7 +83,7 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
             <SelectContent>
               {SIGN_EXPRESSIONS.map((expr) => (
                 <SelectItem key={expr} value={expr}>
-                  {expr.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                  {translateSignExpression(expr, language)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -106,9 +109,9 @@ export const CastLookControls: React.FC<CastLookControlsProps> = ({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {TIME_OPTIONS.map((t) => (
-                  <SelectItem key={t} value={t}>
-                    {t.charAt(0).toUpperCase() + t.slice(1)}
+                {TIME_OPTIONS.map((timeOpt) => (
+                  <SelectItem key={timeOpt} value={timeOpt}>
+                    {translateTimeOption(timeOpt, language)}
                   </SelectItem>
                 ))}
               </SelectContent>

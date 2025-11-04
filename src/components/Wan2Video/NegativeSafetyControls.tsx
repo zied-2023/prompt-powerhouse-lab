@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,8 @@ export const NegativeSafetyControls: React.FC<NegativeSafetyControlsProps> = ({
   negative,
   onChange,
 }) => {
+  const { t } = useTranslation();
+
   const addSuggestion = (suggestion: string) => {
     const current = negative.trim();
     if (current.includes(suggestion)) return;
@@ -47,16 +50,16 @@ export const NegativeSafetyControls: React.FC<NegativeSafetyControlsProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <ShieldAlert className="h-5 w-5" />
-          Negative Prompt & Safety
+          {t('wan2VideoNegativeSafety')}
         </CardTitle>
         <CardDescription>
-          Specify unwanted elements to avoid in generation
+          {t('wan2VideoNegativeSafetyDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="negative">Negative Prompt</Label>
+            <Label htmlFor="negative">{t('wan2VideoNegativePrompt')}</Label>
             <span className="text-xs text-muted-foreground">
               {negative.length} / 500 chars
             </span>
@@ -74,14 +77,14 @@ export const NegativeSafetyControls: React.FC<NegativeSafetyControlsProps> = ({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label className="text-sm">Quick Suggestions</Label>
+            <Label className="text-sm">{t('wan2VideoQuickSuggestions')}</Label>
             <Button
               variant="ghost"
               size="sm"
               onClick={clearAll}
               className="h-7 text-xs"
             >
-              Clear All
+              {t('wan2VideoClearAll')}
             </Button>
           </div>
           <div className="flex flex-wrap gap-2">

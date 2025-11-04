@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -31,21 +32,23 @@ export const LightAtmosphereControls: React.FC<LightAtmosphereControlsProps> = (
   neonFlicker,
   onChange,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Lightbulb className="h-5 w-5" />
-          Light & Atmosphere
+          {t('wan2VideoLightAtmosphere')}
         </CardTitle>
         <CardDescription>
-          Control lighting temperature and atmospheric effects
+          {t('wan2VideoLightAtmosphereDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="kelvin">Color Temperature</Label>
+            <Label htmlFor="kelvin">{t('wan2VideoColorTemp')}</Label>
             <Input
               id="kelvin"
               type="number"
@@ -82,7 +85,7 @@ export const LightAtmosphereControls: React.FC<LightAtmosphereControlsProps> = (
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="dust">Dust Density</Label>
+            <Label htmlFor="dust">{t('wan2VideoDustDensity')}</Label>
             <span className="text-sm text-muted-foreground">{dust}%</span>
           </div>
           <Slider
@@ -98,7 +101,7 @@ export const LightAtmosphereControls: React.FC<LightAtmosphereControlsProps> = (
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="haze">Haze Scatter</Label>
+            <Label htmlFor="haze">{t('wan2VideoHazeScatter')}</Label>
             <span className="text-sm text-muted-foreground">{haze}%</span>
           </div>
           <Slider
@@ -114,9 +117,9 @@ export const LightAtmosphereControls: React.FC<LightAtmosphereControlsProps> = (
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="lens-rain">Lens Rain Effect</Label>
+            <Label htmlFor="lens-rain">{t('wan2VideoLensRain')}</Label>
             <p className="text-xs text-muted-foreground">
-              Add water droplets on camera lens
+              {t('wan2VideoWaterDroplets')}
             </p>
           </div>
           <Switch
@@ -128,9 +131,9 @@ export const LightAtmosphereControls: React.FC<LightAtmosphereControlsProps> = (
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="neon-flicker">Neon Flicker</Label>
+            <Label htmlFor="neon-flicker">{t('wan2VideoNeonFlicker')}</Label>
             <p className="text-xs text-muted-foreground">
-              Add flickering neon light effect
+              {t('wan2VideoFlickeringLight')}
             </p>
           </div>
           <Switch

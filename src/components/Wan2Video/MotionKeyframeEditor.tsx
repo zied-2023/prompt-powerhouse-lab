@@ -6,6 +6,9 @@ import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { MotionKeyframe, ACTOR_ACTIONS, CAMERA_ACTIONS, FX_EVENTS } from '@/types/wan2Motion';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateActorAction, translateCameraAction, translateFxEvent } from '@/lib/wan2VideoTranslations';
 
 interface MotionKeyframeEditorProps {
   keyframes: MotionKeyframe[];
@@ -13,6 +16,8 @@ interface MotionKeyframeEditorProps {
 }
 
 export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyframes, onChange }) => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
   const addKeyframe = () => {
     const lastPct = keyframes.length > 0 ? keyframes[keyframes.length - 1].pct : 0;
     const newPct = Math.min(lastPct + 20, 100);
@@ -59,14 +64,14 @@ export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyf
         </div>
         <Button onClick={addKeyframe} size="sm" disabled={keyframes.length >= 10}>
           <Plus className="h-4 w-4 mr-1" />
-          Add Keyframe
+          {t('wan2VideoAddKeyframe')}
         </Button>
       </div>
 
       {hasErrors() && (
         <Alert variant="destructive">
           <AlertDescription>
-            Invalid timeline: Percentages must be in ascending order (0-100)
+            {t('wan2VideoInvalidTimeline')}
           </AlertDescription>
         </Alert>
       )}
@@ -74,18 +79,18 @@ export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyf
       {hasTooManyKeyframes && (
         <Alert variant="destructive">
           <AlertDescription>
-            Performance warning: More than 5 keyframes may affect WAN-2.2 processing time
+            {t('wan2VideoTooManyKeyframes')}
           </AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-2">
         <div className="grid grid-cols-12 gap-2 text-xs font-medium text-muted-foreground px-2">
-          <div className="col-span-1">%</div>
-          <div className="col-span-1">Time</div>
-          <div className="col-span-3">Actor Action</div>
-          <div className="col-span-3">Camera Action</div>
-          <div className="col-span-3">FX Event</div>
+          <div className="col-span-1">{t('wan2VideoPercentage')}</div>
+          <div className="col-span-1">{t('wan2VideoDuration')}</div>
+          <div className="col-span-3">{t('wan2VideoActorAction')}</div>
+          <div className="col-span-3">{t('wan2VideoCameraAction')}</div>
+          <div className="col-span-3">{t('wan2VideoFxEvent')}</div>
           <div className="col-span-1"></div>
         </div>
 
@@ -125,7 +130,7 @@ export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyf
                 <SelectContent>
                   {ACTOR_ACTIONS.map((action) => (
                     <SelectItem key={action} value={action} className="text-xs">
-                      {action}
+                      {translateActorAction(action, language)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -143,7 +148,7 @@ export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyf
                 <SelectContent>
                   {CAMERA_ACTIONS.map((action) => (
                     <SelectItem key={action} value={action} className="text-xs">
-                      {action}
+                      {translateCameraAction(action, language)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -161,7 +166,7 @@ export const MotionKeyframeEditor: React.FC<MotionKeyframeEditorProps> = ({ keyf
                 <SelectContent>
                   {FX_EVENTS.map((fx) => (
                     <SelectItem key={fx} value={fx} className="text-xs">
-                      {fx === 'none' ? 'No FX' : fx}
+                      {translateFxEvent(fx, language)}
                     </SelectItem>
                   ))}
                 </SelectContent>

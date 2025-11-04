@@ -6,6 +6,9 @@ import { Switch } from '@/components/ui/switch';
 import { CAMERA_PRESETS } from '@/types/wan2Motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Camera } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { translateCameraPreset } from '@/lib/wan2VideoTranslations';
 
 interface CameraPhysicsControlsProps {
   cameraPreset: string;
@@ -30,20 +33,23 @@ export const CameraPhysicsControls: React.FC<CameraPhysicsControlsProps> = ({
   smoothing,
   onChange,
 }) => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Camera className="h-5 w-5" />
-          Camera Path & Physics
+          {t('wan2VideoCameraPhysics')}
         </CardTitle>
         <CardDescription>
-          Configure camera movement patterns and shake behavior
+          {t('wan2VideoCameraPhysicsDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="camera-preset">Path Preset</Label>
+          <Label htmlFor="camera-preset">{t('wan2VideoCameraPreset')}</Label>
           <Select value={cameraPreset} onValueChange={(value) => onChange({ cameraPreset: value })}>
             <SelectTrigger id="camera-preset">
               <SelectValue />
@@ -51,7 +57,7 @@ export const CameraPhysicsControls: React.FC<CameraPhysicsControlsProps> = ({
             <SelectContent>
               {CAMERA_PRESETS.map((preset) => (
                 <SelectItem key={preset} value={preset}>
-                  {preset.charAt(0).toUpperCase() + preset.slice(1)}
+                  {translateCameraPreset(preset, language)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -60,7 +66,7 @@ export const CameraPhysicsControls: React.FC<CameraPhysicsControlsProps> = ({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="shake-intensity">Shake Intensity</Label>
+            <Label htmlFor="shake-intensity">{t('wan2VideoShakeIntensity')}</Label>
             <span className="text-sm text-muted-foreground">{shakeIntensity}%</span>
           </div>
           <Slider
@@ -76,7 +82,7 @@ export const CameraPhysicsControls: React.FC<CameraPhysicsControlsProps> = ({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="shake-freq">Shake Frequency</Label>
+            <Label htmlFor="shake-freq">{t('wan2VideoShakeFreq')}</Label>
             <span className="text-sm text-muted-foreground">{shakeFreq.toFixed(1)} Hz</span>
           </div>
           <Slider
@@ -92,7 +98,7 @@ export const CameraPhysicsControls: React.FC<CameraPhysicsControlsProps> = ({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="shake-amp">Shake Amplitude</Label>
+            <Label htmlFor="shake-amp">{t('wan2VideoShakeAmp')}</Label>
             <span className="text-sm text-muted-foreground">{shakeAmp.toFixed(1)} px</span>
           </div>
           <Slider
@@ -108,9 +114,9 @@ export const CameraPhysicsControls: React.FC<CameraPhysicsControlsProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="smoothing">Motion Smoothing</Label>
+            <Label htmlFor="smoothing">{t('wan2VideoMotionSmoothing')}</Label>
             <p className="text-xs text-muted-foreground">
-              Apply interpolation between keyframes
+              {t('wan2VideoApplyInterpolation')}
             </p>
           </div>
           <Switch

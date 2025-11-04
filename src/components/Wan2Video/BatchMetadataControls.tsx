@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
@@ -27,6 +28,8 @@ export const BatchMetadataControls: React.FC<BatchMetadataControlsProps> = ({
   appendHash,
   onChange,
 }) => {
+  const { t } = useTranslation();
+
   const batchCount = Math.max(0, seedEnd - seed + 1);
   const hasError = seedEnd < seed;
 
@@ -35,10 +38,10 @@ export const BatchMetadataControls: React.FC<BatchMetadataControlsProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Layers className="h-5 w-5" />
-          Batch Generation & Metadata
+          {t('wan2VideoBatchMetadata')}
         </CardTitle>
         <CardDescription>
-          Configure seed range and variation parameters
+          {t('wan2VideoBatchMetadataDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -46,14 +49,14 @@ export const BatchMetadataControls: React.FC<BatchMetadataControlsProps> = ({
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              End seed must be greater than or equal to start seed
+              {t('wan2VideoInvalidSeeds')}
             </AlertDescription>
           </Alert>
         )}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="seed-start">Seed Start</Label>
+            <Label htmlFor="seed-start">{t('wan2VideoSeedStart')}</Label>
             <Input
               id="seed-start"
               type="number"
@@ -66,7 +69,7 @@ export const BatchMetadataControls: React.FC<BatchMetadataControlsProps> = ({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="seed-end">Seed End</Label>
+            <Label htmlFor="seed-end">{t('wan2VideoSeedEnd')}</Label>
             <Input
               id="seed-end"
               type="number"
@@ -92,7 +95,7 @@ export const BatchMetadataControls: React.FC<BatchMetadataControlsProps> = ({
 
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="vary-strength">Variation Strength</Label>
+            <Label htmlFor="vary-strength">{t('wan2VideoVaryStrength')}</Label>
             <span className="text-sm text-muted-foreground">{varyStrength.toFixed(2)}</span>
           </div>
           <Slider
@@ -111,7 +114,7 @@ export const BatchMetadataControls: React.FC<BatchMetadataControlsProps> = ({
 
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="append-hash">Append Hash to Filename</Label>
+            <Label htmlFor="append-hash">{t('wan2VideoAppendHash')}</Label>
             <p className="text-xs text-muted-foreground">
               Add unique hash to prevent filename conflicts
             </p>

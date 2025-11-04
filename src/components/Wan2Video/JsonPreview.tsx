@@ -44,8 +44,8 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
   const copyJson = () => {
     navigator.clipboard.writeText(jsonString);
     toast({
-      title: 'JSON Copied',
-      description: 'Configuration copied to clipboard',
+      title: t('wan2VideoCopyJson'),
+      description: t('wan2VideoConfigPreviewDesc'),
     });
   };
 
@@ -53,8 +53,8 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
     const plainText = generatePlainPrompt();
     navigator.clipboard.writeText(plainText);
     toast({
-      title: 'Plain Prompt Copied',
-      description: 'Human-readable prompt copied to clipboard',
+      title: t('wan2VideoCopyPlain'),
+      description: t('wan2VideoConfigPreviewDesc'),
     });
   };
 
@@ -63,10 +63,10 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileJson className="h-5 w-5" />
-          Configuration Preview
+          {t('wan2VideoConfigPreview')}
         </CardTitle>
         <CardDescription>
-          Real-time preview of your WAN-2.2 configuration
+          {t('wan2VideoConfigPreviewDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -74,11 +74,11 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="json" className="flex items-center gap-2">
               <Code className="h-4 w-4" />
-              JSON Format
+              {t('wan2VideoJsonFormat')}
             </TabsTrigger>
             <TabsTrigger value="plain" className="flex items-center gap-2">
               <FileJson className="h-4 w-4" />
-              Plain Text
+              {t('wan2VideoPlainText')}
             </TabsTrigger>
           </TabsList>
 
@@ -94,7 +94,7 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
                 className="absolute top-2 right-2"
               >
                 <Copy className="h-4 w-4 mr-1" />
-                Copy JSON
+                {t('wan2VideoCopyJson')}
               </Button>
             </div>
           </TabsContent>
@@ -111,7 +111,7 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
                 className="absolute top-2 right-2"
               >
                 <Copy className="h-4 w-4 mr-1" />
-                Copy Plain
+                {t('wan2VideoCopyPlain')}
               </Button>
             </div>
           </TabsContent>
