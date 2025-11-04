@@ -5,12 +5,14 @@ import { Copy, Code, FileJson } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Wan2VideoConfig } from '@/types/wan2Motion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface JsonPreviewProps {
   config: Wan2VideoConfig;
 }
 
 export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
+  const { t } = useTranslation();
   const jsonString = JSON.stringify(config, null, 2);
 
   const generatePlainPrompt = (): string => {
