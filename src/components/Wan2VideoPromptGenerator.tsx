@@ -6,13 +6,16 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "@/hooks/use-toast";
-import { Video, Copy, Sparkles, ChevronDown, Settings2 } from "lucide-react";
+import { Video, Copy, Sparkles, ChevronDown, Settings2, Zap } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Wan2VideoFullMotionGenerator from "./Wan2VideoFullMotionGenerator";
 
 const Wan2VideoPromptGenerator = () => {
+  const [generatorMode, setGeneratorMode] = useState<'simple' | 'advanced'>('simple');
   const { t } = useTranslation();
   const { credits, useCredit } = useUserCredits();
   const { user } = useAuth();
@@ -201,7 +204,21 @@ const Wan2VideoPromptGenerator = () => {
   const isPremium = credits && credits.remaining_credits > 50;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="space-y-6">
+      <Tabs value={generatorMode} onValueChange={(value) => setGeneratorMode(value as 'simple' | 'advanced')}>
+        <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+          <TabsTrigger value="simple" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Simple Mode
+          </TabsTrigger>
+          <TabsTrigger value="advanced" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Full Motion Engine
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="simple" className="mt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center space-x-3 text-2xl">
@@ -523,6 +540,13 @@ const Wan2VideoPromptGenerator = () => {
           )}
         </CardContent>
       </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="advanced" className="mt-6">
+          <Wan2VideoFullMotionGenerator />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
