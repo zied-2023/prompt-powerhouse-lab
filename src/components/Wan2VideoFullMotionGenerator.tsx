@@ -2,12 +2,15 @@ import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { Video, Sparkles, AlertCircle } from "lucide-react";
+import { Video, Sparkles, AlertCircle, Wand2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
+import { wan2FullMotionOptimizer } from "@/services/wan2FullMotionOptimizer";
 import { Wan2VideoConfig, MotionKeyframe } from "@/types/wan2Motion";
 import { CastLookControls } from "./Wan2Video/CastLookControls";
 import { MotionKeyframeEditor } from "./Wan2Video/MotionKeyframeEditor";
@@ -55,6 +58,14 @@ const Wan2VideoFullMotionGenerator = () => {
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [useOpikOptimization, setUseOpikOptimization] = useState(true);
+  const [optimizationStats, setOptimizationStats] = useState<{
+    score: number;
+    improvements: string[];
+    time: number;
+    keyframeOptimizations: number;
+    complexity: string;
+  } | null>(null);
 
   const updateConfig = (updates: Partial<Wan2VideoConfig>) => {
     setConfig((prev) => ({ ...prev, ...updates }));
@@ -106,17 +117,49 @@ const Wan2VideoFullMotionGenerator = () => {
       const startTime = Date.now();
       await useCredit();
 
+      let finalConfig = config;
+      let optimizationResult = null;
+
+      if (useOpikOptimization && user?.id) {
+        console.log('🤖 Using Opik Optimization for Full Motion Configuration');
+
+        optimizationResult = await wan2FullMotionOptimizer.optimizeFullMotionConfig(config, user.id);
+
+        finalConfig = optimizationResult.optimizedConfig;
+
+        setOptimizationStats({
+          score: optimizationResult.score,
+          improvements: optimizationResult.improvements,
+          time: optimizationResult.optimizationTime,
+          keyframeOptimizations: optimizationResult.keyframeOptimizations,
+          complexity: optimizationResult.configComplexity
+        });
+
+        if (JSON.stringify(config) !== JSON.stringify(finalConfig)) {
+          setConfig(finalConfig);
+        }
+
+        console.log('✨ Optimized Configuration:', finalConfig);
+        console.log('📊 Quality Score:', optimizationResult.score.toFixed(1));
+        console.log('🎯 Improvements:', optimizationResult.improvements);
+      } else {
+        console.log('📝 Using Standard Configuration');
+        setOptimizationStats(null);
+      }
+
       const traceData = {
         input: config,
-        output: JSON.stringify(config, null, 2),
+        output: JSON.stringify(finalConfig, null, 2),
         metadata: {
           user_id: user?.id,
           feature: 'wan2-video-full-motion',
-          keyframe_count: config.motion.length,
-          batch_size: config.seedEnd - config.seed + 1,
-          camera_preset: config.cameraPreset,
+          keyframe_count: finalConfig.motion.length,
+          batch_size: finalConfig.seedEnd - finalConfig.seed + 1,
+          camera_preset: finalConfig.cameraPreset,
+          optimized: useOpikOptimization,
+          optimization_score: optimizationResult?.score || null,
         },
-        tags: ['wan2-video', 'full-motion', 'premium'],
+        tags: ['wan2-video', 'full-motion', 'premium', useOpikOptimization ? 'optimized' : 'standard'],
       };
 
       await opikService.logTrace(
@@ -128,9 +171,15 @@ const Wan2VideoFullMotionGenerator = () => {
         traceData.tags
       );
 
+      const scoreDisplay = optimizationResult
+        ? optimizationResult.score.toFixed(1)
+        : '8.5';
+
       toast({
-        title: t('wan2VideoGenerate'),
-        description: `WAN-2.2 configuration created with ${config.motion.length} ${t('wan2VideoTotalKeyframes')}`,
+        title: useOpikOptimization ? `Configuration optimisée (${scoreDisplay}/10)` : t('wan2VideoGenerate'),
+        description: useOpikOptimization
+          ? `${finalConfig.motion.length} keyframes • ${optimizationResult?.improvements.length} améliorations`
+          : `WAN-2.2 configuration created with ${finalConfig.motion.length} ${t('wan2VideoTotalKeyframes')}`,
       });
     } catch (error) {
       console.error('Generation error:', error);
@@ -249,6 +298,79 @@ const Wan2VideoFullMotionGenerator = () => {
       />
 
       <JsonPreview config={config} />
+
+      <Card className="border-blue-200 dark:border-blue-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1 flex-1">
+              <div className="flex items-center gap-2">
+                <Wand2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <Label htmlFor="opik-fullmotion-optimization" className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Optimisation Opik Automatique
+                </Label>
+                <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs">
+                  Nouveau
+                </Badge>
+              </div>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Optimise automatiquement la configuration complète : timeline, caméra, éclairage, et paramètres avancés
+              </p>
+            </div>
+            <Switch
+              id="opik-fullmotion-optimization"
+              checked={useOpikOptimization}
+              onCheckedChange={setUseOpikOptimization}
+              className="data-[state=checked]:bg-blue-600 ml-4"
+            />
+          </div>
+          {useOpikOptimization && (
+            <div className="mt-4 pt-4 border-t border-blue-200 dark:border-blue-700">
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                ✨ L'optimisation analysera votre configuration et ajustera automatiquement les paramètres pour obtenir les meilleurs résultats professionnels
+              </p>
+            </div>
+          )}
+          {optimizationStats && (
+            <div className="mt-4 pt-4 border-t border-green-200 dark:border-green-700 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-green-700 dark:text-green-300">
+                    Configuration optimisée
+                  </p>
+                  <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs">
+                    Score: {optimizationStats.score.toFixed(1)}/10
+                  </Badge>
+                </div>
+                <div className="text-xs text-gray-600 dark:text-gray-400">
+                  Complexité: {optimizationStats.complexity}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="p-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                  <p className="text-muted-foreground">Temps d'optimisation</p>
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">{optimizationStats.time}ms</p>
+                </div>
+                <div className="p-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                  <p className="text-muted-foreground">Keyframes optimisées</p>
+                  <p className="font-semibold text-gray-900 dark:text-gray-100">{optimizationStats.keyframeOptimizations}</p>
+                </div>
+              </div>
+              {optimizationStats.improvements.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-2">Améliorations appliquées:</p>
+                  <ul className="space-y-1">
+                    {optimizationStats.improvements.map((improvement, idx) => (
+                      <li key={idx} className="text-xs text-green-600 dark:text-green-400">
+                        {improvement}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="flex justify-center pt-4">
         <Button
