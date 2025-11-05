@@ -5,12 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "@/hooks/use-toast";
-import { Video, Copy, Sparkles, ChevronDown, Settings2, Zap } from "lucide-react";
+import { Video, Copy, Sparkles, ChevronDown, Settings2, Zap, Wand2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { opikService } from "@/services/opikService";
+import { wan2VideoOptimizer } from "@/services/wan2VideoOptimizer";
 import Wan2VideoFullMotionGenerator from "./Wan2VideoFullMotionGenerator";
 import { Badge } from "@/components/ui/badge";
 
@@ -41,6 +43,12 @@ const Wan2VideoPromptGenerator = () => {
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [useOpikOptimization, setUseOpikOptimization] = useState(true);
+  const [optimizationStats, setOptimizationStats] = useState<{
+    score: number;
+    improvements: string[];
+    time: number;
+  } | null>(null);
 
   const characterOptions = [
     'soldier', 'woman', 'man', 'child', 'elderly man',
@@ -113,29 +121,54 @@ const Wan2VideoPromptGenerator = () => {
     setIsGenerating(true);
 
     try {
-      let prompt = `${formData.character} ${formData.item} ${formData.sign} ${formData.place} ${formData.time} ${formData.move} ${formData.light} cinematic shallow depth of field`;
+      let prompt = '';
+      let optimizationResult = null;
 
-      prompt = prompt
-        .replace(/["'`]/g, '')
-        .replace(/,/g, '')
-        .replace(/[^a-zA-Z0-9\s-]/g, '')
-        .replace(/\s+/g, ' ')
-        .trim();
+      if (useOpikOptimization && user?.id) {
+        console.log('🤖 Using Opik Optimization for WAN-2.2 Prompt');
 
-      const bannedWords = ['text', 'watermark', 'lowres', 'blurry', 'oversaturated'];
-      bannedWords.forEach(word => {
-        const regex = new RegExp(`\\b${word}\\b`, 'gi');
-        prompt = prompt.replace(regex, '');
-      });
+        optimizationResult = await wan2VideoOptimizer.optimizeWan2Prompt(formData, user.id);
 
-      prompt = prompt.replace(/\s+/g, ' ').trim();
+        prompt = optimizationResult.optimizedPrompt;
 
-      if (prompt.length > 200) {
-        const lastSpace = prompt.lastIndexOf(' ', 197);
-        prompt = prompt.substring(0, lastSpace > 0 ? lastSpace : 197);
+        setOptimizationStats({
+          score: optimizationResult.score,
+          improvements: optimizationResult.improvements,
+          time: optimizationResult.optimizationTime
+        });
+
+        console.log('✨ Optimized Prompt:', prompt, `(${prompt.length} chars)`);
+        console.log('📊 Quality Score:', optimizationResult.score.toFixed(1));
+        console.log('🎯 Improvements:', optimizationResult.improvements);
+      } else {
+        console.log('📝 Using Standard WAN-2.2 Template');
+
+        prompt = `${formData.character} ${formData.item} ${formData.sign} ${formData.place} ${formData.time} ${formData.move} ${formData.light} cinematic shallow depth of field`;
+
+        prompt = prompt
+          .replace(/["'`]/g, '')
+          .replace(/,/g, '')
+          .replace(/[^a-zA-Z0-9\s-]/g, '')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        const bannedWords = ['text', 'watermark', 'lowres', 'blurry', 'oversaturated'];
+        bannedWords.forEach(word => {
+          const regex = new RegExp(`\\b${word}\\b`, 'gi');
+          prompt = prompt.replace(regex, '');
+        });
+
+        prompt = prompt.replace(/\s+/g, ' ').trim();
+
+        if (prompt.length > 200) {
+          const lastSpace = prompt.lastIndexOf(' ', 197);
+          prompt = prompt.substring(0, lastSpace > 0 ? lastSpace : 197);
+        }
+
+        setOptimizationStats(null);
       }
 
-      console.log('✅ Prompt WAN-2.2 généré:', prompt, `(${prompt.length} caractères)`);
+      console.log('✅ Prompt WAN-2.2 final:', prompt, `(${prompt.length} caractères)`);
 
       setGeneratedPrompt(prompt);
 
@@ -147,30 +180,31 @@ const Wan2VideoPromptGenerator = () => {
         });
       }
 
+      const scoreDisplay = optimizationResult
+        ? optimizationResult.score.toFixed(1)
+        : '9.5';
+
       toast({
-        title: "Prompt WAN-2.2 généré (9.5/10)",
-        description: `${prompt.length}/200 caractères - Version clean, 0 texte parasite`,
+        title: `Prompt WAN-2.2 généré (${scoreDisplay}/10)`,
+        description: useOpikOptimization
+          ? `${prompt.length}/200 caractères - Optimisé par Opik`
+          : `${prompt.length}/200 caractères - Version clean, 0 texte parasite`,
       });
 
-      // NOTE: Optimisation Opik DÉSACTIVÉE pour WAN-2.2
-      // Le template est déjà optimisé à 9.5/10 et Opik ajoute du texte parasite
-      // Garde la version "clean" sans métadonnées ROLE/FORMAT/CONSTRAINTS
-
-      // Enregistrer quand même la trace dans Opik (sans modifier le prompt)
       if (user?.id) {
         opikService.createTrace({
           userId: user.id,
-          traceId: `wan2-clean-${Date.now()}`,
+          traceId: `wan2-${useOpikOptimization ? 'optimized' : 'clean'}-${Date.now()}`,
           promptInput: 'WAN-2.2 Template',
           promptOutput: prompt,
-          model: 'wan2-template-9.5',
-          latencyMs: 0,
-          tokensUsed: 0,
+          model: useOpikOptimization ? 'wan2-opik-optimizer' : 'wan2-template-9.5',
+          latencyMs: optimizationResult?.optimizationTime || 0,
+          tokensUsed: optimizationResult?.tokens || 0,
           tags: {
             type: 'wan2-video-generation',
             template: 'character-item-sign-place-time-move-light',
-            score: 9.5,
-            clean: true,
+            score: optimizationResult?.score || 9.5,
+            optimized: useOpikOptimization,
             aspectRatio: advancedSettings.aspectRatio,
             duration: advancedSettings.duration,
             finalLength: prompt.length
@@ -434,6 +468,38 @@ const Wan2VideoPromptGenerator = () => {
             </CollapsibleContent>
           </Collapsible>
 
+          <div className="p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Wand2 className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <Label htmlFor="opik-optimization" className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    Optimisation Opik Automatique
+                  </Label>
+                  <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs">
+                    Nouveau
+                  </Badge>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Améliore automatiquement le prompt avec l'IA pour une qualité optimale
+                </p>
+              </div>
+              <Switch
+                id="opik-optimization"
+                checked={useOpikOptimization}
+                onCheckedChange={setUseOpikOptimization}
+                className="data-[state=checked]:bg-blue-600"
+              />
+            </div>
+            {useOpikOptimization && (
+              <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700">
+                <p className="text-xs text-blue-700 dark:text-blue-300">
+                  ✨ L'optimisation Opik analysera votre prompt et l'améliorera pour obtenir les meilleurs résultats vidéo possibles
+                </p>
+              </div>
+            )}
+          </div>
+
           <Button
             onClick={generateWan2Prompt}
             disabled={isGenerating || !isPremium}
@@ -491,16 +557,37 @@ const Wan2VideoPromptGenerator = () => {
 
               <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
                 <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm text-green-700 dark:text-green-300 font-bold">
-                    Version Clean WAN-2.2
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm text-green-700 dark:text-green-300 font-bold">
+                      {optimizationStats ? 'Optimisé par Opik' : 'Version Clean WAN-2.2'}
+                    </p>
+                    {optimizationStats && (
+                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs">
+                        IA
+                      </Badge>
+                    )}
+                  </div>
                   <span className="px-3 py-1 bg-green-100 dark:bg-green-800 rounded-full text-xs font-bold text-green-800 dark:text-green-200">
-                    Score: 9.5/10
+                    Score: {optimizationStats ? optimizationStats.score.toFixed(1) : '9.5'}/10
                   </span>
                 </div>
                 <p className="text-xs text-green-600 dark:text-green-400">
-                  0 texte parasite • Plans & lumière respectés • Template optimisé
+                  {optimizationStats
+                    ? `Optimisé en ${optimizationStats.time}ms • ${optimizationStats.improvements.length} améliorations appliquées`
+                    : '0 texte parasite • Plans & lumière respectés • Template optimisé'}
                 </p>
+                {optimizationStats && optimizationStats.improvements.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-700">
+                    <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Améliorations appliquées:</p>
+                    <ul className="space-y-1">
+                      {optimizationStats.improvements.map((improvement, idx) => (
+                        <li key={idx} className="text-xs text-green-600 dark:text-green-400">
+                          {improvement}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3 text-xs">
