@@ -328,15 +328,32 @@ class LLMRouter {
       }
     }
 
-    console.error('❌ Toutes les clés OpenRouter ont échoué, fallback sur Mistral');
+    console.error('❌ Toutes les clés OpenRouter ont échoué, tentative de fallback');
     const keys = await this.fetchApiKeysFromSupabase();
-    const mistralKeys = keys.get('mistral');
-    if (mistralKeys && mistralKeys.length > 0) {
-      console.log('🔄 Utilisation de Mistral comme fallback...');
-      return this.callMistral(request);
+
+    // Essayer Gemini en premier (gratuit et fiable)
+    const geminiKeys = keys.get('gemini');
+    if (geminiKeys && geminiKeys.length > 0) {
+      console.log('🔄 Utilisation de Gemini comme fallback...');
+      try {
+        return await this.callGemini(request);
+      } catch (geminiError) {
+        console.warn('⚠️ Gemini fallback a échoué:', geminiError);
+      }
     }
 
-    throw lastError || new Error('Toutes les clés OpenRouter ont échoué et aucun fallback disponible');
+    // Essayer Mistral si Gemini échoue
+    const mistralKeys = keys.get('mistral');
+    if (mistralKeys && mistralKeys.length > 0) {
+      console.log('🔄 Utilisation de Mistral comme dernier fallback...');
+      try {
+        return await this.callMistral(request);
+      } catch (mistralError) {
+        console.warn('⚠️ Mistral fallback a échoué:', mistralError);
+      }
+    }
+
+    throw lastError || new Error('Tous les providers ont échoué. Veuillez réessayer plus tard.');
   }
 
   async callMistral(request: LLMRequest, apiKey?: string): Promise<LLMResponse> {
@@ -381,6 +398,17 @@ class LLMRouter {
 
         if (response.status === 402) {
           throw new Error('La clé API Mistral n\'a plus de crédits disponibles.');
+        }
+
+        if (response.status === 429) {
+          console.warn('⚠️ Mistral API limite atteinte (429), tentative de fallback sur Gemini...');
+          const keys = await this.fetchApiKeysFromSupabase();
+          const geminiKeys = keys.get('gemini');
+          if (geminiKeys && geminiKeys.length > 0) {
+            console.log('🔄 Basculement automatique sur Gemini gratuit');
+            return this.callGemini(request);
+          }
+          throw new Error('Limite de capacité Mistral atteinte. Veuillez réessayer dans quelques instants.');
         }
 
         throw new Error(`Erreur API Mistral: ${response.status} - ${errorData.error?.message || errorData.message || response.statusText}`);
