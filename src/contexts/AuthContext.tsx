@@ -56,14 +56,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (mounted) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          if (event === 'SIGNED_OUT') {
-            setLoading(false);
+      (event, session) => {
+        (async () => {
+          if (mounted) {
+            setSession(session);
+            setUser(session?.user ?? null);
+            if (event === 'SIGNED_OUT') {
+              setLoading(false);
+            }
           }
-        }
+        })();
       }
     );
 
