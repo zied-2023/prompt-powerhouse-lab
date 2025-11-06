@@ -52,7 +52,7 @@ const PROVIDER_CONFIGS = {
     maxOutputTokens: 4096
   },
   gemini: {
-    endpoint: 'https://generativelanguage.googleapis.com/v1beta/models/',
+    endpoint: 'https://generativelanguage.googleapis.com/v1/models/',
     model: 'gemini-1.5-flash',
     envKey: 'AIzaSyCgl-H781pntE5MBo2RzP0FlDugIbVevcM',
     maxOutputTokens: 8192
@@ -145,7 +145,20 @@ class LLMRouter {
     // Récupérer les clés API depuis Supabase ou fallback sur .env
     const apiKeys = await this.fetchApiKeysFromSupabase(userId);
 
-    // Mode gratuit: utiliser Gemini
+    // Toujours essayer OpenRouter en premier si disponible (plus stable)
+    const openrouterKeys = apiKeys.get('openrouter') || [];
+    if (openrouterKeys.length > 0) {
+      console.log(`🎯 Utilisation d'OpenRouter (Claude 3.5) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
+      return {
+        provider: 'openrouter',
+        model: PROVIDER_CONFIGS.openrouter.model,
+        apiKey: openrouterKeys[0],
+        endpoint: PROVIDER_CONFIGS.openrouter.endpoint,
+        useEdgeFunction: false
+      };
+    }
+
+    // Mode gratuit ou fallback: utiliser Gemini
     if (!isAuthenticated || !userHasCredits) {
       const geminiKeys = apiKeys.get('gemini') || [];
       if (geminiKeys.length > 0) {
@@ -160,7 +173,7 @@ class LLMRouter {
       }
     }
 
-    // Si l'utilisateur a des crédits et est authentifié, on peut utiliser OpenRouter ou DeepSeek
+    // Si l'utilisateur a des crédits et est authentifié, on peut utiliser DeepSeek
     if (isAuthenticated && userHasCredits && USE_DEEPSEEK_FOR_PREMIUM) {
       const deepseekKeys = apiKeys.get('deepseek') || [];
       if (deepseekKeys.length > 0) {
@@ -173,19 +186,6 @@ class LLMRouter {
           useEdgeFunction: false
         };
       }
-    }
-
-    // Vérifier si OpenRouter est disponible avec plusieurs clés
-    const openrouterKeys = apiKeys.get('openrouter') || [];
-    if (openrouterKeys.length > 0) {
-      console.log(`🎯 Utilisation d\'OpenRouter (Claude 3.5) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
-      return {
-        provider: 'openrouter',
-        model: PROVIDER_CONFIGS.openrouter.model,
-        apiKey: openrouterKeys[0],
-        endpoint: PROVIDER_CONFIGS.openrouter.endpoint,
-        useEdgeFunction: false
-      };
     }
 
     // Fallback sur Mistral si disponible
@@ -562,6 +562,11 @@ class LLMRouter {
 
         if (response.status === 429) {
           throw new Error('La clé API Gemini a atteint sa limite de requêtes.');
+        }
+
+        if (response.status === 404) {
+          console.error('❌ Erreur 404 Gemini - Modèle non trouvé:', errorData);
+          throw new Error(`Le modèle Gemini ${PROVIDER_CONFIGS.gemini.model} n'est pas disponible. Veuillez vérifier votre clé API.`);
         }
 
         throw new Error(`Erreur API Gemini: ${response.status} - ${errorData.error?.message || response.statusText}`);
