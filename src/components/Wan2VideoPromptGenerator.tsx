@@ -266,14 +266,134 @@ const Wan2VideoPromptGenerator = () => {
       </Card>
 
       {generatorMode === 'simple' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <Card className="glass-card border-white/30 shadow-2xl hover-lift">
+        <div className="space-y-8">
+          {generatedPrompt && (
+            <Card className="glass-card border-green-300 dark:border-green-700 shadow-2xl hover-lift bg-green-50/50 dark:bg-green-900/10">
+              <CardHeader className="pb-6">
+                <CardTitle className="flex items-center justify-between text-2xl">
+                  <span className="gradient-text">Prompt WAN-2.2 Généré</span>
+                  <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
+                    <Copy className="h-4 w-4 mr-2" />
+                    {t('copy')}
+                  </Button>
+                </CardTitle>
+                <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
+                  Prompt prêt pour WAN-2.2 (T2V 14B)
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 p-4 rounded-lg border border-pink-200 dark:border-pink-700">
+                    <p className="text-sm font-mono text-gray-800 dark:text-gray-200 leading-relaxed">
+                      {generatedPrompt}
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-green-700 dark:text-green-300 font-bold">
+                          {optimizationStats ? 'Optimisé par Opik' : 'Version Clean WAN-2.2'}
+                        </p>
+                        {optimizationStats && (
+                          <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs">
+                            IA
+                          </Badge>
+                        )}
+                      </div>
+                      <span className="px-3 py-1 bg-green-100 dark:bg-green-800 rounded-full text-xs font-bold text-green-800 dark:text-green-200">
+                        Score: {optimizationStats ? optimizationStats.score.toFixed(1) : '9.5'}/10
+                      </span>
+                    </div>
+                    <p className="text-xs text-green-600 dark:text-green-400">
+                      {optimizationStats
+                        ? `Optimisé en ${optimizationStats.time}ms • ${optimizationStats.improvements.length} améliorations appliquées`
+                        : '0 texte parasite • Plans & lumière respectés • Template optimisé'}
+                    </p>
+                    {optimizationStats && optimizationStats.improvements.length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-700">
+                        <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Améliorations appliquées:</p>
+                        <ul className="space-y-1">
+                          {optimizationStats.improvements.map((improvement, idx) => (
+                            <li key={idx} className="text-xs text-green-600 dark:text-green-400">
+                              {improvement}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <p className="text-muted-foreground">Longueur</p>
+                      <p className="font-bold text-lg">{generatedPrompt.length} / 200</p>
+                    </div>
+                    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <p className="text-muted-foreground">Format</p>
+                      <p className="font-bold text-lg">{advancedSettings.aspectRatio}</p>
+                    </div>
+                    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <p className="text-muted-foreground">FPS</p>
+                      <p className="font-bold text-lg">24 fps</p>
+                    </div>
+                    <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                      <p className="text-muted-foreground">Durée</p>
+                      <p className="font-bold text-lg">{advancedSettings.duration}</p>
+                    </div>
+                  </div>
+
+                  {showAdvanced && (
+                    <div className="grid grid-cols-3 gap-3 text-xs">
+                      <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                        <p className="text-muted-foreground">Seed</p>
+                        <p className="font-bold text-lg">{advancedSettings.seed === -1 ? 'Random' : advancedSettings.seed}</p>
+                      </div>
+                      <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                        <p className="text-muted-foreground">Steps</p>
+                        <p className="font-bold text-lg">{advancedSettings.steps}</p>
+                      </div>
+                      <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
+                        <p className="text-muted-foreground">CFG</p>
+                        <p className="font-bold text-lg">{advancedSettings.cfg}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="text-sm text-blue-700 dark:text-blue-300 font-semibold flex items-center gap-2">
+                          <Sparkles className="h-4 w-4" />
+                          Créer une séquence synchrone
+                        </p>
+                        <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                          Modifiez légèrement les paramètres ci-dessous (ex: changer le mouvement de caméra de "360-orbit" à "dolly-in") pour créer des vidéos synchronisées du même sujet.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={generateWan2Prompt}
+                        disabled={isGenerating || !isPremium}
+                        size="sm"
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white flex-shrink-0"
+                      >
+                        <Wand2 className="h-4 w-4 mr-2" />
+                        Regénérer
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          <Card className="glass-card border-white/30 shadow-2xl hover-lift">
         <CardHeader className="pb-6">
           <CardTitle className="flex items-center space-x-3 text-2xl">
             <div className="w-8 h-8 bg-gradient-to-br from-pink-600 to-purple-600 rounded-lg flex items-center justify-center">
               <Video className="h-5 w-5 text-white" />
             </div>
-            <span className="gradient-text">Générateur WAN-2.2/2.5</span>
+            <span className="gradient-text">{generatedPrompt ? 'Modifier les Paramètres' : 'Générateur WAN-2.2/2.5'}</span>
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
             Template : Character + Item + Sign + Place + Time + Move + Light + Cinematic + Shallow DoF
@@ -528,117 +648,6 @@ const Wan2VideoPromptGenerator = () => {
               <li>• Score WAN-2.2: 9/10 - 0 texte parasite, plans & lumière respectés</li>
             </ul>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="glass-card border-white/30 shadow-2xl hover-lift">
-        <CardHeader className="pb-6">
-          <CardTitle className="flex items-center justify-between text-2xl">
-            <span className="gradient-text">Prompt WAN-2.2 Optimisé</span>
-            {generatedPrompt && (
-              <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
-                <Copy className="h-4 w-4 mr-2" />
-                {t('copy')}
-              </Button>
-            )}
-          </CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
-            Prompt prêt pour WAN-2.2 (T2V 14B)
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {generatedPrompt ? (
-            <div className="glass-card border-white/30 p-6 rounded-xl space-y-4">
-              <div className="bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 p-4 rounded-lg border border-pink-200 dark:border-pink-700">
-                <p className="text-sm font-mono text-gray-800 dark:text-gray-200 leading-relaxed">
-                  {generatedPrompt}
-                </p>
-              </div>
-
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm text-green-700 dark:text-green-300 font-bold">
-                      {optimizationStats ? 'Optimisé par Opik' : 'Version Clean WAN-2.2'}
-                    </p>
-                    {optimizationStats && (
-                      <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 text-xs">
-                        IA
-                      </Badge>
-                    )}
-                  </div>
-                  <span className="px-3 py-1 bg-green-100 dark:bg-green-800 rounded-full text-xs font-bold text-green-800 dark:text-green-200">
-                    Score: {optimizationStats ? optimizationStats.score.toFixed(1) : '9.5'}/10
-                  </span>
-                </div>
-                <p className="text-xs text-green-600 dark:text-green-400">
-                  {optimizationStats
-                    ? `Optimisé en ${optimizationStats.time}ms • ${optimizationStats.improvements.length} améliorations appliquées`
-                    : '0 texte parasite • Plans & lumière respectés • Template optimisé'}
-                </p>
-                {optimizationStats && optimizationStats.improvements.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-green-200 dark:border-green-700">
-                    <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-1">Améliorations appliquées:</p>
-                    <ul className="space-y-1">
-                      {optimizationStats.improvements.map((improvement, idx) => (
-                        <li key={idx} className="text-xs text-green-600 dark:text-green-400">
-                          {improvement}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <p className="text-muted-foreground">Longueur</p>
-                  <p className="font-bold text-lg">{generatedPrompt.length} / 200</p>
-                </div>
-                <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <p className="text-muted-foreground">Format</p>
-                  <p className="font-bold text-lg">{advancedSettings.aspectRatio}</p>
-                </div>
-                <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <p className="text-muted-foreground">FPS</p>
-                  <p className="font-bold text-lg">24 fps</p>
-                </div>
-                <div className="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-                  <p className="text-muted-foreground">Durée</p>
-                  <p className="font-bold text-lg">{advancedSettings.duration}</p>
-                </div>
-              </div>
-
-              {showAdvanced && (
-                <div className="grid grid-cols-3 gap-3 text-xs">
-                  <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                    <p className="text-muted-foreground">Seed</p>
-                    <p className="font-bold text-lg">{advancedSettings.seed === -1 ? 'Random' : advancedSettings.seed}</p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                    <p className="text-muted-foreground">Steps</p>
-                    <p className="font-bold text-lg">{advancedSettings.steps}</p>
-                  </div>
-                  <div className="p-3 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700">
-                    <p className="text-muted-foreground">CFG</p>
-                    <p className="font-bold text-lg">{advancedSettings.cfg}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-16 space-y-4 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-purple-100 dark:from-pink-900/20 dark:to-purple-900/20 rounded-full flex items-center justify-center">
-                <Video className="h-8 w-8 text-pink-600 dark:text-pink-400" />
-              </div>
-              <p className="text-gray-500 dark:text-gray-400 font-medium">
-                Configurez les 7 paramètres et générez votre prompt WAN-2.2
-              </p>
-              <p className="text-sm text-gray-400 dark:text-gray-500">
-                Template: character + item + sign + place + time + move + light
-              </p>
-            </div>
-          )}
         </CardContent>
       </Card>
         </div>
