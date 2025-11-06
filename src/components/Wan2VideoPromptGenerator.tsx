@@ -407,7 +407,16 @@ const Wan2VideoPromptGenerator = () => {
           )}
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-700 mb-4">
+            <p className="text-sm text-purple-700 dark:text-purple-300 font-semibold">
+              7 paramètres essentiels pour WAN-2.2
+            </p>
+            <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+              Character + Item + Sign + Place + Time + Move + Light
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="space-y-2">
               <Label className="text-sm font-semibold text-gray-700 dark:text-gray-200">Character (Personnage)</Label>
               <Select value={formData.character} onValueChange={(value) => setFormData({...formData, character: value})}>
