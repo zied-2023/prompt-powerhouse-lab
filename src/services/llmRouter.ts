@@ -145,6 +145,13 @@ class LLMRouter {
     // Récupérer les clés API depuis Supabase ou fallback sur .env
     const apiKeys = await this.fetchApiKeysFromSupabase(userId);
 
+    // RÈGLE STRICTE: JAMAIS Gemini en mode premium (utilisateur authentifié avec crédits)
+    const isPremiumMode = isAuthenticated && userHasCredits;
+
+    if (isPremiumMode) {
+      console.log('🔒 MODE PREMIUM: Gemini désactivé');
+    }
+
     // PRIORITÉ 1: Mistral (préféré par l'utilisateur)
     const mistralKeys = apiKeys.get('mistral') || [];
     if (mistralKeys.length > 0) {
@@ -172,7 +179,7 @@ class LLMRouter {
     }
 
     // Si l'utilisateur a des crédits et est authentifié, on peut utiliser DeepSeek
-    if (isAuthenticated && userHasCredits && USE_DEEPSEEK_FOR_PREMIUM) {
+    if (isPremiumMode && USE_DEEPSEEK_FOR_PREMIUM) {
       const deepseekKeys = apiKeys.get('deepseek') || [];
       if (deepseekKeys.length > 0) {
         console.log('🎯 Utilisation de DeepSeek pour utilisateur premium', { isAuthenticated, userHasCredits });
@@ -186,11 +193,11 @@ class LLMRouter {
       }
     }
 
-    // Mode gratuit ou fallback final: utiliser Gemini
-    if (!isAuthenticated || !userHasCredits) {
+    // Gemini UNIQUEMENT pour mode gratuit (pas authentifié OU pas de crédits)
+    if (!isPremiumMode) {
       const geminiKeys = apiKeys.get('gemini') || [];
       if (geminiKeys.length > 0) {
-        console.log('🎯 Utilisation de Gemini pour mode gratuit', { isAuthenticated, userHasCredits });
+        console.log('🎯 Utilisation de Gemini pour mode gratuit UNIQUEMENT', { isAuthenticated, userHasCredits });
         return {
           provider: 'gemini',
           model: PROVIDER_CONFIGS.gemini.model,
@@ -199,6 +206,11 @@ class LLMRouter {
           useEdgeFunction: false
         };
       }
+    }
+
+    // Si on arrive ici en mode premium, c'est une erreur critique
+    if (isPremiumMode) {
+      throw new Error('MODE PREMIUM: Aucune API premium disponible (Mistral, OpenRouter ou DeepSeek). Gemini n\'est pas autorisé en mode premium.');
     }
 
     throw new Error('Aucune clé API configurée. Veuillez configurer au moins une clé API (Mistral, OpenRouter, DeepSeek ou Gemini).');
