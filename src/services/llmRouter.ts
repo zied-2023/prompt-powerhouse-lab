@@ -145,10 +145,23 @@ class LLMRouter {
     // Récupérer les clés API depuis Supabase ou fallback sur .env
     const apiKeys = await this.fetchApiKeysFromSupabase(userId);
 
-    // Toujours essayer OpenRouter en premier si disponible (plus stable)
+    // PRIORITÉ 1: Mistral (préféré par l'utilisateur)
+    const mistralKeys = apiKeys.get('mistral') || [];
+    if (mistralKeys.length > 0) {
+      console.log('🎯 Utilisation de Mistral API (priorité 1)', { isAuthenticated, userHasCredits });
+      return {
+        provider: 'mistral',
+        model: PROVIDER_CONFIGS.mistral.model,
+        apiKey: mistralKeys[0],
+        endpoint: PROVIDER_CONFIGS.mistral.endpoint,
+        useEdgeFunction: false
+      };
+    }
+
+    // PRIORITÉ 2: OpenRouter (fallback stable)
     const openrouterKeys = apiKeys.get('openrouter') || [];
     if (openrouterKeys.length > 0) {
-      console.log(`🎯 Utilisation d'OpenRouter (Claude 3.5) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
+      console.log(`🎯 Utilisation d'OpenRouter (priorité 2) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
       return {
         provider: 'openrouter',
         model: PROVIDER_CONFIGS.openrouter.model,
@@ -156,21 +169,6 @@ class LLMRouter {
         endpoint: PROVIDER_CONFIGS.openrouter.endpoint,
         useEdgeFunction: false
       };
-    }
-
-    // Mode gratuit ou fallback: utiliser Gemini
-    if (!isAuthenticated || !userHasCredits) {
-      const geminiKeys = apiKeys.get('gemini') || [];
-      if (geminiKeys.length > 0) {
-        console.log('🎯 Utilisation de Gemini pour mode gratuit', { isAuthenticated, userHasCredits });
-        return {
-          provider: 'gemini',
-          model: PROVIDER_CONFIGS.gemini.model,
-          apiKey: geminiKeys[0],
-          endpoint: PROVIDER_CONFIGS.gemini.endpoint,
-          useEdgeFunction: false
-        };
-      }
     }
 
     // Si l'utilisateur a des crédits et est authentifié, on peut utiliser DeepSeek
@@ -188,17 +186,19 @@ class LLMRouter {
       }
     }
 
-    // Fallback sur Mistral si disponible
-    const mistralKeys = apiKeys.get('mistral') || [];
-    if (mistralKeys.length > 0) {
-      console.log('🎯 Utilisation de Mistral API', { isAuthenticated, userHasCredits });
-      return {
-        provider: 'mistral',
-        model: PROVIDER_CONFIGS.mistral.model,
-        apiKey: mistralKeys[0],
-        endpoint: PROVIDER_CONFIGS.mistral.endpoint,
-        useEdgeFunction: false
-      };
+    // Mode gratuit ou fallback final: utiliser Gemini
+    if (!isAuthenticated || !userHasCredits) {
+      const geminiKeys = apiKeys.get('gemini') || [];
+      if (geminiKeys.length > 0) {
+        console.log('🎯 Utilisation de Gemini pour mode gratuit', { isAuthenticated, userHasCredits });
+        return {
+          provider: 'gemini',
+          model: PROVIDER_CONFIGS.gemini.model,
+          apiKey: geminiKeys[0],
+          endpoint: PROVIDER_CONFIGS.gemini.endpoint,
+          useEdgeFunction: false
+        };
+      }
     }
 
     throw new Error('Aucune clé API configurée. Veuillez configurer au moins une clé API (Mistral, OpenRouter, DeepSeek ou Gemini).');
@@ -527,13 +527,20 @@ class LLMRouter {
 
     try {
       // Convertir les messages au format Gemini
-      const systemInstruction = request.messages.find(m => m.role === 'system')?.content || '';
+      const systemMessage = request.messages.find(m => m.role === 'system')?.content || '';
       const userMessages = request.messages.filter(m => m.role === 'user' || m.role === 'assistant');
 
-      const contents = userMessages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }]
-      }));
+      // Combiner le system message avec le premier message utilisateur si présent
+      const contents = userMessages.map((msg, index) => {
+        const text = (index === 0 && systemMessage)
+          ? `${systemMessage}\n\n${msg.content}`
+          : msg.content;
+
+        return {
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text }]
+        };
+      });
 
       const geminiEndpoint = `${PROVIDER_CONFIGS.gemini.endpoint}${PROVIDER_CONFIGS.gemini.model}:generateContent?key=${apiKey}`;
 
@@ -544,9 +551,6 @@ class LLMRouter {
         },
         body: JSON.stringify({
           contents,
-          systemInstruction: systemInstruction ? {
-            parts: [{ text: systemInstruction }]
-          } : undefined,
           generationConfig: {
             temperature: request.temperature || 0.7,
             maxOutputTokens: request.maxTokens || 8192,
