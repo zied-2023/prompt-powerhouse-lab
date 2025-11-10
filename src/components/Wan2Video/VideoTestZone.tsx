@@ -34,8 +34,7 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
   const [errorDetails, setErrorDetails] = useState<string>('');
 
   const API_KEY = '9c2e77463661ab0b602062f5adddf857';
-  // Note: Remplacez cette URL par la vraie URL de l'API WAN-2.2
-  const API_ENDPOINT = 'https://api.wan2video.com/v1/generate';
+  const API_ENDPOINT = 'https://api.kie.ai/api/v1';
 
   React.useEffect(() => {
     if (initialPrompt) {
@@ -57,24 +56,34 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
     setGenerationStatus('pending');
     setVideoUrl('');
     setTaskId('');
+    setErrorDetails('');
 
     try {
-      console.log('🎬 Génération vidéo WAN-2.2:', { prompt, duration, aspectRatio, seed });
+      console.log('🎬 Génération vidéo via Kie.ai:', { prompt, duration, aspectRatio, seed });
 
-      const response = await fetch(API_ENDPOINT, {
+      // Format de l'API Kie.ai pour génération vidéo
+      const response = await fetch(`${API_ENDPOINT}/chat/completions`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${API_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          prompt: prompt.trim(),
-          duration: parseInt(duration.replace('s', '')),
-          aspect_ratio: aspectRatio,
-          seed: seed === -1 ? null : seed,
-          steps: 25,
-          cfg_scale: 7,
-          fps: 24
+          model: 'wan2.2',
+          messages: [
+            {
+              role: 'user',
+              content: prompt.trim()
+            }
+          ],
+          video_settings: {
+            duration: parseInt(duration.replace('s', '')),
+            aspect_ratio: aspectRatio,
+            seed: seed === -1 ? undefined : seed,
+            steps: 25,
+            cfg_scale: 7,
+            fps: 24
+          }
         })
       });
 
@@ -133,7 +142,7 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
     const checkStatus = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINT}/status/${taskId}`, {
+        const response = await fetch(`${API_ENDPOINT}/chat/tasks/${taskId}`, {
           headers: {
             'Authorization': `Bearer ${API_KEY}`
           }
@@ -209,17 +218,17 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TestTube className="h-5 w-5 text-purple-600" />
-          Zone de Test API WAN-2.2
+          Zone de Test - Kie.ai (WAN-2.2)
         </CardTitle>
         <CardDescription>
-          Testez vos prompts avec l'API WAN-2.2 en temps réel
+          Testez vos prompts avec l'API Kie.ai (modèle WAN-2.2) en temps réel
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription className="text-xs">
-            Cette zone de test utilise votre clé API WAN-2.2 pour générer des vidéos réelles.
+            Cette zone de test utilise l'API Kie.ai (modèle WAN-2.2) pour générer des vidéos réelles.
             La génération peut prendre 1-3 minutes selon la durée.
           </AlertDescription>
         </Alert>
@@ -368,22 +377,15 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 space-y-2">
           <p className="text-xs text-blue-700 dark:text-blue-300">
-            <strong>Note:</strong> L'API WAN-2.2 nécessite une clé API valide.
-            Les vidéos sont générées sur les serveurs de WAN-2.2 et peuvent prendre quelques minutes.
+            <strong>Note:</strong> Cette zone utilise l'API Kie.ai (WAN-2.2 model).
+            Les vidéos sont générées sur les serveurs Kie.ai et peuvent prendre 1-3 minutes.
           </p>
           <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
             <p><strong>Configuration actuelle:</strong></p>
             <p>• Clé API: {API_KEY.substring(0, 8)}...{API_KEY.substring(API_KEY.length - 4)}</p>
             <p>• Endpoint: {API_ENDPOINT}</p>
+            <p>• Model: wan2.2 (Text-to-Video)</p>
           </div>
-          <Alert className="mt-2">
-            <AlertCircle className="h-3 w-3" />
-            <AlertDescription className="text-xs">
-              <strong>Important:</strong> Si vous obtenez une erreur "Failed to fetch",
-              vous devez configurer la vraie URL de l'API WAN-2.2. L'URL actuelle est un placeholder.
-              Consultez la documentation WAN-2.2 pour obtenir l'endpoint correct.
-            </AlertDescription>
-          </Alert>
         </div>
       </CardContent>
     </Card>
