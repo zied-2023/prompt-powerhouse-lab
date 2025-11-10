@@ -15,6 +15,7 @@ import { opikService } from "@/services/opikService";
 import { wan2VideoOptimizer } from "@/services/wan2VideoOptimizer";
 import Wan2VideoFullMotionGenerator from "./Wan2VideoFullMotionGenerator";
 import { Badge } from "@/components/ui/badge";
+import VideoTestZone from "./Wan2Video/VideoTestZone";
 
 const Wan2VideoPromptGenerator = () => {
   const [generatorMode, setGeneratorMode] = useState<'simple' | 'advanced'>('simple');
@@ -385,6 +386,10 @@ const Wan2VideoPromptGenerator = () => {
                 </div>
               </CardContent>
             </Card>
+          )}
+
+          {generatedPrompt && (
+            <VideoTestZone initialPrompt={generatedPrompt} />
           )}
 
           <Card className="glass-card border-white/30 shadow-2xl hover-lift">
