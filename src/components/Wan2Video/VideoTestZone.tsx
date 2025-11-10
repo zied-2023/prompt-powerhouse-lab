@@ -31,9 +31,11 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
   const [taskId, setTaskId] = useState<string>('');
   const [videoUrl, setVideoUrl] = useState<string>('');
   const [generationStatus, setGenerationStatus] = useState<'idle' | 'pending' | 'processing' | 'completed' | 'failed'>('idle');
+  const [errorDetails, setErrorDetails] = useState<string>('');
 
   const API_KEY = '9c2e77463661ab0b602062f5adddf857';
-  const API_ENDPOINT = 'https://api.wan-2-2.ai/v1/generate';
+  // Note: Remplacez cette URL par la vraie URL de l'API WAN-2.2
+  const API_ENDPOINT = 'https://api.wan2video.com/v1/generate';
 
   React.useEffect(() => {
     if (initialPrompt) {
@@ -101,9 +103,23 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
       console.error('❌ Erreur génération vidéo:', error);
       setGenerationStatus('failed');
 
+      let errorMessage = error.message || "Impossible de générer la vidéo";
+
+      // Détection du type d'erreur
+      if (error.message === 'Failed to fetch') {
+        errorMessage = "Impossible de se connecter à l'API WAN-2.2. Vérifiez l'URL de l'API et la clé.";
+        setErrorDetails("Erreur CORS ou URL incorrecte. L'API doit autoriser les requêtes depuis ce domaine.");
+      } else if (error.message.includes('401')) {
+        errorMessage = "Clé API invalide ou expirée";
+        setErrorDetails("Vérifiez que votre clé API WAN-2.2 est correcte.");
+      } else if (error.message.includes('429')) {
+        errorMessage = "Limite de requêtes atteinte";
+        setErrorDetails("Vous avez dépassé la limite de requêtes. Attendez quelques instants.");
+      }
+
       toast({
         title: "Erreur de génération",
-        description: error.message || "Impossible de générer la vidéo",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -337,19 +353,37 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
             {generationStatus === 'failed' && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-xs">
-                  La génération a échoué. Veuillez réessayer.
+                <AlertDescription className="text-xs space-y-2">
+                  <p>La génération a échoué. Veuillez réessayer.</p>
+                  {errorDetails && (
+                    <p className="text-xs bg-red-900/20 p-2 rounded border border-red-700 mt-2">
+                      <strong>Détails:</strong> {errorDetails}
+                    </p>
+                  )}
                 </AlertDescription>
               </Alert>
             )}
           </div>
         )}
 
-        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+        <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 space-y-2">
           <p className="text-xs text-blue-700 dark:text-blue-300">
             <strong>Note:</strong> L'API WAN-2.2 nécessite une clé API valide.
             Les vidéos sont générées sur les serveurs de WAN-2.2 et peuvent prendre quelques minutes.
           </p>
+          <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
+            <p><strong>Configuration actuelle:</strong></p>
+            <p>• Clé API: {API_KEY.substring(0, 8)}...{API_KEY.substring(API_KEY.length - 4)}</p>
+            <p>• Endpoint: {API_ENDPOINT}</p>
+          </div>
+          <Alert className="mt-2">
+            <AlertCircle className="h-3 w-3" />
+            <AlertDescription className="text-xs">
+              <strong>Important:</strong> Si vous obtenez une erreur "Failed to fetch",
+              vous devez configurer la vraie URL de l'API WAN-2.2. L'URL actuelle est un placeholder.
+              Consultez la documentation WAN-2.2 pour obtenir l'endpoint correct.
+            </AlertDescription>
+          </Alert>
         </div>
       </CardContent>
     </Card>
