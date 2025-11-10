@@ -152,23 +152,10 @@ class LLMRouter {
       console.log('🔒 MODE PREMIUM: Gemini désactivé');
     }
 
-    // PRIORITÉ 1: Mistral (préféré par l'utilisateur)
-    const mistralKeys = apiKeys.get('mistral') || [];
-    if (mistralKeys.length > 0) {
-      console.log('🎯 Utilisation de Mistral API (priorité 1)', { isAuthenticated, userHasCredits });
-      return {
-        provider: 'mistral',
-        model: PROVIDER_CONFIGS.mistral.model,
-        apiKey: mistralKeys[0],
-        endpoint: PROVIDER_CONFIGS.mistral.endpoint,
-        useEdgeFunction: false
-      };
-    }
-
-    // PRIORITÉ 2: OpenRouter (fallback stable)
+    // PRIORITÉ 1: OpenRouter (clé principale)
     const openrouterKeys = apiKeys.get('openrouter') || [];
     if (openrouterKeys.length > 0) {
-      console.log(`🎯 Utilisation d'OpenRouter (priorité 2) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
+      console.log(`🎯 Utilisation d'OpenRouter (priorité 1) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
       return {
         provider: 'openrouter',
         model: PROVIDER_CONFIGS.openrouter.model,
@@ -178,11 +165,24 @@ class LLMRouter {
       };
     }
 
-    // Si l'utilisateur a des crédits et est authentifié, on peut utiliser DeepSeek
+    // PRIORITÉ 2: Mistral (fallback principal)
+    const mistralKeys = apiKeys.get('mistral') || [];
+    if (mistralKeys.length > 0) {
+      console.log('🎯 Utilisation de Mistral API (priorité 2)', { isAuthenticated, userHasCredits });
+      return {
+        provider: 'mistral',
+        model: PROVIDER_CONFIGS.mistral.model,
+        apiKey: mistralKeys[0],
+        endpoint: PROVIDER_CONFIGS.mistral.endpoint,
+        useEdgeFunction: false
+      };
+    }
+
+    // PRIORITÉ 3: DeepSeek (si disponible et en mode premium)
     if (isPremiumMode && USE_DEEPSEEK_FOR_PREMIUM) {
       const deepseekKeys = apiKeys.get('deepseek') || [];
       if (deepseekKeys.length > 0) {
-        console.log('🎯 Utilisation de DeepSeek pour utilisateur premium', { isAuthenticated, userHasCredits });
+        console.log('🎯 Utilisation de DeepSeek pour utilisateur premium (priorité 3)', { isAuthenticated, userHasCredits });
         return {
           provider: 'deepseek',
           model: PROVIDER_CONFIGS.deepseek.model,
@@ -210,10 +210,10 @@ class LLMRouter {
 
     // Si on arrive ici en mode premium, c'est une erreur critique
     if (isPremiumMode) {
-      throw new Error('MODE PREMIUM: Aucune API premium disponible (Mistral, OpenRouter ou DeepSeek). Gemini n\'est pas autorisé en mode premium.');
+      throw new Error('MODE PREMIUM: Aucune API premium disponible (OpenRouter, Mistral ou DeepSeek). Gemini n\'est pas autorisé en mode premium.');
     }
 
-    throw new Error('Aucune clé API configurée. Veuillez configurer au moins une clé API (Mistral, OpenRouter, DeepSeek ou Gemini).');
+    throw new Error('Aucune clé API configurée. Veuillez configurer au moins une clé API (OpenRouter, Mistral, DeepSeek ou Gemini).');
   }
 
   async callLLM(config: LLMConfig, request: LLMRequest): Promise<LLMResponse> {
