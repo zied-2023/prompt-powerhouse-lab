@@ -59,19 +59,14 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
     setErrorDetails('');
 
     try {
-      console.log('🎬 Génération vidéo via Kie.ai Runway API:', { prompt, duration, aspectRatio, seed });
-
-      const aspectRatioMap: Record<string, string> = {
-        '16:9': '1280:720',
-        '9:16': '720:1280',
-        '1:1': '1024:1024'
-      };
+      console.log('🎬 Génération vidéo via Kie.ai Runway API:', { prompt, duration, aspectRatio });
 
       const requestBody = {
-        text_prompt: prompt.trim(),
+        prompt: prompt.trim(),
         duration: parseInt(duration.replace('s', '')),
-        ratio: aspectRatioMap[aspectRatio] || '1280:720',
-        seed: seed === -1 ? undefined : seed
+        quality: '720p',
+        aspectRatio: aspectRatio,
+        waterMark: ''
       };
 
       console.log('📤 Request body:', requestBody);
@@ -108,8 +103,8 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
       const data = JSON.parse(responseText);
       console.log('✅ Success response:', data);
 
-      if (data.task_id || data.id) {
-        const taskId = data.task_id || data.id;
+      if (data.code === 200 && data.data?.taskId) {
+        const taskId = data.data.taskId;
         setTaskId(taskId);
         setGenerationStatus('processing');
 
@@ -120,7 +115,7 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
         pollVideoStatus(taskId);
       } else {
-        throw new Error(data.error || data.message || 'Erreur lors de la génération');
+        throw new Error(data.msg || data.message || data.error || 'Erreur lors de la génération');
       }
 
     } catch (error: any) {
@@ -159,7 +154,7 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
     const checkStatus = async () => {
       try {
-        const statusEndpoint = `${API_ENDPOINT}/api/v1/runway/record-detail?id=${taskId}`;
+        const statusEndpoint = `${API_ENDPOINT}/api/v1/runway/record-detail?taskId=${taskId}`;
         console.log('🔍 Checking status at:', statusEndpoint);
 
         const response = await fetch(statusEndpoint, {
@@ -176,41 +171,47 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
         console.log('📊 Status check:', data);
 
-        if (data.status === 'SUCCESS' && data.task_result?.videos?.[0]) {
-          const videoUrl = data.task_result.videos[0];
-          setVideoUrl(videoUrl);
-          setGenerationStatus('completed');
+        if (data.code === 200 && data.data) {
+          const status = data.data.status;
 
-          toast({
-            title: "Vidéo générée avec succès",
-            description: "Votre vidéo est prête",
-          });
+          if (status === 'SUCCESS' && data.data.videoUrl) {
+            const videoUrl = data.data.videoUrl;
+            setVideoUrl(videoUrl);
+            setGenerationStatus('completed');
 
-          return;
-        } else if (data.status === 'FAILED' || data.status === 'ERROR') {
-          setGenerationStatus('failed');
-          setErrorDetails(data.error || data.message || 'Erreur inconnue');
-
-          toast({
-            title: "Échec de génération",
-            description: data.error || data.message || "La génération a échoué",
-            variant: "destructive"
-          });
-
-          return;
-        } else if (data.status === 'PENDING' || data.status === 'PROCESSING') {
-          attempts++;
-
-          if (attempts < maxAttempts) {
-            setTimeout(checkStatus, 5000);
-          } else {
-            setGenerationStatus('failed');
             toast({
-              title: "Timeout",
-              description: "La génération a pris trop de temps",
+              title: "Vidéo générée avec succès",
+              description: "Votre vidéo est prête",
+            });
+
+            return;
+          } else if (status === 'FAILED' || status === 'ERROR') {
+            setGenerationStatus('failed');
+            setErrorDetails(data.data.error || data.msg || 'Erreur inconnue');
+
+            toast({
+              title: "Échec de génération",
+              description: data.data.error || data.msg || "La génération a échoué",
               variant: "destructive"
             });
+
+            return;
+          } else if (status === 'PENDING' || status === 'PROCESSING') {
+            attempts++;
+
+            if (attempts < maxAttempts) {
+              setTimeout(checkStatus, 5000);
+            } else {
+              setGenerationStatus('failed');
+              toast({
+                title: "Timeout",
+                description: "La génération a pris trop de temps",
+                variant: "destructive"
+              });
+            }
           }
+        } else {
+          throw new Error(data.msg || 'Format de réponse inattendu');
         }
 
       } catch (error: any) {
