@@ -59,24 +59,29 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
     setErrorDetails('');
 
     try {
-      console.log('🎬 Génération vidéo via Kie.ai Runway API:', { prompt, duration, aspectRatio, seed });
+      console.log('🎬 Génération vidéo via Kie.ai Kling API:', { prompt, duration, aspectRatio, seed });
 
       const aspectRatioMap: Record<string, string> = {
-        '16:9': '1280:720',
-        '9:16': '720:1280',
-        '1:1': '1024:1024'
+        '16:9': '16:9',
+        '9:16': '9:16',
+        '1:1': '1:1'
       };
 
       const requestBody = {
-        text_prompt: prompt.trim(),
-        duration: parseInt(duration.replace('s', '')),
-        ratio: aspectRatioMap[aspectRatio] || '1280:720',
-        seed: seed === -1 ? undefined : seed
+        model: 'kling-v1',
+        input: {
+          prompt: prompt.trim(),
+          negative_prompt: 'blurry, low quality, distorted',
+          cfg_scale: 0.5,
+          mode: '0',
+          aspect_ratio: aspectRatioMap[aspectRatio] || '16:9',
+          duration: duration
+        }
       };
 
       console.log('📤 Request body:', requestBody);
 
-      const response = await fetch(`${API_ENDPOINT}/runway/generate`, {
+      const response = await fetch(`${API_ENDPOINT}/kling/v1/videos/text2video`, {
         method: 'POST',
         headers: {
           'x-api-key': API_KEY,
@@ -96,16 +101,16 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
       const data = await response.json();
       console.log('✅ Success response:', data);
 
-      if (data.task_id) {
-        setTaskId(data.task_id);
+      if (data.data?.task_id) {
+        setTaskId(data.data.task_id);
         setGenerationStatus('processing');
 
         toast({
           title: "Génération lancée",
-          description: `Task ID: ${data.task_id}. Les vidéos prennent 1-3 minutes.`,
+          description: `Task ID: ${data.data.task_id}. Les vidéos Kling prennent 1-3 minutes.`,
         });
 
-        pollVideoStatus(data.task_id);
+        pollVideoStatus(data.data.task_id);
       } else {
         throw new Error(data.error || 'Erreur lors de la génération');
       }
@@ -146,7 +151,7 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
     const checkStatus = async () => {
       try {
-        const response = await fetch(`${API_ENDPOINT}/runway/fetch/${taskId}`, {
+        const response = await fetch(`${API_ENDPOINT}/kling/v1/videos/text2video/${taskId}`, {
           headers: {
             'x-api-key': API_KEY
           }
@@ -160,29 +165,29 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
         console.log('📊 Status check:', data);
 
-        if (data.status === 'SUCCESS' && data.task_result?.videos?.[0]) {
-          const videoUrl = data.task_result.videos[0];
+        if (data.data?.task_status === 'succeed' && data.data?.task_result?.videos?.[0]?.url) {
+          const videoUrl = data.data.task_result.videos[0].url;
           setVideoUrl(videoUrl);
           setGenerationStatus('completed');
 
           toast({
             title: "Vidéo générée avec succès",
-            description: "Votre vidéo est prête",
+            description: "Votre vidéo Kling est prête",
           });
 
           return;
-        } else if (data.status === 'FAILED' || data.status === 'ERROR') {
+        } else if (data.data?.task_status === 'failed') {
           setGenerationStatus('failed');
-          setErrorDetails(data.error || data.message || 'Erreur inconnue');
+          setErrorDetails(data.data?.task_status_msg || 'Erreur inconnue');
 
           toast({
             title: "Échec de génération",
-            description: data.error || data.message || "La génération a échoué",
+            description: data.data?.task_status_msg || "La génération a échoué",
             variant: "destructive"
           });
 
           return;
-        } else if (data.status === 'PENDING' || data.status === 'PROCESSING') {
+        } else if (data.data?.task_status === 'processing' || data.data?.task_status === 'submitted') {
           attempts++;
 
           if (attempts < maxAttempts) {
@@ -233,18 +238,18 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <TestTube className="h-5 w-5 text-purple-600" />
-          Zone de Test - Kie.ai (Runway Gen-3)
+          Zone de Test - Kie.ai (Kling V1)
         </CardTitle>
         <CardDescription>
-          Testez vos prompts avec l'API Kie.ai Runway Gen-3 Alpha Turbo en temps réel
+          Testez vos prompts avec l'API Kie.ai Kling V1 en temps réel
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription className="text-xs">
-            Cette zone de test utilise l'API Kie.ai (modèle Runway Gen-3 Alpha Turbo) pour générer des vidéos réelles.
-            La génération peut prendre 1-3 minutes selon la durée et le modèle.
+            Cette zone de test utilise l'API Kie.ai (modèle Kling V1) pour générer des vidéos réelles.
+            La génération peut prendre 1-3 minutes selon la durée.
           </AlertDescription>
         </Alert>
 
@@ -392,14 +397,14 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 space-y-2">
           <p className="text-xs text-blue-700 dark:text-blue-300">
-            <strong>Note:</strong> Cette zone utilise l'API Kie.ai (Runway Gen-3 Alpha Turbo).
+            <strong>Note:</strong> Cette zone utilise l'API Kie.ai (Kling V1).
             Les vidéos sont générées sur les serveurs Kie.ai et peuvent prendre 1-3 minutes.
           </p>
           <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
             <p><strong>Configuration actuelle:</strong></p>
             <p>• Clé API: {API_KEY.substring(0, 8)}...{API_KEY.substring(API_KEY.length - 4)}</p>
-            <p>• Endpoint: {API_ENDPOINT}/runway</p>
-            <p>• Model: Runway Gen-3 Alpha Turbo (Text-to-Video)</p>
+            <p>• Endpoint: {API_ENDPOINT}/kling/v1/videos/text2video</p>
+            <p>• Model: Kling V1 (Text-to-Video)</p>
           </div>
         </div>
       </CardContent>
