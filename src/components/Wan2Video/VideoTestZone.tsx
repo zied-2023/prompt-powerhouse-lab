@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, TestTube, Video, AlertCircle, CheckCircle2, Info } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VideoTestZoneProps {
   initialPrompt?: string;
@@ -33,9 +34,6 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
   const [generationStatus, setGenerationStatus] = useState<'idle' | 'pending' | 'processing' | 'completed' | 'failed'>('idle');
   const [errorDetails, setErrorDetails] = useState<string>('');
 
-  const API_KEY = '9c2e77463661ab0b602062f5adddf857';
-  const API_ENDPOINT = 'https://api.kie.ai';
-
   React.useEffect(() => {
     if (initialPrompt) {
       setPrompt(initialPrompt);
@@ -59,9 +57,10 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
     setErrorDetails('');
 
     try {
-      console.log('🎬 Génération vidéo via Kie.ai Runway API:', { prompt, duration, aspectRatio });
+      console.log('🎬 Génération vidéo via Edge Function (Runway API):', { prompt, duration, aspectRatio });
 
       const requestBody = {
+        action: 'generate',
         prompt: prompt.trim(),
         duration: parseInt(duration.replace('s', '')),
         quality: '720p',
@@ -71,37 +70,15 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
       console.log('📤 Request body:', requestBody);
 
-      const endpoint = `${API_ENDPOINT}/api/v1/runway/generate`;
-      console.log('🔗 Using endpoint:', endpoint);
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
+      const { data, error } = await supabase.functions.invoke('runway-video-proxy', {
+        body: requestBody
       });
 
-      console.log('📥 Response status:', response.status);
-      console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log('📥 Edge Function response:', { data, error });
 
-      const responseText = await response.text();
-      console.log('📥 Raw response:', responseText);
-
-      if (!response.ok) {
-        let errorData;
-        try {
-          errorData = JSON.parse(responseText);
-        } catch {
-          errorData = { message: responseText };
-        }
-        console.error('❌ Error response:', errorData);
-        throw new Error(errorData.message || errorData.error || errorData.msg || `Erreur API: ${response.status} - ${responseText}`);
+      if (error) {
+        throw new Error(error.message || 'Erreur lors de l\'appel à l\'Edge Function');
       }
-
-      const data = JSON.parse(responseText);
-      console.log('✅ Success response:', data);
 
       if (data.code === 200 && data.data?.taskId) {
         const taskId = data.data.taskId;
@@ -154,22 +131,20 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
     const checkStatus = async () => {
       try {
-        const statusEndpoint = `${API_ENDPOINT}/api/v1/runway/record-detail?taskId=${taskId}`;
-        console.log('🔍 Checking status at:', statusEndpoint);
+        console.log('🔍 Checking status for taskId:', taskId);
 
-        const response = await fetch(statusEndpoint, {
-          headers: {
-            'Authorization': `Bearer ${API_KEY}`
+        const { data, error } = await supabase.functions.invoke('runway-video-proxy', {
+          body: {
+            action: 'status',
+            taskId: taskId
           }
         });
 
-        if (!response.ok) {
-          throw new Error('Erreur lors de la vérification du statut');
+        console.log('📊 Status check:', { data, error });
+
+        if (error) {
+          throw new Error(error.message || 'Erreur lors de la vérification du statut');
         }
-
-        const data = await response.json();
-
-        console.log('📊 Status check:', data);
 
         if (data.code === 200 && data.data) {
           const status = data.data.status;
@@ -409,14 +384,14 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
 
         <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700 space-y-2">
           <p className="text-xs text-blue-700 dark:text-blue-300">
-            <strong>Note:</strong> Cette zone utilise l'API Kie.ai (Runway Gen-3).
+            <strong>Note:</strong> Cette zone utilise l'API Kie.ai (Runway Gen-3) via Supabase Edge Function.
             Les vidéos sont générées sur les serveurs Kie.ai et peuvent prendre 1-3 minutes.
           </p>
           <div className="text-xs text-blue-600 dark:text-blue-400 space-y-1">
             <p><strong>Configuration actuelle:</strong></p>
-            <p>• Clé API: {API_KEY.substring(0, 8)}...{API_KEY.substring(API_KEY.length - 4)}</p>
-            <p>• Endpoint: {API_ENDPOINT}/api/v1/runway/generate</p>
+            <p>• Edge Function: runway-video-proxy</p>
             <p>• Model: Runway Gen-3 Alpha Turbo (Text-to-Video)</p>
+            <p>• Pas de problème CORS grâce au proxy</p>
           </div>
           <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700">
             <p className="text-xs text-orange-700 dark:text-orange-300 font-semibold">
