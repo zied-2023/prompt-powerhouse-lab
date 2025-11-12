@@ -91,14 +91,23 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
       });
 
       console.log('📥 Response status:', response.status);
+      console.log('📥 Response headers:', Object.fromEntries(response.headers.entries()));
+
+      const responseText = await response.text();
+      console.log('📥 Raw response:', responseText);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData;
+        try {
+          errorData = JSON.parse(responseText);
+        } catch {
+          errorData = { message: responseText };
+        }
         console.error('❌ Error response:', errorData);
-        throw new Error(errorData.message || errorData.error || `Erreur API: ${response.status}`);
+        throw new Error(errorData.message || errorData.error || errorData.msg || `Erreur API: ${response.status} - ${responseText}`);
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseText);
       console.log('✅ Success response:', data);
 
       if (data.data?.task_id) {
@@ -405,6 +414,11 @@ const VideoTestZone: React.FC<VideoTestZoneProps> = ({ initialPrompt = '' }) => 
             <p>• Clé API: {API_KEY.substring(0, 8)}...{API_KEY.substring(API_KEY.length - 4)}</p>
             <p>• Endpoint: {API_ENDPOINT}/kling/v1/videos/text2video</p>
             <p>• Model: Kling V1 (Text-to-Video)</p>
+          </div>
+          <div className="mt-3 pt-3 border-t border-blue-200 dark:border-blue-700">
+            <p className="text-xs text-orange-700 dark:text-orange-300 font-semibold">
+              🔍 Débogage: Vérifiez la console du navigateur (F12) pour voir les détails de la requête et de la réponse.
+            </p>
           </div>
         </div>
       </CardContent>
