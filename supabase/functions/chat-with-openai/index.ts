@@ -41,7 +41,7 @@ function getApiKeyConfigs(provider: string): ApiKeyConfig[] {
 
     return configs;
   } else if (provider === 'openrouter') {
-    const openrouterKey = Deno.env.get('OPENROUTER_API_KEY') || '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';
+    const openrouterKey = Deno.env.get('OPENROUTER_API_KEY');
 
     const configs: ApiKeyConfig[] = [];
     if (openrouterKey) configs.push({ key: openrouterKey, priority: 1, name: 'openrouter' });
