@@ -18,6 +18,11 @@ export const JsonPreview: React.FC<JsonPreviewProps> = ({ config }) => {
   const generatePlainPrompt = (): string => {
     const parts = [];
 
+    // Add scene description as context if provided
+    if (config.sceneDescription && config.sceneDescription.trim()) {
+      parts.push(`SCENE CONTEXT:\n${config.sceneDescription}\n`);
+    }
+
     parts.push(`Character: ${config.character || 'unspecified'}`);
     parts.push(`Item: ${config.item || 'none'}`);
     parts.push(`Expression: ${config.sign || 'neutral'}`);
