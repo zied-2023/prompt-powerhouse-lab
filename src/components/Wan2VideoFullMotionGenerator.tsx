@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { Video, Sparkles, AlertCircle, Wand2 } from "lucide-react";
+import { Video, Sparkles, AlertCircle, Wand2, FileText } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useUserCredits } from "@/hooks/useUserCredits";
 import { useAuth } from "@/contexts/AuthContext";
@@ -55,6 +56,7 @@ const Wan2VideoFullMotionGenerator = () => {
     seedEnd: 2276,
     varyStrength: 0.15,
     appendHash: true,
+    sceneDescription: '',
   });
 
   const [isGenerating, setIsGenerating] = useState(false);
@@ -248,6 +250,30 @@ const Wan2VideoFullMotionGenerator = () => {
         kelvin={config.kelvin}
         onChange={updateConfig}
       />
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            <CardTitle>Description de la scène</CardTitle>
+          </div>
+          <CardDescription>
+            Décrivez librement la scène, l'ambiance, et les éléments visuels que vous souhaitez dans votre vidéo
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Textarea
+            placeholder="Ex: Une scientifique mystérieuse dans un entrepôt abandonné au coucher du soleil. Elle porte un masque chirurgical, l'air confiant malgré l'atmosphère sombre et poussiéreuse. Les rayons du soleil passent à travers les fenêtres cassées..."
+            value={config.sceneDescription || ''}
+            onChange={(e) => updateConfig({ sceneDescription: e.target.value })}
+            className="min-h-24 resize-vertical"
+            data-testid="textarea-scene-description"
+          />
+          <p className="text-xs text-muted-foreground mt-2">
+            Laissez libre cours à votre créativité. Vos suggestions amélioreront la qualité du rendu final.
+          </p>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

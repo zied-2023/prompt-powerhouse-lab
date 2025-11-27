@@ -28,6 +28,7 @@ export interface Wan2VideoConfig {
   seedEnd: number;
   varyStrength: number;
   appendHash: boolean;
+  sceneDescription?: string;
 }
 
 export const ACTOR_ACTIONS = [
