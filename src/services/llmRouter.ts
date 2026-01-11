@@ -152,28 +152,28 @@ class LLMRouter {
       console.log('🔒 MODE PREMIUM: Gemini désactivé');
     }
 
-    // PRIORITÉ 1: OpenRouter (clé principale)
-    const openrouterKeys = apiKeys.get('openrouter') || [];
-    if (openrouterKeys.length > 0) {
-      console.log(`🎯 Utilisation d'OpenRouter (priorité 1) - ${openrouterKeys.length} clés disponibles`, { isAuthenticated, userHasCredits });
-      return {
-        provider: 'openrouter',
-        model: PROVIDER_CONFIGS.openrouter.model,
-        apiKey: openrouterKeys[0],
-        endpoint: PROVIDER_CONFIGS.openrouter.endpoint,
-        useEdgeFunction: false
-      };
-    }
-
-    // PRIORITÉ 2: Mistral (fallback principal)
+    // PRIORITÉ 1: Mistral (clé principale) - Supporte jusqu'à 16000 tokens
     const mistralKeys = apiKeys.get('mistral') || [];
     if (mistralKeys.length > 0) {
-      console.log('🎯 Utilisation de Mistral API (priorité 2)', { isAuthenticated, userHasCredits });
+      console.log('🎯 Utilisation de Mistral API (priorité 1) - Supporte jusqu\'à 16000 tokens', { isAuthenticated, userHasCredits });
       return {
         provider: 'mistral',
         model: PROVIDER_CONFIGS.mistral.model,
         apiKey: mistralKeys[0],
         endpoint: PROVIDER_CONFIGS.mistral.endpoint,
+        useEdgeFunction: false
+      };
+    }
+
+    // PRIORITÉ 2: OpenRouter (fallback) - Limité à 4096 tokens
+    const openrouterKeys = apiKeys.get('openrouter') || [];
+    if (openrouterKeys.length > 0) {
+      console.log(`🎯 Utilisation d'OpenRouter (priorité 2) - ${openrouterKeys.length} clés disponibles (limité à 4096 tokens)`, { isAuthenticated, userHasCredits });
+      return {
+        provider: 'openrouter',
+        model: PROVIDER_CONFIGS.openrouter.model,
+        apiKey: openrouterKeys[0],
+        endpoint: PROVIDER_CONFIGS.openrouter.endpoint,
         useEdgeFunction: false
       };
     }
@@ -290,7 +290,7 @@ class LLMRouter {
             model: PROVIDER_CONFIGS.openrouter.model,
             messages: request.messages,
             temperature: request.temperature || 0.7,
-            max_tokens: request.maxTokens || 16000  // Augmenté pour les prompts longs
+            max_tokens: Math.min(request.maxTokens || 4096, 4096)  // OpenRouter limite à 4096 tokens
           }),
           signal: controller.signal
         });

@@ -842,10 +842,10 @@
 }
 
 /* Correction des zones problématiques */
-.dark .bg-white,
-.dark .bg-gray-100,
+.dark .bg-white:not(input):not(textarea):not(select),
+.dark .bg-gray-100:not(input):not(textarea):not(select),
 .dark .preview-button,
-.dark .light-bg-element {
+.dark .light-bg-element:not(input):not(textarea):not(select) {
   background-color: white !important;
   color: black !important;
   border: 1px solid #666 !important;
@@ -854,6 +854,34 @@
 .dark .badge-light {
   background-color: hsl(0, 0%, 90%) !important;
   color: #000 !important;
+}
+
+/* Fix pour les champs de saisie en mode sombre - texte visible */
+.dark input[type="text"],
+.dark input[type="email"],
+.dark input[type="password"],
+.dark input[type="number"],
+.dark textarea {
+  color: hsl(0 0% 90%) !important;
+}
+
+.dark input[type="text"]:focus,
+.dark input[type="email"]:focus,
+.dark input[type="password"]:focus,
+.dark input[type="number"]:focus,
+.dark textarea:focus {
+  color: hsl(0 0% 95%) !important;
+}
+
+/* Fix spécifique pour les champs avec bg-gray-800 */
+.dark input.bg-gray-800,
+.dark textarea.bg-gray-800 {
+  color: hsl(0 0% 90%) !important;
+}
+
+.dark input.bg-gray-800::placeholder,
+.dark textarea.bg-gray-800::placeholder {
+  color: hsl(0 0% 65%) !important;
 }
 
 /* Suppression des règles trop agressives */
@@ -881,6 +909,159 @@
 .dark [class*="Card"] * {
   color: hsl(0 0% 95%) !important;
 } */
+
+/* Responsive utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Réduire les espacements sur mobile */
+  .space-y-6 > * + * {
+    margin-top: 1rem;
+  }
+  
+  /* Améliorer la lisibilité des textes sur mobile */
+  body {
+    font-size: 15px;
+  }
+  
+  /* Cartes plus compactes sur mobile - mais ne pas cacher le contenu */
+  .glass-card {
+    padding: 1rem;
+  }
+  
+  /* Boutons plus accessibles sur mobile */
+  button {
+    min-height: 44px; /* Taille minimale recommandée pour le touch */
+  }
+  
+  /* S'assurer que tous les composants sont visibles */
+  .space-y-6,
+  .space-y-4,
+  .space-y-8 {
+    display: block !important;
+  }
+  
+  /* S'assurer que les grilles s'affichent correctement */
+  .grid {
+    display: grid !important;
+  }
+  
+  /* S'assurer que les cartes sont visibles */
+  [class*="Card"],
+  .card,
+  .glass-card {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+    /* S'assurer que les TabsContent sont visibles quand actifs */
+  [data-state="active"] {
+    display: block !important;
+  }
+  
+  /* S'assurer que les TabsContent Radix UI sont visibles */
+  [role="tabpanel"][data-state="active"] {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  /* S'assurer que les composants enfants sont visibles */
+  [role="tabpanel"] > * {
+    display: block !important;
+  }
+}
+
+/* Règles globales pour garantir la visibilité des TabsContent Radix UI */
+[data-radix-tabs-content][data-state="active"],
+[role="tabpanel"][data-state="active"],
+[data-state="active"][role="tabpanel"],
+button[data-state="active"] + div[data-state="active"],
+[data-state="active"].space-y-8,
+div[data-state="active"][class*="space-y"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  overflow: visible !important;
+  position: relative !important;
+}
+
+/* Force spécifiquement les TabsContent avec value analytics et wan2-video */
+div[data-state="active"][data-value="analytics"],
+div[data-state="active"][data-value="wan2-video"],
+[role="tabpanel"][data-state="active"][data-value="analytics"],
+[role="tabpanel"][data-state="active"][data-value="wan2-video"],
+[data-radix-tabs-content][data-state="active"][data-value="analytics"],
+[data-radix-tabs-content][data-state="active"][data-value="wan2-video"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
+  min-height: 200px !important;
+}
+
+/* Force la visibilité des TabsTrigger pour analytics et wan2-video */
+button[data-state][data-value="analytics"],
+button[data-state][data-value="wan2-video"],
+[role="tab"][data-state][data-value="analytics"],
+[role="tab"][data-state][data-value="wan2-video"],
+[data-radix-tabs-trigger][data-value="analytics"],
+[data-radix-tabs-trigger][data-value="wan2-video"] {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* S'assurer que les TabsContent inactifs sont bien cachés (comportement normal) */
+[data-radix-tabs-content][data-state="inactive"],
+[role="tabpanel"][data-state="inactive"],
+[data-state="inactive"][role="tabpanel"] {
+  display: none !important;
+}
+
+/* Force la visibilité pour tous les TabsContent actifs */
+div[data-state="active"] {
+  display: block !important;
+}
+
+/* S'assurer que les composants enfants des TabsContent actifs sont visibles */
+[data-state="active"] > *,
+[role="tabpanel"][data-state="active"] > *,
+[data-state="active"].space-y-8 > * {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Règle spécifique pour les TabsContent avec la classe space-y-8 */
+.space-y-8[data-state="active"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Tablet optimizations */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
 
 .dark .card .light-in-dark,
 .dark [class*="card"] .light-in-dark,

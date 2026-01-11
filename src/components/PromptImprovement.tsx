@@ -60,11 +60,13 @@ const PromptImprovement = () => {
     const isAuthenticated = !!user;
     const userHasCredits = creditsRemaining > 0;
 
-    console.log('🚀 Amélioration de prompt:', {
-      isAuthenticated,
-      userHasCredits,
-      creditsRemaining
-    });
+    if (import.meta.env.DEV) {
+      console.log('🚀 Amélioration de prompt:', {
+        isAuthenticated,
+        userHasCredits,
+        creditsRemaining
+      });
+    }
 
     // Déterminer le mode selon les crédits
     const mode = creditsRemaining <= 10 ? 'free' : creditsRemaining <= 50 ? 'basic' : 'premium';
@@ -72,7 +74,9 @@ const PromptImprovement = () => {
 
     // Détecter la langue du prompt original
     const detectedLanguage = detectLanguage(originalPrompt);
-    console.log('🌍 Langue détectée pour amélioration:', detectedLanguage);
+    if (import.meta.env.DEV) {
+      console.log('🌍 Langue détectée pour amélioration:', detectedLanguage);
+    }
 
     try {
       // Construire le system prompt dans la langue détectée
@@ -112,11 +116,13 @@ ${importantText}`;
           }
         );
 
-        console.log('✅ Réponse LLM reçue:', {
-          provider: llmResponse.provider,
-          model: llmResponse.model,
-          tokens: llmResponse.usage.total_tokens
-        });
+        if (import.meta.env.DEV) {
+          console.log('✅ Réponse LLM reçue:', {
+            provider: llmResponse.provider,
+            model: llmResponse.model,
+            tokens: llmResponse.usage.total_tokens
+          });
+        }
 
         const content = llmResponse.content;
 
@@ -161,36 +167,48 @@ ${importantText}`;
         const tokensUsed = llmResponse.usage.total_tokens;
         const estimatedCost = (tokensUsed / 1000) * 0.001;
 
-        // Track with Opik
+        // Track with Opik (silencieusement - l'erreur CORS est attendue si l'API externe bloque)
         if (user) {
-          console.log('📊 Enregistrement trace Opik (Improvement) pour user:', user.id);
+          if (import.meta.env.DEV) {
+            console.log('📊 Enregistrement trace Opik (Improvement) pour user:', user.id);
+          }
           const userPromptText = improvementObjective
             ? `Améliore ce prompt: "${originalPrompt}" - Objectif: ${improvementObjective}`
             : `Améliore ce prompt: "${originalPrompt}"`;
 
-          const traceResult = await opikService.createTrace({
-            userId: user.id,
-            traceId: traceId,
-            promptInput: userPromptText,
-            promptOutput: finalPrompt,
-            model: llmResponse.model,
-            latencyMs: latencyMs,
-            tokensUsed: tokensUsed,
-            cost: estimatedCost,
-            tags: {
-              provider: llmResponse.provider,
-              type: 'improvement',
-              has_objective: !!improvementObjective,
-              mode: mode,
-              opik_optimized: optimizationScore !== null,
-              opik_score: optimizationScore
-            }
-          });
+          try {
+            const traceResult = await opikService.createTrace({
+              userId: user.id,
+              traceId: traceId,
+              promptInput: userPromptText,
+              promptOutput: finalPrompt,
+              model: llmResponse.model,
+              latencyMs: latencyMs,
+              tokensUsed: tokensUsed,
+              cost: estimatedCost,
+              tags: {
+                provider: llmResponse.provider,
+                type: 'improvement',
+                has_objective: !!improvementObjective,
+                mode: mode,
+                opik_optimized: optimizationScore !== null,
+                opik_score: optimizationScore
+              }
+            });
 
-          if (traceResult) {
-            console.log('✅ Trace Opik (Improvement) enregistrée:', traceResult);
-          } else {
-            console.error('❌ Échec trace Opik (Improvement)');
+            if (traceResult && import.meta.env.DEV) {
+              console.log('✅ Trace Opik (Improvement) enregistrée:', traceResult);
+            }
+          } catch (opikError: any) {
+            // Erreur CORS attendue si l'API externe bloque - ignorer silencieusement
+            if (opikError?.message?.includes('CORS') || opikError?.message?.includes('Failed to fetch')) {
+              // L'erreur CORS est gérée silencieusement - la trace est toujours sauvegardée dans Supabase
+              if (import.meta.env.DEV) {
+                console.warn('⚠️ CORS error with Opik API (expected if external API blocks):', opikError.message);
+              }
+            } else if (import.meta.env.DEV) {
+              console.error('❌ Erreur trace Opik (non bloquant):', opikError);
+            }
           }
         }
 
@@ -237,12 +255,49 @@ ${importantText}`;
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(improvedPrompt);
-    toast({
-      title: t('copiedSuccess'),
-      description: t('promptCopiedClipboard'),
-    });
+  const copyToClipboard = async () => {
+    try {
+      // Vérifier si navigator.clipboard est disponible (nécessite HTTPS ou localhost)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(improvedPrompt);
+        toast({
+          title: t('copiedSuccess'),
+          description: t('promptCopiedClipboard'),
+        });
+      } else {
+        // Fallback pour les environnements sans clipboard API (HTTP non-localhost)
+        const textArea = document.createElement('textarea');
+        textArea.value = improvedPrompt;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+          const successful = document.execCommand('copy');
+          document.body.removeChild(textArea);
+          
+          if (successful) {
+            toast({
+              title: t('copiedSuccess'),
+              description: t('promptCopiedClipboard'),
+            });
+          } else {
+            throw new Error('execCommand failed');
+          }
+        } catch (err) {
+          document.body.removeChild(textArea);
+          throw err;
+        }
+      }
+    } catch (error) {
+      console.error('Erreur lors de la copie:', error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de copier dans le presse-papiers. Veuillez sélectionner et copier manuellement.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSaveImprovedPrompt = async () => {
@@ -284,12 +339,16 @@ ${importantText}`;
   };
 
   const handleFeedback = async (score: number) => {
-    console.log('🌟 handleFeedback (Improvement) appelé avec score:', score);
-    console.log('🔍 currentTraceId:', currentTraceId);
-    console.log('👤 user:', user?.id);
+    if (import.meta.env.DEV) {
+      console.log('🌟 handleFeedback (Improvement) appelé avec score:', score);
+      console.log('🔍 currentTraceId:', currentTraceId);
+      console.log('👤 user:', user?.id);
+    }
 
     if (!currentTraceId || !user) {
-      console.warn('⚠️ Cannot save feedback: no trace ID or user');
+      if (import.meta.env.DEV) {
+        console.warn('⚠️ Cannot save feedback: no trace ID or user');
+      }
       toast({
         title: "Erreur",
         description: "Impossible d'enregistrer l'évaluation",
@@ -301,7 +360,9 @@ ${importantText}`;
     setUserFeedback(score);
 
     try {
-      console.log('📤 Envoi du feedback à Supabase...');
+      if (import.meta.env.DEV) {
+        console.log('📤 Envoi du feedback à Supabase...');
+      }
       const { error } = await opikService.updateTraceFeedback(currentTraceId, score);
 
       if (error) {
@@ -312,14 +373,18 @@ ${importantText}`;
           variant: "destructive"
         });
       } else {
-        console.log('✅ Feedback saved successfully for trace:', currentTraceId, 'with score:', score);
+        if (import.meta.env.DEV) {
+          console.log('✅ Feedback saved successfully for trace:', currentTraceId, 'with score:', score);
+        }
         toast({
           title: "Merci !",
           description: `Votre évaluation (${score}/5) a été enregistrée`,
         });
       }
     } catch (error) {
-      console.error('❌ Exception saving feedback:', error);
+      if (import.meta.env.DEV) {
+        console.error('❌ Exception saving feedback:', error);
+      }
       toast({
         title: "Erreur",
         description: "Une exception s'est produite",

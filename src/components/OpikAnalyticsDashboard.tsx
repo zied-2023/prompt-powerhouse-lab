@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { opikService } from '@/services/opikService';
@@ -57,6 +57,42 @@ export const OpikAnalyticsDashboard: React.FC = () => {
   const [isSavingPrompt, setIsSavingPrompt] = useState(false);
   const [originalPrompt, setOriginalPrompt] = useState<string>('');
 
+  // Utiliser useCallback pour mémoriser la fonction et éviter les re-renders inutiles
+  const loadAnalytics = useCallback(async (isBackgroundRefresh = false) => {
+    if (!user) return;
+
+    if (isBackgroundRefresh) {
+      setIsRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    try {
+      // Logs uniquement en mode développement
+      if (import.meta.env.DEV) {
+        console.log('🔄 Rechargement des analytics Opik pour user:', user.id);
+      }
+
+      const [aggregatedStats, traces] = await Promise.all([
+        opikService.getAggregatedMetrics(user.id),
+        opikService.getTracesByUser(user.id, 10)
+      ]);
+
+      // Logs uniquement en mode développement
+      if (import.meta.env.DEV) {
+        console.log('📊 Stats reçues:', aggregatedStats);
+        console.log('📝 Traces reçues:', traces.length);
+      }
+
+      setStats(aggregatedStats);
+      setRecentTraces(traces);
+    } catch (error) {
+      console.error('Error loading analytics:', error);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (user) {
       loadAnalytics();
@@ -80,7 +116,7 @@ export const OpikAnalyticsDashboard: React.FC = () => {
         document.removeEventListener('visibilitychange', handleVisibilityChange);
       };
     }
-  }, [user]);
+  }, [user, loadAnalytics]);
 
   useEffect(() => {
     let progressInterval: NodeJS.Timeout;
@@ -99,35 +135,6 @@ export const OpikAnalyticsDashboard: React.FC = () => {
       if (progressInterval) clearInterval(progressInterval);
     };
   }, [isTesting]);
-
-  const loadAnalytics = async (isBackgroundRefresh = false) => {
-    if (!user) return;
-
-    if (isBackgroundRefresh) {
-      setIsRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-    try {
-      console.log('🔄 Rechargement des analytics Opik pour user:', user.id);
-
-      const [aggregatedStats, traces] = await Promise.all([
-        opikService.getAggregatedMetrics(user.id),
-        opikService.getTracesByUser(user.id, 10)
-      ]);
-
-      console.log('📊 Stats reçues:', aggregatedStats);
-      console.log('📝 Traces reçues:', traces.length);
-
-      setStats(aggregatedStats);
-      setRecentTraces(traces);
-    } catch (error) {
-      console.error('Error loading analytics:', error);
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  };
 
   const formatLatency = (ms: number) => {
     if (ms < 1000) return `${Math.round(ms)}ms`;
@@ -214,12 +221,53 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast({
-      title: "Copié!",
-      description: "Le prompt a été copié dans le presse-papiers."
-    });
+  const copyToClipboard = async (text: string) => {
+    if (!text || text.trim() === '') {
+      toast({
+        title: "Erreur",
+        description: "Aucun texte à copier.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(text);
+      toast({
+        title: "Copié!",
+        description: "Le prompt a été copié dans le presse-papiers."
+      });
+    } catch (error) {
+      console.error('Erreur lors de la copie:', error);
+      // Fallback pour les navigateurs qui ne supportent pas l'API Clipboard
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          toast({
+            title: "Copié!",
+            description: "Le prompt a été copié dans le presse-papiers."
+          });
+        } else {
+          throw new Error('Échec de la copie');
+        }
+      } catch (fallbackError) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de copier le prompt. Veuillez le sélectionner manuellement.",
+          variant: "destructive"
+        });
+      }
+    }
   };
 
   const saveImprovedPrompt = async () => {
@@ -258,7 +306,9 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
         throw error;
       }
 
-      console.log('✅ Prompt sauvegardé avec succès:', data);
+      if (import.meta.env.DEV) {
+        console.log('✅ Prompt sauvegardé avec succès:', data);
+      }
 
       toast({
         title: "Succès!",
@@ -319,10 +369,12 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
     setTestStartTime(startTime);
 
     try {
-      console.log('🧪 Démarrage du test de prompt...', {
-        promptLength: testPrompt.length,
-        userHasCredits: creditsRemaining > 0
-      });
+      if (import.meta.env.DEV) {
+        console.log('🧪 Démarrage du test de prompt...', {
+          promptLength: testPrompt.length,
+          userHasCredits: creditsRemaining > 0
+        });
+      }
 
       const userHasCredits = creditsRemaining > 0;
 
@@ -343,11 +395,13 @@ Fournis UNIQUEMENT le prompt amélioré, sans explications supplémentaires.`;
       ]) as any;
 
       const latency = Date.now() - startTime;
-      console.log('✅ Test réussi', {
-        latency,
-        provider: llmResponse.provider,
-        tokens: llmResponse.usage?.total_tokens
-      });
+      if (import.meta.env.DEV) {
+        console.log('✅ Test réussi', {
+          latency,
+          provider: llmResponse.provider,
+          tokens: llmResponse.usage?.total_tokens
+        });
+      }
 
       setTestOutput(llmResponse.content);
 

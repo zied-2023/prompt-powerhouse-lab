@@ -38,16 +38,63 @@ TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
 const TabsContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
->(({ className, ...props }, ref) => (
-  <TabsPrimitive.Content
-    ref={ref}
-    className={cn(
-      "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-      className
-    )}
-    {...props}
-  />
-))
+>(({ className, ...props }, ref) => {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  
+  React.useEffect(() => {
+    if (contentRef.current) {
+      const observer = new MutationObserver(() => {
+        const element = contentRef.current;
+        if (element) {
+          const state = element.getAttribute('data-state');
+          if (state === 'active') {
+            element.style.display = 'block';
+            element.style.visibility = 'visible';
+            element.style.opacity = '1';
+            element.style.height = 'auto';
+          } else if (state === 'inactive') {
+            element.style.display = 'none';
+          }
+        }
+      });
+      
+      observer.observe(contentRef.current, {
+        attributes: true,
+        attributeFilter: ['data-state']
+      });
+      
+      // Force initial state
+      const state = contentRef.current.getAttribute('data-state');
+      if (state === 'active') {
+        contentRef.current.style.display = 'block';
+        contentRef.current.style.visibility = 'visible';
+        contentRef.current.style.opacity = '1';
+      }
+      
+      return () => observer.disconnect();
+    }
+  }, []);
+  
+  return (
+    <TabsPrimitive.Content
+      ref={(node) => {
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+        contentRef.current = node;
+      }}
+      className={cn(
+        "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "data-[state=active]:!block data-[state=active]:!visible data-[state=active]:!opacity-100",
+        "data-[state=inactive]:!hidden",
+        className
+      )}
+      {...props}
+    />
+  );
+})
 TabsContent.displayName = TabsPrimitive.Content.displayName
 
 export { Tabs, TabsList, TabsTrigger, TabsContent }

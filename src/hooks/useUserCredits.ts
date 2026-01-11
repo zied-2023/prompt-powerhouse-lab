@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface UserCredits {
   id: string;
@@ -23,21 +24,55 @@ export function useUserCredits() {
   const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { user, loading: authLoading } = useAuth();
+  const isRefreshingRef = useRef(false);
 
   // Fetch user credits
-  const fetchUserCredits = async () => {
+  const fetchUserCredits = useCallback(async (silent = false) => {
+    // Ne pas faire d'appel si l'authentification est en cours de chargement
+    if (authLoading) return;
+    
+    // Ne pas faire d'appel si l'utilisateur n'est pas authentifié
+    if (!user) {
+      setIsLoading(false);
+      setCredits(null);
+      return;
+    }
+
+    // Éviter les appels simultanés
+    if (isRefreshingRef.current && !silent) return;
+    
+    if (!silent) {
+      isRefreshingRef.current = true;
+      setIsLoading(true);
+    }
+
     try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return;
+      // Utiliser la session au lieu de getUser pour éviter les appels répétés
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || !session.user) {
+        setCredits(null);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('user_credits')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', session.user.id)
         .maybeSingle();
 
       if (error) {
-        console.error('Error fetching credits:', error);
+        // Gérer spécifiquement les erreurs 401/403 (non authentifié)
+        if (error.code === 'PGRST116' || error.message?.includes('JWT')) {
+          if (import.meta.env.DEV) {
+            console.warn('User not authenticated, skipping credits fetch');
+          }
+          setCredits(null);
+          return;
+        }
+        if (import.meta.env.DEV) {
+          console.error('Error fetching credits:', error);
+        }
         return;
       }
 
@@ -48,14 +83,25 @@ export function useUserCredits() {
         });
       } else {
         // Create credits for user if they don't exist
-        await createUserCredits(user.user.id);
+        await createUserCredits(session.user.id);
       }
-    } catch (error) {
-      console.error('Error in fetchUserCredits:', error);
+    } catch (error: any) {
+      // Gérer les erreurs d'authentification
+      if (error?.status === 403 || error?.status === 401 || error?.message?.includes('JWT')) {
+        if (import.meta.env.DEV) {
+          console.warn('Authentication error, skipping credits fetch');
+        }
+        setCredits(null);
+        return;
+      }
+      if (import.meta.env.DEV) {
+        console.error('Error in fetchUserCredits:', error);
+      }
     } finally {
       setIsLoading(false);
+      isRefreshingRef.current = false;
     }
-  };
+  }, [user, authLoading]);
 
   // Create initial credits for new user
   const createUserCredits = async (userId: string) => {
@@ -71,7 +117,9 @@ export function useUserCredits() {
         .single();
 
       if (error) {
-        console.error('Error creating credits:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error creating credits:', error);
+        }
         return;
       }
 
@@ -80,7 +128,9 @@ export function useUserCredits() {
         remaining_credits: data.total_credits - data.used_credits
       });
     } catch (error) {
-      console.error('Error in createUserCredits:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in createUserCredits:', error);
+      }
     }
   };
 
@@ -109,8 +159,8 @@ export function useUserCredits() {
     }
   ];
 
-  // Fetch subscription plans
-  const fetchPlans = async () => {
+  // Fetch subscription plans (public, no auth required)
+  const fetchPlans = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('subscription_plans')
@@ -119,37 +169,57 @@ export function useUserCredits() {
         .order('price_tnd', { ascending: true });
 
       if (error) {
-        console.error('Error fetching plans:', error);
+        // Si erreur d'authentification, utiliser les plans par défaut silencieusement
+        if (error.code === 'PGRST301' || error.message?.includes('permission')) {
+          if (import.meta.env.DEV) {
+            console.warn('Permission denied for subscription_plans, using default plans');
+          }
+          setPlans(defaultPlans);
+          return;
+        }
+        if (import.meta.env.DEV) {
+          console.error('Error fetching plans:', error);
+        }
         setPlans(defaultPlans);
         return;
       }
 
       // If no plans in database, use default plans
       setPlans(data && data.length > 0 ? data : defaultPlans);
-    } catch (error) {
-      console.error('Error in fetchPlans:', error);
+    } catch (error: any) {
+      if (import.meta.env.DEV) {
+        console.error('Error in fetchPlans:', error);
+      }
       setPlans(defaultPlans);
     }
-  };
+  }, []);
 
   // Use a credit (increment used_credits)
   const useCredit = async (): Promise<boolean> => {
-    console.log('useCredit called, current credits:', credits);
+    if (import.meta.env.DEV) {
+      console.log('useCredit called, current credits:', credits);
+    }
 
     // Si pas de crédits chargés, continuer sans erreur
     if (!credits) {
-      console.log('No credits loaded, skipping credit deduction');
+      if (import.meta.env.DEV) {
+        console.log('No credits loaded, skipping credit deduction');
+      }
       return true;
     }
 
     // Ne pas bloquer si plus de crédits (juste logger)
     if (credits.remaining_credits <= 0) {
-      console.log('No credits available, but not blocking:', credits);
+      if (import.meta.env.DEV) {
+        console.log('No credits available, but not blocking:', credits);
+      }
       return true;
     }
 
     try {
-      console.log('Updating credits in database, incrementing used_credits to:', credits.used_credits + 1);
+      if (import.meta.env.DEV) {
+        console.log('Updating credits in database, incrementing used_credits to:', credits.used_credits + 1);
+      }
 
       const { data, error } = await supabase
         .from('user_credits')
@@ -161,24 +231,32 @@ export function useUserCredits() {
         .single();
 
       if (error) {
-        console.error('Error using credit:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error using credit:', error);
+        }
         // Ne pas bloquer en cas d'erreur
         return true;
       }
 
-      console.log('Credit update successful, new data:', data);
+      if (import.meta.env.DEV) {
+        console.log('Credit update successful, new data:', data);
+      }
 
       const newCredits = {
         ...data,
         remaining_credits: data.total_credits - data.used_credits
       };
 
-      console.log('Setting new credits state:', newCredits);
+      if (import.meta.env.DEV) {
+        console.log('Setting new credits state:', newCredits);
+      }
       setCredits(newCredits);
 
       return true;
     } catch (error) {
-      console.error('Error in useCredit:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in useCredit:', error);
+      }
       // Ne pas bloquer en cas d'erreur
       return true;
     }
@@ -199,7 +277,9 @@ export function useUserCredits() {
         .single();
 
       if (error) {
-        console.error('Error adding credits:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error adding credits:', error);
+        }
         return;
       }
 
@@ -214,15 +294,31 @@ export function useUserCredits() {
         variant: "default"
       });
     } catch (error) {
-      console.error('Error in addCredits:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in addCredits:', error);
+      }
     }
   };
 
   useEffect(() => {
-    fetchUserCredits();
+    // Ne charger les crédits que si l'utilisateur est authentifié
+    if (!authLoading) {
+      if (user) {
+        fetchUserCredits();
+      } else {
+        setIsLoading(false);
+        setCredits(null);
+      }
+    }
+  }, [user, authLoading, fetchUserCredits]);
+
+  useEffect(() => {
+    // Charger les plans une seule fois (public)
     fetchPlans();
 
-    // Écouter les changements de crédits en temps réel
+    // Écouter les changements de crédits en temps réel uniquement si l'utilisateur est connecté
+    if (!user) return;
+
     const channel = supabase
       .channel('user_credits_changes')
       .on(
@@ -230,12 +326,13 @@ export function useUserCredits() {
         {
           event: '*',
           schema: 'public',
-          table: 'user_credits'
+          table: 'user_credits',
+          filter: `user_id=eq.${user.id}`
         },
         (payload) => {
-          console.log('Real-time credit update:', payload);
-          // Rafraîchir les crédits quand il y a un changement
-          fetchUserCredits();
+          // Rafraîchir les crédits quand il y a un changement (silencieusement)
+          // Ne pas logger pour éviter le spam de logs
+          fetchUserCredits(true);
         }
       )
       .subscribe();
@@ -243,7 +340,7 @@ export function useUserCredits() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [user, fetchPlans, fetchUserCredits]);
 
   return {
     credits,

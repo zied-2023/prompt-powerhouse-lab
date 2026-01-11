@@ -218,8 +218,8 @@ const PromptGenerator = () => {
       console.log('✅ Langue finale utilisée:', userLanguage);
       console.log('📝 Description:', formData.description.substring(0, 50));
 
-      // Déterminer les contraintes de longueur basées sur le mode premium
-      const lengthConstraints = mode === 'premium' && formData.length ? {
+      // Déterminer les contraintes de longueur (disponibles pour tous les modes si longueur spécifiée)
+      const lengthConstraints = formData.length ? {
         'short': { words: '50-100 mots', tokens: 300, description: 'Direct et efficace avec structure complète' },
         'medium': { words: '150-300 mots', tokens: 800, description: 'Équilibre optimal entre détail et performance' },
         'long': { words: '400-700 mots', tokens: 1800, description: 'Détaillé avec exemples et méthodologie' },
@@ -245,14 +245,40 @@ const PromptGenerator = () => {
       console.log('📝 User prompt:', userPrompt.substring(0, 100));
 
       // Déterminer les tokens max selon le mode et la longueur demandée
-      // MODE PREMIUM: Augmenter très significativement les limites
-      const maxTokensByMode = mode === 'free'
-        ? 2000  // Assez pour générer un prompt complet de 200-300 mots
-        : mode === 'basic'
-        ? 3000  // Assez pour générer un prompt complet de 300-400 mots
-        : lengthConstraints
-        ? Math.max(lengthConstraints.tokens * 3, 6000)  // Triple des tokens demandés, minimum 6000
-        : 12000;  // Pour mode premium sans longueur spécifiée, utiliser 12000 tokens
+      // IMPORTANT: Mistral est maintenant en priorité 1 et supporte jusqu'à 16000 tokens
+      let maxTokensByMode: number;
+      
+      if (lengthConstraints) {
+        // Calculer les tokens demandés selon le mode
+        // Mistral peut gérer plus de tokens, donc on peut être plus généreux
+        const requestedTokens = lengthConstraints.tokens * (mode === 'premium' ? 3 : mode === 'basic' ? 2.5 : 2);
+        
+        // Limites par mode (Mistral est en priorité 1, donc on peut utiliser jusqu'à 16000)
+        const modeLimits = {
+          'free': 8000,    // Mistral supporte jusqu'à 16000, mais on limite en mode gratuit
+          'basic': 12000,  // Mistral peut gérer jusqu'à 16000
+          'premium': 16000 // Mistral peut gérer jusqu'à 16000 tokens
+        };
+        
+        // Prendre le minimum entre les tokens demandés et la limite du mode
+        maxTokensByMode = Math.min(requestedTokens, modeLimits[mode]);
+        
+        // S'assurer d'avoir au moins le minimum requis pour la longueur
+        const minRequired = lengthConstraints.tokens * 1.5; // Au moins 1.5x pour avoir de la marge
+        if (maxTokensByMode < minRequired) {
+          // Ajuster selon le mode, mais toujours dans les limites de Mistral (16000)
+          maxTokensByMode = Math.min(minRequired, modeLimits[mode]);
+        }
+      } else {
+        // Pas de contrainte de longueur spécifiée
+        maxTokensByMode = mode === 'free'
+          ? 4000  // Mistral peut gérer plus, mais on reste conservateur en mode gratuit
+          : mode === 'basic'
+          ? 8000  // Mistral peut gérer plus en mode basique
+          : 12000;  // Pour mode premium sans longueur spécifiée, utiliser 12000 tokens (Mistral supporte jusqu'à 16000)
+      }
+      
+      console.log(`📊 Tokens max calculés: ${maxTokensByMode} (mode: ${mode}, longueur: ${formData.length || 'non spécifiée'}, provider: Mistral)`);
 
       // MODE GRATUIT: Génération rapide + optimisation en arrière-plan
       let generatedContent = '';
@@ -507,12 +533,53 @@ const PromptGenerator = () => {
     }
   };
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(generatedPrompt);
-    toast({
-      title: t('copiedSuccess'),
-      description: t('promptCopiedClipboard'),
-    });
+  const copyToClipboard = async () => {
+    if (!generatedPrompt || generatedPrompt.trim() === '') {
+      toast({
+        title: "Erreur",
+        description: "Aucun prompt à copier.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(generatedPrompt);
+      toast({
+        title: t('copiedSuccess'),
+        description: t('promptCopiedClipboard'),
+      });
+    } catch (error) {
+      console.error('Erreur lors de la copie:', error);
+      // Fallback pour les navigateurs qui ne supportent pas l'API Clipboard
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = generatedPrompt;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          toast({
+            title: t('copiedSuccess'),
+            description: t('promptCopiedClipboard'),
+          });
+        } else {
+          throw new Error('Échec de la copie');
+        }
+      } catch (fallbackError) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de copier le prompt. Veuillez le sélectionner manuellement.",
+          variant: "destructive"
+        });
+      }
+    }
   };
 
   const handleFeedback = async (score: number) => {
@@ -591,21 +658,21 @@ const PromptGenerator = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
       {/* Formulaire */}
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
-        <CardHeader className="pb-6">
-          <CardTitle className="flex items-center space-x-3 text-2xl">
-            <div className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <Wand2 className="h-5 w-5 text-white" />
+        <CardHeader className="pb-4 sm:pb-6">
+          <CardTitle className="flex items-center space-x-2 sm:space-x-3 text-xl sm:text-2xl">
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-violet-600 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Wand2 className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </div>
             <span className="gradient-text">{t('promptGeneratorTitle')}</span>
           </CardTitle>
-          <CardDescription className="text-gray-600 dark:text-gray-300 font-medium">
+          <CardDescription className="text-gray-600 dark:text-gray-300 font-medium text-sm sm:text-base">
             {t('promptGeneratorDesc')}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 sm:space-y-6">
           {/* Catégorie principale */}
           <div className="space-y-3">
             <Label htmlFor="category" className="text-sm font-semibold text-gray-700 dark:text-gray-200">
@@ -659,7 +726,7 @@ const PromptGenerator = () => {
               placeholder={t('taskDescriptionPlaceholder')}
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px] bg-white dark:bg-gray-800"
+              className="animated-border hover:shadow-lg transition-all duration-200 font-medium resize-none min-h-[100px] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
               rows={4}
             />
           </div>
@@ -674,7 +741,7 @@ const PromptGenerator = () => {
               placeholder={t('mainObjectivePlaceholder')}
               value={formData.objective}
               onChange={(e) => setFormData({...formData, objective: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800"
+              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -688,7 +755,7 @@ const PromptGenerator = () => {
               placeholder={t('targetAudiencePlaceholder')}
               value={formData.targetAudience}
               onChange={(e) => setFormData({...formData, targetAudience: e.target.value})}
-              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800"
+              className="animated-border hover:shadow-lg transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
           </div>
 
@@ -761,7 +828,7 @@ const PromptGenerator = () => {
           <Button 
             onClick={generatePrompt} 
             disabled={isGenerating}
-            className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 hover:from-violet-700 hover:via-purple-700 hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 glow-effect text-lg"
+            className="w-full bg-gradient-to-r from-violet-600 via-purple-600 to-blue-600 hover:from-violet-700 hover:via-purple-700 hover:to-blue-700 text-white font-semibold py-3 sm:py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 glow-effect text-base sm:text-lg min-h-[44px]"
           >
             {isGenerating ? (
               <>
@@ -780,12 +847,12 @@ const PromptGenerator = () => {
 
       {/* Résultat */}
       <Card className="glass-card border-white/30 shadow-2xl hover-lift">
-        <CardHeader className="pb-6">
-          <CardTitle className="flex items-center justify-between text-2xl">
+        <CardHeader className="pb-4 sm:pb-6">
+          <CardTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 text-xl sm:text-2xl">
             <span className="gradient-text">{t('aiGeneratedPrompt')}</span>
             {generatedPrompt && (
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30">
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button variant="outline" size="sm" onClick={copyToClipboard} className="hover-lift glass-card border-white/30 flex-1 sm:flex-initial">
                   <Copy className="h-4 w-4 mr-2" />
                   {t('copy')}
                 </Button>

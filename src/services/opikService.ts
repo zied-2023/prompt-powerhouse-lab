@@ -37,14 +37,16 @@ class OpikService {
     try {
       const startTime = Date.now();
 
-      console.log('🔍 Opik: Préparation des données de trace:', {
-        userId: trace.userId,
-        traceId: trace.traceId,
-        model: trace.model,
-        hasInput: !!trace.promptInput,
-        hasOutput: !!trace.promptOutput,
-        feedbackScore: trace.feedbackScore
-      });
+      if (import.meta.env.DEV) {
+        console.log('🔍 Opik: Préparation des données de trace:', {
+          userId: trace.userId,
+          traceId: trace.traceId,
+          model: trace.model,
+          hasInput: !!trace.promptInput,
+          hasOutput: !!trace.promptOutput,
+          feedbackScore: trace.feedbackScore
+        });
+      }
 
       const autoScore = this.calculateAutoScore(trace);
 
@@ -61,7 +63,9 @@ class OpikService {
         tags: trace.tags || {}
       };
 
-      console.log('📤 Opik: Envoi des données à Supabase avec score:', traceData.feedback_score);
+      if (import.meta.env.DEV) {
+        console.log('📤 Opik: Envoi des données à Supabase avec score:', traceData.feedback_score);
+      }
 
       const { data, error } = await supabase
         .from('opik_prompt_traces')
@@ -70,17 +74,21 @@ class OpikService {
         .maybeSingle();
 
       if (error) {
-        console.error('❌ Opik: Erreur lors de la création de la trace:', error);
-        console.error('❌ Détails de l\'erreur:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
+        if (import.meta.env.DEV) {
+          console.error('❌ Opik: Erreur lors de la création de la trace:', error);
+          console.error('❌ Détails de l\'erreur:', {
+            message: error.message,
+            details: error.details,
+            hint: error.hint,
+            code: error.code
+          });
+        }
         return null;
       }
 
-      console.log('✅ Opik: Trace créée dans Supabase avec ID:', data?.id);
+      if (import.meta.env.DEV && data?.id) {
+        console.log('✅ Opik: Trace créée dans Supabase avec ID:', data.id);
+      }
 
       if (this.apiKey) {
         await this.sendToOpikAPI('traces', {
@@ -100,7 +108,9 @@ class OpikService {
 
       return data?.id || null;
     } catch (error) {
-      console.error('Error in createTrace:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in createTrace:', error);
+      }
       return null;
     }
   }
@@ -145,7 +155,9 @@ class OpikService {
         .insert(metricData);
 
       if (error) {
-        console.error('Error logging metric:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error logging metric:', error);
+        }
         return false;
       }
 
@@ -160,7 +172,9 @@ class OpikService {
 
       return true;
     } catch (error) {
-      console.error('Error in logMetric:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in logMetric:', error);
+      }
       return false;
     }
   }
@@ -173,13 +187,17 @@ class OpikService {
         .eq('trace_id', traceId);
 
       if (error) {
-        console.error('Error updating feedback:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error updating feedback:', error);
+        }
         return { error };
       }
 
       return {};
     } catch (error) {
-      console.error('Error in updateTraceFeedback:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in updateTraceFeedback:', error);
+      }
       return { error };
     }
   }
@@ -194,13 +212,17 @@ class OpikService {
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching traces:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error fetching traces:', error);
+        }
         return [];
       }
 
       return data || [];
     } catch (error) {
-      console.error('Error in getTracesByUser:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in getTracesByUser:', error);
+      }
       return [];
     }
   }
@@ -214,13 +236,17 @@ class OpikService {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error('Error fetching metrics:', error);
+        if (import.meta.env.DEV) {
+          console.error('Error fetching metrics:', error);
+        }
         return [];
       }
 
       return data || [];
     } catch (error) {
-      console.error('Error in getMetricsForTrace:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in getMetricsForTrace:', error);
+      }
       return [];
     }
   }
@@ -273,7 +299,9 @@ class OpikService {
         totalTraces: data.length
       };
     } catch (error) {
-      console.error('Error in getAggregatedMetrics:', error);
+      if (import.meta.env.DEV) {
+        console.error('Error in getAggregatedMetrics:', error);
+      }
       return {
         avgLatency: 0,
         totalTokens: 0,
@@ -298,10 +326,22 @@ class OpikService {
       });
 
       if (!response.ok) {
-        console.warn(`Opik API warning: ${response.status} ${response.statusText}`);
+        // Ne logger que les erreurs non-CORS en mode DEV
+        if (import.meta.env.DEV && response.status !== 0) {
+          console.warn(`Opik API warning: ${response.status} ${response.statusText}`);
+        }
       }
-    } catch (error) {
-      console.warn('Could not send data to Opik API:', error);
+    } catch (error: any) {
+      // Erreur CORS attendue si l'API externe bloque - ignorer silencieusement
+      if (error?.message?.includes('CORS') || error?.message?.includes('Failed to fetch') || error?.name === 'TypeError') {
+        // CORS est attendu - la trace est toujours sauvegardée dans Supabase
+        // Ne pas logger cette erreur pour éviter de polluer la console
+        return;
+      }
+      // Logger uniquement les autres erreurs en mode DEV
+      if (import.meta.env.DEV) {
+        console.warn('Could not send data to Opik API:', error);
+      }
     }
   }
 
